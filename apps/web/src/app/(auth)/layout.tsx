@@ -13,7 +13,7 @@ export default function AuthLayout({
         <div className="container mx-auto px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
             <Mail className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-xl">SignatureHub</span>
+            <span className="font-semibold text-xl">Siggly</span>
           </Link>
         </div>
       </header>
@@ -26,7 +26,7 @@ export default function AuthLayout({
       {/* Footer */}
       <footer className="border-t bg-white py-4">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} SignatureHub. All rights reserved.
+          © {new Date().getFullYear()} Siggly. All rights reserved.
         </div>
       </footer>
     </div>

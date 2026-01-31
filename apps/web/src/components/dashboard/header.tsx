@@ -38,7 +38,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
           <Mail className="h-6 w-6 text-primary" />
-          <span className="font-semibold text-xl">SignatureHub</span>
+          <span className="font-semibold text-xl">Siggly</span>
         </Link>
 
         {/* Right side */}

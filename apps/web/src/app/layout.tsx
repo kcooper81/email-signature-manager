@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Email Signature Manager',
-  description: 'Centralized email signature management for teams',
+  title: 'Siggly - Signatures, simplified.',
+  description: 'Deploy professional email signatures to your entire team in seconds. One signature, every inbox.',
 };
 
 export default function RootLayout({

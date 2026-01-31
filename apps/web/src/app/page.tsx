@@ -9,7 +9,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Mail className="h-6 w-6 text-primary" />
-            <span className="font-semibold text-xl">SignatureHub</span>
+            <span className="font-semibold text-xl">Siggly</span>
           </div>
           <div className="flex items-center gap-4">
             <Link
@@ -35,13 +35,13 @@ export default function HomePage() {
           <span className="ml-2 text-muted-foreground">Google Workspace & Microsoft 365 support</span>
         </div>
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
-          Email signatures,
+          Signatures,
           <br />
-          <span className="text-primary">managed centrally</span>
+          <span className="text-primary">simplified.</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-          Create beautiful, consistent email signatures for your entire team.
-          Deploy to Google Workspace or Microsoft 365 with one click.
+          Deploy professional email signatures to your entire team in seconds.
+          One signature, every inbox.
         </p>
         <div className="flex items-center justify-center gap-4">
           <Link
@@ -97,7 +97,7 @@ export default function HomePage() {
         <div className="bg-primary rounded-2xl p-12 text-center text-primary-foreground">
           <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-xl mx-auto">
-            Join thousands of teams who trust SignatureHub for their email signature management.
+            Join thousands of teams who trust Siggly for their email signature management.
           </p>
           <Link
             href="/signup"
@@ -115,10 +115,10 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Mail className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium text-muted-foreground">SignatureHub</span>
+              <span className="font-medium text-muted-foreground">Siggly</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} SignatureHub. All rights reserved.
+              © {new Date().getFullYear()} Siggly. All rights reserved.
             </p>
           </div>
         </div>
