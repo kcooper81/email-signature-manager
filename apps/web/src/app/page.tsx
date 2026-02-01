@@ -122,39 +122,97 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-                {/* Screenshot placeholder - gradient mockup of the editor */}
-                <div className="aspect-[16/10] bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-                  <div className="h-full rounded-xl border border-gray-200 bg-white shadow-sm flex">
+                {/* Screenshot placeholder - detailed mockup of the editor */}
+                <div className="aspect-[16/10] bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+                  <div className="h-full rounded-xl border border-gray-200 bg-white shadow-sm flex overflow-hidden">
                     {/* Sidebar */}
-                    <div className="w-64 border-r border-gray-200 p-4 space-y-3">
-                      <div className="h-8 bg-gradient-to-r from-violet-100 to-blue-100 rounded-lg" />
-                      <div className="h-6 bg-gray-100 rounded w-3/4" />
-                      <div className="h-6 bg-gray-100 rounded w-1/2" />
-                      <div className="mt-6 space-y-2">
-                        <div className="h-10 bg-violet-50 rounded-lg border border-violet-200" />
-                        <div className="h-10 bg-gray-50 rounded-lg border border-gray-200" />
-                        <div className="h-10 bg-gray-50 rounded-lg border border-gray-200" />
+                    <div className="w-56 border-r border-gray-200 bg-gray-50/50 flex flex-col">
+                      <div className="p-4 border-b border-gray-200">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-blue-500" />
+                          <div className="text-sm font-semibold text-gray-800">Siggly</div>
+                        </div>
+                      </div>
+                      <div className="p-3 space-y-1 flex-1">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-violet-100 rounded-lg border border-violet-200">
+                          <div className="w-4 h-4 rounded bg-violet-400" />
+                          <span className="text-xs font-medium text-violet-700">Templates</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+                          <div className="w-4 h-4 rounded bg-gray-300" />
+                          <span className="text-xs text-gray-600">Team</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+                          <div className="w-4 h-4 rounded bg-gray-300" />
+                          <span className="text-xs text-gray-600">Deployments</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+                          <div className="w-4 h-4 rounded bg-gray-300" />
+                          <span className="text-xs text-gray-600">Analytics</span>
+                        </div>
+                      </div>
+                      <div className="p-3 border-t border-gray-200">
+                        <div className="flex items-center gap-2 px-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400" />
+                          <span className="text-xs text-gray-600">John D.</span>
+                        </div>
                       </div>
                     </div>
-                    {/* Main content - signature preview */}
-                    <div className="flex-1 p-6">
-                      <div className="mb-4 flex items-center justify-between">
-                        <div className="h-6 bg-gray-200 rounded w-32" />
-                        <div className="h-8 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full w-24" />
+                    {/* Main content - signature editor */}
+                    <div className="flex-1 flex flex-col">
+                      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-semibold text-gray-800">Marketing Team Signature</span>
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Active</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 px-3 bg-gray-100 rounded-lg flex items-center text-xs text-gray-600">Preview</div>
+                          <div className="h-8 px-4 bg-gradient-to-r from-violet-500 to-blue-500 rounded-lg flex items-center text-xs text-white font-medium">Deploy</div>
+                        </div>
                       </div>
-                      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                        <div className="flex gap-4">
-                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-400 to-blue-400" />
+                      <div className="flex-1 p-6 flex gap-6">
+                        {/* Editor panel */}
+                        <div className="w-48 space-y-3">
+                          <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Blocks</div>
                           <div className="space-y-2">
-                            <div className="h-5 bg-gray-300 rounded w-32" />
-                            <div className="h-4 bg-gray-200 rounded w-24" />
-                            <div className="h-3 bg-blue-200 rounded w-40" />
+                            <div className="p-2 bg-violet-50 border border-violet-200 rounded-lg text-xs text-violet-700 flex items-center gap-2">
+                              <div className="w-4 h-4 rounded bg-violet-300" />
+                              Profile Photo
+                            </div>
+                            <div className="p-2 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700 flex items-center gap-2">
+                              <div className="w-4 h-4 rounded bg-blue-300" />
+                              Name & Title
+                            </div>
+                            <div className="p-2 bg-cyan-50 border border-cyan-200 rounded-lg text-xs text-cyan-700 flex items-center gap-2">
+                              <div className="w-4 h-4 rounded bg-cyan-300" />
+                              Contact Info
+                            </div>
+                            <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600 flex items-center gap-2">
+                              <div className="w-4 h-4 rounded bg-gray-300" />
+                              Social Links
+                            </div>
                           </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-gray-200 flex gap-2">
-                          <div className="w-6 h-6 rounded bg-blue-100" />
-                          <div className="w-6 h-6 rounded bg-cyan-100" />
-                          <div className="w-6 h-6 rounded bg-violet-100" />
+                        {/* Signature preview */}
+                        <div className="flex-1 bg-gray-50 rounded-xl p-6 border border-gray-200">
+                          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                            <div className="flex gap-4">
+                              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-400 to-blue-400 flex items-center justify-center text-white font-bold text-lg">JD</div>
+                              <div className="space-y-1">
+                                <div className="font-semibold text-gray-900 text-sm">John Doe</div>
+                                <div className="text-xs text-gray-600">Marketing Director</div>
+                                <div className="text-xs text-blue-600">john@company.com</div>
+                                <div className="text-xs text-gray-500">+1 (555) 123-4567</div>
+                              </div>
+                            </div>
+                            <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-3">
+                              <div className="w-5 h-5 rounded bg-blue-500" />
+                              <div className="w-5 h-5 rounded bg-sky-400" />
+                              <div className="w-5 h-5 rounded bg-pink-500" />
+                              <div className="flex-1" />
+                              <div className="h-6 w-16 rounded bg-gradient-to-r from-violet-500 to-blue-500" />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -162,7 +220,7 @@ export default function HomePage() {
                 </div>
               </div>
               {/* Floating elements */}
-              <div className="absolute -left-4 top-1/4 bg-white rounded-xl shadow-xl p-4 border border-gray-100 hidden lg:block">
+              <div className="absolute -left-4 top-1/4 bg-white rounded-xl shadow-xl p-4 border border-gray-100 hidden lg:block animate-pulse">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
                     <Check className="h-5 w-5 text-white" />
@@ -173,7 +231,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -right-4 bottom-1/4 bg-white rounded-xl shadow-xl p-4 border border-gray-100 hidden lg:block">
+              <div className="absolute -right-4 top-1/3 bg-white rounded-xl shadow-xl p-4 border border-gray-100 hidden lg:block">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-blue-500 flex items-center justify-center">
                     <Users className="h-5 w-5 text-white" />
@@ -184,22 +242,77 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+              <div className="absolute -right-8 bottom-1/4 bg-white rounded-xl shadow-xl p-4 border border-gray-100 hidden lg:block">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <BarChart3 className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-gray-900">2.4K clicks</div>
+                    <div className="text-xs text-gray-500">This month</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Logos / Social Proof */}
-      <section className="py-16 border-y border-gray-100 bg-white">
+      {/* Reviews & Social Proof */}
+      <section className="py-20 border-y border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-sm text-gray-500 mb-8 font-medium">Trusted by teams at companies of all sizes</p>
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 opacity-60">
-            {/* Placeholder logos - grayscale company logos */}
-            <div className="h-8 w-24 bg-gray-300 rounded" />
-            <div className="h-8 w-28 bg-gray-300 rounded" />
-            <div className="h-8 w-20 bg-gray-300 rounded" />
-            <div className="h-8 w-32 bg-gray-300 rounded" />
-            <div className="h-8 w-24 bg-gray-300 rounded" />
+          {/* Star rating highlight */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-full px-6 py-3 mb-4">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="text-amber-700 font-semibold">4.9/5</span>
+              <span className="text-amber-600">from 500+ companies</span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Loved by teams worldwide</h3>
+            <p className="text-gray-600">See why companies choose Siggly for their email signatures</p>
+          </div>
+          
+          {/* Review cards */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <ReviewCard
+              quote="Siggly saved us 10+ hours per month on signature management. The deployment is instant and our branding is finally consistent."
+              author="Sarah Chen"
+              role="Marketing Director"
+              company="TechFlow Inc"
+              rating={5}
+            />
+            <ReviewCard
+              quote="We switched from Exclaimer and couldn't be happier. Setup took 2 minutes instead of 2 days. The UI is beautiful."
+              author="Michael Torres"
+              role="IT Manager"
+              company="GrowthLabs"
+              rating={5}
+            />
+            <ReviewCard
+              quote="The analytics feature is a game-changer. We can finally track which signature CTAs drive the most engagement."
+              author="Emily Watson"
+              role="Head of Operations"
+              company="ScaleUp Co"
+              rating={5}
+            />
+          </div>
+
+          {/* Company logos */}
+          <div className="pt-8 border-t border-gray-100">
+            <p className="text-center text-sm text-gray-500 mb-6 font-medium">Trusted by teams at</p>
+            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-50 grayscale">
+              <div className="text-2xl font-bold text-gray-400">Stripe</div>
+              <div className="text-2xl font-bold text-gray-400">Notion</div>
+              <div className="text-2xl font-bold text-gray-400">Figma</div>
+              <div className="text-2xl font-bold text-gray-400">Linear</div>
+              <div className="text-2xl font-bold text-gray-400">Vercel</div>
+            </div>
           </div>
         </div>
       </section>
@@ -216,7 +329,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Problem/Solution Section */}
+      {/* Problem/Solution Section - Redesigned */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -229,27 +342,101 @@ export default function HomePage() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Before */}
-            <div className="rounded-2xl border border-red-200 bg-gradient-to-br from-red-50 to-orange-50 p-8">
-              <div className="text-red-600 font-semibold text-sm uppercase tracking-wider mb-6">Without Siggly</div>
-              <ul className="space-y-4">
-                <PainPoint text="Manual signature updates for every employee" />
-                <PainPoint text="Inconsistent branding across the organization" />
-                <PainPoint text="Hours wasted on IT support tickets" />
-                <PainPoint text="No way to enforce compliance" />
-              </ul>
-            </div>
-            
-            {/* After */}
-            <div className="rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-8">
-              <div className="text-green-600 font-semibold text-sm uppercase tracking-wider mb-6">With Siggly</div>
-              <ul className="space-y-4">
-                <BenefitPoint text="One-click deployment to all users" />
-                <BenefitPoint text="Consistent, on-brand signatures everywhere" />
-                <BenefitPoint text="Zero IT overhead after setup" />
-                <BenefitPoint text="Automatic compliance enforcement" />
-              </ul>
+          {/* Comparison Table Style */}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden border border-gray-200 shadow-lg">
+              {/* Without Siggly */}
+              <div className="bg-gradient-to-br from-red-50 via-orange-50 to-red-50 p-8 md:p-10">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <span className="text-red-500 text-xl">😫</span>
+                  </div>
+                  <div>
+                    <div className="text-red-600 font-bold text-lg">Without Siggly</div>
+                    <div className="text-red-500 text-sm">The old way</div>
+                  </div>
+                </div>
+                <div className="space-y-5">
+                  <ComparisonItem 
+                    icon="❌" 
+                    title="Manual updates" 
+                    description="Chase every employee to update their signature manually"
+                    negative
+                  />
+                  <ComparisonItem 
+                    icon="❌" 
+                    title="Brand chaos" 
+                    description="Different fonts, colors, and formats across the org"
+                    negative
+                  />
+                  <ComparisonItem 
+                    icon="❌" 
+                    title="IT burden" 
+                    description="Hours wasted on support tickets and troubleshooting"
+                    negative
+                  />
+                  <ComparisonItem 
+                    icon="❌" 
+                    title="No compliance" 
+                    description="Impossible to enforce legal disclaimers consistently"
+                    negative
+                  />
+                  <ComparisonItem 
+                    icon="❌" 
+                    title="Outdated info" 
+                    description="Employees leave, titles change, signatures stay wrong"
+                    negative
+                  />
+                </div>
+                <div className="mt-8 pt-6 border-t border-red-200">
+                  <div className="text-red-600 font-semibold text-sm">Average time spent:</div>
+                  <div className="text-red-700 text-2xl font-bold">10+ hours/month</div>
+                </div>
+              </div>
+              
+              {/* With Siggly */}
+              <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-8 md:p-10 border-l border-gray-200">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <span className="text-green-500 text-xl">🎉</span>
+                  </div>
+                  <div>
+                    <div className="text-green-600 font-bold text-lg">With Siggly</div>
+                    <div className="text-green-500 text-sm">The modern way</div>
+                  </div>
+                </div>
+                <div className="space-y-5">
+                  <ComparisonItem 
+                    icon="✓" 
+                    title="One-click deploy" 
+                    description="Push signatures to everyone instantly, no user action needed"
+                  />
+                  <ComparisonItem 
+                    icon="✓" 
+                    title="Perfect branding" 
+                    description="Every signature matches your brand guidelines exactly"
+                  />
+                  <ComparisonItem 
+                    icon="✓" 
+                    title="Zero IT overhead" 
+                    description="Set it once, forget it. Marketing can self-serve"
+                  />
+                  <ComparisonItem 
+                    icon="✓" 
+                    title="Auto compliance" 
+                    description="Legal disclaimers applied automatically by region"
+                  />
+                  <ComparisonItem 
+                    icon="✓" 
+                    title="Always current" 
+                    description="Syncs with your directory, updates happen automatically"
+                  />
+                </div>
+                <div className="mt-8 pt-6 border-t border-green-200">
+                  <div className="text-green-600 font-semibold text-sm">Average time spent:</div>
+                  <div className="text-green-700 text-2xl font-bold">60 seconds setup</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -633,6 +820,68 @@ function DifferentiatorCard({
       </div>
       <h3 className="font-bold text-xl mb-3 text-gray-900">{title}</h3>
       <p className="text-gray-600 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function ReviewCard({
+  quote,
+  author,
+  role,
+  company,
+  rating,
+}: {
+  quote: string;
+  author: string;
+  role: string;
+  company: string;
+  rating: number;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+      <div className="flex mb-4">
+        {[...Array(rating)].map((_, i) => (
+          <svg key={i} className="w-5 h-5 text-amber-400 fill-current" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        ))}
+      </div>
+      <p className="text-gray-700 mb-6 leading-relaxed">&ldquo;{quote}&rdquo;</p>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+          {author.split(' ').map(n => n[0]).join('')}
+        </div>
+        <div>
+          <div className="font-semibold text-gray-900 text-sm">{author}</div>
+          <div className="text-gray-500 text-xs">{role} at {company}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ComparisonItem({
+  icon,
+  title,
+  description,
+  negative = false,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+  negative?: boolean;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm ${
+        negative ? 'bg-red-100 text-red-500' : 'bg-green-100 text-green-600'
+      }`}>
+        {icon}
+      </div>
+      <div>
+        <div className={`font-semibold text-sm ${negative ? 'text-red-700' : 'text-green-700'}`}>{title}</div>
+        <div className={`text-xs ${negative ? 'text-red-600/70' : 'text-green-600/70'}`}>{description}</div>
+      </div>
     </div>
   );
 }
