@@ -393,7 +393,13 @@ function getDefaultContent(type: SignatureBlockType): SignatureBlock['content'] 
         borderRadius: 4,
       };
     default:
-      return { text: '' };
+      // Default to text block content
+      return {
+        text: '',
+        fontSize: 14,
+        fontWeight: 'normal' as const,
+        color: '#333333',
+      };
   }
 }
 
