@@ -1,5 +1,17 @@
 import mjml2html from 'mjml';
-import type { SignatureBlock, User, Organization } from '@esm/shared';
+import type { 
+  SignatureBlock, 
+  User, 
+  Organization,
+  TextBlock,
+  ImageBlock,
+  VariableBlock,
+  BannerBlock,
+  DisclaimerBlock,
+  DividerBlock,
+  SocialLinksBlock,
+  SpacerBlock,
+} from '@esm/shared';
 import { EMAIL_SAFE_FONTS, DEFAULT_SIGNATURE_STYLES, SOCIAL_PLATFORMS } from '@esm/shared';
 
 interface RenderContext {
@@ -66,7 +78,7 @@ function blockToMjml(block: SignatureBlock, context: RenderContext): string {
   }
 }
 
-function renderTextBlock(block: { content: string; styles?: Record<string, unknown> }): string {
+function renderTextBlock(block: TextBlock): string {
   const styles = block.styles || {};
   const fontSize = styles.fontSize || DEFAULT_SIGNATURE_STYLES.fontSize;
   const color = styles.color || DEFAULT_SIGNATURE_STYLES.color;
@@ -84,13 +96,7 @@ function renderTextBlock(block: { content: string; styles?: Record<string, unkno
   `;
 }
 
-function renderImageBlock(block: {
-  src: string;
-  alt?: string;
-  width?: number;
-  height?: number;
-  link?: string;
-}): string {
+function renderImageBlock(block: ImageBlock): string {
   const imgTag = `
     <mj-image 
       src="${block.src}" 
@@ -104,7 +110,7 @@ function renderImageBlock(block: {
 }
 
 function renderVariableBlock(
-  block: { variable: string; fallback?: string; prefix?: string; suffix?: string; styles?: Record<string, unknown> },
+  block: VariableBlock,
   context: RenderContext
 ): string {
   const value = resolveVariable(block.variable, context) || block.fallback || '';
@@ -155,13 +161,7 @@ function resolveVariable(variable: string, context: RenderContext): string | und
   }
 }
 
-function renderBannerBlock(block: {
-  imageUrl: string;
-  link?: string;
-  alt?: string;
-  startDate?: Date;
-  endDate?: Date;
-}): string {
+function renderBannerBlock(block: BannerBlock): string {
   // Check date range if specified
   const now = new Date();
   if (block.startDate && new Date(block.startDate) > now) return '';
@@ -177,7 +177,7 @@ function renderBannerBlock(block: {
   `;
 }
 
-function renderDisclaimerBlock(block: { content: string }): string {
+function renderDisclaimerBlock(block: DisclaimerBlock): string {
   return `
     <mj-text 
       font-size="10px" 
@@ -189,7 +189,7 @@ function renderDisclaimerBlock(block: { content: string }): string {
   `;
 }
 
-function renderDividerBlock(block: { color?: string; thickness?: number }): string {
+function renderDividerBlock(block: DividerBlock): string {
   return `
     <mj-divider 
       border-color="${block.color || DEFAULT_SIGNATURE_STYLES.dividerColor}" 
@@ -199,10 +199,7 @@ function renderDividerBlock(block: { color?: string; thickness?: number }): stri
   `;
 }
 
-function renderSocialLinksBlock(block: {
-  links: Array<{ platform: string; url: string }>;
-  iconSize?: number;
-}): string {
+function renderSocialLinksBlock(block: SocialLinksBlock): string {
   const iconSize = block.iconSize || 24;
   
   const socialIcons = block.links
@@ -234,7 +231,7 @@ function renderSocialLinksBlock(block: {
   `;
 }
 
-function renderSpacerBlock(block: { height: number }): string {
+function renderSpacerBlock(block: SpacerBlock): string {
   return `<mj-spacer height="${block.height}px" />`;
 }
 
