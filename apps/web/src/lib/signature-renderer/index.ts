@@ -1,4 +1,3 @@
-import mjml2html from 'mjml';
 import type { 
   SignatureBlock, 
   User, 
@@ -21,12 +20,16 @@ interface RenderContext {
 
 /**
  * Renders signature blocks to email-safe HTML using MJML
+ * Uses dynamic import to avoid build-time file system access issues
  */
-export function renderSignatureToHtml(
+export async function renderSignatureToHtml(
   blocks: SignatureBlock[],
   context: RenderContext
-): { html: string; errors: string[] } {
+): Promise<{ html: string; errors: string[] }> {
   const mjmlContent = blocksToMjml(blocks, context);
+  
+  // Dynamic import to avoid build-time evaluation
+  const mjml2html = (await import('mjml')).default;
   
   const result = mjml2html(mjmlContent, {
     validationLevel: 'soft',
