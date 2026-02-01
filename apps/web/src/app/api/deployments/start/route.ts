@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server';
 import { setGmailSignature } from '@/lib/google/gmail';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 
+// Force dynamic to prevent MJML from being evaluated at build time
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient();
@@ -114,7 +117,7 @@ export async function POST(request: NextRequest) {
           },
         };
 
-        const signatureResult = renderSignatureToHtml(template.blocks, renderContext);
+        const signatureResult = await renderSignatureToHtml(template.blocks, renderContext);
 
         // Deploy to Gmail
         await setGmailSignature(
