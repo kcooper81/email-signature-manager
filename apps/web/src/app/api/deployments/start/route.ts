@@ -102,16 +102,19 @@ export async function POST(request: NextRequest) {
 
     for (const targetUser of targetUsers) {
       try {
-        // Render signature with user data
-        const userData = {
-          first_name: targetUser.name?.split(' ')[0] || '',
-          last_name: targetUser.name?.split(' ').slice(1).join(' ') || '',
-          full_name: targetUser.name || '',
-          email: targetUser.email || '',
-          // Add more fields as needed
+        // Render signature with user data in RenderContext format
+        const renderContext = {
+          user: {
+            firstName: targetUser.name?.split(' ')[0] || '',
+            lastName: targetUser.name?.split(' ').slice(1).join(' ') || '',
+            email: targetUser.email || '',
+          },
+          organization: {
+            name: '', // Can be populated from org settings later
+          },
         };
 
-        const signatureHtml = renderSignatureToHtml(template.blocks, userData);
+        const signatureHtml = renderSignatureToHtml(template.blocks, renderContext);
 
         // Deploy to Gmail
         await setGmailSignature(
