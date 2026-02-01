@@ -114,14 +114,14 @@ export async function POST(request: NextRequest) {
           },
         };
 
-        const signatureHtml = renderSignatureToHtml(template.blocks, renderContext);
+        const signatureResult = renderSignatureToHtml(template.blocks, renderContext);
 
         // Deploy to Gmail
         await setGmailSignature(
           connection.access_token,
           connection.refresh_token,
           targetUser.email!,
-          signatureHtml
+          signatureResult.html
         );
 
         successCount++;
