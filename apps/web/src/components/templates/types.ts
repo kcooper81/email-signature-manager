@@ -7,6 +7,7 @@ export type SignatureBlockType =
   | 'contact-info'
   | 'button'
   | 'banner'
+  | 'disclaimer'
   | 'html';
 
 export interface TextBlockContent {
@@ -72,6 +73,21 @@ export interface HtmlBlockContent {
   html: string;
 }
 
+export interface DisclaimerBlockContent {
+  text: string;
+  template: 'confidentiality' | 'legal' | 'gdpr' | 'hipaa' | 'custom';
+  fontSize: number;
+  color: string;
+}
+
+export const DISCLAIMER_TEMPLATES = {
+  confidentiality: `This email and any attachments are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the sender immediately and delete it from your system.`,
+  legal: `This email does not create any contractual relationship. The views expressed in this email are those of the sender and do not necessarily reflect the views of the company.`,
+  gdpr: `We process your personal data in accordance with GDPR. For more information about how we handle your data, please see our Privacy Policy.`,
+  hipaa: `This message may contain Protected Health Information (PHI). If you are not the intended recipient, you are prohibited from disclosing, copying, or distributing this information. Please notify the sender and delete this message immediately.`,
+  custom: '',
+};
+
 export type SignatureBlockContent =
   | TextBlockContent
   | ImageBlockContent
@@ -81,6 +97,7 @@ export type SignatureBlockContent =
   | ContactInfoBlockContent
   | ButtonBlockContent
   | BannerBlockContent
+  | DisclaimerBlockContent
   | HtmlBlockContent;
 
 export interface SignatureBlock {
