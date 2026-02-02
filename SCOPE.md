@@ -135,14 +135,20 @@ email-signature-manager/
 - [ ] Outlook signature deployment
 - [ ] Azure AD user sync
 
-### Phase 4 - Advanced
+### Phase 4 - Billing & Pay Gates ✅ COMPLETE
+- [x] Stripe billing integration (checkout, portal, webhooks)
+- [x] Subscription plans (Free, Starter, Professional, Enterprise)
+- [x] Pay gates system with feature and usage limits
+- [x] Development bypass toggle for testing
+- [x] Upgrade prompts and billing page
+
+### Phase 5 - Advanced
 - [ ] Scheduled deployments
 - [ ] A/B testing for signatures
 - [ ] Click tracking and analytics
-- [ ] Stripe billing integration
 - [ ] White-label options
 
-### Phase 5 - Production Readiness
+### Phase 6 - Production Readiness
 - [ ] **Google OAuth Verification**: Submit app for Google verification (2-6 weeks)
 - [ ] **Domain-Wide Delegation**: Enterprise install option for Workspace admins
 - [ ] **Custom SMTP for auth emails**: Resend/SendGrid integration
@@ -325,6 +331,9 @@ MICROSOFT_TENANT_ID=
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Development
+NEXT_PUBLIC_BYPASS_PAY_GATES=true  # Set to 'false' in production
 ```
 
 ---
@@ -367,14 +376,181 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ---
 
-## Subscription Tiers
+## Billing & Subscription System
 
-| Tier | Users | Templates | Features |
-|------|-------|-----------|----------|
-| **Free** | 5 | 1 | Basic editor, manual deploy |
-| **Starter** | 25 | 5 | Google Workspace, scheduling |
-| **Professional** | 100 | Unlimited | + Microsoft 365, analytics |
-| **Enterprise** | Unlimited | Unlimited | + SSO, API access, SLA |
+### Pricing Model
+
+Siggly uses a **per-team-member pricing model** similar to competitors but at lower rates:
+
+| Tier | Price | Templates | Team Members | Key Features |
+|------|-------|-----------|--------------|--------------|
+| **Free** | $0 forever | 1 | 5 | Basic editor, Google Workspace sync |
+| **Starter** | $0.50/member/mo | 5 | Unlimited | + Microsoft 365, analytics, remove watermark |
+| **Professional** | $29/mo + $1/member | Unlimited | Unlimited | + Scheduled deployments, API access, priority support |
+| **Enterprise** | Custom | Unlimited | Unlimited | + SSO/SAML, white-label, dedicated support |
+
+### Stripe Integration
+
+#### API Routes
+| Route | Description |
+|-------|-------------|
+| `/api/billing/checkout` | Creates Stripe Checkout session for plan upgrades |
+| `/api/billing/portal` | Opens Stripe Customer Portal for subscription management |
+| `/api/billing/webhook` | Handles Stripe webhook events (subscription updates, payments) |
+
+#### Webhook Events Handled
+- `checkout.session.completed` - New subscription created
+- `customer.subscription.updated` - Plan changed or renewed
+- `customer.subscription.deleted` - Subscription canceled
+- `invoice.payment_failed` - Payment failed
+
+#### Environment Variables
+```env
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_...
+STRIPE_STARTER_PRICE_ID=price_...
+STRIPE_PROFESSIONAL_PRICE_ID=price_...
+```
+
+---
+
+## Pay Gates System
+
+### Overview
+
+Pay gates restrict access to features and enforce usage limits based on the user's subscription plan. A **development bypass** allows disabling all gates during development.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SubscriptionProvider                      │
+│  (Context provider wrapping dashboard layout)               │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────┐    ┌─────────────────────────────┐    │
+│  │ useSubscription │───▶│ Fetches plan, usage, limits │    │
+│  │     Hook        │    │ from Supabase               │    │
+│  └─────────────────┘    └─────────────────────────────┘    │
+│           │                                                 │
+│           ▼                                                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │              Helper Functions                        │   │
+│  │  • canAccess(feature) - Check feature access         │   │
+│  │  • canCreateTemplate() - Check template limit        │   │
+│  │  • canAddTeamMember() - Check team member limit      │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/hooks/use-subscription.tsx` | Subscription context and hook |
+| `src/lib/billing/plans.ts` | Plan definitions, features, limits |
+| `src/components/billing/upgrade-prompt.tsx` | Upgrade UI components |
+| `src/components/billing/dev-bypass-indicator.tsx` | Dev mode indicator |
+| `src/components/providers/subscription-provider.tsx` | Client wrapper |
+
+### Feature Gates
+
+Features are gated by plan using the `canAccess()` function:
+
+| Feature | Free | Starter | Professional | Enterprise |
+|---------|------|---------|--------------|------------|
+| `analytics` | ❌ | ✅ | ✅ | ✅ |
+| `microsoft365` | ❌ | ✅ | ✅ | ✅ |
+| `customBranding` | ❌ | ✅ | ✅ | ✅ |
+| `removeWatermark` | ❌ | ✅ | ✅ | ✅ |
+| `scheduledDeployments` | ❌ | ❌ | ✅ | ✅ |
+| `apiAccess` | ❌ | ❌ | ✅ | ✅ |
+| `prioritySupport` | ❌ | ❌ | ✅ | ✅ |
+| `sso` | ❌ | ❌ | ❌ | ✅ |
+| `whiteLabel` | ❌ | ❌ | ❌ | ✅ |
+
+### Usage Limits
+
+Limits are enforced using the `isWithinLimit()` function:
+
+| Resource | Free | Starter | Professional | Enterprise |
+|----------|------|---------|--------------|------------|
+| Templates | 1 | 5 | Unlimited | Unlimited |
+| Team Members | 5 | Unlimited | Unlimited | Unlimited |
+
+### Implementation Examples
+
+#### Checking Feature Access
+```typescript
+const { canAccess } = useSubscription();
+
+if (!canAccess('analytics')) {
+  return <UpgradePrompt feature="Analytics" requiredPlan="starter" />;
+}
+```
+
+#### Checking Usage Limits
+```typescript
+const { canCreateTemplate, usage, limits } = useSubscription();
+
+if (!canCreateTemplate()) {
+  return (
+    <div>
+      You've used {usage.templateCount} of {limits.maxTemplates} templates.
+      <Link href="/settings/billing">Upgrade</Link>
+    </div>
+  );
+}
+```
+
+#### Using Gate Components
+```tsx
+// Feature gate - shows upgrade prompt if no access
+<FeatureGate feature="analytics">
+  <AnalyticsDashboard />
+</FeatureGate>
+
+// Limit gate - shows upgrade prompt if limit reached
+<LimitGate type="template">
+  <CreateTemplateButton />
+</LimitGate>
+```
+
+### Development Bypass
+
+To disable all pay gates during development:
+
+```env
+# .env.local
+NEXT_PUBLIC_BYPASS_PAY_GATES=true
+```
+
+When enabled:
+- All `canAccess()` calls return `true`
+- All `canCreateTemplate()` / `canAddTeamMember()` calls return `true`
+- A yellow "Pay Gates Bypassed" badge appears in the bottom-right corner
+- `UpgradePrompt` components are hidden
+
+**⚠️ Important**: Remove or set to `false` in production!
+
+### Pages with Pay Gates
+
+| Page | Gate Type | Restriction |
+|------|-----------|-------------|
+| `/templates` | Limit | Template count vs plan limit |
+| `/team` | Limit | Team member count vs plan limit |
+| `/analytics` | Feature | Requires `analytics` feature |
+
+### Billing Page
+
+Located at `/settings/billing`, this page shows:
+- Current plan and status
+- Usage vs limits (templates, team members)
+- Trial status and days remaining
+- Upgrade/downgrade options
+- Link to Stripe Customer Portal
 
 ---
 
