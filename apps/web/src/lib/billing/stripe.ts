@@ -11,7 +11,8 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 export const STRIPE_PRICE_IDS = {
   starter: process.env.STRIPE_STARTER_PRICE_ID || '',
-  professional: process.env.STRIPE_PROFESSIONAL_PRICE_ID || '',
+  professional_base: process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID || '',
+  professional_per_user: process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID || '',
 };
 
 export async function createCustomer(email: string, name: string, organizationId: string) {
@@ -26,28 +27,44 @@ export async function createCustomer(email: string, name: string, organizationId
 
 export async function createCheckoutSession({
   customerId,
-  priceId,
+  planId,
   quantity,
   successUrl,
   cancelUrl,
   trialDays,
 }: {
   customerId: string;
-  priceId: string;
+  planId: 'starter' | 'professional';
   quantity: number;
   successUrl: string;
   cancelUrl: string;
   trialDays?: number;
 }) {
+  // Build line items based on plan
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+  if (planId === 'starter') {
+    // Starter: $0.50/member/month (per-user only)
+    lineItems.push({
+      price: STRIPE_PRICE_IDS.starter,
+      quantity,
+    });
+  } else if (planId === 'professional') {
+    // Professional: $29/month base + $1/member/month
+    lineItems.push({
+      price: STRIPE_PRICE_IDS.professional_base,
+      quantity: 1, // Base fee is always 1
+    });
+    lineItems.push({
+      price: STRIPE_PRICE_IDS.professional_per_user,
+      quantity,
+    });
+  }
+
   return stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
-    line_items: [
-      {
-        price: priceId,
-        quantity,
-      },
-    ],
+    line_items: lineItems,
     subscription_data: trialDays
       ? {
           trial_period_days: trialDays,

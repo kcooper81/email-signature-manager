@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { stripe, STRIPE_PRICE_IDS, createCustomer, createCheckoutSession } from '@/lib/billing/stripe';
+import { createCustomer, createCheckoutSession } from '@/lib/billing/stripe';
 import { TRIAL_DAYS } from '@/lib/billing/plans';
 
 export async function POST(request: NextRequest) {
@@ -18,11 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
-    const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
-    if (!priceId) {
-      return NextResponse.json({ error: 'Price not configured' }, { status: 400 });
-    }
-
+    
     // Get user's organization
     const { data: userData } = await supabase
       .from('users')
@@ -88,7 +84,7 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const session = await createCheckoutSession({
       customerId,
-      priceId,
+      planId: planId as 'starter' | 'professional',
       quantity,
       successUrl: `${baseUrl}/settings/billing?success=true`,
       cancelUrl: `${baseUrl}/settings/billing?canceled=true`,
