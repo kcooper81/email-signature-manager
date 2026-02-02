@@ -9,6 +9,8 @@ import type {
   ContactInfoBlockContent,
   ButtonBlockContent,
   SocialBlockContent,
+  DisclaimerBlockContent,
+  HtmlBlockContent,
 } from './types';
 import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github } from 'lucide-react';
 
@@ -81,6 +83,10 @@ function renderBlock(
       return renderButtonBlock(block.content as ButtonBlockContent, replacePlaceholders);
     case 'social':
       return renderSocialBlock(block.content as SocialBlockContent);
+    case 'disclaimer':
+      return renderDisclaimerBlock(block.content as DisclaimerBlockContent);
+    case 'html':
+      return renderHtmlBlock(block.content as HtmlBlockContent);
     default:
       return null;
   }
@@ -307,5 +313,33 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
         </a>
       ))}
     </div>
+  );
+}
+
+function renderDisclaimerBlock(content: DisclaimerBlockContent): React.ReactNode {
+  return (
+    <p
+      style={{
+        fontSize: `${content.fontSize}px`,
+        color: content.color,
+        margin: '12px 0 0 0',
+        lineHeight: 1.4,
+        fontStyle: 'italic',
+      }}
+    >
+      {content.text}
+    </p>
+  );
+}
+
+function renderHtmlBlock(content: HtmlBlockContent): React.ReactNode {
+  if (!content.html) {
+    return null;
+  }
+  return (
+    <div
+      dangerouslySetInnerHTML={{ __html: content.html }}
+      style={{ marginTop: 8 }}
+    />
   );
 }

@@ -157,9 +157,52 @@ email-signature-manager/
 
 ---
 
+## Target Audiences & Search Intent
+
+### Buyer Profiles
+
+| Audience | Pain Points | What They Want | Price Sensitivity |
+|----------|-------------|----------------|-------------------|
+| **IT/Admin Teams** | Employees mess up signatures, no central control, missing disclaimers, mobile inconsistency | Centralized control, domain-wide deployment, compliance | Have budget, willing to pay |
+| **Marketing Teams** | No way to use signatures for campaigns, can't track ROI | Campaign banners, click tracking, signature as promo space | Value buyers, pay for ROI |
+| **Small Businesses** | Look unprofessional, hard to set up | Professional look, easy setup, basic sync | Price sensitive, need cheaper plans |
+| **Agencies** | Managing signatures for multiple clients | White-label, multi-tenant, bulk management | Can bring multiple clients |
+
+### High-Intent Search Keywords
+
+Target these for SEO and content marketing:
+
+**Commercial Intent (buyers searching):**
+- "company email signature manager"
+- "outlook company signature"
+- "gmail signature for all users"
+- "email signature marketing banner"
+- "outlook auto deploy signatures"
+- "centralized email footer"
+- "email signature software"
+
+**Problem-Aware (pain point searches):**
+- "update all outlook signatures automatically"
+- "company-wide gmail signatures"
+- "enforce email signature policy"
+- "email signature legal disclaimer"
+- "consistent email signatures across company"
+
+### Marketing Content Ideas
+
+| Content Type | Topics |
+|--------------|--------|
+| **Landing Pages** | IT Admins, Marketing Teams, Small Business, Agencies |
+| **Use Cases** | Sales teams, Support teams, Recruiting, Legal compliance |
+| **Blog Posts** | "Why email signatures matter for brand", "Email signature compliance guide", "ROI of signature marketing" |
+| **Tools** | Free signature generator (SEO traffic), Signature audit tool |
+| **Comparisons** | "Siggly vs Exclaimer", "Siggly vs CodeTwo", "Best email signature software 2024" |
+
+---
+
 ## Competitive Differentiators (Future Roadmap)
 
-*Features that will make Siggly stand out from Exclaimer, CodeTwo, WiseStamp, and others.*
+*Features that will make Siggly stand out from Exclaimer, CodeTwo, WiseStamp, Newoldstamp, Letsignit, and Opensense.*
 
 ### 🚀 Zero-Friction Onboarding
 - [ ] **60-second setup**: Connect Google/Microsoft → see live signature instantly
