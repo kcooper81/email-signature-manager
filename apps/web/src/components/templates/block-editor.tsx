@@ -16,8 +16,9 @@ import type {
   ButtonBlockContent,
   SocialBlockContent,
   HtmlBlockContent,
+  DisclaimerBlockContent,
 } from './types';
-import { DYNAMIC_FIELDS } from './types';
+import { DYNAMIC_FIELDS, DISCLAIMER_TEMPLATES } from './types';
 
 interface BlockEditorProps {
   block: SignatureBlock;
@@ -42,6 +43,8 @@ export function BlockEditor({ block, onChange }: BlockEditorProps) {
       return <SocialEditor content={block.content as SocialBlockContent} onChange={onChange} />;
     case 'html':
       return <HtmlEditor content={block.content as HtmlBlockContent} onChange={onChange} />;
+    case 'disclaimer':
+      return <DisclaimerEditor content={block.content as DisclaimerBlockContent} onChange={onChange} />;
     default:
       return <div className="text-muted-foreground">No editor for this block type</div>;
   }
@@ -731,6 +734,85 @@ function HtmlEditor({
         <p className="text-xs text-blue-800">
           <strong>Tips:</strong> Use inline styles, table layouts, and avoid modern CSS. 
           Test in Gmail and Outlook before deploying.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function DisclaimerEditor({
+  content,
+  onChange,
+}: {
+  content: DisclaimerBlockContent;
+  onChange: (content: DisclaimerBlockContent) => void;
+}) {
+  const handleTemplateChange = (template: DisclaimerBlockContent['template']) => {
+    const text = template === 'custom' ? content.text : DISCLAIMER_TEMPLATES[template];
+    onChange({ ...content, template, text });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label>Disclaimer Template</Label>
+        <select
+          value={content.template}
+          onChange={(e) => handleTemplateChange(e.target.value as DisclaimerBlockContent['template'])}
+          className="w-full h-10 px-3 border rounded-md"
+        >
+          <option value="confidentiality">Confidentiality</option>
+          <option value="legal">Legal / No Contract</option>
+          <option value="gdpr">GDPR Privacy</option>
+          <option value="hipaa">HIPAA (Healthcare)</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Disclaimer Text</Label>
+        <textarea
+          value={content.text}
+          onChange={(e) => onChange({ ...content, text: e.target.value, template: 'custom' })}
+          className="w-full min-h-[100px] p-2 border rounded-md text-sm"
+          placeholder="Enter your legal disclaimer..."
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Font Size</Label>
+          <Input
+            type="number"
+            value={content.fontSize}
+            onChange={(e) => onChange({ ...content, fontSize: parseInt(e.target.value) || 10 })}
+            min={8}
+            max={14}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Text Color</Label>
+          <div className="flex gap-2">
+            <Input
+              type="color"
+              value={content.color}
+              onChange={(e) => onChange({ ...content, color: e.target.value })}
+              className="w-12 h-10 p-1"
+            />
+            <Input
+              type="text"
+              value={content.color}
+              onChange={(e) => onChange({ ...content, color: e.target.value })}
+              className="flex-1"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+        <p className="text-xs text-amber-800">
+          <strong>Note:</strong> Legal disclaimers should be reviewed by your legal team. 
+          These templates are starting points only.
         </p>
       </div>
     </div>

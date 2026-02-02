@@ -43,6 +43,7 @@ import {
   Trash2,
   Loader2,
   Code,
+  FileText,
 } from 'lucide-react';
 import type { SignatureBlock, SignatureBlockType } from './types';
 import { BlockEditor } from './block-editor';
@@ -65,6 +66,7 @@ const BLOCK_TYPES: { type: SignatureBlockType; label: string; icon: React.ReactN
   { type: 'spacer', label: 'Spacer', icon: <Space className="h-4 w-4" /> },
   { type: 'contact-info', label: 'Contact', icon: <Phone className="h-4 w-4" /> },
   { type: 'button', label: 'Button', icon: <Square className="h-4 w-4" /> },
+  { type: 'disclaimer', label: 'Disclaimer', icon: <FileText className="h-4 w-4" /> },
   { type: 'html', label: 'HTML', icon: <Code className="h-4 w-4" /> },
 ];
 
@@ -388,6 +390,17 @@ function getDefaultContent(type: SignatureBlockType): SignatureBlock['content'] 
         textColor: '#ffffff',
         borderRadius: 4,
       };
+    case 'disclaimer':
+      return {
+        text: 'This email and any attachments are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the sender immediately and delete it from your system.',
+        template: 'confidentiality',
+        fontSize: 10,
+        color: '#666666',
+      };
+    case 'html':
+      return {
+        html: '',
+      };
     default:
       // Default to text block content
       return {
@@ -416,6 +429,10 @@ function getBlockPreviewText(block: SignatureBlock): string {
       return 'Contact details';
     case 'button':
       return content.text || 'Button';
+    case 'disclaimer':
+      return 'Legal disclaimer';
+    case 'html':
+      return content.html ? 'Custom HTML' : 'Empty HTML';
     default:
       return block.type;
   }
