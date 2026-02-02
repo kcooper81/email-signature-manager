@@ -49,6 +49,7 @@
     "stripe": "^14.0.0",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
+    "uglify-js": "^3.19.3",
     "zod": "^3.22.0"
   },
   "devDependencies": {

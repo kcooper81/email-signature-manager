@@ -1,241 +1,262 @@
-import type { 
-  SignatureBlock, 
-  User, 
-  Organization,
-  TextBlock,
-  ImageBlock,
-  VariableBlock,
-  BannerBlock,
-  DisclaimerBlock,
-  DividerBlock,
-  SocialLinksBlock,
-  SpacerBlock,
-} from '@esm/shared';
-import { EMAIL_SAFE_FONTS, DEFAULT_SIGNATURE_STYLES, SOCIAL_PLATFORMS } from '@esm/shared';
-
-interface RenderContext {
-  user: Partial<User>;
-  organization: Partial<Organization>;
+// Template block types matching the actual database structure
+interface TemplateBlock {
+  id: string;
+  type: string;
+  content: any;
 }
 
-/**
- * Renders signature blocks to email-safe HTML using MJML
- * Uses dynamic import to avoid build-time file system access issues
- */
-export async function renderSignatureToHtml(
-  blocks: SignatureBlock[],
-  context: RenderContext
-): Promise<{ html: string; errors: string[] }> {
-  const mjmlContent = blocksToMjml(blocks, context);
-  
-  // Dynamic import to avoid build-time evaluation
-  const mjml2html = (await import('mjml')).default;
-  
-  const result = mjml2html(mjmlContent, {
-    validationLevel: 'soft',
-    minify: true,
-  });
-
-  return {
-    html: result.html,
-    errors: result.errors?.map((e) => e.message) || [],
+interface RenderContext {
+  user: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    title?: string;
+    department?: string;
+    phone?: string;
+    mobile?: string;
+  };
+  organization: {
+    name?: string;
   };
 }
 
-function blocksToMjml(blocks: SignatureBlock[], context: RenderContext): string {
-  const bodyContent = blocks.map((block) => blockToMjml(block, context)).join('\n');
+/**
+ * Renders signature blocks to email-safe HTML
+ * Uses simple table-based HTML for maximum email client compatibility
+ */
+export async function renderSignatureToHtml(
+  blocks: TemplateBlock[],
+  context: RenderContext
+): Promise<{ html: string; errors: string[] }> {
+  try {
+    const bodyContent = blocks.map((block) => blockToHtml(block, context)).join('');
+    
+    const html = `
+      <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; color: #333333;">
+        <tbody>
+          ${bodyContent}
+        </tbody>
+      </table>
+    `;
 
-  return `
-    <mjml>
-      <mj-body width="600px">
-        <mj-section padding="0">
-          <mj-column>
-            ${bodyContent}
-          </mj-column>
-        </mj-section>
-      </mj-body>
-    </mjml>
-  `;
+    return {
+      html: html.trim(),
+      errors: [],
+    };
+  } catch (error: any) {
+    console.error('Error rendering signature:', error);
+    return {
+      html: '',
+      errors: [error.message || 'Failed to render signature'],
+    };
+  }
 }
 
-function blockToMjml(block: SignatureBlock, context: RenderContext): string {
+function blockToHtml(block: TemplateBlock, context: RenderContext): string {
+  const content = block.content;
+  
   switch (block.type) {
     case 'text':
-      return renderTextBlock(block);
+      return renderTextBlock(content, context);
     case 'image':
-      return renderImageBlock(block);
-    case 'variable':
-      return renderVariableBlock(block, context);
-    case 'banner':
-      return renderBannerBlock(block);
-    case 'disclaimer':
-      return renderDisclaimerBlock(block);
+      return renderImageBlock(content);
     case 'divider':
-      return renderDividerBlock(block);
-    case 'socialLinks':
-      return renderSocialLinksBlock(block);
+      return renderDividerBlock(content);
     case 'spacer':
-      return renderSpacerBlock(block);
+      return renderSpacerBlock(content);
+    case 'social':
+      return renderSocialBlock(content);
+    case 'contact-info':
+      return renderContactInfoBlock(content, context);
+    case 'button':
+      return renderButtonBlock(content);
+    case 'banner':
+      return renderBannerBlock(content);
     default:
       return '';
   }
 }
 
-function renderTextBlock(block: TextBlock): string {
-  const styles = block.styles || {};
-  const fontSize = styles.fontSize || DEFAULT_SIGNATURE_STYLES.fontSize;
-  const color = styles.color || DEFAULT_SIGNATURE_STYLES.color;
-  const fontFamily = styles.fontFamily || DEFAULT_SIGNATURE_STYLES.fontFamily;
-
-  return `
-    <mj-text 
-      font-size="${fontSize}px" 
-      color="${color}" 
-      font-family="${fontFamily}"
-      padding="2px 0"
-    >
-      ${block.content}
-    </mj-text>
-  `;
-}
-
-function renderImageBlock(block: ImageBlock): string {
-  const imgTag = `
-    <mj-image 
-      src="${block.src}" 
-      alt="${block.alt || ''}"
-      ${block.width ? `width="${block.width}px"` : ''}
-      ${block.link ? `href="${block.link}"` : ''}
-      padding="4px 0"
-    />
-  `;
-  return imgTag;
-}
-
-function renderVariableBlock(
-  block: VariableBlock,
-  context: RenderContext
-): string {
-  const value = resolveVariable(block.variable, context) || block.fallback || '';
-  if (!value) return '';
-
-  const content = `${block.prefix || ''}${value}${block.suffix || ''}`;
-  const styles = block.styles || {};
-  const fontSize = styles.fontSize || DEFAULT_SIGNATURE_STYLES.fontSize;
-  const color = styles.color || DEFAULT_SIGNATURE_STYLES.color;
-
-  return `
-    <mj-text 
-      font-size="${fontSize}px" 
-      color="${color}"
-      padding="2px 0"
-    >
-      ${content}
-    </mj-text>
-  `;
-}
-
-function resolveVariable(variable: string, context: RenderContext): string | undefined {
+function replacePlaceholders(text: string, context: RenderContext): string {
   const { user, organization } = context;
-
-  switch (variable) {
-    case 'firstName':
-      return user.firstName;
-    case 'lastName':
-      return user.lastName;
-    case 'fullName':
-      return [user.firstName, user.lastName].filter(Boolean).join(' ');
-    case 'email':
-      return user.email;
-    case 'title':
-      return user.title;
-    case 'department':
-      return user.department;
-    case 'phone':
-      return user.phone;
-    case 'mobile':
-      return user.mobile;
-    case 'company':
-      return organization.name;
-    case 'avatar':
-      return user.avatarUrl;
-    default:
-      return undefined;
-  }
-}
-
-function renderBannerBlock(block: BannerBlock): string {
-  // Check date range if specified
-  const now = new Date();
-  if (block.startDate && new Date(block.startDate) > now) return '';
-  if (block.endDate && new Date(block.endDate) < now) return '';
-
-  return `
-    <mj-image 
-      src="${block.imageUrl}" 
-      alt="${block.alt || 'Banner'}"
-      ${block.link ? `href="${block.link}"` : ''}
-      padding="8px 0"
-    />
-  `;
-}
-
-function renderDisclaimerBlock(block: DisclaimerBlock): string {
-  return `
-    <mj-text 
-      font-size="10px" 
-      color="#666666"
-      padding="8px 0 0 0"
-    >
-      ${block.content}
-    </mj-text>
-  `;
-}
-
-function renderDividerBlock(block: DividerBlock): string {
-  return `
-    <mj-divider 
-      border-color="${block.color || DEFAULT_SIGNATURE_STYLES.dividerColor}" 
-      border-width="${block.thickness || 1}px"
-      padding="4px 0"
-    />
-  `;
-}
-
-function renderSocialLinksBlock(block: SocialLinksBlock): string {
-  const iconSize = block.iconSize || 24;
   
-  const socialIcons = block.links
-    .map((link) => {
-      const platform = SOCIAL_PLATFORMS[link.platform as keyof typeof SOCIAL_PLATFORMS];
-      if (!platform) return '';
-      
-      // Using placeholder icons - in production, use actual hosted icon URLs
-      return `
-        <mj-social-element 
-          name="${link.platform}" 
-          href="${link.url}"
-          icon-size="${iconSize}px"
-          padding="0 4px"
-        />
-      `;
+  let result = text
+    .replace(/\{\{first_name\}\}/gi, user.firstName || '')
+    .replace(/\{\{last_name\}\}/gi, user.lastName || '')
+    .replace(/\{\{full_name\}\}/gi, [user.firstName, user.lastName].filter(Boolean).join(' '))
+    .replace(/\{\{email\}\}/gi, user.email || '')
+    .replace(/\{\{phone\}\}/gi, user.phone || '')
+    .replace(/\{\{mobile\}\}/gi, user.mobile || '')
+    .replace(/\{\{job_title\}\}/gi, user.title || '')
+    .replace(/\{\{department\}\}/gi, user.department || '')
+    .replace(/\{\{company\}\}/gi, organization.name || '')
+    // Remove any remaining unresolved placeholders
+    .replace(/\{\{[^}]+\}\}/gi, '');
+  
+  return result.trim();
+}
+
+function renderTextBlock(content: any, context: RenderContext): string {
+  const text = replacePlaceholders(content.text || '', context);
+  const fontSize = content.fontSize || 14;
+  const color = content.color || '#333333';
+  const fontWeight = content.fontWeight || 'normal';
+  const fontStyle = content.fontStyle || 'normal';
+  const align = content.align || 'left';
+
+  return `
+    <tr>
+      <td style="font-size: ${fontSize}px; color: ${color}; font-weight: ${fontWeight}; font-style: ${fontStyle}; text-align: ${align}; padding: 2px 0;">
+        ${text}
+      </td>
+    </tr>
+  `;
+}
+
+function renderImageBlock(content: any): string {
+  const src = content.src || '';
+  const alt = content.alt || '';
+  const width = content.width ? `width="${content.width}"` : '';
+  const link = content.link;
+
+  if (!src) return '';
+
+  const img = `<img src="${src}" alt="${alt}" ${width} style="display: block; max-width: 100%;" />`;
+  
+  return `
+    <tr>
+      <td style="padding: 4px 0;">
+        ${link ? `<a href="${link}">${img}</a>` : img}
+      </td>
+    </tr>
+  `;
+}
+
+function renderDividerBlock(content: any): string {
+  const color = content.color || '#cccccc';
+  const thickness = content.width || 1;
+  const style = content.style || 'solid';
+
+  return `
+    <tr>
+      <td style="padding: 8px 0;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+          <tr>
+            <td style="border-top: ${thickness}px ${style} ${color}; font-size: 1px; line-height: 1px;">&nbsp;</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  `;
+}
+
+function renderSpacerBlock(content: any): string {
+  const height = content.height || 20;
+
+  return `
+    <tr>
+      <td style="height: ${height}px; line-height: ${height}px;">&nbsp;</td>
+    </tr>
+  `;
+}
+
+function renderSocialBlock(content: any): string {
+  const platforms = content.platforms || [];
+  
+  if (platforms.length === 0) return '';
+
+  const links = platforms
+    .map((p: any) => {
+      if (!p.url) return '';
+      const name = p.type.charAt(0).toUpperCase() + p.type.slice(1);
+      return `<a href="${p.url}" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
     })
+    .filter(Boolean)
     .join('');
 
   return `
-    <mj-social 
-      font-size="12px" 
-      icon-size="${iconSize}px" 
-      mode="horizontal"
-      padding="4px 0"
-    >
-      ${socialIcons}
-    </mj-social>
+    <tr>
+      <td style="padding: 4px 0;">
+        ${links}
+      </td>
+    </tr>
   `;
 }
 
-function renderSpacerBlock(block: SpacerBlock): string {
-  return `<mj-spacer height="${block.height}px" />`;
+function renderContactInfoBlock(content: any, context: RenderContext): string {
+  const items: string[] = [];
+  
+  if (content.email) {
+    const email = replacePlaceholders(content.email, context);
+    if (email) {
+      items.push(`<a href="mailto:${email}" style="color: #0066cc; text-decoration: none;">${email}</a>`);
+    }
+  }
+  if (content.phone) {
+    const phone = replacePlaceholders(content.phone, context);
+    if (phone) {
+      items.push(`<a href="tel:${phone}" style="color: #0066cc; text-decoration: none;">${phone}</a>`);
+    }
+  }
+  if (content.website) {
+    const website = replacePlaceholders(content.website, context);
+    if (website) {
+      items.push(`<a href="${website}" style="color: #0066cc; text-decoration: none;">${website}</a>`);
+    }
+  }
+  if (content.address) {
+    const address = replacePlaceholders(content.address, context);
+    if (address) {
+      items.push(address);
+    }
+  }
+
+  if (items.length === 0) return '';
+
+  return `
+    <tr>
+      <td style="padding: 4px 0; font-size: 12px; color: #666666;">
+        ${items.join(' | ')}
+      </td>
+    </tr>
+  `;
+}
+
+function renderButtonBlock(content: any): string {
+  const text = content.text || 'Click Here';
+  const url = content.url || '#';
+  const bgColor = content.backgroundColor || '#0066cc';
+  const textColor = content.textColor || '#ffffff';
+  const borderRadius = content.borderRadius || 4;
+
+  return `
+    <tr>
+      <td style="padding: 8px 0;">
+        <a href="${url}" style="display: inline-block; padding: 10px 20px; background-color: ${bgColor}; color: ${textColor}; text-decoration: none; border-radius: ${borderRadius}px; font-weight: bold;">
+          ${text}
+        </a>
+      </td>
+    </tr>
+  `;
+}
+
+function renderBannerBlock(content: any): string {
+  const src = content.src || '';
+  const alt = content.alt || 'Banner';
+  const link = content.link;
+  const width = content.width ? `width="${content.width}"` : '';
+
+  if (!src) return '';
+
+  const img = `<img src="${src}" alt="${alt}" ${width} style="display: block; max-width: 100%;" />`;
+  
+  return `
+    <tr>
+      <td style="padding: 8px 0;">
+        ${link ? `<a href="${link}">${img}</a>` : img}
+      </td>
+    </tr>
+  `;
 }
 
 /**
