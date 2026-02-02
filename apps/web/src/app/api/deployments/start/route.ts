@@ -163,10 +163,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Collect unique departments from target users for tracking
-    const targetEmails = targetUsers.map(u => u.email);
-    
-    // Create deployment record with target info
+    // Create deployment record (without target tracking columns that may not exist)
     const { data: deployment, error: deploymentError } = await supabase
       .from('signature_deployments')
       .insert({
@@ -177,8 +174,6 @@ export async function POST(request: NextRequest) {
         successful_count: 0,
         failed_count: 0,
         initiated_by: user.id,
-        target_type: target, // 'me', 'selected', or 'all'
-        target_emails: targetEmails, // Array of emails deployed to
       })
       .select('id')
       .single();
@@ -186,7 +181,7 @@ export async function POST(request: NextRequest) {
     if (deploymentError || !deployment) {
       console.error('Failed to create deployment:', deploymentError);
       return NextResponse.json(
-        { error: 'Failed to create deployment' },
+        { error: 'Failed to create deployment', details: deploymentError?.message },
         { status: 500 }
       );
     }
