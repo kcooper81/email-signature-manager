@@ -4,15 +4,15 @@ import { stripe } from '@/lib/billing/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
-
-// Use service role for webhook (no user context)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 export async function POST(request: NextRequest) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
   const body = await request.text();
   const signature = headers().get('stripe-signature') || '';
 
@@ -79,6 +79,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
   // Update our database
+  const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -102,6 +103,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const status = mapStripeStatus(subscription.status);
   const plan = getPlanFromPriceId(subscription.items.data[0]?.price.id);
 
+  const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -123,6 +125,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
 
+  const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -142,6 +145,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
 
+  const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -159,6 +163,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
 
   // Only update if currently past_due
+  const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from('subscriptions')
     .update({
