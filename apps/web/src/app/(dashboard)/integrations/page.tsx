@@ -92,14 +92,26 @@ export default function IntegrationsPage() {
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-          <XCircle className="h-5 w-5 text-red-600" />
-          <p className="text-red-800">
-            {error === 'oauth_denied' && 'Connection was denied. Please try again.'}
-            {error === 'missing_params' && 'Invalid callback. Please try again.'}
-            {error === 'state_expired' && 'Session expired. Please try again.'}
-            {error === 'callback_failed' && 'Failed to complete connection. Please try again.'}
-          </p>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-amber-800">
+                {error === 'oauth_denied' && 'Connection was denied'}
+                {error === 'missing_params' && 'Invalid callback'}
+                {error === 'state_expired' && 'Session timed out'}
+                {error === 'callback_failed' && 'Connection failed'}
+                {error === 'access_not_configured' && 'Workspace admin approval required'}
+              </p>
+              <p className="text-sm text-amber-700 mt-1">
+                {error === 'oauth_denied' && 'You declined the permission request. Click "Connect Google Workspace" to try again.'}
+                {error === 'missing_params' && 'The callback was missing required parameters. Please try connecting again.'}
+                {error === 'state_expired' && 'The authorization took too long. This can happen if you needed to get admin approval first. Simply click "Connect Google Workspace" below to continue.'}
+                {error === 'callback_failed' && 'Something went wrong saving your connection. Please try again.'}
+                {error === 'access_not_configured' && 'Your Google Workspace admin needs to approve this app before you can connect. Contact your admin or check the Google Workspace Admin Console.'}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
