@@ -32,7 +32,6 @@ import {
 import {
   ArrowLeft,
   Save,
-  Eye,
   Type,
   Image,
   Share2,
@@ -43,10 +42,12 @@ import {
   GripVertical,
   Trash2,
   Loader2,
+  Code,
 } from 'lucide-react';
 import type { SignatureBlock, SignatureBlockType } from './types';
 import { BlockEditor } from './block-editor';
 import { SignaturePreview } from './preview';
+import { EmailClientPreview } from './email-client-preview';
 
 interface TemplateEditorProps {
   initialBlocks: SignatureBlock[];
@@ -59,11 +60,12 @@ interface TemplateEditorProps {
 const BLOCK_TYPES: { type: SignatureBlockType; label: string; icon: React.ReactNode }[] = [
   { type: 'text', label: 'Text', icon: <Type className="h-4 w-4" /> },
   { type: 'image', label: 'Image', icon: <Image className="h-4 w-4" /> },
-  { type: 'social', label: 'Social Links', icon: <Share2 className="h-4 w-4" /> },
+  { type: 'social', label: 'Social', icon: <Share2 className="h-4 w-4" /> },
   { type: 'divider', label: 'Divider', icon: <Minus className="h-4 w-4" /> },
   { type: 'spacer', label: 'Spacer', icon: <Space className="h-4 w-4" /> },
-  { type: 'contact-info', label: 'Contact Info', icon: <Phone className="h-4 w-4" /> },
+  { type: 'contact-info', label: 'Contact', icon: <Phone className="h-4 w-4" /> },
   { type: 'button', label: 'Button', icon: <Square className="h-4 w-4" /> },
+  { type: 'html', label: 'HTML', icon: <Code className="h-4 w-4" /> },
 ];
 
 export function TemplateEditor({
@@ -78,7 +80,6 @@ export function TemplateEditor({
   const [description, setDescription] = useState(initialDescription);
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -134,7 +135,7 @@ export function TemplateEditor({
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
+    <div className="min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b">
         <div className="flex items-center gap-4">
@@ -157,13 +158,6 @@ export function TemplateEditor({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            {showPreview ? 'Hide' : 'Show'} Preview
-          </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <>
@@ -180,42 +174,42 @@ export function TemplateEditor({
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="grid grid-cols-12 gap-6 h-[calc(100%-4rem)]">
-        {/* Block palette */}
-        <div className="col-span-2">
-          <Card className="h-full">
-            <CardHeader className="pb-3">
+      {/* Main content - 3 column layout: blocks | editor | preview */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 pb-6">
+        {/* Column 1: Add blocks + Block list */}
+        <div className="lg:col-span-3 space-y-4">
+          {/* Add Block buttons */}
+          <Card>
+            <CardHeader className="py-3">
               <CardTitle className="text-sm">Add Block</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {BLOCK_TYPES.map((blockType) => (
-                <Button
-                  key={blockType.type}
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => addBlock(blockType.type)}
-                >
-                  {blockType.icon}
-                  <span className="ml-2">{blockType.label}</span>
-                </Button>
-              ))}
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-2 gap-1.5">
+                {BLOCK_TYPES.map((blockType) => (
+                  <Button
+                    key={blockType.type}
+                    variant="outline"
+                    size="sm"
+                    className="justify-start text-xs h-8"
+                    onClick={() => addBlock(blockType.type)}
+                  >
+                    {blockType.icon}
+                    <span className="ml-1">{blockType.label}</span>
+                  </Button>
+                ))}
+              </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Block list */}
-        <div className="col-span-4">
-          <Card className="h-full overflow-auto">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Signature Blocks</CardTitle>
-              <CardDescription>Click to edit, drag to reorder</CardDescription>
+          {/* Block list */}
+          <Card>
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm">Blocks</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="pt-0">
               {blocks.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-6 text-muted-foreground text-sm">
                   <p>No blocks yet</p>
-                  <p className="text-sm">Add blocks from the left panel</p>
                 </div>
               ) : (
                 <DndContext
@@ -243,42 +237,44 @@ export function TemplateEditor({
           </Card>
         </div>
 
-        {/* Block editor */}
-        <div className="col-span-3">
-          <Card className="h-full overflow-auto">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Block Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {selectedBlock ? (
-                <BlockEditor
-                  block={selectedBlock}
-                  onChange={(content) => updateBlock(selectedBlock.id, content)}
-                />
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Select a block to edit</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Preview */}
-        {showPreview && (
-          <div className="col-span-3">
-            <Card className="h-full overflow-auto">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Live Preview</CardTitle>
+        {/* Column 2: Block editor (sticky) */}
+        <div className="lg:col-span-4">
+          <div className="lg:sticky lg:top-4">
+            <Card>
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm">
+                  {selectedBlock ? `Edit: ${selectedBlock.type.replace('-', ' ')}` : 'Block Settings'}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="bg-white border rounded-lg p-4">
-                  <SignaturePreview blocks={blocks} />
-                </div>
+              <CardContent className="pt-0">
+                {selectedBlock ? (
+                  <BlockEditor
+                    block={selectedBlock}
+                    onChange={(content) => updateBlock(selectedBlock.id, content)}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground text-sm">
+                    <p>Select a block to edit</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
-        )}
+        </div>
+
+        {/* Column 3: Preview (sticky) */}
+        <div className="lg:col-span-5">
+          <div className="lg:sticky lg:top-4">
+              <Card>
+                <CardHeader className="py-3">
+                  <CardTitle className="text-sm">Email Client Preview</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <EmailClientPreview blocks={blocks} />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
       </div>
     </div>
   );

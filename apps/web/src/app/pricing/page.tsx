@@ -1,91 +1,21 @@
 import Link from 'next/link';
 import { Mail, Check, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PLANS_LIST, TRIAL_DAYS } from '@/lib/billing/plans';
 
 export const metadata = {
   title: 'Pricing | Siggly - Email Signature Management',
   description: 'Simple, transparent pricing for email signature management. Start free, upgrade as you grow.',
 };
 
-const plans = [
-  {
-    name: 'Free',
-    price: '$0',
-    period: 'forever',
-    description: 'Perfect for trying out Siggly',
-    features: [
-      { text: 'Up to 5 users', included: true },
-      { text: '1 signature template', included: true },
-      { text: 'Basic editor', included: true },
-      { text: 'Manual deployment', included: true },
-      { text: 'Google Workspace', included: false },
-      { text: 'Analytics', included: false },
-      { text: 'Priority support', included: false },
-    ],
-    cta: 'Get Started',
-    popular: false,
-  },
-  {
-    name: 'Starter',
-    price: '$29',
-    period: '/month',
-    description: 'For small teams getting started',
-    features: [
-      { text: 'Up to 25 users', included: true },
-      { text: '5 signature templates', included: true },
-      { text: 'Visual editor', included: true },
-      { text: 'One-click deployment', included: true },
-      { text: 'Google Workspace', included: true },
-      { text: 'Basic analytics', included: true },
-      { text: 'Email support', included: true },
-    ],
-    cta: 'Start Free Trial',
-    popular: false,
-  },
-  {
-    name: 'Professional',
-    price: '$79',
-    period: '/month',
-    description: 'For growing organizations',
-    features: [
-      { text: 'Up to 100 users', included: true },
-      { text: 'Unlimited templates', included: true },
-      { text: 'Advanced editor', included: true },
-      { text: 'Scheduled deployments', included: true },
-      { text: 'Google + Microsoft 365', included: true },
-      { text: 'Advanced analytics', included: true },
-      { text: 'Priority support', included: true },
-    ],
-    cta: 'Start Free Trial',
-    popular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For large organizations',
-    features: [
-      { text: 'Unlimited users', included: true },
-      { text: 'Unlimited templates', included: true },
-      { text: 'White-label options', included: true },
-      { text: 'API access', included: true },
-      { text: 'SSO/SAML', included: true },
-      { text: 'Custom integrations', included: true },
-      { text: 'Dedicated support', included: true },
-    ],
-    cta: 'Contact Sales',
-    popular: false,
-  },
-];
-
 const faqs = [
   {
     question: 'Can I try Siggly for free?',
-    answer: 'Yes! Our Free plan lets you try Siggly with up to 5 users forever. Paid plans also come with a 14-day free trial.',
+    answer: `Yes! Our Free plan lets you try Siggly with up to 5 team members forever. Paid plans also come with a ${TRIAL_DAYS}-day free trial.`,
   },
   {
-    question: 'What happens when I exceed my user limit?',
-    answer: 'We\'ll notify you when you\'re approaching your limit. You can upgrade anytime to add more users.',
+    question: 'How does per-member pricing work?',
+    answer: 'You pay based on the number of team members who receive email signatures. For example, with Starter at $0.50/member, a 50-person team costs just $25/month.',
   },
   {
     question: 'Can I change plans later?',
@@ -98,6 +28,10 @@ const faqs = [
   {
     question: 'What payment methods do you accept?',
     answer: 'We accept all major credit cards (Visa, Mastercard, American Express) and can arrange invoicing for Enterprise plans.',
+  },
+  {
+    question: 'How does Siggly compare to competitors?',
+    answer: 'Siggly offers the same features as Exclaimer, WiseStamp, and CodeTwo at up to 50% lower cost. For example, WiseStamp charges $1/member while our Starter plan is just $0.50/member.',
   },
 ];
 
@@ -140,7 +74,7 @@ export default function PricingPage() {
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plans.map((plan) => (
+            {PLANS_LIST.map((plan) => (
               <div
                 key={plan.name}
                 className={`relative bg-white border rounded-2xl p-6 ${
@@ -156,14 +90,36 @@ export default function PricingPage() {
                 )}
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-gray-500">{plan.period}</span>
-                  </div>
+                  {plan.id === 'enterprise' ? (
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold">Custom</span>
+                    </div>
+                  ) : plan.id === 'free' ? (
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold">$0</span>
+                      <span className="text-gray-500">{plan.period}</span>
+                    </div>
+                  ) : plan.id === 'starter' ? (
+                    <div>
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold">$0.50</span>
+                        <span className="text-gray-500">/member/mo</span>
+                      </div>
+                      <p className="text-xs text-violet-600 mt-1">50% cheaper than competitors</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold">$29</span>
+                        <span className="text-gray-500">/mo</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">+ $1/team member</p>
+                    </div>
+                  )}
                   <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
                 </div>
                 <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature) => (
+                  {plan.featureList.map((feature) => (
                     <li key={feature.text} className="flex items-center gap-2 text-sm">
                       {feature.included ? (
                         <Check className="h-4 w-4 text-green-500" />
@@ -176,7 +132,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href={plan.name === 'Enterprise' ? '/contact' : '/signup'}>
+                <Link href={plan.ctaLink}>
                   <Button
                     className="w-full"
                     variant={plan.popular ? 'default' : 'outline'}

@@ -3,17 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Plus, FileSignature, Pencil, Trash2 } from 'lucide-react';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, EmptyState } from '@/components/ui';
+import { PageHeader } from '@/components/dashboard';
+import { Plus, FileSignature, Pencil, Trash2, Users, Lock } from 'lucide-react';
 import { SignaturePreview } from '@/components/templates/preview';
 import type { SignatureBlock } from '@/components/templates/types';
+import { useSubscription } from '@/hooks/use-subscription';
+import { LimitGate } from '@/components/billing';
 
 interface Template {
   id: string;
@@ -23,11 +19,14 @@ interface Template {
   is_default: boolean;
   created_at: string;
   updated_at: string;
+  deployment_count?: number;
+  last_deployed_at?: string | null;
 }
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
+  const { canCreateTemplate, plan, usage, limits } = useSubscription();
 
   useEffect(() => {
     loadTemplates();
@@ -60,22 +59,56 @@ export default function TemplatesPage() {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Templates</h1>
-          <p className="text-muted-foreground">
-            Create and manage email signature templates
-          </p>
-        </div>
+  const canCreate = canCreateTemplate();
+  const templateLimitReached = !canCreate;
+
+  const actionButtons = (
+    <div className="flex items-center gap-2">
+      <Link href="/templates/assignments">
+        <Button variant="outline">
+          <Users className="mr-2 h-4 w-4" />
+          View Usage
+        </Button>
+      </Link>
+      {templateLimitReached ? (
+        <Link href="/settings/billing">
+          <Button variant="outline" className="border-violet-300 text-violet-700 hover:bg-violet-50">
+            <Lock className="mr-2 h-4 w-4" />
+            Upgrade to Create More
+          </Button>
+        </Link>
+      ) : (
         <Link href="/templates/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             New Template
           </Button>
         </Link>
-      </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Templates"
+        description="Create and manage email signature templates"
+        action={actionButtons}
+      />
+
+      {/* Usage indicator */}
+      {limits.maxTemplates !== -1 && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>
+            {usage.templateCount} / {limits.maxTemplates} templates used
+          </span>
+          {templateLimitReached && (
+            <Badge variant="secondary" className="text-xs">
+              Limit reached
+            </Badge>
+          )}
+        </div>
+      )}
 
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -93,18 +126,20 @@ export default function TemplatesPage() {
         </div>
       ) : templates.length === 0 ? (
         <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <FileSignature className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No templates yet</h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Create your first email signature template to get started
-            </p>
-            <Link href="/templates/new">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Template
-              </Button>
-            </Link>
+          <CardContent className="py-6">
+            <EmptyState
+              icon={FileSignature}
+              title="No templates yet"
+              description="Create your first email signature template to get started"
+              action={
+                <Link href="/templates/new">
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Template
+                  </Button>
+                </Link>
+              }
+            />
           </CardContent>
         </Card>
       ) : (
@@ -117,9 +152,7 @@ export default function TemplatesPage() {
                     <CardTitle className="flex items-center gap-2">
                       {template.name}
                       {template.is_default && (
-                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                          Default
-                        </span>
+                        <Badge variant="info">Default</Badge>
                       )}
                     </CardTitle>
                     <CardDescription>

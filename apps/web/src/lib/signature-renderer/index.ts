@@ -72,6 +72,8 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
       return renderButtonBlock(content);
     case 'banner':
       return renderBannerBlock(content);
+    case 'html':
+      return renderHtmlBlock(content);
     default:
       return '';
   }
@@ -135,14 +137,15 @@ function renderImageBlock(content: any): string {
 function renderDividerBlock(content: any): string {
   const color = content.color || '#cccccc';
   const thickness = content.width || 1;
-  const style = content.style || 'solid';
 
+  // Gmail-safe divider using a colored table cell instead of border
+  // This approach works better across email clients
   return `
     <tr>
-      <td style="padding: 8px 0;">
-        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+      <td style="padding: 10px 0;">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse: collapse;">
           <tr>
-            <td style="border-top: ${thickness}px ${style} ${color}; font-size: 1px; line-height: 1px;">&nbsp;</td>
+            <td style="background-color: ${color}; height: ${thickness}px; line-height: ${thickness}px; font-size: ${thickness}px;">&nbsp;</td>
           </tr>
         </table>
       </td>
@@ -254,6 +257,28 @@ function renderBannerBlock(content: any): string {
     <tr>
       <td style="padding: 8px 0;">
         ${link ? `<a href="${link}">${img}</a>` : img}
+      </td>
+    </tr>
+  `;
+}
+
+function renderHtmlBlock(content: any): string {
+  const html = content.html || '';
+  
+  if (!html.trim()) return '';
+
+  // Sanitize HTML - remove dangerous elements
+  let sanitized = html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '');
+
+  return `
+    <tr>
+      <td style="padding: 4px 0;">
+        ${sanitized}
       </td>
     </tr>
   `;
