@@ -2,26 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Button } from '@/components/ui';
+import { PageHeader, StatCard } from '@/components/dashboard';
 import { 
-  BarChart3, 
   Users, 
   FileSignature, 
   Rocket,
   TrendingUp,
   TrendingDown,
-  Calendar,
   CheckCircle2,
   XCircle,
   Clock,
   Loader2,
+  Lock,
+  Sparkles,
 } from 'lucide-react';
+import { useSubscription } from '@/hooks/use-subscription';
+import Link from 'next/link';
 
 interface AnalyticsData {
   totalUsers: number;
@@ -45,6 +42,9 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
+  const { canAccess, plan } = useSubscription();
+  
+  const hasAnalyticsAccess = canAccess('analytics');
 
   useEffect(() => {
     loadAnalytics();
@@ -117,95 +117,99 @@ export default function AnalyticsPage() {
     );
   }
 
+  // Show upgrade prompt if user doesn't have analytics access
+  if (!hasAnalyticsAccess) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Analytics"
+          description="Track your signature deployment metrics"
+        />
+        <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-white">
+          <CardContent className="py-12">
+            <div className="text-center max-w-md mx-auto">
+              <div className="mx-auto w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-4">
+                <Lock className="h-8 w-8 text-violet-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Unlock Analytics</h3>
+              <p className="text-muted-foreground mb-6">
+                Get detailed insights into your signature deployments, track success rates, 
+                and monitor team adoption with our analytics dashboard.
+              </p>
+              <Link href="/settings/billing">
+                <Button size="lg">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Upgrade to Starter
+                </Button>
+              </Link>
+              <p className="text-xs text-muted-foreground mt-3">
+                Available on Starter plan and above
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const successRate = data?.totalDeployments 
     ? Math.round((data.successfulDeployments / data.totalDeployments) * 100) 
     : 0;
 
   const maxDeployments = Math.max(...(data?.deploymentsByDay.map(d => d.count) || [1]));
 
+  const timeRangeAction = (
+    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+      {(['7d', '30d', '90d'] as const).map((range) => (
+        <button
+          key={range}
+          onClick={() => setTimeRange(range)}
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+            timeRange === range
+              ? 'bg-white shadow text-gray-900'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground">
-            Track your signature deployment metrics
-          </p>
-        </div>
-        <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-          {(['7d', '30d', '90d'] as const).map((range) => (
-            <button
-              key={range}
-              onClick={() => setTimeRange(range)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                timeRange === range
-                  ? 'bg-white shadow text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
-            </button>
-          ))}
-        </div>
-      </div>
+      <PageHeader
+        title="Analytics"
+        description="Track your signature deployment metrics"
+        action={timeRangeAction}
+      />
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalUsers || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Synced from Google Workspace
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Templates</CardTitle>
-            <FileSignature className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalTemplates || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Active signature templates
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Deployments</CardTitle>
-            <Rocket className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalDeployments || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              In the last {timeRange === '7d' ? '7 days' : timeRange === '30d' ? '30 days' : '90 days'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            {successRate >= 90 ? (
-              <TrendingUp className="h-4 w-4 text-green-600" />
-            ) : (
-              <TrendingDown className="h-4 w-4 text-red-600" />
-            )}
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{successRate}%</div>
-            <p className="text-xs text-muted-foreground">
-              {data?.successfulDeployments} successful, {data?.failedDeployments} failed
-            </p>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Total Users"
+          value={data?.totalUsers || 0}
+          description="Synced from Google Workspace"
+          icon={Users}
+        />
+        <StatCard
+          title="Templates"
+          value={data?.totalTemplates || 0}
+          description="Active signature templates"
+          icon={FileSignature}
+        />
+        <StatCard
+          title="Deployments"
+          value={data?.totalDeployments || 0}
+          description={`In the last ${timeRange === '7d' ? '7 days' : timeRange === '30d' ? '30 days' : '90 days'}`}
+          icon={Rocket}
+        />
+        <StatCard
+          title="Success Rate"
+          value={`${successRate}%`}
+          description={`${data?.successfulDeployments} successful, ${data?.failedDeployments} failed`}
+          icon={successRate >= 90 ? TrendingUp : TrendingDown}
+        />
       </div>
 
       {/* Deployment Chart */}
