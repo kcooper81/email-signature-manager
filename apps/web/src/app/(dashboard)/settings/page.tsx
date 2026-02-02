@@ -2,15 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Switch } from '@/components/ui';
+import { PageHeader } from '@/components/dashboard';
 import { 
   Building2, 
   User, 
@@ -21,7 +14,9 @@ import {
   Loader2,
   Check,
   AlertCircle,
+  CreditCard,
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface UserProfile {
   id: string;
@@ -143,6 +138,7 @@ export default function SettingsPage() {
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'organization', label: 'Organization', icon: Building2 },
+    { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'appearance', label: 'Appearance', icon: Palette },
     { id: 'security', label: 'Security', icon: Shield },
@@ -150,30 +146,41 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account and preferences
-        </p>
-      </div>
+      <PageHeader 
+        title="Settings" 
+        description="Manage your account and preferences" 
+      />
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
-        <div className="w-full md:w-64 space-y-1">
+        <div className="w-full lg:w-56 shrink-0">
+          <nav className="space-y-1 lg:sticky lg:top-6">
           {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-violet-100 text-violet-900'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <tab.icon className="h-5 w-5" />
-              {tab.label}
-            </button>
-          ))}
+              tab.href ? (
+                <Link
+                  key={tab.id}
+                  href={tab.href}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-100"
+                >
+                  <tab.icon className="h-5 w-5" />
+                  {tab.label}
+                </Link>
+              ) : (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
+                    activeTab === tab.id
+                      ? 'bg-violet-100 text-violet-900 font-medium'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <tab.icon className="h-5 w-5" />
+                  {tab.label}
+                </button>
+              )
+            ))}
+          </nav>
         </div>
 
         {/* Content */}
@@ -286,67 +293,43 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-4 rounded-lg border">
                     <div>
                       <p className="font-medium">Email Notifications</p>
                       <p className="text-sm text-muted-foreground">
                         Receive email updates about your account
                       </p>
                     </div>
-                    <button
-                      onClick={() => setEmailNotifications(!emailNotifications)}
-                      className={`w-12 h-6 rounded-full transition-colors ${
-                        emailNotifications ? 'bg-violet-600' : 'bg-gray-300'
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                          emailNotifications ? 'translate-x-6' : 'translate-x-0.5'
-                        }`}
-                      />
-                    </button>
+                    <Switch
+                      checked={emailNotifications}
+                      onCheckedChange={setEmailNotifications}
+                    />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-4 rounded-lg border">
                     <div>
                       <p className="font-medium">Deployment Alerts</p>
                       <p className="text-sm text-muted-foreground">
                         Get notified when deployments complete or fail
                       </p>
                     </div>
-                    <button
-                      onClick={() => setDeploymentAlerts(!deploymentAlerts)}
-                      className={`w-12 h-6 rounded-full transition-colors ${
-                        deploymentAlerts ? 'bg-violet-600' : 'bg-gray-300'
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                          deploymentAlerts ? 'translate-x-6' : 'translate-x-0.5'
-                        }`}
-                      />
-                    </button>
+                    <Switch
+                      checked={deploymentAlerts}
+                      onCheckedChange={setDeploymentAlerts}
+                    />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-4 rounded-lg border">
                     <div>
                       <p className="font-medium">Weekly Digest</p>
                       <p className="text-sm text-muted-foreground">
                         Receive a weekly summary of activity
                       </p>
                     </div>
-                    <button
-                      onClick={() => setWeeklyDigest(!weeklyDigest)}
-                      className={`w-12 h-6 rounded-full transition-colors ${
-                        weeklyDigest ? 'bg-violet-600' : 'bg-gray-300'
-                      }`}
-                    >
-                      <div
-                        className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                          weeklyDigest ? 'translate-x-6' : 'translate-x-0.5'
-                        }`}
-                      />
-                    </button>
+                    <Switch
+                      checked={weeklyDigest}
+                      onCheckedChange={setWeeklyDigest}
+                    />
                   </div>
                 </div>
 

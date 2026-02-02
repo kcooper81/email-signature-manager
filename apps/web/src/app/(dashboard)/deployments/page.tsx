@@ -514,7 +514,7 @@ export default function DeploymentsPage() {
                     {filteredUsers.length === 0 ? (
                       <p className="text-sm text-muted-foreground p-4 text-center">
                         {users.length === 0 ? (
-                          <>No users synced. <Link href="/users" className="text-primary hover:underline">Sync users first</Link></>
+                          <>No users synced. <Link href="/team" className="text-primary hover:underline">Sync users first</Link></>
                         ) : (
                           'No users match your search'
                         )}

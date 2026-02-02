@@ -6,7 +6,8 @@ export type SignatureBlockType =
   | 'spacer'
   | 'contact-info'
   | 'button'
-  | 'banner';
+  | 'banner'
+  | 'html';
 
 export interface TextBlockContent {
   text: string;
@@ -67,6 +68,10 @@ export interface BannerBlockContent {
   width: number;
 }
 
+export interface HtmlBlockContent {
+  html: string;
+}
+
 export type SignatureBlockContent =
   | TextBlockContent
   | ImageBlockContent
@@ -75,7 +80,8 @@ export type SignatureBlockContent =
   | SpacerBlockContent
   | ContactInfoBlockContent
   | ButtonBlockContent
-  | BannerBlockContent;
+  | BannerBlockContent
+  | HtmlBlockContent;
 
 export interface SignatureBlock {
   id: string;

@@ -1,0 +1,431 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
+import { PageHeader } from '@/components/dashboard';
+import { 
+  CreditCard, 
+  Check, 
+  X,
+  Loader2,
+  ExternalLink,
+  Users,
+  FileSignature,
+  Calendar,
+  AlertTriangle,
+  Sparkles,
+} from 'lucide-react';
+import { PLANS, getPlan, formatPrice, TRIAL_DAYS } from '@/lib/billing/plans';
+
+interface Subscription {
+  id: string;
+  plan: string;
+  status: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  stripe_customer_id: string;
+  stripe_subscription_id: string | null;
+}
+
+interface UsageStats {
+  templateCount: number;
+  userCount: number;
+}
+
+export default function BillingPage() {
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [usage, setUsage] = useState<UsageStats>({ templateCount: 0, userCount: 0 });
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadBillingData();
+  }, []);
+
+  const loadBillingData = async () => {
+    const supabase = createClient();
+    
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!userData?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    // Get subscription
+    const { data: subData } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('organization_id', userData.organization_id)
+      .single();
+
+    if (subData) {
+      setSubscription(subData);
+    }
+
+    // Get organization for trial info
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('trial_ends_at')
+      .eq('id', userData.organization_id)
+      .single();
+
+    if (orgData?.trial_ends_at) {
+      setTrialEndsAt(orgData.trial_ends_at);
+    }
+
+    // Get usage stats
+    const { count: templateCount } = await supabase
+      .from('signature_templates')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', userData.organization_id);
+
+    const { count: userCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', userData.organization_id);
+
+    setUsage({
+      templateCount: templateCount || 0,
+      userCount: userCount || 0,
+    });
+
+    setLoading(false);
+  };
+
+  const handleManageBilling = async () => {
+    setActionLoading(true);
+    try {
+      const response = await fetch('/api/billing/portal', {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Failed to open billing portal:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpgrade = async (planId: string) => {
+    setActionLoading(true);
+    try {
+      const response = await fetch('/api/billing/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId }),
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Failed to start checkout:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const currentPlan = getPlan(subscription?.plan || 'free');
+  const isTrialing = subscription?.status === 'trialing';
+  const isCanceled = subscription?.cancel_at_period_end;
+  const isPastDue = subscription?.status === 'past_due';
+
+  const trialDaysRemaining = trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Billing & Subscription"
+        description="Manage your subscription, payment methods, and billing history"
+      />
+
+      {/* Trial/Status Banner */}
+      {isTrialing && trialDaysRemaining > 0 && (
+        <Card className="bg-gradient-to-r from-violet-50 to-blue-50 border-violet-200">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-5 w-5 text-violet-600" />
+              <div>
+                <p className="font-medium text-gray-900">
+                  You're on a {TRIAL_DAYS}-day free trial
+                </p>
+                <p className="text-sm text-gray-600">
+                  {trialDaysRemaining} days remaining. Upgrade now to keep all features.
+                </p>
+              </div>
+            </div>
+            <Button onClick={() => handleUpgrade('professional')}>
+              Upgrade Now
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {isPastDue && (
+        <Card className="bg-red-50 border-red-200">
+          <CardContent className="p-4 flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+            <div>
+              <p className="font-medium text-red-900">Payment past due</p>
+              <p className="text-sm text-red-700">
+                Please update your payment method to avoid service interruption.
+              </p>
+            </div>
+            <Button variant="destructive" onClick={handleManageBilling} className="ml-auto">
+              Update Payment
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {isCanceled && (
+        <Card className="bg-amber-50 border-amber-200">
+          <CardContent className="p-4 flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600" />
+            <div>
+              <p className="font-medium text-amber-900">Subscription canceled</p>
+              <p className="text-sm text-amber-700">
+                Your subscription will end on {subscription?.current_period_end 
+                  ? new Date(subscription.current_period_end).toLocaleDateString() 
+                  : 'the end of the billing period'}.
+              </p>
+            </div>
+            <Button variant="outline" onClick={handleManageBilling} className="ml-auto">
+              Reactivate
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Current Plan */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Current Plan
+            </CardTitle>
+            <CardDescription>
+              Your current subscription and usage
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xl font-semibold">{currentPlan.name}</h3>
+                  {isTrialing && <Badge variant="info">Trial</Badge>}
+                  {isCanceled && <Badge variant="warning">Canceling</Badge>}
+                </div>
+                <p className="text-sm text-gray-500 mt-1">{currentPlan.description}</p>
+                {currentPlan.pricePerUser > 0 && (
+                  <p className="text-lg font-medium mt-2">
+                    {formatPrice(currentPlan.pricePerUser)}/user/month
+                  </p>
+                )}
+              </div>
+              {subscription?.stripe_subscription_id && (
+                <Button variant="outline" onClick={handleManageBilling} disabled={actionLoading}>
+                  {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Manage Subscription'}
+                </Button>
+              )}
+            </div>
+
+            {/* Usage */}
+            <div>
+              <h4 className="font-medium mb-3">Current Usage</h4>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileSignature className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm">Templates</span>
+                  </div>
+                  <span className="font-medium">
+                    {usage.templateCount} / {currentPlan.features.maxTemplates === -1 ? '∞' : currentPlan.features.maxTemplates}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm">Team Members</span>
+                  </div>
+                  <span className="font-medium">
+                    {usage.userCount} / {currentPlan.features.maxUsers === -1 ? '∞' : currentPlan.features.maxUsers}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing Period */}
+            {subscription?.current_period_end && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  {isCanceled ? 'Access until' : 'Next billing date'}:{' '}
+                  {new Date(subscription.current_period_end).toLocaleDateString()}
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {subscription?.stripe_subscription_id ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={handleManageBilling}
+                  disabled={actionLoading}
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Update Payment Method
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={handleManageBilling}
+                  disabled={actionLoading}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  View Invoices
+                </Button>
+              </>
+            ) : (
+              <Button 
+                className="w-full" 
+                onClick={() => handleUpgrade('professional')}
+                disabled={actionLoading}
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                Upgrade to Pro
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Available Plans */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Available Plans</CardTitle>
+          <CardDescription>
+            Choose the plan that best fits your team's needs
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {Object.values(PLANS).map((plan) => {
+              const isCurrentPlan = currentPlan.id === plan.id;
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative p-4 border rounded-lg ${
+                    plan.popular ? 'border-violet-300 bg-violet-50/50' : ''
+                  } ${isCurrentPlan ? 'ring-2 ring-violet-600' : ''}`}
+                >
+                  {plan.popular && (
+                    <Badge className="absolute -top-2 left-1/2 -translate-x-1/2" variant="default">
+                      Most Popular
+                    </Badge>
+                  )}
+                  <h3 className="font-semibold text-lg mt-2">{plan.name}</h3>
+                  <p className="text-sm text-gray-500 mb-3">{plan.description}</p>
+                  <p className="text-2xl font-bold mb-4">
+                    {plan.pricePerUser === 0 
+                      ? plan.id === 'enterprise' ? 'Custom' : 'Free'
+                      : formatPrice(plan.pricePerUser)}
+                    {plan.pricePerUser > 0 && (
+                      <span className="text-sm font-normal text-gray-500">/user/mo</span>
+                    )}
+                  </p>
+                  <ul className="space-y-2 text-sm mb-4">
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-600" />
+                      {plan.features.maxTemplates === -1 ? 'Unlimited' : plan.features.maxTemplates} templates
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-600" />
+                      {plan.features.maxUsers === -1 ? 'Unlimited' : `Up to ${plan.features.maxUsers}`} users
+                    </li>
+                    <li className="flex items-center gap-2">
+                      {plan.features.analytics ? (
+                        <Check className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <X className="h-4 w-4 text-gray-300" />
+                      )}
+                      <span className={!plan.features.analytics ? 'text-gray-400' : ''}>
+                        Analytics
+                      </span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      {plan.features.removeWatermark ? (
+                        <Check className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <X className="h-4 w-4 text-gray-300" />
+                      )}
+                      <span className={!plan.features.removeWatermark ? 'text-gray-400' : ''}>
+                        No watermark
+                      </span>
+                    </li>
+                  </ul>
+                  {isCurrentPlan ? (
+                    <Button variant="outline" className="w-full" disabled>
+                      Current Plan
+                    </Button>
+                  ) : plan.id === 'enterprise' ? (
+                    <Button variant="outline" className="w-full" asChild>
+                      <a href="mailto:sales@siggly.com">Contact Sales</a>
+                    </Button>
+                  ) : plan.id === 'free' ? (
+                    <Button variant="outline" className="w-full" disabled>
+                      Downgrade
+                    </Button>
+                  ) : (
+                    <Button 
+                      className="w-full" 
+                      onClick={() => handleUpgrade(plan.id)}
+                      disabled={actionLoading}
+                    >
+                      {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Upgrade'}
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

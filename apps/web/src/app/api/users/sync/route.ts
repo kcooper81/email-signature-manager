@@ -87,8 +87,11 @@ export async function POST(request: NextRequest) {
           email: googleUser.email,
           first_name: firstName,
           last_name: lastName,
+          title: googleUser.title || null,
+          department: googleUser.department || null,
           organization_id: organizationId,
           role: 'member',
+          source: 'google',
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'email',

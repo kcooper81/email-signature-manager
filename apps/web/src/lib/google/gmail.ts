@@ -5,6 +5,9 @@ export interface GmailUser {
   id: string;
   email: string;
   name: string;
+  title?: string;
+  department?: string;
+  orgUnitPath?: string;
 }
 
 export async function setGmailSignature(
@@ -86,15 +89,22 @@ export async function listWorkspaceUsers(
         maxResults: 100,
         pageToken,
         orderBy: 'email',
+        projection: 'full', // Get full user data including organizations
       });
 
       if (response.data.users) {
         for (const user of response.data.users) {
           if (user.primaryEmail && user.id) {
+            // Extract organization info (title, department) from Google Workspace
+            const primaryOrg = user.organizations?.find((org: any) => org.primary) || user.organizations?.[0];
+            
             users.push({
               id: user.id,
               email: user.primaryEmail,
               name: user.name?.fullName || user.primaryEmail,
+              title: primaryOrg?.title || undefined,
+              department: primaryOrg?.department || undefined,
+              orgUnitPath: user.orgUnitPath || undefined,
             });
           }
         }

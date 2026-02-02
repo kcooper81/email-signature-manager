@@ -15,6 +15,7 @@ import type {
   ContactInfoBlockContent,
   ButtonBlockContent,
   SocialBlockContent,
+  HtmlBlockContent,
 } from './types';
 import { DYNAMIC_FIELDS } from './types';
 
@@ -39,6 +40,8 @@ export function BlockEditor({ block, onChange }: BlockEditorProps) {
       return <ButtonEditor content={block.content as ButtonBlockContent} onChange={onChange} />;
     case 'social':
       return <SocialEditor content={block.content as SocialBlockContent} onChange={onChange} />;
+    case 'html':
+      return <HtmlEditor content={block.content as HtmlBlockContent} onChange={onChange} />;
     default:
       return <div className="text-muted-foreground">No editor for this block type</div>;
   }
@@ -651,6 +654,84 @@ function SocialEditor({
           min={16}
           max={48}
         />
+      </div>
+    </div>
+  );
+}
+
+// HTML Block Editor with sanitization warnings
+function HtmlEditor({
+  content,
+  onChange,
+}: {
+  content: HtmlBlockContent;
+  onChange: (content: HtmlBlockContent) => void;
+}) {
+  // List of potentially unsafe HTML patterns
+  const getWarnings = (html: string): string[] => {
+    const warnings: string[] = [];
+    
+    if (/<script/i.test(html)) {
+      warnings.push('Scripts will be removed - not supported in email');
+    }
+    if (/<style/i.test(html)) {
+      warnings.push('Style tags may not work - use inline styles instead');
+    }
+    if (/position\s*:/i.test(html)) {
+      warnings.push('CSS position property not supported in most email clients');
+    }
+    if (/display\s*:\s*flex/i.test(html)) {
+      warnings.push('Flexbox not supported in email clients');
+    }
+    if (/display\s*:\s*grid/i.test(html)) {
+      warnings.push('CSS Grid not supported in email clients');
+    }
+    if (/<form/i.test(html)) {
+      warnings.push('Forms not supported in email signatures');
+    }
+    if (/javascript:/i.test(html)) {
+      warnings.push('JavaScript URLs will be removed');
+    }
+    if (/<iframe/i.test(html)) {
+      warnings.push('iframes not supported in email');
+    }
+    
+    return warnings;
+  };
+
+  const warnings = getWarnings(content.html || '');
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label>Custom HTML</Label>
+        <textarea
+          value={content.html || ''}
+          onChange={(e) => onChange({ html: e.target.value })}
+          className="w-full min-h-[150px] p-3 border rounded-md text-sm font-mono bg-slate-50"
+          placeholder="<table cellpadding='0' cellspacing='0'>&#10;  <tr>&#10;    <td>Your custom HTML here</td>&#10;  </tr>&#10;</table>"
+        />
+        <p className="text-xs text-muted-foreground">
+          Use table-based layouts for best email client compatibility.
+        </p>
+      </div>
+
+      {warnings.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-sm font-medium text-amber-800 mb-1">Compatibility warnings:</p>
+          <ul className="text-xs text-amber-700 space-y-0.5">
+            {warnings.map((warning, i) => (
+              <li key={i}>• {warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <p className="text-xs text-blue-800">
+          <strong>Tips:</strong> Use inline styles, table layouts, and avoid modern CSS. 
+          Test in Gmail and Outlook before deploying.
+        </p>
       </div>
     </div>
   );
