@@ -10,8 +10,15 @@ export async function GET(request: NextRequest) {
 
   if (error) {
     console.error('Google OAuth error:', error);
+    // Map Google error codes to user-friendly error types
+    let errorType = 'oauth_denied';
+    if (error === 'access_denied') {
+      errorType = 'oauth_denied';
+    } else if (error === 'access_not_configured') {
+      errorType = 'access_not_configured';
+    }
     return NextResponse.redirect(
-      new URL('/integrations?error=oauth_denied', request.url)
+      new URL(`/integrations?error=${errorType}`, request.url)
     );
   }
 
