@@ -293,15 +293,14 @@ export function TemplateEditor({
         {/* Right: Shared Preview (sticky) */}
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-4">
-              <Card>
-                <CardHeader className="py-3">
-                  <CardTitle className="text-sm">Email Client Preview</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <EmailClientPreview blocks={blocks} />
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm">Email Client Preview</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <EmailClientPreview blocks={blocks} />
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
