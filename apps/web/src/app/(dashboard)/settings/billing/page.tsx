@@ -345,9 +345,18 @@ export default function BillingPage() {
                 </div>
                 <p className="text-sm text-gray-500 mt-1">{currentPlan.description}</p>
                 {currentPlan.pricePerUser > 0 && (
-                  <p className="text-lg font-medium mt-2">
-                    {formatPrice(currentPlan.pricePerUser)}/user/month
-                  </p>
+                  <div className="mt-2">
+                    {currentPlan.id === 'professional' ? (
+                      <div>
+                        <p className="text-lg font-medium">$29/month base</p>
+                        <p className="text-sm text-gray-500">+ $1/user/month</p>
+                      </div>
+                    ) : (
+                      <p className="text-lg font-medium">
+                        {formatPrice(currentPlan.pricePerUser)}/user/month
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
               {subscription?.stripe_subscription_id && (
@@ -462,14 +471,23 @@ export default function BillingPage() {
                   )}
                   <h3 className="font-semibold text-lg mt-2">{plan.name}</h3>
                   <p className="text-sm text-gray-500 mb-3">{plan.description}</p>
-                  <p className="text-2xl font-bold mb-4">
-                    {plan.pricePerUser === 0 
-                      ? plan.id === 'enterprise' ? 'Custom' : 'Free'
-                      : formatPrice(plan.pricePerUser)}
-                    {plan.pricePerUser > 0 && (
-                      <span className="text-sm font-normal text-gray-500">/user/mo</span>
+                  <div className="mb-4">
+                    {plan.pricePerUser === 0 ? (
+                      <p className="text-2xl font-bold">
+                        {plan.id === 'enterprise' ? 'Custom' : 'Free'}
+                      </p>
+                    ) : plan.id === 'professional' ? (
+                      <div>
+                        <p className="text-2xl font-bold">$29<span className="text-sm font-normal text-gray-500">/mo</span></p>
+                        <p className="text-sm text-gray-500">+ $1/user/mo</p>
+                      </div>
+                    ) : (
+                      <p className="text-2xl font-bold">
+                        {formatPrice(plan.pricePerUser)}
+                        <span className="text-sm font-normal text-gray-500">/user/mo</span>
+                      </p>
                     )}
-                  </p>
+                  </div>
                   <ul className="space-y-2 text-sm mb-4">
                     <li className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-green-600" />
