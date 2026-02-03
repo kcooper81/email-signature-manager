@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   DndContext,
@@ -51,6 +51,8 @@ import { SignaturePreview } from './preview';
 import { EmailClientPreview } from './email-client-preview';
 import { QuickForm } from './quick-form';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 interface TemplateEditorProps {
   initialBlocks: SignatureBlock[];
@@ -85,6 +87,8 @@ export function TemplateEditor({
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [editorMode, setEditorMode] = useState<'quick' | 'advanced'>(initialBlocks.length === 0 ? 'quick' : 'advanced');
+  const [quickFormCompatible, setQuickFormCompatible] = useState(true);
+  const [showCompatibilityWarning, setShowCompatibilityWarning] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -139,7 +143,71 @@ export function TemplateEditor({
 
   const handleQuickFormGenerate = (generatedBlocks: SignatureBlock[]) => {
     setBlocks(generatedBlocks);
-    setEditorMode('advanced');
+    setQuickFormCompatible(true);
+    setShowCompatibilityWarning(false);
+  };
+
+  const handleQuickFormUpdate = (updatedBlocks: SignatureBlock[]) => {
+    setBlocks(updatedBlocks);
+    setQuickFormCompatible(true);
+  };
+
+  // Check if blocks are compatible with Quick Form
+  const isQuickFormCompatible = (blocks: SignatureBlock[]): boolean => {
+    if (blocks.length === 0) return true;
+
+    // Count block types
+    const blockCounts = {
+      text: blocks.filter(b => b.type === 'text').length,
+      image: blocks.filter(b => b.type === 'image').length,
+      contactInfo: blocks.filter(b => b.type === 'contact-info').length,
+      social: blocks.filter(b => b.type === 'social').length,
+      disclaimer: blocks.filter(b => b.type === 'disclaimer').length,
+      html: blocks.filter(b => b.type === 'html').length,
+      button: blocks.filter(b => b.type === 'button').length,
+    };
+
+    // Quick Form doesn't support:
+    // - Custom HTML blocks
+    // - Multiple images (only 1 profile photo)
+    // - Buttons
+    // - Multiple contact-info blocks
+    // - Multiple social blocks
+    // - Multiple disclaimer blocks
+    if (blockCounts.html > 0) return false;
+    if (blockCounts.button > 0) return false;
+    if (blockCounts.image > 1) return false;
+    if (blockCounts.contactInfo > 1) return false;
+    if (blockCounts.social > 1) return false;
+    if (blockCounts.disclaimer > 1) return false;
+
+    // Text blocks should be reasonable (name, title, company)
+    if (blockCounts.text > 5) return false;
+
+    return true;
+  };
+
+  // Check compatibility whenever blocks change
+  useEffect(() => {
+    const compatible = isQuickFormCompatible(blocks);
+    setQuickFormCompatible(compatible);
+    if (!compatible && editorMode === 'quick') {
+      setShowCompatibilityWarning(true);
+    }
+  }, [blocks, editorMode]);
+
+  const handleModeChange = (mode: 'quick' | 'advanced') => {
+    // Re-check compatibility before switching to quick mode
+    if (mode === 'quick') {
+      const compatible = isQuickFormCompatible(blocks);
+      if (!compatible) {
+        setQuickFormCompatible(false);
+        setShowCompatibilityWarning(true);
+        return;
+      }
+    }
+    setEditorMode(mode);
+    setShowCompatibilityWarning(false);
   };
 
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
@@ -185,13 +253,35 @@ export function TemplateEditor({
       </div>
 
       {/* Editor Mode Toggle */}
-      <div className="mb-6">
-        <Tabs value={editorMode} onValueChange={(v) => setEditorMode(v as 'quick' | 'advanced')}>
+      <div className="mb-6 space-y-3">
+        <Tabs value={editorMode} onValueChange={(v) => handleModeChange(v as 'quick' | 'advanced')}>
           <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="quick">Quick Form</TabsTrigger>
+            <TabsTrigger value="quick" disabled={!quickFormCompatible}>
+              Quick Form
+              {!quickFormCompatible && ' (Unavailable)'}
+            </TabsTrigger>
             <TabsTrigger value="advanced">Advanced Builder</TabsTrigger>
           </TabsList>
         </Tabs>
+
+        {showCompatibilityWarning && (
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Quick Form is disabled because this signature contains custom blocks (HTML, buttons, or multiple images). 
+              Continue using Advanced Builder to edit this signature.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {editorMode === 'quick' && blocks.length > 0 && quickFormCompatible && (
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Editing in Quick Form will update your signature blocks. Switch to Advanced Builder for more control.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       {/* Main content - 2 column layout: editor | preview */}
@@ -199,7 +289,11 @@ export function TemplateEditor({
         {/* Left: Editor area (changes based on mode) */}
         <div className="lg:col-span-7">
           {editorMode === 'quick' ? (
-            <QuickForm onGenerate={handleQuickFormGenerate} />
+            <QuickForm 
+              onGenerate={handleQuickFormGenerate}
+              onUpdate={handleQuickFormUpdate}
+              initialBlocks={blocks}
+            />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
               {/* Column 1: Add blocks + Block list */}
