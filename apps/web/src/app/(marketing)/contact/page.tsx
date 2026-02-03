@@ -24,29 +24,9 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-              <Mail className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-lg">Siggly</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost">Sign in</Button>
-            </Link>
-            <Link href="/signup">
-              <Button>Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <>
       {/* Content */}
-      <main className="py-16">
+      <div className="py-16">
         <div className="max-w-6xl mx-auto px-6">
           <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -185,23 +165,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-gray-200 mt-12">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <p className="text-sm text-gray-500">
-              © {new Date().getFullYear()} Siggly. All rights reserved.
-            </p>
-            <div className="flex items-center gap-6 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-900">Privacy</Link>
-              <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-900">Terms</Link>
-              <Link href="/about" className="text-sm text-gray-500 hover:text-gray-900">About</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </>
   );
 }
