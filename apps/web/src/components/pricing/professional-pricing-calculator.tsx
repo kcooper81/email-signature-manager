@@ -12,7 +12,7 @@ export function ProfessionalPricingCalculator() {
         <span className="text-4xl font-bold">$29</span>
         <span className="text-gray-500">/mo</span>
       </div>
-      <p className="text-xs text-gray-500 mt-1">+ $1/team member</p>
+      <p className="text-xs text-gray-500 mt-1">for up to 10 users, then $1/user</p>
       
       {/* Quick Calculator */}
       <div className="mt-4 p-3 bg-violet-50 rounded-lg border border-violet-200">
