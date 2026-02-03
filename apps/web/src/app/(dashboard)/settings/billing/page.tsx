@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
@@ -15,8 +16,24 @@ import {
   Calendar,
   AlertTriangle,
   Sparkles,
+  User,
+  Building2,
+  Bell,
+  Palette,
+  Shield,
 } from 'lucide-react';
 import { PLANS, getPlan, formatPrice, TRIAL_DAYS } from '@/lib/billing/plans';
+import { trackViewItem, trackBeginCheckout, trackAddToCart, trackPurchase, trackSubscriptionEvent } from '@/components/analytics';
+import { useSearchParams } from 'next/navigation';
+
+const settingsTabs = [
+  { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
+  { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
+  { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
+  { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
+  { id: 'appearance', label: 'Appearance', icon: Palette, href: '/settings' },
+  { id: 'security', label: 'Security', icon: Shield, href: '/settings' },
+];
 
 interface Subscription {
   id: string;
@@ -40,10 +57,45 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
+  const [purchaseTracked, setPurchaseTracked] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     loadBillingData();
   }, []);
+
+  // Track successful checkout/purchase
+  useEffect(() => {
+    const success = searchParams.get('success');
+    if (success === 'true' && subscription && !purchaseTracked) {
+      const plan = getPlan(subscription.plan);
+      const priceInDollars = plan.pricePerUser / 100;
+      const estimatedValue = priceInDollars * usage.userCount;
+      
+      // Track the purchase
+      trackPurchase(
+        subscription.stripe_subscription_id || `sub_${Date.now()}`,
+        [{
+          item_id: subscription.plan,
+          item_name: plan.name,
+          price: priceInDollars,
+          quantity: usage.userCount,
+          item_category: 'subscription',
+        }],
+        estimatedValue
+      );
+
+      // Track subscription event
+      const isTrialing = subscription.status === 'trialing';
+      trackSubscriptionEvent(
+        isTrialing ? 'trial_started' : 'subscription_started',
+        plan.name,
+        estimatedValue
+      );
+
+      setPurchaseTracked(true);
+    }
+  }, [searchParams, subscription, usage, purchaseTracked]);
 
   const loadBillingData = async () => {
     const supabase = createClient();
@@ -124,6 +176,30 @@ export default function BillingPage() {
   const handleUpgrade = async (planId: string) => {
     setActionLoading(true);
     try {
+      // Track plan selection and checkout start
+      const selectedPlan = getPlan(planId);
+      const priceInDollars = selectedPlan.pricePerUser / 100; // Convert cents to dollars
+      const estimatedValue = priceInDollars * usage.userCount;
+      
+      trackAddToCart({
+        item_id: planId,
+        item_name: selectedPlan.name,
+        price: priceInDollars,
+        quantity: usage.userCount,
+        item_category: 'subscription',
+      });
+      
+      trackBeginCheckout(
+        [{
+          item_id: planId,
+          item_name: selectedPlan.name,
+          price: priceInDollars,
+          quantity: usage.userCount,
+          item_category: 'subscription',
+        }],
+        estimatedValue
+      );
+
       const response = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -160,9 +236,34 @@ export default function BillingPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Billing & Subscription"
-        description="Manage your subscription, payment methods, and billing history"
+        title="Settings"
+        description="Manage your account and preferences"
       />
+
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar */}
+        <div className="w-full lg:w-56 shrink-0">
+          <nav className="space-y-1 lg:sticky lg:top-6">
+            {settingsTabs.map((tab) => (
+              <Link
+                key={tab.id}
+                href={tab.href}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
+                  tab.id === 'billing'
+                    ? 'bg-violet-100 text-violet-900 font-medium'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 space-y-6">
+          <h2 className="text-xl font-semibold">Billing & Subscription</h2>
 
       {/* Trial/Status Banner */}
       {isTrialing && trialDaysRemaining > 0 && (
@@ -405,7 +506,7 @@ export default function BillingPage() {
                     </Button>
                   ) : plan.id === 'enterprise' ? (
                     <Button variant="outline" className="w-full" asChild>
-                      <a href="mailto:sales@siggly.com">Contact Sales</a>
+                      <a href="mailto:sales@siggly.io">Contact Sales</a>
                     </Button>
                   ) : plan.id === 'free' ? (
                     <Button variant="outline" className="w-full" disabled>
@@ -426,6 +527,8 @@ export default function BillingPage() {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }

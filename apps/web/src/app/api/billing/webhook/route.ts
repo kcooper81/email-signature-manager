@@ -78,13 +78,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Get the subscription details
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
+  // Determine plan from all line items (handles multi-item subscriptions)
+  const plan = getPlanFromSubscription(subscription);
+
   // Update our database
   const supabase = getSupabaseAdmin();
   const { error } = await supabase
     .from('subscriptions')
     .update({
       stripe_subscription_id: subscriptionId,
-      plan: getPlanFromPriceId(subscription.items.data[0]?.price.id),
+      plan,
       status: subscription.status === 'trialing' ? 'trialing' : 'active',
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
@@ -101,7 +104,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
 
   const status = mapStripeStatus(subscription.status);
-  const plan = getPlanFromPriceId(subscription.items.data[0]?.price.id);
+  const plan = getPlanFromSubscription(subscription);
 
   const supabase = getSupabaseAdmin();
   const { error } = await supabase
@@ -178,14 +181,36 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   }
 }
 
+function getPlanFromSubscription(subscription: Stripe.Subscription): string {
+  // Check all line items in the subscription to determine the plan
+  const priceIds = subscription.items.data.map(item => item.price.id);
+  
+  const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
+  const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
+  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
+
+  // Check if any price ID matches professional plan
+  if (priceIds.includes(professionalBasePriceId!) || priceIds.includes(professionalPerUserPriceId!)) {
+    return 'professional';
+  }
+  
+  // Check if any price ID matches starter plan
+  if (priceIds.includes(starterPriceId!)) {
+    return 'starter';
+  }
+  
+  return 'free';
+}
+
 function getPlanFromPriceId(priceId: string | undefined): string {
   if (!priceId) return 'free';
   
   const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
-  const professionalPriceId = process.env.STRIPE_PROFESSIONAL_PRICE_ID;
+  const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
+  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
 
   if (priceId === starterPriceId) return 'starter';
-  if (priceId === professionalPriceId) return 'professional';
+  if (priceId === professionalBasePriceId || priceId === professionalPerUserPriceId) return 'professional';
   
   return 'free';
 }

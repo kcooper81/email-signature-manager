@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { GoogleAnalytics } from '@/components/analytics';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://siggly.com',
+    url: 'https://siggly.io',
     siteName: 'Siggly',
     title: 'Siggly - Email Signature Management for Teams',
     description: 'Create, manage, and deploy consistent email signatures to your entire team in seconds. The modern way to manage email signatures.',
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     google: 'google-site-verification-code',
   },
   alternates: {
-    canonical: 'https://siggly.com',
+    canonical: 'https://siggly.io',
   },
 };
 
@@ -89,7 +90,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <GoogleAnalytics />
+        {children}
+      </body>
     </html>
   );
 }
