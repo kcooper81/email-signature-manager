@@ -488,35 +488,24 @@ export default function BillingPage() {
                       </p>
                     )}
                   </div>
-                  <ul className="space-y-2 text-sm mb-4">
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      {plan.features.maxTemplates === -1 ? 'Unlimited' : plan.features.maxTemplates} templates
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
-                      {plan.features.maxUsers === -1 ? 'Unlimited' : `Up to ${plan.features.maxUsers}`} users
-                    </li>
-                    <li className="flex items-center gap-2">
-                      {plan.features.analytics ? (
-                        <Check className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <X className="h-4 w-4 text-gray-300" />
-                      )}
-                      <span className={!plan.features.analytics ? 'text-gray-400' : ''}>
-                        Analytics
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      {plan.features.removeWatermark ? (
-                        <Check className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <X className="h-4 w-4 text-gray-300" />
-                      )}
-                      <span className={!plan.features.removeWatermark ? 'text-gray-400' : ''}>
-                        No watermark
-                      </span>
-                    </li>
+                  <ul className="space-y-2 text-sm mb-4 max-h-64 overflow-y-auto">
+                    {plan.featureList.slice(0, 8).map((feature) => (
+                      <li key={feature.text} className="flex items-center gap-2">
+                        {feature.included ? (
+                          <Check className="h-4 w-4 text-green-600 shrink-0" />
+                        ) : (
+                          <X className="h-4 w-4 text-gray-300 shrink-0" />
+                        )}
+                        <span className={feature.included ? 'text-gray-700' : 'text-gray-400'}>
+                          {feature.text}
+                        </span>
+                      </li>
+                    ))}
+                    {plan.featureList.length > 8 && (
+                      <li className="text-xs text-gray-500 italic pl-6">
+                        + {plan.featureList.length - 8} more features
+                      </li>
+                    )}
                   </ul>
                   {isCurrentPlan ? (
                     <Button variant="outline" className="w-full" disabled>
