@@ -49,6 +49,8 @@ import type { SignatureBlock, SignatureBlockType } from './types';
 import { BlockEditor } from './block-editor';
 import { SignaturePreview } from './preview';
 import { EmailClientPreview } from './email-client-preview';
+import { QuickForm } from './quick-form';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface TemplateEditorProps {
   initialBlocks: SignatureBlock[];
@@ -82,6 +84,7 @@ export function TemplateEditor({
   const [description, setDescription] = useState(initialDescription);
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [editorMode, setEditorMode] = useState<'quick' | 'advanced'>(initialBlocks.length === 0 ? 'quick' : 'advanced');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -134,6 +137,11 @@ export function TemplateEditor({
     await onSave(name, description, blocks);
   };
 
+  const handleQuickFormGenerate = (generatedBlocks: SignatureBlock[]) => {
+    setBlocks(generatedBlocks);
+    setEditorMode('advanced');
+  };
+
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
 
   return (
@@ -176,10 +184,26 @@ export function TemplateEditor({
         </div>
       </div>
 
-      {/* Main content - 3 column layout: blocks | editor | preview */}
+      {/* Editor Mode Toggle */}
+      <div className="mb-6">
+        <Tabs value={editorMode} onValueChange={(v) => setEditorMode(v as 'quick' | 'advanced')}>
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="quick">Quick Form</TabsTrigger>
+            <TabsTrigger value="advanced">Advanced Builder</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {/* Main content - 2 column layout: editor | preview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 pb-6">
-        {/* Column 1: Add blocks + Block list */}
-        <div className="lg:col-span-3 space-y-4">
+        {/* Left: Editor area (changes based on mode) */}
+        <div className="lg:col-span-7">
+          {editorMode === 'quick' ? (
+            <QuickForm onGenerate={handleQuickFormGenerate} />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              {/* Column 1: Add blocks + Block list */}
+              <div className="lg:col-span-5 space-y-4">
           {/* Add Block buttons */}
           <Card>
             <CardHeader className="py-3">
@@ -237,10 +261,10 @@ export function TemplateEditor({
               )}
             </CardContent>
           </Card>
-        </div>
+              </div>
 
-        {/* Column 2: Block editor (sticky) */}
-        <div className="lg:col-span-4">
+              {/* Column 2: Block editor (sticky) */}
+              <div className="lg:col-span-7">
           <div className="lg:sticky lg:top-4">
             <Card>
               <CardHeader className="py-3">
@@ -261,10 +285,12 @@ export function TemplateEditor({
                 )}
               </CardContent>
             </Card>
-          </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Column 3: Preview (sticky) */}
+        {/* Right: Shared Preview (sticky) */}
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-4">
               <Card>
@@ -277,6 +303,7 @@ export function TemplateEditor({
               </Card>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

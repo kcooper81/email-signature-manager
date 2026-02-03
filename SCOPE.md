@@ -198,6 +198,31 @@ Target these for SEO and content marketing:
 | **Tools** | Free signature generator (SEO traffic), Signature audit tool |
 | **Comparisons** | "Siggly vs Exclaimer", "Siggly vs CodeTwo", "Best email signature software 2024" |
 
+### Demand Tiers
+
+Understanding buyer segments helps guide pricing and feature prioritization:
+
+| Tier | Buyer Profile | What They Care About | Willingness to Pay | Siggly Plan |
+|------|---------------|---------------------|-------------------|-------------|
+| **Basic SMB** | Small teams (5-20 people) | Price, ease of use, quick setup | Low ($0-10/mo) | Free / Starter |
+| **Mid-Market** | Marketing teams, growing companies | Campaign banners, reporting, ROI tracking | Medium-High ($29-99/mo) | Professional |
+| **Enterprise** | IT buyers, large orgs | Compliance, SSO, API, governance, SLA | Highest ($200+/mo) | Enterprise |
+
+**Key insight**: Mid-market marketing teams are the sweet spot — they have budget AND pain, and will pay for measurable ROI.
+
+### Market Gaps (Where Siggly Can Win)
+
+Competitors like Exclaimer and CodeTwo focus on enterprise. This leaves gaps:
+
+| Gap | Opportunity | Siggly Advantage |
+|-----|-------------|------------------|
+| **SMB-Friendly UX** | Most solutions feel enterprise-heavy and complex | Simple, modern UI that non-technical users love |
+| **Affordable Entry Tier** | Competitors start at $2-4/user/month minimum | Free tier + $0.50/user Starter plan |
+| **Better Analytics & ROI** | "Did signatures generate leads?" is unanswered | Click tracking, campaign attribution, engagement dashboard |
+| **AI-Powered Signatures** | No personalization without admin hassle | AI generator, smart suggestions, auto-optimization |
+| **Seamless Gmail/Outlook Sync** | Competitors require scripts, admin certs, IT involvement | One-click OAuth connection, no IT needed |
+| **Mobile Consistency** | Signatures break on mobile apps | Mobile-optimized templates that work everywhere |
+
 ---
 
 ## Competitive Differentiators (Future Roadmap)
