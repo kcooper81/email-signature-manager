@@ -73,30 +73,56 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
 
-  if (!subscriptionId) return;
+  console.log('[Webhook] Checkout completed:', { customerId, subscriptionId });
+
+  if (!subscriptionId) {
+    console.log('[Webhook] No subscription ID in session');
+    return;
+  }
 
   // Get the subscription details
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
   // Determine plan from all line items (handles multi-item subscriptions)
   const plan = getPlanFromSubscription(subscription);
+  console.log('[Webhook] Detected plan:', plan);
 
   // Update our database
   const supabase = getSupabaseAdmin();
-  const { error } = await supabase
+  
+  // First check if subscription exists
+  const { data: existingSub, error: fetchError } = await supabase
     .from('subscriptions')
-    .update({
-      stripe_subscription_id: subscriptionId,
-      plan,
-      status: subscription.status === 'trialing' ? 'trialing' : 'active',
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('stripe_customer_id', customerId);
+    .select('*')
+    .eq('stripe_customer_id', customerId)
+    .single();
 
-  if (error) {
-    console.error('Failed to update subscription after checkout:', error);
+  if (fetchError && fetchError.code !== 'PGRST116') {
+    console.error('[Webhook] Error fetching subscription:', fetchError);
+    return;
+  }
+
+  if (existingSub) {
+    // Update existing subscription
+    const { error } = await supabase
+      .from('subscriptions')
+      .update({
+        stripe_subscription_id: subscriptionId,
+        plan,
+        status: subscription.status === 'trialing' ? 'trialing' : 'active',
+        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_customer_id', customerId);
+
+    if (error) {
+      console.error('[Webhook] Failed to update subscription after checkout:', error);
+    } else {
+      console.log('[Webhook] Successfully updated subscription to plan:', plan);
+    }
+  } else {
+    console.error('[Webhook] No subscription record found for customer:', customerId);
   }
 }
 
@@ -105,6 +131,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   const status = mapStripeStatus(subscription.status);
   const plan = getPlanFromSubscription(subscription);
+
+  console.log('[Webhook] Subscription updated:', { customerId, subscriptionId: subscription.id, plan, status });
 
   const supabase = getSupabaseAdmin();
   const { error } = await supabase
@@ -121,7 +149,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     .eq('stripe_customer_id', customerId);
 
   if (error) {
-    console.error('Failed to update subscription:', error);
+    console.error('[Webhook] Failed to update subscription:', error);
+  } else {
+    console.log('[Webhook] Successfully updated subscription');
   }
 }
 

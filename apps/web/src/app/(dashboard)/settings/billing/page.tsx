@@ -21,6 +21,7 @@ import {
   Bell,
   Palette,
   Shield,
+  RefreshCw,
 } from 'lucide-react';
 import { PLANS, getPlan, formatPrice, TRIAL_DAYS } from '@/lib/billing/plans';
 import { trackViewItem, trackBeginCheckout, trackAddToCart, trackPurchase, trackSubscriptionEvent } from '@/components/analytics';
@@ -55,7 +56,7 @@ export default function BillingPage() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [usage, setUsage] = useState<UsageStats>({ templateCount: 0, userCount: 0 });
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
   const [purchaseTracked, setPurchaseTracked] = useState(false);
   const searchParams = useSearchParams();
@@ -63,6 +64,18 @@ export default function BillingPage() {
   useEffect(() => {
     loadBillingData();
   }, []);
+
+  // Reload data after successful checkout
+  useEffect(() => {
+    const success = searchParams.get('success');
+    if (success === 'true') {
+      // Wait a bit for webhook to process, then reload
+      const timer = setTimeout(() => {
+        loadBillingData();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   // Track successful checkout/purchase
   useEffect(() => {
@@ -157,7 +170,7 @@ export default function BillingPage() {
   };
 
   const handleManageBilling = async () => {
-    setActionLoading(true);
+    setLoadingPlanId('billing-portal');
     try {
       const response = await fetch('/api/billing/portal', {
         method: 'POST',
@@ -169,12 +182,12 @@ export default function BillingPage() {
     } catch (error) {
       console.error('Failed to open billing portal:', error);
     } finally {
-      setActionLoading(false);
+      setLoadingPlanId(null);
     }
   };
 
   const handleUpgrade = async (planId: string) => {
-    setActionLoading(true);
+    setLoadingPlanId(planId);
     try {
       // Track plan selection and checkout start
       const selectedPlan = getPlan(planId);
@@ -212,7 +225,7 @@ export default function BillingPage() {
     } catch (error) {
       console.error('Failed to start checkout:', error);
     } finally {
-      setActionLoading(false);
+      setLoadingPlanId(null);
     }
   };
 
@@ -263,7 +276,18 @@ export default function BillingPage() {
 
         {/* Content */}
         <div className="flex-1 space-y-6">
-          <h2 className="text-xl font-semibold">Billing & Subscription</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Billing & Subscription</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => loadBillingData()}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
 
       {/* Trial/Status Banner */}
       {isTrialing && trialDaysRemaining > 0 && (
@@ -360,8 +384,8 @@ export default function BillingPage() {
                 )}
               </div>
               {subscription?.stripe_subscription_id && (
-                <Button variant="outline" onClick={handleManageBilling} disabled={actionLoading}>
-                  {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Manage Subscription'}
+                <Button variant="outline" onClick={handleManageBilling} disabled={loadingPlanId === 'billing-portal'}>
+                  {loadingPlanId === 'billing-portal' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Manage Subscription'}
                 </Button>
               )}
             </div>
@@ -416,7 +440,7 @@ export default function BillingPage() {
                   variant="outline" 
                   className="w-full justify-start" 
                   onClick={handleManageBilling}
-                  disabled={actionLoading}
+                  disabled={loadingPlanId === 'billing-portal'}
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
                   Update Payment Method
@@ -425,7 +449,7 @@ export default function BillingPage() {
                   variant="outline" 
                   className="w-full justify-start" 
                   onClick={handleManageBilling}
-                  disabled={actionLoading}
+                  disabled={loadingPlanId === 'billing-portal'}
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   View Invoices
@@ -435,9 +459,9 @@ export default function BillingPage() {
               <Button 
                 className="w-full" 
                 onClick={() => handleUpgrade('professional')}
-                disabled={actionLoading}
+                disabled={loadingPlanId === 'professional'}
               >
-                <Sparkles className="mr-2 h-4 w-4" />
+                {loadingPlanId === 'professional' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                 Upgrade to Pro
               </Button>
             )}
@@ -523,9 +547,9 @@ export default function BillingPage() {
                     <Button 
                       className="w-full" 
                       onClick={() => handleUpgrade(plan.id)}
-                      disabled={actionLoading}
+                      disabled={loadingPlanId === plan.id}
                     >
-                      {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Upgrade'}
+                      {loadingPlanId === plan.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Upgrade'}
                     </Button>
                   )}
                 </div>
