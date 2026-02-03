@@ -117,10 +117,10 @@ export function FeedbackWidget() {
                 
                 <div className="pt-3 border-t mt-3">
                   <a
-                    href="mailto:support@siggly.com"
+                    href="mailto:support@siggly.io"
                     className="text-sm text-violet-600 hover:text-violet-700 font-medium"
                   >
-                    Or email us at support@siggly.com
+                    Or email us at support@siggly.io
                   </a>
                 </div>
               </div>

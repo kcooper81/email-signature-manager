@@ -267,7 +267,7 @@ export default function DeploymentsPage() {
                 <PartyPopper className="h-10 w-10 text-green-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                🎉 Signatures Deployed!
+                Signatures Deployed!
               </h2>
               <p className="text-gray-600">
                 Your email signatures have been successfully deployed.
