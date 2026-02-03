@@ -19,8 +19,8 @@ const faqs = [
     answer: `Yes! Our Free plan lets you try Siggly with up to 5 team members forever. Paid plans also come with a ${TRIAL_DAYS}-day free trial.`,
   },
   {
-    question: 'How does per-member pricing work?',
-    answer: 'You pay based on the number of team members who receive email signatures. For example, with Starter at $0.50/member, a 50-person team costs just $25/month.',
+    question: 'How does per-user/team member pricing work?',
+    answer: 'You pay based on the number of users/team members in your organization who need email signatures. For example: Starter plan at $0.50 per user means a 10-person team pays $5/month, a 50-person team pays $25/month. Professional plan is $29 base + $1 per user, so a 50-person team pays $79/month ($29 + $50). Everyone on your team gets professional signatures.',
   },
   {
     question: 'Can I change plans later?',
@@ -59,15 +59,54 @@ export default function PricingPage() {
           <h1 className="text-5xl font-bold mb-6">
             Simple, transparent pricing
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-4">
             Start free, upgrade as you grow. No hidden fees, no surprises.
           </p>
+          <p className="text-lg text-violet-600 font-medium">
+            💡 Pricing is per team member/user — everyone in your organization gets professional email signatures
+          </p>
+        </div>
+      </section>
+
+      {/* Pricing Calculator */}
+      <section className="py-12 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="bg-violet-50 border-2 border-violet-200 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold text-center mb-4">Calculate Your Cost</h2>
+            <p className="text-center text-gray-600 mb-6">
+              See exactly what you'll pay based on your team size
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div className="bg-white rounded-xl p-6 shadow-sm">
+                <div className="text-sm text-gray-500 mb-2">10 team members</div>
+                <div className="text-3xl font-bold text-violet-600 mb-1">$5/mo</div>
+                <div className="text-xs text-gray-500">with Starter ($0.50/user)</div>
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-violet-500">
+                <div className="text-sm text-gray-500 mb-2">50 team members</div>
+                <div className="text-3xl font-bold text-violet-600 mb-1">$79/mo</div>
+                <div className="text-xs text-gray-500">with Professional ($29 + $1/user)</div>
+              </div>
+              <div className="bg-white rounded-xl p-6 shadow-sm">
+                <div className="text-sm text-gray-500 mb-2">100 team members</div>
+                <div className="text-3xl font-bold text-violet-600 mb-1">$129/mo</div>
+                <div className="text-xs text-gray-500">with Professional ($29 + $1/user)</div>
+              </div>
+            </div>
+            <p className="text-center text-sm text-gray-500 mt-6">
+              💰 Save up to 50% compared to Exclaimer, WiseStamp, and CodeTwo
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Pricing Grid */}
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-4">Choose Your Plan</h2>
+          <p className="text-center text-gray-600 mb-12">
+            All plans include core features. Upgrade for advanced capabilities and priority support.
+          </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {PLANS_LIST.map((plan) => (
               <div
@@ -98,9 +137,10 @@ export default function PricingPage() {
                     <div>
                       <div className="flex items-baseline justify-center gap-1">
                         <span className="text-4xl font-bold">$0.50</span>
-                        <span className="text-gray-500">/member/mo</span>
+                        <span className="text-gray-500">/user/mo</span>
                       </div>
                       <p className="text-xs text-violet-600 mt-1">50% cheaper than competitors</p>
+                      <p className="text-xs text-gray-400 mt-1">Per team member</p>
                     </div>
                   ) : (
                     <div>
@@ -109,6 +149,7 @@ export default function PricingPage() {
                         <span className="text-gray-500">/mo</span>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">+ $1/team member</p>
+                      <p className="text-xs text-gray-400 mt-1">Base fee + per user</p>
                     </div>
                   )}
                   <p className="text-sm text-gray-500 mt-2">{plan.description}</p>

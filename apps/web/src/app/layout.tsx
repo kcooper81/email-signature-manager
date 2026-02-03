@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     creator: '@siggly',
   },
   verification: {
-    google: 'google-site-verification-code',
+    google: 'C__U2dgBYDEMGP3dJ1luDoSeOP2K6sVQEJq-Q7xpbwo',
   },
   alternates: {
     canonical: 'https://siggly.io',
