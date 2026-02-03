@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,10 +11,97 @@ import type { SignatureBlock } from './types';
 
 interface QuickFormProps {
   onGenerate: (blocks: SignatureBlock[]) => void;
+  onUpdate?: (blocks: SignatureBlock[]) => void;
+  initialBlocks?: SignatureBlock[];
 }
 
-export function QuickForm({ onGenerate }: QuickFormProps) {
-  const [formData, setFormData] = useState({
+// Helper function to extract form data from blocks
+function blocksToFormData(blocks: SignatureBlock[]) {
+  const formData = {
+    name: '',
+    title: '',
+    company: '',
+    email: '',
+    phone: '',
+    website: '',
+    address: '',
+    photoUrl: '',
+    linkedin: '',
+    twitter: '',
+    facebook: '',
+    instagram: '',
+    disclaimer: '',
+  };
+
+  const includeFlags = {
+    includePhoto: false,
+    includeSocial: false,
+    includeDisclaimer: false,
+  };
+
+  blocks.forEach((block) => {
+    switch (block.type) {
+      case 'image':
+        const imageContent = block.content as any;
+        formData.photoUrl = imageContent.src || '';
+        includeFlags.includePhoto = true;
+        break;
+
+      case 'text':
+        const textContent = block.content as any;
+        const text = textContent.text || '';
+        
+        // Try to identify which field this is based on styling
+        if (textContent.fontWeight === 'bold' && textContent.fontSize >= 16) {
+          // Likely the name
+          if (!formData.name) formData.name = text;
+        } else if (textContent.fontWeight === 'bold' && textContent.color?.includes('7c3aed')) {
+          // Likely company (purple color)
+          formData.company = text;
+        } else if (textContent.fontSize <= 14 && !formData.title) {
+          // Likely title
+          formData.title = text;
+        }
+        break;
+
+      case 'contact-info':
+        const contactContent = block.content as any;
+        formData.email = contactContent.email || '';
+        formData.phone = contactContent.phone || '';
+        formData.website = contactContent.website || '';
+        formData.address = contactContent.address || '';
+        break;
+
+      case 'social':
+        const socialContent = block.content as any;
+        includeFlags.includeSocial = socialContent.platforms?.length > 0;
+        socialContent.platforms?.forEach((platform: any) => {
+          if (platform.type === 'linkedin') formData.linkedin = platform.url;
+          if (platform.type === 'twitter') formData.twitter = platform.url;
+          if (platform.type === 'facebook') formData.facebook = platform.url;
+          if (platform.type === 'instagram') formData.instagram = platform.url;
+        });
+        break;
+
+      case 'disclaimer':
+        const disclaimerContent = block.content as any;
+        formData.disclaimer = disclaimerContent.text || '';
+        includeFlags.includeDisclaimer = true;
+        break;
+    }
+  });
+
+  return { formData, includeFlags };
+}
+
+export function QuickForm({ onGenerate, onUpdate, initialBlocks = [] }: QuickFormProps) {
+  // Store block IDs to preserve them across updates
+  const blockIdsRef = useRef<Map<string, string>>(new Map());
+  
+  // Initialize form data from blocks if provided
+  const initialData = initialBlocks.length > 0 ? blocksToFormData(initialBlocks) : null;
+  
+  const [formData, setFormData] = useState(initialData?.formData || {
     name: '',
     title: '',
     company: '',
@@ -30,21 +117,48 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
     disclaimer: '',
   });
 
-  const [includePhoto, setIncludePhoto] = useState(false);
-  const [includeSocial, setIncludeSocial] = useState(false);
-  const [includeDisclaimer, setIncludeDisclaimer] = useState(false);
+  const [includePhoto, setIncludePhoto] = useState(initialData?.includeFlags.includePhoto || false);
+  const [includeSocial, setIncludeSocial] = useState(initialData?.includeFlags.includeSocial || false);
+  const [includeDisclaimer, setIncludeDisclaimer] = useState(initialData?.includeFlags.includeDisclaimer || false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // Helper to get or create block ID
+  const getBlockId = useCallback((key: string, existingBlocks?: SignatureBlock[]) => {
+    // Try to find existing block ID from initialBlocks
+    if (existingBlocks) {
+      const existing = existingBlocks.find(b => {
+        if (key === 'photo' && b.type === 'image') return true;
+        if (key === 'name' && b.type === 'text' && (b.content as any).fontSize >= 16) return true;
+        if (key === 'title' && b.type === 'text' && (b.content as any).fontSize <= 14 && (b.content as any).fontWeight === 'normal') return true;
+        if (key === 'company' && b.type === 'text' && (b.content as any).color?.includes('7c3aed')) return true;
+        if (key === 'contact' && b.type === 'contact-info') return true;
+        if (key === 'social' && b.type === 'social') return true;
+        if (key === 'disclaimer' && b.type === 'disclaimer') return true;
+        return false;
+      });
+      if (existing) return existing.id;
+    }
+    
+    // Check if we've created an ID for this key before
+    if (blockIdsRef.current.has(key)) {
+      return blockIdsRef.current.get(key)!;
+    }
+    
+    // Create new ID and store it
+    const newId = crypto.randomUUID();
+    blockIdsRef.current.set(key, newId);
+    return newId;
+  }, []);
 
-  const generateBlocks = () => {
+  // Memoize block generation function
+  const generateBlocksFromFormData = useCallback((): SignatureBlock[] => {
     const blocks: SignatureBlock[] = [];
 
     // Photo block
     if (includePhoto && formData.photoUrl) {
       blocks.push({
-        id: crypto.randomUUID(),
+        id: getBlockId('photo', initialBlocks),
         type: 'image',
         content: {
           src: formData.photoUrl,
@@ -58,7 +172,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
     // Name block
     if (formData.name) {
       blocks.push({
-        id: crypto.randomUUID(),
+        id: getBlockId('name', initialBlocks),
         type: 'text',
         content: {
           text: formData.name,
@@ -72,7 +186,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
     // Title block
     if (formData.title) {
       blocks.push({
-        id: crypto.randomUUID(),
+        id: getBlockId('title', initialBlocks),
         type: 'text',
         content: {
           text: formData.title,
@@ -86,7 +200,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
     // Company block
     if (formData.company) {
       blocks.push({
-        id: crypto.randomUUID(),
+        id: getBlockId('company', initialBlocks),
         type: 'text',
         content: {
           text: formData.company,
@@ -109,7 +223,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
     // Contact info block
     if (formData.email || formData.phone || formData.website || formData.address) {
       blocks.push({
-        id: crypto.randomUUID(),
+        id: getBlockId('contact', initialBlocks),
         type: 'contact-info',
         content: {
           email: formData.email || undefined,
@@ -136,7 +250,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
           content: { height: 12 },
         });
         blocks.push({
-          id: crypto.randomUUID(),
+          id: getBlockId('social', initialBlocks),
           type: 'social',
           content: {
             platforms: socialPlatforms,
@@ -169,7 +283,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
         content: { height: 12 },
       });
       blocks.push({
-        id: crypto.randomUUID(),
+        id: getBlockId('disclaimer', initialBlocks),
         type: 'disclaimer',
         content: {
           text: formData.disclaimer,
@@ -180,6 +294,59 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
       });
     }
 
+    return blocks;
+  }, [formData, includePhoto, includeSocial, includeDisclaimer, getBlockId, initialBlocks]);
+
+  // Update form when initialBlocks change (but not on every render)
+  useEffect(() => {
+    if (initialBlocks.length > 0 && !isInitialLoad) {
+      const { formData: newFormData, includeFlags } = blocksToFormData(initialBlocks);
+      setFormData(newFormData);
+      setIncludePhoto(includeFlags.includePhoto);
+      setIncludeSocial(includeFlags.includeSocial);
+      setIncludeDisclaimer(includeFlags.includeDisclaimer);
+    }
+  }, [initialBlocks, isInitialLoad]);
+
+  // Auto-update blocks when form changes (after initial load, with debounce)
+  useEffect(() => {
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+      return;
+    }
+
+    // Clear existing timeout
+    if (updateTimeoutRef.current) {
+      clearTimeout(updateTimeoutRef.current);
+    }
+
+    // Only auto-update if we have onUpdate callback and initial blocks exist
+    if (onUpdate && initialBlocks.length > 0) {
+      // Debounce updates to avoid excessive re-renders
+      updateTimeoutRef.current = setTimeout(() => {
+        const blocks = generateBlocksFromFormData();
+        onUpdate(blocks);
+      }, 300);
+    }
+
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, [formData, includePhoto, includeSocial, includeDisclaimer, onUpdate, initialBlocks.length, generateBlocksFromFormData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const generateBlocks = () => {
+    // Validate that at least name is provided
+    if (!formData.name.trim()) {
+      alert('Please enter at least a name for the signature');
+      return;
+    }
+    const blocks = generateBlocksFromFormData();
     onGenerate(blocks);
   };
 
@@ -393,7 +560,7 @@ export function QuickForm({ onGenerate }: QuickFormProps) {
 
       <Button onClick={generateBlocks} size="lg" className="w-full">
         <Wand2 className="mr-2 h-5 w-5" />
-        Generate Signature
+        {initialBlocks.length > 0 ? 'Update Signature' : 'Generate Signature'}
       </Button>
     </div>
   );

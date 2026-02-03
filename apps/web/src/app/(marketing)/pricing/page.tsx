@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { Check, X, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PLANS_LIST, TRIAL_DAYS } from '@/lib/billing/plans';
 import { PricingPageTracker } from '@/components/analytics';
@@ -39,6 +42,40 @@ const faqs = [
     answer: 'Siggly offers the same features as Exclaimer, WiseStamp, and CodeTwo at up to 50% lower cost. For example, WiseStamp charges $1/member while our Starter plan is just $0.50/member.',
   },
 ];
+
+function ProfessionalPricing() {
+  const [teamSize, setTeamSize] = useState(10);
+  const totalPrice = 29 + teamSize;
+
+  return (
+    <div>
+      <div className="flex items-baseline justify-center gap-1">
+        <span className="text-4xl font-bold">$29</span>
+        <span className="text-gray-500">/mo</span>
+      </div>
+      <p className="text-xs text-gray-500 mt-1">+ $1/team member</p>
+      
+      {/* Quick Calculator */}
+      <div className="mt-4 p-3 bg-violet-50 rounded-lg border border-violet-200">
+        <p className="text-xs font-medium text-violet-900 mb-2">Quick calculator:</p>
+        <div className="space-y-2">
+          <input
+            type="range"
+            min="1"
+            max="100"
+            value={teamSize}
+            onChange={(e) => setTeamSize(parseInt(e.target.value))}
+            className="w-full h-2 bg-violet-200 rounded-lg appearance-none cursor-pointer accent-violet-600"
+          />
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-600">{teamSize} users</span>
+            <span className="font-bold text-violet-600">${totalPrice}/mo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function PricingPage() {
   // Prepare plans for tracking
@@ -143,14 +180,7 @@ export default function PricingPage() {
                       <p className="text-xs text-gray-400 mt-1">Per team member</p>
                     </div>
                   ) : (
-                    <div>
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-4xl font-bold">$29</span>
-                        <span className="text-gray-500">/mo</span>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">+ $1/team member</p>
-                      <p className="text-xs text-gray-400 mt-1">Base fee + per user</p>
-                    </div>
+                    <ProfessionalPricing />
                   )}
                   <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
                 </div>
