@@ -50,7 +50,7 @@ const mainNavItems = [
 const bottomNavItems = [
   {
     title: 'Help & Support',
-    href: '/help',
+    href: '/support',
     icon: HelpCircle,
   },
   {
