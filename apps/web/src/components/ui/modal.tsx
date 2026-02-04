@@ -38,7 +38,7 @@ function Modal({ open, onClose, children, className }: ModalProps) {
       />
       <div
         className={cn(
-          'relative z-50 w-full max-w-lg rounded-xl bg-white p-6 shadow-xl animate-in fade-in-0 zoom-in-95',
+          'relative z-50 w-full max-w-lg rounded-xl bg-card p-6 shadow-xl animate-in fade-in-0 zoom-in-95',
           className
         )}
       >
@@ -55,9 +55,9 @@ function ModalHeader({ className, children, onClose }: { className?: string; chi
       {onClose && (
         <button
           onClick={onClose}
-          className="rounded-full p-1 hover:bg-gray-100 transition-colors"
+          className="rounded-full p-1 hover:bg-accent transition-colors"
         >
-          <X className="h-5 w-5 text-gray-500" />
+          <X className="h-5 w-5 text-muted-foreground" />
         </button>
       )}
     </div>
@@ -66,7 +66,7 @@ function ModalHeader({ className, children, onClose }: { className?: string; chi
 
 function ModalTitle({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <h2 className={cn('text-lg font-semibold text-gray-900', className)}>
+    <h2 className={cn('text-lg font-semibold text-foreground', className)}>
       {children}
     </h2>
   );

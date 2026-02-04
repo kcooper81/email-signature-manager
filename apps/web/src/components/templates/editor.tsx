@@ -434,7 +434,7 @@ function SortableBlock({ block, isSelected, onSelect, onDelete }: SortableBlockP
       className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors mb-2 ${
         isSelected
           ? 'border-primary bg-primary/5'
-          : 'hover:bg-slate-50 bg-white'
+          : 'hover:bg-accent bg-card'
       } ${isDragging ? 'shadow-lg' : ''}`}
       onClick={onSelect}
     >

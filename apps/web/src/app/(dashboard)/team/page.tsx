@@ -342,7 +342,7 @@ export default function TeamMembersPage() {
           {/* Search and filters */}
           <div className="flex flex-wrap items-center gap-3 mt-4">
             <div className="relative flex-1 min-w-[200px] max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search members..."
                 value={searchQuery}
@@ -352,15 +352,15 @@ export default function TeamMembersPage() {
             </div>
 
             {/* Source filter */}
-            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
               {(['all', 'manual', 'synced'] as const).map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setSourceFilter(filter)}
                   className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                     sourceFilter === filter
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-violet-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {filter === 'all' ? 'All' : filter === 'manual' ? 'Manual' : 'Synced'}
@@ -371,11 +371,11 @@ export default function TeamMembersPage() {
             {/* Department filter */}
             {departments.length > 0 && (
               <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-gray-400" />
+                <Building2 className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={departmentFilter}
                   onChange={(e) => setDepartmentFilter(e.target.value)}
-                  className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white"
+                  className="text-sm border rounded-lg px-2 py-1.5 bg-background"
                 >
                   <option value="all">All Departments</option>
                   {departments.map((dept) => (
@@ -387,11 +387,11 @@ export default function TeamMembersPage() {
 
             {/* Sort dropdown */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Sort:</span>
+              <span className="text-sm text-muted-foreground">Sort:</span>
               <select
                 value={sortField}
                 onChange={(e) => setSortField(e.target.value as SortField)}
-                className="text-sm border border-gray-200 rounded-lg px-2 py-1.5 bg-white"
+                className="text-sm border rounded-lg px-2 py-1.5 bg-background"
               >
                 <option value="name">Name</option>
                 <option value="email">Email</option>
@@ -400,7 +400,7 @@ export default function TeamMembersPage() {
               </select>
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded"
               >
                 <ArrowUpDown className="h-4 w-4" />
               </button>
@@ -421,7 +421,7 @@ export default function TeamMembersPage() {
               }
             />
           ) : filteredMembers.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               No members match your search or filters.
             </div>
           ) : (
@@ -429,7 +429,7 @@ export default function TeamMembersPage() {
               {filteredMembers.map((emp) => (
                 <div
                   key={emp.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar 
@@ -437,12 +437,12 @@ export default function TeamMembersPage() {
                       fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
                     />
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-foreground">
                         {emp.first_name && emp.last_name 
                           ? `${emp.first_name} ${emp.last_name}`
                           : emp.email}
                       </p>
-                      <div className="flex items-center gap-3 text-sm text-gray-500">
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {emp.email}
@@ -458,7 +458,7 @@ export default function TeamMembersPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {emp.title && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         {emp.title}
                       </span>
                     )}
