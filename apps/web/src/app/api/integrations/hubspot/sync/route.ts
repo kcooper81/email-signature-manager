@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { listHubSpotContacts } from '@/lib/hubspot/crm';
+import { listHubSpotContacts, getContactsFromList } from '@/lib/hubspot/crm';
 import { refreshHubSpotToken } from '@/lib/hubspot/oauth';
 
 export async function POST(request: NextRequest) {
@@ -13,6 +13,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Get optional listId from request body
+    const body = await request.json().catch(() => ({}));
+    const listId = body.listId;
+
     const { data: userData } = await supabase
       .from('users')
       .select('organization_id')
@@ -57,7 +61,10 @@ export async function POST(request: NextRequest) {
         .eq('id', connection.id);
     }
 
-    const contacts = await listHubSpotContacts(accessToken);
+    // Sync from specific list or all contacts with employee filter
+    const contacts = listId 
+      ? await getContactsFromList(accessToken, listId)
+      : await listHubSpotContacts(accessToken);
 
     const usersToUpsert = contacts.map((contact) => ({
       email: contact.email,
