@@ -18,6 +18,10 @@ import {
   Cloud,
   User as UserIcon,
   Lock,
+  FileSignature,
+  Copy,
+  Download,
+  X,
 } from 'lucide-react';
 import { useSubscription } from '@/hooks/use-subscription';
 
@@ -39,6 +43,19 @@ interface Connection {
   is_active: boolean;
 }
 
+interface Template {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+interface GeneratedSignature {
+  userId: string;
+  userName: string;
+  email: string;
+  html: string;
+}
+
 type SortField = 'name' | 'email' | 'department' | 'created_at';
 type SortOrder = 'asc' | 'desc';
 type SourceFilter = 'all' | 'manual' | 'synced';
@@ -50,6 +67,15 @@ export default function TeamMembersPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{ synced: number; errors: number } | null>(null);
   const { canAddTeamMember, plan, usage, limits } = useSubscription();
+  
+  // Signature sharing state
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [generatedSignatures, setGeneratedSignatures] = useState<GeneratedSignature[]>([]);
+  const [generating, setGenerating] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   
   // Search, sort, filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,6 +97,7 @@ export default function TeamMembersPage() {
 
   useEffect(() => {
     loadData();
+    loadTemplates();
   }, []);
 
   const loadData = async () => {
@@ -94,6 +121,100 @@ export default function TeamMembersPage() {
     if (connectionsData) setConnections(connectionsData);
 
     setLoading(false);
+  };
+
+  const loadTemplates = async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('signature_templates')
+      .select('id, name, description')
+      .order('name');
+    
+    if (data) setTemplates(data);
+  };
+
+  const toggleMemberSelection = (memberId: string) => {
+    const newSelection = new Set(selectedMembers);
+    if (newSelection.has(memberId)) {
+      newSelection.delete(memberId);
+    } else {
+      newSelection.add(memberId);
+    }
+    setSelectedMembers(newSelection);
+  };
+
+  const selectAllMembers = () => {
+    if (selectedMembers.size === filteredMembers.length) {
+      setSelectedMembers(new Set());
+    } else {
+      setSelectedMembers(new Set(filteredMembers.map(m => m.id)));
+    }
+  };
+
+  const generateSignatures = async () => {
+    if (!selectedTemplate || selectedMembers.size === 0) {
+      alert('Please select a template and at least one team member');
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const response = await fetch('/api/signatures/generate-for-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateId: selectedTemplate,
+          userIds: Array.from(selectedMembers),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate signatures');
+      }
+
+      setGeneratedSignatures(data.signatures);
+    } catch (err: any) {
+      alert(err.message || 'Failed to generate signatures');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const copySignature = async (html: string, userId: string) => {
+    try {
+      await navigator.clipboard.writeText(html);
+      setCopiedId(userId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      alert('Failed to copy to clipboard');
+    }
+  };
+
+  const downloadSignature = (html: string, userName: string) => {
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `signature-${userName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadAllSignatures = () => {
+    generatedSignatures.forEach(sig => {
+      downloadSignature(sig.html, sig.userName);
+    });
+  };
+
+  const closeShareModal = () => {
+    setShowShareModal(false);
+    setSelectedTemplate('');
+    setGeneratedSignatures([]);
+    setSelectedMembers(new Set());
   };
 
   const syncUsers = async () => {
@@ -337,7 +458,38 @@ export default function TeamMembersPage() {
                 {filteredMembers.length} of {members.length} member{members.length !== 1 ? 's' : ''}
               </CardDescription>
             </div>
+            {selectedMembers.size > 0 && (
+              <Button onClick={() => setShowShareModal(true)} variant="default">
+                <FileSignature className="mr-2 h-4 w-4" />
+                Share Signatures ({selectedMembers.size})
+              </Button>
+            )}
           </div>
+
+          {/* Bulk actions */}
+          {members.length > 0 && (
+            <div className="flex items-center gap-2 pb-2 border-b">
+              <input
+                type="checkbox"
+                checked={selectedMembers.size === filteredMembers.length && filteredMembers.length > 0}
+                onChange={selectAllMembers}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <span className="text-sm text-muted-foreground">
+                {selectedMembers.size > 0 ? `${selectedMembers.size} selected` : 'Select all'}
+              </span>
+              {selectedMembers.size > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedMembers(new Set())}
+                  className="ml-2"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          )}
 
           {/* Search and filters */}
           <div className="flex flex-wrap items-center gap-3 mt-4">
@@ -432,6 +584,13 @@ export default function TeamMembersPage() {
                   className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent transition-colors"
                 >
                   <div className="flex items-center gap-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedMembers.has(emp.id)}
+                      onChange={() => toggleMemberSelection(emp.id)}
+                      className="h-4 w-4 rounded border-gray-300"
+                      onClick={(e) => e.stopPropagation()}
+                    />
                     <Avatar 
                       alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
                       fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
@@ -563,6 +722,131 @@ export default function TeamMembersPage() {
               </>
             )}
           </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Share Signatures Modal */}
+      <Modal open={showShareModal} onClose={closeShareModal}>
+        <ModalHeader>
+          <ModalTitle>Share Signatures</ModalTitle>
+          <ModalDescription>
+            Generate personalized signatures for {selectedMembers.size} team member{selectedMembers.size !== 1 ? 's' : ''}
+          </ModalDescription>
+        </ModalHeader>
+        <div className="space-y-4 py-4">
+          {generatedSignatures.length === 0 ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="template">Select Template</Label>
+                <select
+                  id="template"
+                  value={selectedTemplate}
+                  onChange={(e) => setSelectedTemplate(e.target.value)}
+                  className="w-full text-sm border rounded-lg px-3 py-2 bg-background"
+                >
+                  <option value="">Choose a template...</option>
+                  {templates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="bg-muted rounded-lg p-3 text-sm">
+                <p className="font-medium mb-1">Selected Members:</p>
+                <ul className="list-disc list-inside text-muted-foreground">
+                  {Array.from(selectedMembers).slice(0, 5).map(id => {
+                    const member = members.find(m => m.id === id);
+                    return member ? (
+                      <li key={id}>
+                        {member.first_name && member.last_name 
+                          ? `${member.first_name} ${member.last_name}`
+                          : member.email}
+                      </li>
+                    ) : null;
+                  })}
+                  {selectedMembers.size > 5 && (
+                    <li className="text-xs">...and {selectedMembers.size - 5} more</li>
+                  )}
+                </ul>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium">
+                  {generatedSignatures.length} signature{generatedSignatures.length !== 1 ? 's' : ''} generated
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadAllSignatures}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download All
+                </Button>
+              </div>
+              <div className="max-h-96 overflow-y-auto space-y-3">
+                {generatedSignatures.map((sig) => (
+                  <div key={sig.userId} className="border rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <p className="font-medium text-sm">{sig.userName}</p>
+                        <p className="text-xs text-muted-foreground">{sig.email}</p>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copySignature(sig.html, sig.userId)}
+                        >
+                          {copiedId === sig.userId ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-green-600" />
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-4 w-4" />
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => downloadSignature(sig.html, sig.userName)}
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="bg-muted rounded p-2 text-xs max-h-32 overflow-auto">
+                      <div dangerouslySetInnerHTML={{ __html: sig.html }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <ModalFooter>
+          <Button variant="outline" onClick={closeShareModal}>
+            {generatedSignatures.length > 0 ? 'Done' : 'Cancel'}
+          </Button>
+          {generatedSignatures.length === 0 && (
+            <Button onClick={generateSignatures} disabled={generating || !selectedTemplate}>
+              {generating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <FileSignature className="mr-2 h-4 w-4" />
+                  Generate Signatures
+                </>
+              )}
+            </Button>
+          )}
         </ModalFooter>
       </Modal>
     </div>
