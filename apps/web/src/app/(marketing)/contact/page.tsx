@@ -18,8 +18,11 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, this would send to an API
-    console.log('Contact form submitted:', formData);
+    // Create mailto link with form data
+    const mailtoLink = `mailto:support@siggly.io?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company}\n\nMessage:\n${formData.message}`
+    )}`;
+    window.location.href = mailtoLink;
     setSubmitted(true);
   };
 

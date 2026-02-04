@@ -15,7 +15,7 @@ import { relations } from 'drizzle-orm';
 // ============================================
 
 export const userRoleEnum = pgEnum('user_role', ['owner', 'admin', 'member']);
-export const emailProviderEnum = pgEnum('email_provider', ['google', 'microsoft']);
+export const emailProviderEnum = pgEnum('email_provider', ['google', 'microsoft', 'hubspot']);
 export const deploymentStatusEnum = pgEnum('deployment_status', ['pending', 'in_progress', 'success', 'failed']);
 export const jobStatusEnum = pgEnum('job_status', ['pending', 'running', 'completed', 'failed', 'retrying']);
 export const subscriptionPlanEnum = pgEnum('subscription_plan', ['free', 'starter', 'professional', 'enterprise']);
