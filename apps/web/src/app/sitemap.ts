@@ -41,7 +41,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/for/marketing`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/for/small-business`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/for/agencies`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/for/enterprise`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/google-workspace`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/integrations/microsoft-365`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/use-cases`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
   ];
 
@@ -50,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/compare/exclaimer`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/compare/codetwo`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/compare/siggy`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/compare/wisestamp`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
   ];
 
   // Blog pages
@@ -71,6 +74,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Tool pages (for organic traffic)
   const toolPages: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/tools/signature-generator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/signature-templates`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/html-signature-converter`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+  ];
+
+  // Industry pages (high-value for niche SEO)
+  const industryPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/industries/legal`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/healthcare`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/finance`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/real-estate`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
   ];
 
   // Other pages
@@ -88,6 +101,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...comparisonPages,
     ...blogPages,
     ...toolPages,
+    ...industryPages,
     ...otherPages,
   ];
 }

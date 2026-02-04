@@ -141,7 +141,6 @@ export default function PrivacyPage() {
           </p>
           <ul>
             <li>Email: privacy@siggly.io</li>
-            <li>Address: [Your Business Address]</li>
           </ul>
         </div>
       </div>
