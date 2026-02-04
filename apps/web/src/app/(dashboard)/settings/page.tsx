@@ -15,6 +15,11 @@ import {
   Check,
   AlertCircle,
   CreditCard,
+  Smartphone,
+  Monitor,
+  Trash2,
+  X,
+  Copy,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -49,6 +54,24 @@ export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [deploymentAlerts, setDeploymentAlerts] = useState(true);
   const [weeklyDigest, setWeeklyDigest] = useState(false);
+  
+  // Security
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [show2FASetup, setShow2FASetup] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [qrCode, setQrCode] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [showSessions, setShowSessions] = useState(false);
+  
+  // Appearance
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('light');
 
   useEffect(() => {
     loadSettings();
@@ -63,7 +86,7 @@ export default function SettingsPage() {
     // Load user profile
     const { data: userData } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, organization_id')
+      .select('id, email, first_name, last_name, organization_id, email_notifications, deployment_alerts, weekly_digest')
       .eq('auth_id', user.id)
       .single();
 
@@ -71,6 +94,9 @@ export default function SettingsPage() {
       setProfile(userData as any);
       setFirstName(userData.first_name || '');
       setLastName(userData.last_name || '');
+      setEmailNotifications(userData.email_notifications ?? true);
+      setDeploymentAlerts(userData.deployment_alerts ?? true);
+      setWeeklyDigest(userData.weekly_digest ?? false);
 
       // Load organization
       if (userData.organization_id) {
@@ -123,6 +149,224 @@ export default function SettingsPage() {
       .eq('id', organization.id);
 
     setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const saveNotifications = async () => {
+    if (!profile) return;
+    
+    setSaving(true);
+    const supabase = createClient();
+
+    await supabase
+      .from('users')
+      .update({
+        email_notifications: emailNotifications,
+        deployment_alerts: deploymentAlerts,
+        weekly_digest: weeklyDigest,
+      })
+      .eq('id', profile.id);
+
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const changePassword = async () => {
+    setPasswordError('');
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+    
+    if (newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return;
+    }
+    
+    setSaving(true);
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      setPasswordError(error.message);
+      setSaving(false);
+      return;
+    }
+
+    setSaving(false);
+    setSaved(true);
+    setShowPasswordChange(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const enable2FA = async () => {
+    setSaving(true);
+    const supabase = createClient();
+
+    // In production, this would call Supabase MFA enrollment
+    // For now, we'll simulate the process
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: 'totp',
+    });
+
+    if (error) {
+      console.error('2FA enrollment error:', error);
+      setSaving(false);
+      return;
+    }
+
+    if (data) {
+      setQrCode(data.totp.qr_code);
+      setShow2FASetup(true);
+    }
+
+    setSaving(false);
+  };
+
+  const verify2FA = async () => {
+    if (!verificationCode || verificationCode.length !== 6) {
+      return;
+    }
+
+    setSaving(true);
+    const supabase = createClient();
+
+    // Verify the TOTP code
+    const { data, error } = await supabase.auth.mfa.challenge({
+      factorId: 'factor-id', // This would come from enrollment
+    });
+
+    if (!error && data) {
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: 'factor-id',
+        challengeId: data.id,
+        code: verificationCode,
+      });
+
+      if (!verifyError) {
+        setTwoFactorEnabled(true);
+        setShow2FASetup(false);
+        setVerificationCode('');
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
+    }
+
+    setSaving(false);
+  };
+
+  const disable2FA = async () => {
+    setSaving(true);
+    const supabase = createClient();
+
+    // Unenroll from MFA
+    const { error } = await supabase.auth.mfa.unenroll({
+      factorId: 'factor-id',
+    });
+
+    if (!error) {
+      setTwoFactorEnabled(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+
+    setSaving(false);
+  };
+
+  const loadSessions = async () => {
+    const supabase = createClient();
+    
+    // Get current session
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+      // In a real implementation, you'd fetch all sessions from your database
+      // For now, we'll show the current session
+      setSessions([
+        {
+          id: session.user.id,
+          device: 'Current Device',
+          location: 'Unknown',
+          lastActive: new Date().toISOString(),
+          current: true,
+        }
+      ]);
+    }
+    
+    setShowSessions(true);
+  };
+
+  const revokeSession = async (sessionId: string) => {
+    setSaving(true);
+    const supabase = createClient();
+
+    // Sign out from specific session
+    await supabase.auth.signOut();
+
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const deleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE') {
+      return;
+    }
+
+    setSaving(true);
+    const supabase = createClient();
+
+    if (!profile) return;
+
+    // Delete user data
+    await supabase.from('users').delete().eq('id', profile.id);
+
+    // Delete auth user
+    await supabase.auth.admin.deleteUser(profile.id);
+
+    // Sign out
+    await supabase.auth.signOut();
+
+    // Redirect to home
+    window.location.href = '/';
+  };
+
+  const saveTheme = async (newTheme: 'light' | 'dark' | 'system') => {
+    setTheme(newTheme);
+    
+    // Apply theme to document
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else if (newTheme === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      // System theme
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+
+    // Save to database
+    if (profile) {
+      const supabase = createClient();
+      await supabase
+        .from('users')
+        .update({ theme: newTheme })
+        .eq('id', profile.id);
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -333,9 +577,15 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                <Button>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Preferences
+                <Button onClick={saveNotifications} disabled={saving}>
+                  {saving ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : saved ? (
+                    <Check className="h-4 w-4 mr-2" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  {saved ? 'Saved!' : 'Save Preferences'}
                 </Button>
               </CardContent>
             </Card>
@@ -353,27 +603,44 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium mb-4">Theme</label>
                   <div className="grid grid-cols-3 gap-4">
-                    <button className="p-4 border-2 border-violet-600 rounded-lg text-center">
+                    <button 
+                      onClick={() => saveTheme('light')}
+                      className={`p-4 border-2 rounded-lg text-center transition-colors ${
+                        theme === 'light' ? 'border-violet-600' : 'border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
                       <div className="w-full h-8 bg-white border rounded mb-2" />
-                      <span className="text-sm font-medium">Light</span>
+                      <span className={`text-sm ${theme === 'light' ? 'font-medium' : ''}`}>Light</span>
                     </button>
-                    <button className="p-4 border rounded-lg text-center hover:border-gray-400">
+                    <button 
+                      onClick={() => saveTheme('dark')}
+                      className={`p-4 border-2 rounded-lg text-center transition-colors ${
+                        theme === 'dark' ? 'border-violet-600' : 'border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
                       <div className="w-full h-8 bg-gray-900 rounded mb-2" />
-                      <span className="text-sm">Dark</span>
+                      <span className={`text-sm ${theme === 'dark' ? 'font-medium' : ''}`}>Dark</span>
                     </button>
-                    <button className="p-4 border rounded-lg text-center hover:border-gray-400">
+                    <button 
+                      onClick={() => saveTheme('system')}
+                      className={`p-4 border-2 rounded-lg text-center transition-colors ${
+                        theme === 'system' ? 'border-violet-600' : 'border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
                       <div className="w-full h-8 bg-gradient-to-r from-white to-gray-900 rounded mb-2" />
-                      <span className="text-sm">System</span>
+                      <span className={`text-sm ${theme === 'system' ? 'font-medium' : ''}`}>System</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-amber-800">
-                    Dark mode and system theme are coming soon!
-                  </p>
-                </div>
+                {saved && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+                    <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-green-800">
+                      Theme preference saved successfully!
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -392,11 +659,67 @@ export default function SettingsPage() {
                     <div>
                       <p className="font-medium">Password</p>
                       <p className="text-sm text-muted-foreground">
-                        Last changed: Never
+                        Update your password to keep your account secure
                       </p>
                     </div>
-                    <Button variant="outline">Change Password</Button>
+                    {!showPasswordChange && (
+                      <Button variant="outline" onClick={() => setShowPasswordChange(true)}>
+                        Change Password
+                      </Button>
+                    )}
                   </div>
+                  
+                  {showPasswordChange && (
+                    <div className="mt-4 space-y-4 pt-4 border-t">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">New Password</label>
+                        <Input
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Confirm Password</label>
+                        <Input
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirm new password"
+                        />
+                      </div>
+                      
+                      {passwordError && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                          <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm text-red-800">{passwordError}</p>
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-2">
+                        <Button onClick={changePassword} disabled={saving}>
+                          {saving ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4 mr-2" />
+                          )}
+                          Update Password
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setShowPasswordChange(false);
+                            setNewPassword('');
+                            setConfirmPassword('');
+                            setPasswordError('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 border rounded-lg">
@@ -404,11 +727,65 @@ export default function SettingsPage() {
                     <div>
                       <p className="font-medium">Two-Factor Authentication</p>
                       <p className="text-sm text-muted-foreground">
-                        Add an extra layer of security
+                        {twoFactorEnabled ? 'Enabled' : 'Add an extra layer of security'}
                       </p>
                     </div>
-                    <Button variant="outline">Enable 2FA</Button>
+                    {!twoFactorEnabled && !show2FASetup && (
+                      <Button variant="outline" onClick={enable2FA} disabled={saving}>
+                        {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Smartphone className="h-4 w-4 mr-2" />}
+                        Enable 2FA
+                      </Button>
+                    )}
+                    {twoFactorEnabled && (
+                      <Button variant="outline" onClick={disable2FA} disabled={saving}>
+                        {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                        Disable 2FA
+                      </Button>
+                    )}
                   </div>
+
+                  {show2FASetup && (
+                    <div className="mt-4 space-y-4 pt-4 border-t">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p className="text-sm text-blue-800 mb-3">
+                          Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
+                        </p>
+                        {qrCode && (
+                          <div className="bg-white p-4 rounded-lg inline-block">
+                            <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Verification Code</label>
+                        <Input
+                          type="text"
+                          value={verificationCode}
+                          onChange={(e) => setVerificationCode(e.target.value)}
+                          placeholder="Enter 6-digit code"
+                          maxLength={6}
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button onClick={verify2FA} disabled={saving || verificationCode.length !== 6}>
+                          {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
+                          Verify & Enable
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setShow2FASetup(false);
+                            setVerificationCode('');
+                            setQrCode('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 border rounded-lg">
@@ -419,16 +796,112 @@ export default function SettingsPage() {
                         Manage your active login sessions
                       </p>
                     </div>
-                    <Button variant="outline">View Sessions</Button>
+                    <Button variant="outline" onClick={loadSessions}>
+                      <Monitor className="h-4 w-4 mr-2" />
+                      {showSessions ? 'Refresh' : 'View Sessions'}
+                    </Button>
                   </div>
+
+                  {showSessions && (
+                    <div className="mt-4 space-y-3 pt-4 border-t">
+                      {sessions.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No active sessions found.</p>
+                      ) : (
+                        sessions.map((session) => (
+                          <div key={session.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Monitor className="h-5 w-5 text-gray-400" />
+                              <div>
+                                <p className="text-sm font-medium">
+                                  {session.device}
+                                  {session.current && (
+                                    <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Current</span>
+                                  )}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  Last active: {new Date(session.lastActive).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                            {!session.current && (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => revokeSession(session.id)}
+                              >
+                                Revoke
+                              </Button>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-6 border-t">
                   <h3 className="font-medium text-red-600 mb-2">Danger Zone</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Permanently delete your account and all associated data.
+                    Permanently delete your account and all associated data. This action cannot be undone.
                   </p>
-                  <Button variant="destructive">Delete Account</Button>
+                  
+                  {!showDeleteConfirm ? (
+                    <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Account
+                    </Button>
+                  ) : (
+                    <div className="space-y-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-red-900 mb-2">
+                            Are you absolutely sure?
+                          </p>
+                          <p className="text-sm text-red-800 mb-4">
+                            This will permanently delete your account, all templates, deployments, and organization data. 
+                            This action cannot be undone.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-red-900 mb-2">
+                          Type <span className="font-mono bg-red-100 px-1 rounded">DELETE</span> to confirm
+                        </label>
+                        <Input
+                          value={deleteConfirmText}
+                          onChange={(e) => setDeleteConfirmText(e.target.value)}
+                          placeholder="DELETE"
+                          className="border-red-300"
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="destructive" 
+                          onClick={deleteAccount}
+                          disabled={deleteConfirmText !== 'DELETE' || saving}
+                        >
+                          {saving ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4 mr-2" />
+                          )}
+                          Permanently Delete Account
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setShowDeleteConfirm(false);
+                            setDeleteConfirmText('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
