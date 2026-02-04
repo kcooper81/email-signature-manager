@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { listHubSpotContacts, getContactsFromList } from '@/lib/hubspot/crm';
+import { getHubSpotLists } from '@/lib/hubspot/crm';
 import { refreshHubSpotToken } from '@/lib/hubspot/oauth';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -13,10 +13,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Get optional listId from request body
-    const body = await request.json().catch(() => ({}));
-    const listId = body.listId;
-
     const { data: userData } = await supabase
       .from('users')
       .select('organization_id')
@@ -61,53 +57,16 @@ export async function POST(request: NextRequest) {
         .eq('id', connection.id);
     }
 
-    // Sync from specific list or all contacts with employee filter
-    const contacts = listId 
-      ? await getContactsFromList(accessToken, listId)
-      : await listHubSpotContacts(accessToken);
-
-    const usersToUpsert = contacts.map((contact) => ({
-      email: contact.email,
-      first_name: contact.firstName,
-      last_name: contact.lastName,
-      title: contact.jobTitle,
-      department: contact.department,
-      phone: contact.phone,
-      mobile: contact.mobilePhone,
-      organization_id: userData.organization_id,
-      role: 'member' as const,
-    }));
-
-    const { data: upsertedUsers, error: upsertError } = await supabase
-      .from('users')
-      .upsert(usersToUpsert, {
-        onConflict: 'email,organization_id',
-        ignoreDuplicates: false,
-      })
-      .select();
-
-    if (upsertError) {
-      console.error('Failed to sync HubSpot contacts:', upsertError);
-      return NextResponse.json(
-        { error: 'Failed to sync contacts' },
-        { status: 500 }
-      );
-    }
+    const lists = await getHubSpotLists(accessToken);
 
     return NextResponse.json({
       success: true,
-      count: upsertedUsers?.length || 0,
-      total: contacts.length,
+      lists,
     });
   } catch (error: any) {
-    console.error('HubSpot sync error:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-    });
+    console.error('Failed to fetch HubSpot lists:', error);
     return NextResponse.json(
-      { error: error.message || 'Sync failed' },
+      { error: error.message || 'Failed to fetch lists' },
       { status: 500 }
     );
   }

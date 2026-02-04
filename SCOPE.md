@@ -130,10 +130,49 @@ email-signature-manager/
 - [x] Blog page (placeholder posts)
 - [x] Demo page with feature showcase
 
-### Phase 3 - Microsoft 365
-- [ ] Microsoft Graph API integration
-- [ ] Outlook signature deployment
-- [ ] Azure AD user sync
+### Phase 3 - Microsoft 365 (Outlook Web) ✅ COMPLETE
+- [x] Microsoft Graph API OAuth integration
+- [x] Azure AD user sync (import employees from directory)
+- [x] Outlook Web signature deployment via Graph API
+- [x] Token refresh and connection management
+- **Note**: Fully functional OAuth flow, user sync from Azure AD, and token management.
+- **Limitation**: This phase only covers Outlook Web. Desktop requires Phase 3.5.
+- **Known Issue**: Microsoft Graph API doesn't support direct signature deployment. Signatures must be set via mailboxSettings endpoint which has limitations.
+
+### Phase 3.5 - Outlook Desktop Support (Advanced)
+**Option A: Outlook Web Add-in (Recommended)** 🎯
+- [ ] Build Microsoft Office Add-in using Office.js
+- [ ] Add-in manifest configuration for Outlook
+- [ ] Client-side signature insertion on email compose
+- [ ] Real-time signature preview in Outlook desktop
+- [ ] Centralized deployment via Microsoft 365 admin center
+- [ ] Support for Outlook for Windows, Mac, Web, and Mobile
+- [ ] Add-in authentication and API communication
+- [ ] Signature caching and offline support
+
+**Technical Requirements:**
+- Microsoft 365 admin center access for deployment
+- Office Add-in development (JavaScript/TypeScript)
+- Office.js API integration
+- Signature storage in user's mailbox or cloud service
+- Works across all Outlook clients (desktop, web, mobile)
+
+**Benefits:**
+- ✅ User sees signature while composing (real-time preview)
+- ✅ Works on all platforms (Windows, Mac, web, mobile)
+- ✅ Better placement in replies/forwards
+- ✅ No Exchange transport rules needed
+- ✅ Industry-standard approach (used by Exclaimer, CodeTwo)
+
+**Challenges:**
+- More complex to build than API-only solution
+- Requires Microsoft partnership/certification for production
+- Add-in must be deployed by tenant admin
+- Development and testing requires Microsoft 365 developer tenant
+
+**Alternative Options (Not Recommended):**
+- Option B: Exchange Transport Rules (server-side, no preview, poor placement)
+- Option C: PowerShell scripts + Group Policy (Windows-only, high maintenance)
 
 ### Phase 4 - Billing & Pay Gates ✅ COMPLETE
 - [x] Stripe billing integration (checkout, portal, webhooks)
