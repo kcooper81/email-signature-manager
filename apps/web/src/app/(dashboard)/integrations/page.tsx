@@ -32,6 +32,9 @@ export default function IntegrationsPage() {
   const [connections, setConnections] = useState<ProviderConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState<string | null>(null);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -65,6 +68,90 @@ export default function IntegrationsPage() {
   const connectHubSpot = () => {
     setConnecting('hubspot');
     window.location.href = '/api/integrations/hubspot/connect';
+  };
+
+  const syncGoogle = async () => {
+    setSyncing('google');
+    setSyncError(null);
+    setSyncSuccess(null);
+    
+    try {
+      const response = await fetch('/api/integrations/google/sync', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to sync users');
+      }
+      
+      const data = await response.json();
+      setSyncSuccess(`Synced ${data.count || 0} users from Google Workspace`);
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (err) {
+      setSyncError('Failed to sync Google Workspace users. Please try again.');
+      console.error('Google sync error:', err);
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  const syncMicrosoft = async () => {
+    setSyncing('microsoft');
+    setSyncError(null);
+    setSyncSuccess(null);
+    
+    try {
+      const response = await fetch('/api/integrations/microsoft/sync', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to sync users');
+      }
+      
+      const data = await response.json();
+      setSyncSuccess(`Synced ${data.count || 0} users from Microsoft 365`);
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (err) {
+      setSyncError('Failed to sync Microsoft 365 users. Please try again.');
+      console.error('Microsoft sync error:', err);
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  const syncHubSpot = async () => {
+    setSyncing('hubspot');
+    setSyncError(null);
+    setSyncSuccess(null);
+    
+    try {
+      const response = await fetch('/api/integrations/hubspot/sync', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to sync contacts');
+      }
+      
+      const data = await response.json();
+      setSyncSuccess(`Synced ${data.count || 0} contacts from HubSpot`);
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (err) {
+      setSyncError('Failed to sync HubSpot contacts. Please try again.');
+      console.error('HubSpot sync error:', err);
+    } finally {
+      setSyncing(null);
+    }
   };
 
   const disconnectProvider = async (provider: string) => {
@@ -113,6 +200,20 @@ export default function IntegrationsPage() {
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-green-600" />
           <p className="text-green-800">HubSpot CRM connected successfully!</p>
+        </div>
+      )}
+
+      {syncSuccess && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-green-600" />
+          <p className="text-green-800">{syncSuccess}</p>
+        </div>
+      )}
+
+      {syncError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+          <XCircle className="h-5 w-5 text-red-600" />
+          <p className="text-red-800">{syncError}</p>
         </div>
       )}
 
@@ -178,6 +279,21 @@ export default function IntegrationsPage() {
                   Connected on {new Date(googleConnection.created_at).toLocaleDateString()}
                 </div>
                 <div className="flex gap-2">
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={syncGoogle}
+                    disabled={syncing === 'google'}
+                  >
+                    {syncing === 'google' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Syncing...
+                      </>
+                    ) : (
+                      'Sync Users'
+                    )}
+                  </Button>
                   <Button variant="outline" size="sm" onClick={connectGoogle}>
                     Reconnect
                   </Button>
@@ -246,6 +362,21 @@ export default function IntegrationsPage() {
                   Connected on {new Date(microsoftConnection.created_at).toLocaleDateString()}
                 </div>
                 <div className="flex gap-2">
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={syncMicrosoft}
+                    disabled={syncing === 'microsoft'}
+                  >
+                    {syncing === 'microsoft' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Syncing...
+                      </>
+                    ) : (
+                      'Sync Users'
+                    )}
+                  </Button>
                   <Button variant="outline" size="sm" onClick={connectMicrosoft}>
                     Reconnect
                   </Button>
@@ -311,6 +442,21 @@ export default function IntegrationsPage() {
                   Connected on {new Date(hubspotConnection.created_at).toLocaleDateString()}
                 </div>
                 <div className="flex gap-2">
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={syncHubSpot}
+                    disabled={syncing === 'hubspot'}
+                  >
+                    {syncing === 'hubspot' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Syncing...
+                      </>
+                    ) : (
+                      'Sync Contacts'
+                    )}
+                  </Button>
                   <Button variant="outline" size="sm" onClick={connectHubSpot}>
                     Reconnect
                   </Button>
