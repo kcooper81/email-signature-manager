@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { listHubSpotContacts } from '@/lib/hubspot/crm';
-import { refreshHubSpotToken } from '@/lib/hubspot/oauth';
+import { listWorkspaceUsers } from '@/lib/google/gmail';
+import { createAuthenticatedClient } from '@/lib/google/oauth';
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   try {
     const { data: userData } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, email')
       .eq('auth_id', user.id)
       .single();
 
@@ -30,43 +30,59 @@ export async function POST(request: NextRequest) {
       .from('provider_connections')
       .select('*')
       .eq('organization_id', userData.organization_id)
-      .eq('provider', 'hubspot')
+      .eq('provider', 'google')
       .single();
 
     if (!connection) {
       return NextResponse.json(
-        { error: 'HubSpot not connected' },
+        { error: 'Google Workspace not connected' },
         { status: 404 }
       );
     }
 
-    let accessToken = connection.access_token;
-    const expiresAt = new Date(connection.token_expires_at);
+    // Extract domain from user's email
+    const domain = userData.email.split('@')[1];
+    if (!domain) {
+      return NextResponse.json(
+        { error: 'Could not determine workspace domain' },
+        { status: 400 }
+      );
+    }
 
-    if (expiresAt < new Date()) {
-      const tokens = await refreshHubSpotToken(connection.refresh_token);
-      accessToken = tokens.access_token;
+    // Check if token is expired and refresh if needed
+    let accessToken = connection.access_token;
+    const expiresAt = connection.token_expires_at ? new Date(connection.token_expires_at) : null;
+
+    if (expiresAt && expiresAt < new Date()) {
+      const auth = createAuthenticatedClient(connection.access_token, connection.refresh_token);
+      const { credentials } = await auth.refreshAccessToken();
+      
+      accessToken = credentials.access_token!;
 
       await supabase
         .from('provider_connections')
         .update({
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token,
-          token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
+          access_token: credentials.access_token,
+          refresh_token: credentials.refresh_token || connection.refresh_token,
+          token_expires_at: credentials.expiry_date 
+            ? new Date(credentials.expiry_date).toISOString() 
+            : null,
         })
         .eq('id', connection.id);
     }
 
-    const contacts = await listHubSpotContacts(accessToken);
+    const workspaceUsers = await listWorkspaceUsers(
+      accessToken,
+      connection.refresh_token,
+      domain
+    );
 
-    const usersToUpsert = contacts.map((contact) => ({
-      email: contact.email,
-      first_name: contact.firstName,
-      last_name: contact.lastName,
-      title: contact.jobTitle,
-      department: contact.department,
-      phone: contact.phone,
-      mobile: contact.mobilePhone,
+    const usersToUpsert = workspaceUsers.map((workspaceUser) => ({
+      email: workspaceUser.email,
+      first_name: workspaceUser.name.split(' ')[0] || workspaceUser.name,
+      last_name: workspaceUser.name.split(' ').slice(1).join(' ') || undefined,
+      title: workspaceUser.title,
+      department: workspaceUser.department,
       organization_id: userData.organization_id,
       role: 'member' as const,
     }));
@@ -80,9 +96,9 @@ export async function POST(request: NextRequest) {
       .select();
 
     if (upsertError) {
-      console.error('Failed to sync HubSpot contacts:', upsertError);
+      console.error('Failed to sync Google Workspace users:', upsertError);
       return NextResponse.json(
-        { error: 'Failed to sync contacts' },
+        { error: 'Failed to sync users' },
         { status: 500 }
       );
     }
@@ -90,10 +106,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       count: upsertedUsers?.length || 0,
-      total: contacts.length,
+      total: workspaceUsers.length,
     });
   } catch (error: any) {
-    console.error('HubSpot sync error:', error);
+    console.error('Google sync error:', error);
     console.error('Error details:', {
       message: error.message,
       stack: error.stack,

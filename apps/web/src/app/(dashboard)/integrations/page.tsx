@@ -228,6 +228,7 @@ export default function IntegrationsPage() {
                 {error === 'state_expired' && 'Session timed out'}
                 {error === 'callback_failed' && 'Connection failed'}
                 {error === 'access_not_configured' && 'Workspace admin approval required'}
+                {error === 'microsoft_not_implemented' && 'Microsoft 365 Coming Soon'}
               </p>
               <p className="text-sm text-amber-700 mt-1">
                 {error === 'oauth_denied' && 'You declined the permission request. Click "Connect Google Workspace" to try again.'}
@@ -235,6 +236,7 @@ export default function IntegrationsPage() {
                 {error === 'state_expired' && 'The authorization took too long. This can happen if you needed to get admin approval first. Simply click "Connect Google Workspace" below to continue.'}
                 {error === 'callback_failed' && 'Something went wrong saving your connection. Please try again.'}
                 {error === 'access_not_configured' && 'Your Google Workspace admin needs to approve this app before you can connect. Contact your admin or check the Google Workspace Admin Console.'}
+                {error === 'microsoft_not_implemented' && 'Microsoft 365 integration is currently under development. Please use Google Workspace or HubSpot CRM for now.'}
               </p>
             </div>
           </div>
