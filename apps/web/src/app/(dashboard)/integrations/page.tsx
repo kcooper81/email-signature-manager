@@ -27,6 +27,13 @@ interface ProviderConnection {
   token_expires_at: string | null;
 }
 
+interface HubSpotList {
+  id: string;
+  name: string;
+  listType: 'STATIC' | 'DYNAMIC';
+  size: number;
+}
+
 export default function IntegrationsPage() {
   const searchParams = useSearchParams();
   const [connections, setConnections] = useState<ProviderConnection[]>([]);
@@ -35,6 +42,9 @@ export default function IntegrationsPage() {
   const [syncing, setSyncing] = useState<string | null>(null);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [syncSuccess, setSyncSuccess] = useState<string | null>(null);
+  const [hubspotLists, setHubspotLists] = useState<HubSpotList[]>([]);
+  const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  const [loadingLists, setLoadingLists] = useState(false);
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -126,6 +136,21 @@ export default function IntegrationsPage() {
     }
   };
 
+  const loadHubSpotLists = async () => {
+    setLoadingLists(true);
+    try {
+      const response = await fetch('/api/integrations/hubspot/lists');
+      if (response.ok) {
+        const data = await response.json();
+        setHubspotLists(data.lists || []);
+      }
+    } catch (err) {
+      console.error('Failed to load HubSpot lists:', err);
+    } finally {
+      setLoadingLists(false);
+    }
+  };
+
   const syncHubSpot = async () => {
     setSyncing('hubspot');
     setSyncError(null);
@@ -134,6 +159,10 @@ export default function IntegrationsPage() {
     try {
       const response = await fetch('/api/integrations/hubspot/sync', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ listId: selectedListId }),
       });
       
       if (!response.ok) {
@@ -228,15 +257,19 @@ export default function IntegrationsPage() {
                 {error === 'state_expired' && 'Session timed out'}
                 {error === 'callback_failed' && 'Connection failed'}
                 {error === 'access_not_configured' && 'Workspace admin approval required'}
-                {error === 'microsoft_not_implemented' && 'Microsoft 365 Coming Soon'}
+                {error === 'no_organization' && 'Organization not found'}
+                {error === 'storage_failed' && 'Failed to save connection'}
+                {error === 'oauth_failed' && 'OAuth failed'}
               </p>
               <p className="text-sm text-amber-700 mt-1">
-                {error === 'oauth_denied' && 'You declined the permission request. Click "Connect Google Workspace" to try again.'}
+                {error === 'oauth_denied' && 'You declined the permission request. Please try connecting again.'}
                 {error === 'missing_params' && 'The callback was missing required parameters. Please try connecting again.'}
-                {error === 'state_expired' && 'The authorization took too long. This can happen if you needed to get admin approval first. Simply click "Connect Google Workspace" below to continue.'}
+                {error === 'state_expired' && 'The authorization took too long. This can happen if you needed to get admin approval first. Simply try connecting again.'}
                 {error === 'callback_failed' && 'Something went wrong saving your connection. Please try again.'}
-                {error === 'access_not_configured' && 'Your Google Workspace admin needs to approve this app before you can connect. Contact your admin or check the Google Workspace Admin Console.'}
-                {error === 'microsoft_not_implemented' && 'Microsoft 365 integration is currently under development. Please use Google Workspace or HubSpot CRM for now.'}
+                {error === 'access_not_configured' && 'Your admin needs to approve this app before you can connect. Contact your admin or check the admin console.'}
+                {error === 'no_organization' && 'Your account is not associated with an organization. Please contact support.'}
+                {error === 'storage_failed' && 'Failed to store the connection in the database. Please try again.'}
+                {error === 'oauth_failed' && 'The OAuth flow failed. Please try again or contact support if the issue persists.'}
               </p>
             </div>
           </div>
@@ -437,12 +470,63 @@ export default function IntegrationsPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Connect your HubSpot CRM to automatically sync contact data and populate signature fields with employee information.
             </p>
+
+            {!hubspotConnection?.is_active && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-sm font-medium text-blue-900 mb-2">Recommended Setup:</p>
+                <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                  <li>Create a list in HubSpot called "Employees"</li>
+                  <li>Add all employee contacts to this list</li>
+                  <li>After connecting, select the list to sync from</li>
+                </ol>
+                <p className="text-xs text-blue-700 mt-2">
+                  <strong>Note:</strong> HubSpot typically contains customers/leads. We recommend using Google Workspace or Microsoft 365 for employee management.
+                </p>
+              </div>
+            )}
             
             {hubspotConnection?.is_active ? (
               <div className="space-y-3">
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(hubspotConnection.created_at).toLocaleDateString()}
                 </div>
+
+                {hubspotLists.length === 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={loadHubSpotLists}
+                    disabled={loadingLists}
+                  >
+                    {loadingLists ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading Lists...
+                      </>
+                    ) : (
+                      'Load HubSpot Lists'
+                    )}
+                  </Button>
+                )}
+
+                {hubspotLists.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Select Employee List:</label>
+                    <select
+                      className="w-full px-3 py-2 border rounded-md text-sm"
+                      value={selectedListId || ''}
+                      onChange={(e) => setSelectedListId(e.target.value || null)}
+                    >
+                      <option value="">All Contacts (with employee filter)</option>
+                      {hubspotLists.map((list) => (
+                        <option key={list.id} value={list.id}>
+                          {list.name} ({list.size} contacts)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 <div className="flex gap-2">
                   <Button 
                     variant="default" 
