@@ -20,6 +20,7 @@ export const deploymentStatusEnum = pgEnum('deployment_status', ['pending', 'in_
 export const jobStatusEnum = pgEnum('job_status', ['pending', 'running', 'completed', 'failed', 'retrying']);
 export const subscriptionPlanEnum = pgEnum('subscription_plan', ['free', 'starter', 'professional', 'enterprise']);
 export const subscriptionStatusEnum = pgEnum('subscription_status', ['active', 'past_due', 'canceled', 'trialing']);
+export const industryTypeEnum = pgEnum('industry_type', ['general', 'legal', 'healthcare', 'finance', 'real_estate']);
 
 // ============================================
 // Organizations
@@ -31,6 +32,7 @@ export const organizations = pgTable('organizations', {
   slug: text('slug').notNull().unique(),
   domain: text('domain'),
   logoUrl: text('logo_url'),
+  industry: industryTypeEnum('industry').default('general'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -82,6 +84,8 @@ export const signatureTemplates = pgTable('signature_templates', {
   description: text('description'),
   organizationId: uuid('organization_id').references(() => organizations.id).notNull(),
   blocks: jsonb('blocks').notNull().$type<unknown[]>(),
+  industry: industryTypeEnum('industry').default('general'),
+  complianceFields: jsonb('compliance_fields'),
   isDefault: boolean('is_default').default(false).notNull(),
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
