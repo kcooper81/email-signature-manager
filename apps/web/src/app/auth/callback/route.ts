@@ -6,8 +6,21 @@ export async function GET(request: Request) {
   const code = searchParams.get('code');
   const next = searchParams.get('next') ?? '/dashboard';
   
-  // Use environment variable to ensure correct redirect in production
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  // Get base URL - use VERCEL_URL in production or custom domain
+  const getBaseUrl = () => {
+    // If NEXT_PUBLIC_APP_URL is set, use it
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      return process.env.NEXT_PUBLIC_APP_URL;
+    }
+    // In Vercel production, use VERCEL_URL
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}`;
+    }
+    // Fallback to localhost for development
+    return 'http://localhost:3000';
+  };
+  
+  const baseUrl = getBaseUrl();
 
   if (code) {
     const supabase = createClient();
