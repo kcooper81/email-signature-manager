@@ -263,3 +263,16 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
     references: [organizations.id],
   }),
 }));
+
+// ============================================
+// Email Subscribers (Newsletter/Marketing)
+// ============================================
+
+export const emailSubscribers = pgTable('email_subscribers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: text('email').notNull().unique(),
+  source: text('source'), // 'blog', 'tool', 'homepage', etc.
+  subscribedAt: timestamp('subscribed_at').defaultNow().notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  metadata: jsonb('metadata'), // Store additional context (page URL, referrer, etc.)
+});

@@ -75,18 +75,6 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-cyan-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">Office</h3>
-                    <p className="text-gray-600 text-sm">
-                      123 Business Street<br />
-                      San Francisco, CA 94102
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 

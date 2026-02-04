@@ -183,10 +183,6 @@ export default function HomePage() {
                               <div className="w-4 h-4 rounded bg-cyan-300" />
                               Contact Info
                             </div>
-                            <div className="p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-600 flex items-center gap-2">
-                              <div className="w-4 h-4 rounded bg-gray-300" />
-                              Social Links
-                            </div>
                           </div>
                         </div>
                         {/* Signature preview */}
@@ -198,13 +194,9 @@ export default function HomePage() {
                                 <div className="font-semibold text-gray-900 text-sm">John Doe</div>
                                 <div className="text-xs text-gray-600">Marketing Director</div>
                                 <div className="text-xs text-blue-600">john@company.com</div>
-                                <div className="text-xs text-gray-500">+1 (555) 123-4567</div>
                               </div>
                             </div>
                             <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-3">
-                              <div className="w-5 h-5 rounded bg-blue-500" />
-                              <div className="w-5 h-5 rounded bg-sky-400" />
-                              <div className="w-5 h-5 rounded bg-pink-500" />
                               <div className="flex-1" />
                               <div className="h-6 w-16 rounded bg-gradient-to-r from-violet-500 to-blue-500" />
                             </div>
@@ -309,21 +301,21 @@ export default function HomePage() {
               quote="Siggly saved us 10+ hours per month on signature management. The deployment is instant and our branding is finally consistent."
               author="Sarah Chen"
               role="Marketing Director"
-              company="TechFlow Inc"
+              company="Acme Digital Corp"
               rating={5}
             />
             <ReviewCard
               quote="We switched from Exclaimer and couldn't be happier. Setup took 2 minutes instead of 2 days. The UI is beautiful."
               author="Michael Torres"
               role="IT Manager"
-              company="GrowthLabs"
+              company="Example Tech Solutions"
               rating={5}
             />
             <ReviewCard
               quote="The analytics feature is a game-changer. We can finally track which signature CTAs drive the most engagement."
               author="Emily Watson"
               role="Head of Operations"
-              company="ScaleUp Co"
+              company="Demo Industries LLC"
               rating={5}
             />
           </div>
@@ -354,103 +346,102 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Problem/Solution Section - Redesigned */}
-      <section className="py-24 bg-white">
+      {/* Problem/Solution Section */}
+      <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Managing email signatures shouldn&apos;t be this hard
             </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              IT teams waste hours chasing employees to update signatures. Marketing loses control of brand consistency. 
-              Sound familiar?
+            <p className="text-lg text-gray-600">
+              Stop wasting time on manual updates. Deploy consistent signatures to your entire team in seconds.
             </p>
           </div>
           
-          {/* Comparison Table Style */}
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-0 rounded-2xl overflow-hidden border border-gray-200 shadow-lg">
-              {/* Without Siggly */}
-              <div className="bg-gradient-to-br from-red-50 via-orange-50 to-red-50 p-8 md:p-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Problems */}
+              <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
+                  <div className="h-12 w-12 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <AlertTriangle className="h-6 w-6 text-gray-600" />
                   </div>
-                  <div>
-                    <div className="text-red-600 font-bold text-lg">Without Siggly</div>
-                    <div className="text-red-500 text-sm">The old way</div>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">The Problem</h3>
                 </div>
-                <div className="space-y-5">
-                  <ComparisonItem 
-                    title="Manual updates" 
-                    description="Chase every employee to update their signature manually"
-                    negative
-                  />
-                  <ComparisonItem 
-                    title="Brand chaos" 
-                    description="Different fonts, colors, and formats across the org"
-                    negative
-                  />
-                  <ComparisonItem 
-                    title="IT burden" 
-                    description="Hours wasted on support tickets and troubleshooting"
-                    negative
-                  />
-                  <ComparisonItem 
-                    title="No compliance" 
-                    description="Impossible to enforce legal disclaimers consistently"
-                    negative
-                  />
-                  <ComparisonItem 
-                    title="Outdated info" 
-                    description="Employees leave, titles change, signatures stay wrong"
-                    negative
-                  />
-                </div>
-                <div className="mt-8 pt-6 border-t border-red-200">
-                  <div className="text-red-600 font-semibold text-sm">Average time spent:</div>
-                  <div className="text-red-700 text-2xl font-bold">10+ hours/month</div>
-                </div>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <X className="h-4 w-4 text-gray-500" />
+                    </div>
+                    <span className="text-gray-700">Manual updates require chasing employees</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <X className="h-4 w-4 text-gray-500" />
+                    </div>
+                    <span className="text-gray-700">Inconsistent branding across the organization</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <X className="h-4 w-4 text-gray-500" />
+                    </div>
+                    <span className="text-gray-700">IT teams waste hours on support tickets</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <X className="h-4 w-4 text-gray-500" />
+                    </div>
+                    <span className="text-gray-700">Can't enforce compliance or legal disclaimers</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <X className="h-4 w-4 text-gray-500" />
+                    </div>
+                    <span className="text-gray-700">Outdated information stays in signatures</span>
+                  </li>
+                </ul>
               </div>
               
-              {/* With Siggly */}
-              <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 p-8 md:p-10 border-l border-gray-200">
+              {/* Solution */}
+              <div className="bg-gradient-to-br from-violet-50 to-blue-50 rounded-2xl p-8 border-2 border-violet-200 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <Zap className="h-5 w-5 text-green-500" />
+                  <div className="h-12 w-12 rounded-xl bg-violet-100 flex items-center justify-center">
+                    <Zap className="h-6 w-6 text-violet-600" />
                   </div>
-                  <div>
-                    <div className="text-green-600 font-bold text-lg">With Siggly</div>
-                    <div className="text-green-500 text-sm">The modern way</div>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-900">The Solution</h3>
                 </div>
-                <div className="space-y-5">
-                  <ComparisonItem 
-                    title="One-click deploy" 
-                    description="Push signatures to everyone instantly, no user action needed"
-                  />
-                  <ComparisonItem 
-                    title="Perfect branding" 
-                    description="Every signature matches your brand guidelines exactly"
-                  />
-                  <ComparisonItem 
-                    title="Zero IT overhead" 
-                    description="Set it once, forget it. Marketing can self-serve"
-                  />
-                  <ComparisonItem 
-                    title="Auto compliance" 
-                    description="Legal disclaimers applied automatically by region"
-                  />
-                  <ComparisonItem 
-                    title="Always current" 
-                    description="Syncs with your directory, updates happen automatically"
-                  />
-                </div>
-                <div className="mt-8 pt-6 border-t border-green-200">
-                  <div className="text-green-600 font-semibold text-sm">Average time spent:</div>
-                  <div className="text-green-700 text-2xl font-bold">60 seconds setup</div>
-                </div>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">One-click deploy to everyone instantly</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">100% consistent branding across all signatures</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Zero IT overhead, marketing can self-serve</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Automatic compliance and disclaimers by region</span>
+                  </li>
+                  <li className="flex items-start gap-3 group">
+                    <div className="h-6 w-6 rounded-full bg-violet-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-violet-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Always current with directory sync</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
