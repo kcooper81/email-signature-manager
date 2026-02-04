@@ -157,7 +157,6 @@ export default function TermsPage() {
           </p>
           <ul>
             <li>Email: legal@siggly.io</li>
-            <li>Address: [Your Business Address]</li>
           </ul>
         </div>
       </div>

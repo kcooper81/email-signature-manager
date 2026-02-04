@@ -3,18 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, ArrowRight, Download, Copy, Check, Linkedin, Twitter, Facebook, Instagram, Globe, Phone, MapPin } from 'lucide-react';
+import { Mail, ArrowRight, Download, Copy, Check, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const socialIcons: Record<string, React.ElementType> = {
-  linkedin: Linkedin,
-  twitter: Twitter,
-  facebook: Facebook,
-  instagram: Instagram,
-  website: Globe,
-};
 
 const templates = [
   { id: 'modern', name: 'Modern', color: 'violet' },
@@ -31,11 +24,7 @@ export default function SignatureGeneratorPage() {
     jobTitle: 'Marketing Director',
     company: 'Acme Inc.',
     email: 'john@acme.com',
-    phone: '+1 (555) 123-4567',
     website: 'www.acme.com',
-    linkedin: 'linkedin.com/in/johnsmith',
-    twitter: '',
-    address: '123 Business Ave, New York, NY',
   });
 
   const handleChange = (field: string, value: string) => {
@@ -72,10 +61,8 @@ export default function SignatureGeneratorPage() {
       <div style="font-weight: 500;">${formData.company}</div>
       <div style="margin-top: 8px; font-size: 13px;">
         ${formData.email ? `<div>✉️ ${formData.email}</div>` : ''}
-        ${formData.phone ? `<div>📞 ${formData.phone}</div>` : ''}
         ${formData.website ? `<div>🌐 ${formData.website}</div>` : ''}
       </div>
-      ${formData.linkedin ? `<div style="margin-top: 8px;"><a href="https://${formData.linkedin}" style="color: ${c.primary};">LinkedIn</a></div>` : ''}
     </td>
   </tr>
 </table>
@@ -118,23 +105,13 @@ export default function SignatureGeneratorPage() {
                     <Label htmlFor="company">Company</Label>
                     <Input id="company" value={formData.company} onChange={(e) => handleChange('company', e.target.value)} />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} />
-                    </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} />
                   </div>
                   <div>
                     <Label htmlFor="website">Website</Label>
                     <Input id="website" value={formData.website} onChange={(e) => handleChange('website', e.target.value)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="linkedin">LinkedIn URL</Label>
-                    <Input id="linkedin" value={formData.linkedin} onChange={(e) => handleChange('linkedin', e.target.value)} />
                   </div>
                 </div>
               </div>
@@ -183,16 +160,8 @@ export default function SignatureGeneratorPage() {
                         <div className="font-medium text-gray-700">{formData.company}</div>
                         <div className="mt-2 text-sm text-gray-600 space-y-1">
                           {formData.email && <div className="flex items-center gap-2"><Mail className="h-3 w-3" /> {formData.email}</div>}
-                          {formData.phone && <div className="flex items-center gap-2"><Phone className="h-3 w-3" /> {formData.phone}</div>}
                           {formData.website && <div className="flex items-center gap-2"><Globe className="h-3 w-3" /> {formData.website}</div>}
                         </div>
-                        {formData.linkedin && (
-                          <div className="mt-2">
-                            <a href="#" className="text-sm" style={{ color: selectedTemplate === 'modern' ? '#7c3aed' : selectedTemplate === 'bold' ? '#2563eb' : selectedTemplate === 'minimal' ? '#64748b' : '#374151' }}>
-                              LinkedIn Profile →
-                            </a>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>

@@ -38,8 +38,8 @@ export default function GoogleWorkspacePage() {
                     Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/demo">
-                  <Button size="lg" variant="outline">Watch Demo</Button>
+                <Link href="/pricing">
+                  <Button size="lg" variant="outline">View Pricing</Button>
                 </Link>
               </div>
             </div>
