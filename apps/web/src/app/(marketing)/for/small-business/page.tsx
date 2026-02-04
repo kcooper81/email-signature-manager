@@ -108,7 +108,7 @@ export default function SmallBusinessPage() {
                 </Link>
               </div>
               <p className="text-sm text-gray-500 mt-4">
-                ✓ Free for up to 5 team members &nbsp; ✓ Setup in 5 minutes
+                Free for up to 5 team members • Setup in 5 minutes
               </p>
             </div>
             <div className="relative">

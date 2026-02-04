@@ -145,9 +145,6 @@ export default function FeaturesPage() {
             <Link href="/signup">
               <Button size="lg">Start Free Trial</Button>
             </Link>
-            <Link href="/demo">
-              <Button size="lg" variant="outline">Watch Demo</Button>
-            </Link>
           </div>
         </div>
       </section>

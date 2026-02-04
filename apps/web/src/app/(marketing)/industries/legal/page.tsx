@@ -99,7 +99,7 @@ export default function LegalIndustryPage() {
                 </Link>
               </div>
               <p className="text-sm text-slate-400 mt-4">
-                ✓ Bar-compliant disclaimers &nbsp; ✓ Audit trails &nbsp; ✓ Secure deployment
+                Bar-compliant disclaimers • Audit trails • Secure deployment
               </p>
             </div>
             <div className="relative">

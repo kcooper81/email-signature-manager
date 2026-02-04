@@ -96,8 +96,6 @@ export default function MarketingPage() {
         description="Your team sends thousands of emails every day. Each one is a chance to promote your brand, drive traffic, and generate leads—for free."
         primaryButtonText="Start Free Trial"
         primaryButtonHref="/signup"
-        secondaryButtonText="See Demo"
-        secondaryButtonHref="/demo"
         image={{
           src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
           alt: 'Marketing team collaboration',

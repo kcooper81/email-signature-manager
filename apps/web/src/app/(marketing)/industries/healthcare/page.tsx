@@ -88,7 +88,7 @@ export default function HealthcareIndustryPage() {
                 </Link>
               </div>
               <p className="text-sm text-blue-200 mt-4">
-                ✓ HIPAA Compliant &nbsp; ✓ BAA Available &nbsp; ✓ Encrypted Deployment
+                HIPAA Compliant • BAA Available • Encrypted Deployment
               </p>
             </div>
             <div className="relative">
