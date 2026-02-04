@@ -58,9 +58,9 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
   const clientInfo = CLIENT_INFO[selectedClient];
 
   return (
-    <div className={cn('bg-white', className)}>
+    <div className={cn('bg-card', className)}>
       {/* Client Tabs */}
-      <div className="flex items-center gap-1 p-2 bg-gray-100 rounded-t-lg">
+      <div className="flex items-center gap-1 p-2 bg-muted rounded-t-lg">
         {(Object.keys(CLIENT_INFO) as EmailClient[]).map((client) => (
           <button
             key={client}
@@ -68,8 +68,8 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
             className={cn(
               'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
               selectedClient === client
-                ? 'bg-white text-violet-600 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
+                ? 'bg-background text-violet-600 shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
             )}
           >
             {CLIENT_ICONS[client]}
@@ -81,8 +81,8 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
       {/* Client Description */}
       <div className="flex items-center justify-between px-4 py-3 border-b text-sm">
         <div>
-          <span className="font-medium text-gray-900">{clientInfo.name}</span>
-          <span className="text-gray-500 ml-2">{clientInfo.description}</span>
+          <span className="font-medium text-foreground">{clientInfo.name}</span>
+          <span className="text-muted-foreground ml-2">{clientInfo.description}</span>
         </div>
         <button
           onClick={() => setShowQuirks(!showQuirks)}
@@ -113,27 +113,27 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
       {/* Preview Container */}
       <div className="p-4 overflow-auto">
         <div 
-          className="bg-white rounded border shadow-sm p-4"
+          className="bg-background rounded border shadow-sm p-4"
           style={selectedClient === 'outlook' ? { borderRadius: 0 } : {}}
         >
           {/* Email Header Simulation */}
           <div className="border-b pb-3 mb-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-              <span className="font-medium text-gray-700">From:</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <span className="font-medium text-foreground">From:</span>
               <span>you@company.com</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-              <span className="font-medium text-gray-700">To:</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+              <span className="font-medium text-foreground">To:</span>
               <span>recipient@example.com</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="font-medium text-gray-700">Subject:</span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">Subject:</span>
               <span>Re: Your inquiry</span>
             </div>
           </div>
 
           {/* Email Body */}
-          <div className="text-sm text-gray-600 mb-4">
+          <div className="text-sm text-muted-foreground mb-4">
             <p>Hi there,</p>
             <p className="mt-2">Thank you for reaching out. I'll get back to you shortly.</p>
             <p className="mt-2">Best regards,</p>
@@ -155,7 +155,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
       </div>
 
       {/* Disclaimer */}
-      <div className="px-4 py-2 bg-gray-50 border-t text-xs text-gray-500 flex items-center justify-between">
+      <div className="px-4 py-2 bg-muted border-t text-xs text-muted-foreground flex items-center justify-between">
         <span>
           Preview simulation • Last updated: Jan 2026
         </span>
@@ -177,7 +177,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
 function SignatureRenderer({ blocks, client }: { blocks: any[]; client: EmailClient }) {
   if (!blocks || blocks.length === 0) {
     return (
-      <div className="text-gray-400 text-sm italic">
+      <div className="text-muted-foreground text-sm italic">
         No signature blocks yet
       </div>
     );

@@ -159,15 +159,15 @@ export default function AnalyticsPage() {
   const maxDeployments = Math.max(...(data?.deploymentsByDay.map(d => d.count) || [1]));
 
   const timeRangeAction = (
-    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+    <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
       {(['7d', '30d', '90d'] as const).map((range) => (
         <button
           key={range}
           onClick={() => setTimeRange(range)}
           className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
             timeRange === range
-              ? 'bg-white shadow text-gray-900'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-background shadow text-foreground'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                   height: `${Math.max((day.count / maxDeployments) * 100, 4)}%`,
                 }}
               >
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border">
                   {day.count} deployment{day.count !== 1 ? 's' : ''}
                   <br />
                   {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}

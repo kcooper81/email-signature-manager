@@ -20,7 +20,7 @@ export default async function DashboardLayout({
 
   return (
     <SubscriptionProvider>
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-background">
         <DashboardHeader user={user} />
         <div className="flex">
           <DashboardNav />

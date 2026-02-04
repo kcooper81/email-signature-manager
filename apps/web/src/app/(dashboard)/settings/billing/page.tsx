@@ -264,7 +264,7 @@ export default function BillingPage() {
                 className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
                   tab.id === 'billing'
                     ? 'bg-violet-100 text-violet-900 font-medium'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    : 'text-muted-foreground hover:bg-accent'
                 }`}
               >
                 <tab.icon className="h-5 w-5" />
@@ -296,10 +296,10 @@ export default function BillingPage() {
             <div className="flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-violet-600" />
               <div>
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-foreground">
                   You're on a {TRIAL_DAYS}-day free trial
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   {trialDaysRemaining} days remaining. Upgrade now to keep all features.
                 </p>
               </div>
@@ -360,20 +360,20 @@ export default function BillingPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-semibold">{currentPlan.name}</h3>
                   {isTrialing && <Badge variant="info">Trial</Badge>}
                   {isCanceled && <Badge variant="warning">Canceling</Badge>}
                 </div>
-                <p className="text-sm text-gray-500 mt-1">{currentPlan.description}</p>
+                <p className="text-sm text-muted-foreground mt-1">{currentPlan.description}</p>
                 {currentPlan.pricePerUser > 0 && (
                   <div className="mt-2">
                     {currentPlan.id === 'professional' ? (
                       <div>
                         <p className="text-lg font-medium">$29/month base</p>
-                        <p className="text-sm text-gray-500">+ $1/user/month</p>
+                        <p className="text-sm text-muted-foreground">+ $1/user/month</p>
                       </div>
                     ) : (
                       <p className="text-lg font-medium">
@@ -396,7 +396,7 @@ export default function BillingPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
-                    <FileSignature className="h-4 w-4 text-gray-400" />
+                    <FileSignature className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">Templates</span>
                   </div>
                   <span className="font-medium">
@@ -405,7 +405,7 @@ export default function BillingPage() {
                 </div>
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gray-400" />
+                    <Users className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">Team Members</span>
                   </div>
                   <span className="font-medium">
@@ -417,7 +417,7 @@ export default function BillingPage() {
 
             {/* Billing Period */}
             {subscription?.current_period_end && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <span>
                   {isCanceled ? 'Access until' : 'Next billing date'}:{' '}
@@ -494,7 +494,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                   <h3 className="font-semibold text-lg mt-2">{plan.name}</h3>
-                  <p className="text-sm text-gray-500 mb-3">{plan.description}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
                   <div className="mb-4">
                     {plan.pricePerUser === 0 ? (
                       <p className="text-2xl font-bold">
@@ -502,13 +502,13 @@ export default function BillingPage() {
                       </p>
                     ) : plan.id === 'professional' ? (
                       <div>
-                        <p className="text-2xl font-bold">$29<span className="text-sm font-normal text-gray-500">/mo</span></p>
-                        <p className="text-sm text-gray-500">+ $1/user/mo</p>
+                        <p className="text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                        <p className="text-sm text-muted-foreground">+ $1/user/mo</p>
                       </div>
                     ) : (
                       <p className="text-2xl font-bold">
                         {formatPrice(plan.pricePerUser)}
-                        <span className="text-sm font-normal text-gray-500">/user/mo</span>
+                        <span className="text-sm font-normal text-muted-foreground">/user/mo</span>
                       </p>
                     )}
                   </div>
@@ -518,15 +518,15 @@ export default function BillingPage() {
                         {feature.included ? (
                           <Check className="h-4 w-4 text-green-600 shrink-0" />
                         ) : (
-                          <X className="h-4 w-4 text-gray-300 shrink-0" />
+                          <X className="h-4 w-4 text-muted-foreground/40 shrink-0" />
                         )}
-                        <span className={feature.included ? 'text-gray-700' : 'text-gray-400'}>
+                        <span className={feature.included ? 'text-foreground' : 'text-muted-foreground'}>
                           {feature.text}
                         </span>
                       </li>
                     ))}
                     {plan.featureList.length > 8 && (
-                      <li className="text-xs text-gray-500 italic pl-6">
+                      <li className="text-xs text-muted-foreground italic pl-6">
                         + {plan.featureList.length - 8} more features
                       </li>
                     )}

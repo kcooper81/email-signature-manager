@@ -76,7 +76,7 @@ export function FeedbackWidget() {
 
       {/* Feedback Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-80 rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-4 fade-in-0">
+        <div className="fixed bottom-6 right-6 z-50 w-80 rounded-2xl bg-card shadow-2xl border overflow-hidden animate-in slide-in-from-bottom-4 fade-in-0">
           {/* Header */}
           <div className="bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 flex items-center justify-between">
             <h3 className="text-white font-semibold">
@@ -97,8 +97,8 @@ export function FeedbackWidget() {
                 <div className="mb-4 rounded-full bg-green-100 p-3">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-gray-900 font-medium">Feedback Received!</p>
-                <p className="text-sm text-gray-500 mt-1">We appreciate your input.</p>
+                <p className="text-foreground font-medium">Feedback Received!</p>
+                <p className="text-sm text-muted-foreground mt-1">We appreciate your input.</p>
               </div>
             ) : !feedbackType ? (
               <div className="space-y-2">
@@ -106,12 +106,12 @@ export function FeedbackWidget() {
                   <button
                     key={option.type}
                     onClick={() => setFeedbackType(option.type)}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-violet-300 hover:bg-violet-50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-lg border hover:border-violet-300 hover:bg-violet-50 transition-colors text-left"
                   >
                     <div className="rounded-full bg-violet-100 p-2">
                       <option.icon className="h-4 w-4 text-violet-600" />
                     </div>
-                    <span className="font-medium text-gray-900">{option.label}</span>
+                    <span className="font-medium text-foreground">{option.label}</span>
                   </button>
                 ))}
                 
