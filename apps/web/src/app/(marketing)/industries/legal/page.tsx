@@ -52,6 +52,7 @@ const commonDisclaimers = [
 
 const features = [
   'Centralized signature management for entire firm',
+  'Built-in compliance blocks with bar numbers, state, and credentials',
   'Department-based signatures (Litigation, Corporate, IP, etc.)',
   'Automatic disclaimer updates across all attorneys',
   'Mobile-responsive for court communications',

@@ -36,6 +36,7 @@ const hipaaFeatures = [
 ];
 
 const complianceChecklist = [
+  'Built-in compliance blocks with NPI numbers and licenses',
   'Encrypted data transmission (TLS 1.2+)',
   'Access controls and authentication',
   'Audit logs for all signature changes',
