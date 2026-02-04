@@ -118,7 +118,7 @@ export async function searchHubSpotContactByEmail(
           filters: [
             {
               propertyName: 'email',
-              operator: 'EQ',
+              operator: 'EQ' as any,
               value: email,
             },
           ],
@@ -139,6 +139,10 @@ export async function searchHubSpotContactByEmail(
     if (response.results && response.results.length > 0) {
       const contact = response.results[0];
       const props = contact.properties;
+
+      if (!props.email) {
+        return null;
+      }
 
       return {
         id: contact.id,
