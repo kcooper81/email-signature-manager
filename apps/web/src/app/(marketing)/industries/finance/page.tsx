@@ -103,7 +103,7 @@ export default function FinanceIndustryPage() {
                 </Link>
               </div>
               <p className="text-sm text-emerald-200 mt-4">
-                ✓ SEC/FINRA Compliant &nbsp; ✓ SOX Audit Trails &nbsp; ✓ Secure Deployment
+                SEC/FINRA Compliant • SOX Audit Trails • Secure Deployment
               </p>
             </div>
             <div className="relative">

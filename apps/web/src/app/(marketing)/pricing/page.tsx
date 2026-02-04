@@ -64,7 +64,7 @@ export default function PricingPage() {
             Start free, upgrade as you grow. No hidden fees, no surprises.
           </p>
           <p className="text-lg text-violet-600 font-medium">
-            💡 Pricing is per team member/user — everyone in your organization gets professional email signatures
+            Pricing is per team member/user — everyone in your organization gets professional email signatures
           </p>
         </div>
       </section>
@@ -95,7 +95,7 @@ export default function PricingPage() {
               </div>
             </div>
             <p className="text-center text-sm text-gray-500 mt-6">
-              💰 Save up to 50% compared to Exclaimer, WiseStamp, and CodeTwo
+              Save up to 50% compared to Exclaimer, WiseStamp, and CodeTwo
             </p>
           </div>
         </div>

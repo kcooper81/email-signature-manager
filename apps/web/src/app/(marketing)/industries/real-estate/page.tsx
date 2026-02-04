@@ -87,7 +87,7 @@ export default function RealEstateIndustryPage() {
                 </Link>
               </div>
               <p className="text-sm text-gray-500 mt-4">
-                ✓ Showcase credentials &nbsp; ✓ Promote listings &nbsp; ✓ Mobile-optimized
+                Showcase credentials • Promote listings • Mobile-optimized
               </p>
             </div>
             <div className="relative">

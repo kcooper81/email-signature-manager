@@ -121,7 +121,7 @@ export default function EnterprisePage() {
                 </Link>
               </div>
               <p className="text-sm text-slate-400 mt-4">
-                ✓ SSO/SAML Support &nbsp; ✓ SOC 2 Certified &nbsp; ✓ 24/7 Support
+                SSO/SAML Support • SOC 2 Certified • 24/7 Support
               </p>
             </div>
             <div className="relative">
