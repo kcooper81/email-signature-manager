@@ -89,11 +89,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      synced: upsertedUsers?.length || 0,
+      count: upsertedUsers?.length || 0,
       total: contacts.length,
     });
   } catch (error: any) {
     console.error('HubSpot sync error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
     return NextResponse.json(
       { error: error.message || 'Sync failed' },
       { status: 500 }

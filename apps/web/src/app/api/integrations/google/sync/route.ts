@@ -1,0 +1,123 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+import { listWorkspaceUsers } from '@/lib/google/gmail';
+import { createAuthenticatedClient } from '@/lib/google/oauth';
+
+export async function POST(request: NextRequest) {
+  const supabase = createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('organization_id, email')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!userData?.organization_id) {
+      return NextResponse.json(
+        { error: 'Organization not found' },
+        { status: 404 }
+      );
+    }
+
+    const { data: connection } = await supabase
+      .from('provider_connections')
+      .select('*')
+      .eq('organization_id', userData.organization_id)
+      .eq('provider', 'google')
+      .single();
+
+    if (!connection) {
+      return NextResponse.json(
+        { error: 'Google Workspace not connected' },
+        { status: 404 }
+      );
+    }
+
+    // Extract domain from user's email
+    const domain = userData.email.split('@')[1];
+    if (!domain) {
+      return NextResponse.json(
+        { error: 'Could not determine workspace domain' },
+        { status: 400 }
+      );
+    }
+
+    // Check if token is expired and refresh if needed
+    let accessToken = connection.access_token;
+    const expiresAt = connection.token_expires_at ? new Date(connection.token_expires_at) : null;
+
+    if (expiresAt && expiresAt < new Date()) {
+      const auth = createAuthenticatedClient(connection.access_token, connection.refresh_token);
+      const { credentials } = await auth.refreshAccessToken();
+      
+      accessToken = credentials.access_token!;
+
+      await supabase
+        .from('provider_connections')
+        .update({
+          access_token: credentials.access_token,
+          refresh_token: credentials.refresh_token || connection.refresh_token,
+          token_expires_at: credentials.expiry_date 
+            ? new Date(credentials.expiry_date).toISOString() 
+            : null,
+        })
+        .eq('id', connection.id);
+    }
+
+    const workspaceUsers = await listWorkspaceUsers(
+      accessToken,
+      connection.refresh_token,
+      domain
+    );
+
+    const usersToUpsert = workspaceUsers.map((workspaceUser) => ({
+      email: workspaceUser.email,
+      first_name: workspaceUser.name.split(' ')[0] || workspaceUser.name,
+      last_name: workspaceUser.name.split(' ').slice(1).join(' ') || undefined,
+      title: workspaceUser.title,
+      department: workspaceUser.department,
+      organization_id: userData.organization_id,
+      role: 'member' as const,
+    }));
+
+    const { data: upsertedUsers, error: upsertError } = await supabase
+      .from('users')
+      .upsert(usersToUpsert, {
+        onConflict: 'email,organization_id',
+        ignoreDuplicates: false,
+      })
+      .select();
+
+    if (upsertError) {
+      console.error('Failed to sync Google Workspace users:', upsertError);
+      return NextResponse.json(
+        { error: 'Failed to sync users' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      count: upsertedUsers?.length || 0,
+      total: workspaceUsers.length,
+    });
+  } catch (error: any) {
+    console.error('Google sync error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+    return NextResponse.json(
+      { error: error.message || 'Sync failed' },
+      { status: 500 }
+    );
+  }
+}
