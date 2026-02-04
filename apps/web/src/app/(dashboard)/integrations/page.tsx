@@ -57,6 +57,16 @@ export default function IntegrationsPage() {
     window.location.href = '/api/integrations/google/connect';
   };
 
+  const connectMicrosoft = () => {
+    setConnecting('microsoft');
+    window.location.href = '/api/integrations/microsoft/connect';
+  };
+
+  const connectHubSpot = () => {
+    setConnecting('hubspot');
+    window.location.href = '/api/integrations/hubspot/connect';
+  };
+
   const disconnectProvider = async (provider: string) => {
     if (!confirm(`Are you sure you want to disconnect ${provider}?`)) return;
 
@@ -73,6 +83,7 @@ export default function IntegrationsPage() {
 
   const googleConnection = connections.find((c) => c.provider === 'google');
   const microsoftConnection = connections.find((c) => c.provider === 'microsoft');
+  const hubspotConnection = connections.find((c) => c.provider === 'hubspot');
 
   return (
     <div className="space-y-6">
@@ -88,6 +99,20 @@ export default function IntegrationsPage() {
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-green-600" />
           <p className="text-green-800">Google Workspace connected successfully!</p>
+        </div>
+      )}
+
+      {success === 'microsoft_connected' && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-green-600" />
+          <p className="text-green-800">Microsoft 365 connected successfully!</p>
+        </div>
+      )}
+
+      {success === 'hubspot_connected' && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-green-600" />
+          <p className="text-green-800">HubSpot CRM connected successfully!</p>
         </div>
       )}
 
@@ -185,7 +210,7 @@ export default function IntegrationsPage() {
         </Card>
 
         {/* Microsoft 365 */}
-        <Card className="opacity-60">
+        <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -202,6 +227,12 @@ export default function IntegrationsPage() {
                   <CardDescription>Outlook signature management</CardDescription>
                 </div>
               </div>
+              {microsoftConnection?.is_active && (
+                <span className="flex items-center gap-1 text-sm text-green-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Connected
+                </span>
+              )}
             </div>
           </CardHeader>
           <CardContent>
@@ -209,10 +240,105 @@ export default function IntegrationsPage() {
               Connect your Microsoft 365 to automatically deploy email signatures to Outlook users.
             </p>
             
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <AlertCircle className="h-4 w-4" />
-              Coming soon
+            {microsoftConnection?.is_active ? (
+              <div className="space-y-3">
+                <div className="text-xs text-muted-foreground">
+                  Connected on {new Date(microsoftConnection.created_at).toLocaleDateString()}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={connectMicrosoft}>
+                    Reconnect
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-destructive"
+                    onClick={() => disconnectProvider('microsoft')}
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button onClick={connectMicrosoft} disabled={connecting === 'microsoft'}>
+                {connecting === 'microsoft' ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    Connect Microsoft 365
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* HubSpot CRM */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white border rounded-lg flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-6 h-6">
+                    <path fill="#FF7A59" d="M18.164 7.93V5.084a2.198 2.198 0 0 0 1.267-1.978v-.04A2.084 2.084 0 0 0 17.349 1h-.04a2.084 2.084 0 0 0-2.082 2.082v.04c0 .835.492 1.556 1.198 1.888v2.92a4.132 4.132 0 0 0-2.26 1.21l-7.213-4.39a2.527 2.527 0 1 0-.957 1.568l7.214 4.39a4.167 4.167 0 1 0 5.955-2.778zm-1.082 6.323a2.083 2.083 0 1 1 0-4.166 2.083 2.083 0 0 1 0 4.166z"/>
+                  </svg>
+                </div>
+                <div>
+                  <CardTitle className="text-lg">HubSpot CRM</CardTitle>
+                  <CardDescription>Sync contact data</CardDescription>
+                </div>
+              </div>
+              {hubspotConnection?.is_active && (
+                <span className="flex items-center gap-1 text-sm text-green-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Connected
+                </span>
+              )}
             </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Connect your HubSpot CRM to automatically sync contact data and populate signature fields with employee information.
+            </p>
+            
+            {hubspotConnection?.is_active ? (
+              <div className="space-y-3">
+                <div className="text-xs text-muted-foreground">
+                  Connected on {new Date(hubspotConnection.created_at).toLocaleDateString()}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={connectHubSpot}>
+                    Reconnect
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-destructive"
+                    onClick={() => disconnectProvider('hubspot')}
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button onClick={connectHubSpot} disabled={connecting === 'hubspot'}>
+                {connecting === 'hubspot' ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    Connect HubSpot CRM
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

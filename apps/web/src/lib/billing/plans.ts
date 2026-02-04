@@ -9,6 +9,7 @@ export interface PlanFeatures {
   removeWatermark: boolean;
   googleWorkspace: boolean;
   microsoft365: boolean;
+  hubspotCRM: boolean;
   scheduledDeployments: boolean;
   whiteLabel: boolean;
 }
@@ -54,6 +55,7 @@ export const PLANS: Record<string, Plan> = {
       removeWatermark: false,
       googleWorkspace: true,
       microsoft365: false,
+      hubspotCRM: false,
       scheduledDeployments: false,
       whiteLabel: false,
     },
@@ -64,6 +66,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'Quick form generator', included: true },
       { text: 'Google Workspace integration', included: true },
       { text: 'Microsoft 365 integration', included: true },
+      { text: 'HubSpot CRM integration', included: false },
       { text: 'Auto-sync user directory', included: true },
       { text: 'One-click deployment', included: true },
       { text: 'Mobile-responsive signatures', included: true },
@@ -94,6 +97,7 @@ export const PLANS: Record<string, Plan> = {
       removeWatermark: true,
       googleWorkspace: true,
       microsoft365: true,
+      hubspotCRM: false,
       scheduledDeployments: false,
       whiteLabel: false,
     },
@@ -104,6 +108,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'Quick form generator', included: true },
       { text: 'Google Workspace integration', included: true },
       { text: 'Microsoft 365 integration', included: true },
+      { text: 'HubSpot CRM integration', included: false },
       { text: 'Auto-sync user directory', included: true },
       { text: 'One-click deployment', included: true },
       { text: 'Mobile-responsive signatures', included: true },
@@ -135,6 +140,7 @@ export const PLANS: Record<string, Plan> = {
       removeWatermark: true,
       googleWorkspace: true,
       microsoft365: true,
+      hubspotCRM: true,
       scheduledDeployments: true,
       whiteLabel: false,
     },
@@ -145,6 +151,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'Quick form generator', included: true },
       { text: 'Google Workspace integration', included: true },
       { text: 'Microsoft 365 integration', included: true },
+      { text: 'HubSpot CRM integration', included: true },
       { text: 'Auto-sync user directory', included: true },
       { text: 'One-click deployment', included: true },
       { text: 'Bulk operations', included: true },
@@ -176,6 +183,7 @@ export const PLANS: Record<string, Plan> = {
       removeWatermark: true,
       googleWorkspace: true,
       microsoft365: true,
+      hubspotCRM: true,
       scheduledDeployments: true,
       whiteLabel: true,
     },

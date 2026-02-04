@@ -29,12 +29,22 @@ export function MarketingFooter() {
           </div>
           
           <div>
-            <h4 className="font-semibold text-sm mb-4 text-gray-900">Resources</h4>
+            <h4 className="font-semibold text-sm mb-4 text-gray-900">Solutions</h4>
             <ul className="space-y-3 text-sm text-gray-600">
               <li><Link href="/use-cases" className="hover:text-gray-900 transition-colors">Use Cases</Link></li>
+              <li><Link href="/for/marketing" className="hover:text-gray-900 transition-colors">For Marketing</Link></li>
+              <li><Link href="/for/it-admins" className="hover:text-gray-900 transition-colors">For IT Admins</Link></li>
+              <li><Link href="/for/agencies" className="hover:text-gray-900 transition-colors">For Agencies</Link></li>
+            </ul>
+          </div>
+          
+          <div>
+            <h4 className="font-semibold text-sm mb-4 text-gray-900">Resources</h4>
+            <ul className="space-y-3 text-sm text-gray-600">
               <li><Link href="/blog" className="hover:text-gray-900 transition-colors">Blog</Link></li>
-              <li><Link href="/docs" className="hover:text-gray-900 transition-colors">Documentation</Link></li>
               <li><Link href="/help" className="hover:text-gray-900 transition-colors">Help Center</Link></li>
+              <li><Link href="/compare/exclaimer" className="hover:text-gray-900 transition-colors">vs Exclaimer</Link></li>
+              <li><Link href="/compare/codetwo" className="hover:text-gray-900 transition-colors">vs CodeTwo</Link></li>
             </ul>
           </div>
           
@@ -44,6 +54,7 @@ export function MarketingFooter() {
               <li><Link href="/about" className="hover:text-gray-900 transition-colors">About</Link></li>
               <li><Link href="/contact" className="hover:text-gray-900 transition-colors">Contact</Link></li>
               <li><Link href="/careers" className="hover:text-gray-900 transition-colors">Careers</Link></li>
+              <li><Link href="/security" className="hover:text-gray-900 transition-colors">Security</Link></li>
             </ul>
           </div>
           
@@ -52,7 +63,6 @@ export function MarketingFooter() {
             <ul className="space-y-3 text-sm text-gray-600">
               <li><Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-gray-900 transition-colors">Terms of Service</Link></li>
-              <li><Link href="/security" className="hover:text-gray-900 transition-colors">Security</Link></li>
             </ul>
           </div>
         </div>
