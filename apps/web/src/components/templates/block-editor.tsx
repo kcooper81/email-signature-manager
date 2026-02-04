@@ -17,8 +17,10 @@ import type {
   SocialBlockContent,
   HtmlBlockContent,
   DisclaimerBlockContent,
+  ComplianceBlockContent,
 } from './types';
 import { DYNAMIC_FIELDS, DISCLAIMER_TEMPLATES } from './types';
+import { ComplianceBlockEditor } from './compliance-block';
 
 interface BlockEditorProps {
   block: SignatureBlock;
@@ -45,6 +47,8 @@ export function BlockEditor({ block, onChange }: BlockEditorProps) {
       return <HtmlEditor content={block.content as HtmlBlockContent} onChange={onChange} />;
     case 'disclaimer':
       return <DisclaimerEditor content={block.content as DisclaimerBlockContent} onChange={onChange} />;
+    case 'compliance':
+      return <ComplianceBlockEditor content={block.content as ComplianceBlockContent} onChange={onChange} />;
     default:
       return <div className="text-muted-foreground">No editor for this block type</div>;
   }

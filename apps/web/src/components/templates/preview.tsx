@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type {
   SignatureBlock,
   TextBlockContent,
@@ -10,14 +11,19 @@ import type {
   ButtonBlockContent,
   SocialBlockContent,
   DisclaimerBlockContent,
+  ComplianceBlockContent,
   HtmlBlockContent,
 } from './types';
-import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github } from 'lucide-react';
+import { ComplianceBlockPreview } from './compliance-block';
+import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github, Sun, Moon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface SignaturePreviewProps {
   blocks: SignatureBlock[];
   userData?: Record<string, string>;
 }
+
+type ColorMode = 'light' | 'dark';
 
 // Sample user data for preview
 const SAMPLE_USER_DATA: Record<string, string> = {
@@ -37,6 +43,8 @@ const SAMPLE_USER_DATA: Record<string, string> = {
 };
 
 export function SignaturePreview({ blocks, userData = SAMPLE_USER_DATA }: SignaturePreviewProps) {
+  const [colorMode, setColorMode] = useState<ColorMode>('light');
+
   const replacePlaceholders = (text: string): string => {
     let result = text;
     Object.entries(userData).forEach(([key, value]) => {
@@ -53,38 +61,73 @@ export function SignaturePreview({ blocks, userData = SAMPLE_USER_DATA }: Signat
     );
   }
 
+  const bgColor = colorMode === 'dark' ? '#1a1a1a' : '#ffffff';
+  const textColor = colorMode === 'dark' ? '#e5e5e5' : '#1a1a1a';
+
   return (
-    <div className="font-sans" style={{ maxWidth: '600px' }}>
-      {blocks.map((block) => (
-        <div key={block.id}>
-          {renderBlock(block, replacePlaceholders)}
-        </div>
-      ))}
+    <div>
+      <div className="flex justify-end mb-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setColorMode(colorMode === 'light' ? 'dark' : 'light')}
+          className="gap-2"
+        >
+          {colorMode === 'light' ? (
+            <>
+              <Moon className="h-4 w-4" />
+              Dark Mode
+            </>
+          ) : (
+            <>
+              <Sun className="h-4 w-4" />
+              Light Mode
+            </>
+          )}
+        </Button>
+      </div>
+      <div 
+        className="font-sans p-4 rounded-lg border" 
+        style={{ 
+          maxWidth: '600px',
+          backgroundColor: bgColor,
+          color: textColor,
+        }}
+      >
+        {blocks.map((block) => (
+          <div key={block.id}>
+            {renderBlock(block, replacePlaceholders, colorMode)}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 function renderBlock(
   block: SignatureBlock,
-  replacePlaceholders: (text: string) => string
+  replacePlaceholders: (text: string) => string,
+  colorMode: ColorMode = 'light'
 ): React.ReactNode {
   switch (block.type) {
     case 'text':
-      return renderTextBlock(block.content as TextBlockContent, replacePlaceholders);
+      return renderTextBlock(block.content as TextBlockContent, replacePlaceholders, colorMode);
     case 'image':
       return renderImageBlock(block.content as ImageBlockContent);
     case 'divider':
-      return renderDividerBlock(block.content as DividerBlockContent);
+      return renderDividerBlock(block.content as DividerBlockContent, colorMode);
     case 'spacer':
       return renderSpacerBlock(block.content as SpacerBlockContent);
     case 'contact-info':
-      return renderContactInfoBlock(block.content as ContactInfoBlockContent, replacePlaceholders);
+      return renderContactInfoBlock(block.content as ContactInfoBlockContent, replacePlaceholders, colorMode);
     case 'button':
       return renderButtonBlock(block.content as ButtonBlockContent, replacePlaceholders);
     case 'social':
-      return renderSocialBlock(block.content as SocialBlockContent);
+      return renderSocialBlock(block.content as SocialBlockContent, colorMode);
     case 'disclaimer':
       return renderDisclaimerBlock(block.content as DisclaimerBlockContent);
+    case 'compliance':
+      return <ComplianceBlockPreview content={block.content as ComplianceBlockContent} />;
     case 'html':
       return renderHtmlBlock(block.content as HtmlBlockContent);
     default:
@@ -94,7 +137,8 @@ function renderBlock(
 
 function renderTextBlock(
   content: TextBlockContent,
-  replacePlaceholders: (text: string) => string
+  replacePlaceholders: (text: string) => string,
+  colorMode: ColorMode = 'light'
 ): React.ReactNode {
   return (
     <p
@@ -157,14 +201,17 @@ function renderImageBlock(content: ImageBlockContent): React.ReactNode {
   return img;
 }
 
-function renderDividerBlock(content: DividerBlockContent): React.ReactNode {
+function renderDividerBlock(content: DividerBlockContent, colorMode: ColorMode = 'light'): React.ReactNode {
+  const dividerColor = colorMode === 'dark' && content.color === '#e5e5e5' ? '#404040' : content.color;
   return (
     <hr
       style={{
         border: 'none',
-        borderTop: `1px ${content.style} ${content.color}`,
+        borderTop: `1px ${content.style} ${dividerColor}`,
         width: `${content.width}%`,
-        margin: '12px 0',
+        margin: '8px 0',
+        height: 0,
+        padding: 0,
       }}
     />
   );
@@ -176,8 +223,11 @@ function renderSpacerBlock(content: SpacerBlockContent): React.ReactNode {
 
 function renderContactInfoBlock(
   content: ContactInfoBlockContent,
-  replacePlaceholders: (text: string) => string
+  replacePlaceholders: (text: string) => string,
+  colorMode: ColorMode = 'light'
 ): React.ReactNode {
+  const linkColor = colorMode === 'dark' ? '#9ca3af' : '#666';
+  const iconColor = colorMode === 'dark' ? '#6b7280' : '#999';
   const items = [];
 
   if (content.email) {
@@ -213,7 +263,7 @@ function renderContactInfoBlock(
   }
 
   return (
-    <div style={{ fontSize: 13, color: '#666', marginTop: 8 }}>
+    <div style={{ fontSize: 13, color: linkColor, marginTop: 8 }}>
       {items.map((item, index) => (
         <div
           key={index}
@@ -225,12 +275,12 @@ function renderContactInfoBlock(
           }}
         >
           {content.showIcons && (
-            <span style={{ color: '#999' }}>{item.icon}</span>
+            <span style={{ color: iconColor }}>{item.icon}</span>
           )}
           {item.href ? (
             <a
               href={item.href}
-              style={{ color: '#666', textDecoration: 'none' }}
+              style={{ color: linkColor, textDecoration: 'none' }}
             >
               {item.text}
             </a>
@@ -268,7 +318,7 @@ function renderButtonBlock(
   );
 }
 
-function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
+function renderSocialBlock(content: SocialBlockContent, colorMode: ColorMode = 'light'): React.ReactNode {
   const getIcon = (type: string) => {
     const size = content.iconSize || 24;
     const props = { style: { width: size, height: size } };

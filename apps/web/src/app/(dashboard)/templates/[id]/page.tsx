@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { TemplateEditor } from '@/components/templates/editor';
-import type { SignatureBlock } from '@/components/templates/types';
+import type { SignatureBlock, IndustryType } from '@/components/templates/types';
 import { Loader2 } from 'lucide-react';
 
 interface PageProps {
@@ -17,6 +17,7 @@ export default function EditTemplatePage({ params }: PageProps) {
     name: string;
     description: string;
     blocks: SignatureBlock[];
+    industry: IndustryType;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,11 +43,12 @@ export default function EditTemplatePage({ params }: PageProps) {
       name: data.name,
       description: data.description || '',
       blocks: (data.blocks as SignatureBlock[]) || [],
+      industry: (data.industry as IndustryType) || 'general',
     });
     setLoading(false);
   };
 
-  const handleSave = async (name: string, description: string, blocks: SignatureBlock[]) => {
+  const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry: IndustryType) => {
     setSaving(true);
 
     try {
@@ -57,6 +59,7 @@ export default function EditTemplatePage({ params }: PageProps) {
           name,
           description,
           blocks,
+          industry,
           updated_at: new Date().toISOString(),
         })
         .eq('id', params.id);
@@ -91,6 +94,7 @@ export default function EditTemplatePage({ params }: PageProps) {
       initialBlocks={template.blocks}
       initialName={template.name}
       initialDescription={template.description}
+      initialIndustry={template.industry}
       onSave={handleSave}
       saving={saving}
     />

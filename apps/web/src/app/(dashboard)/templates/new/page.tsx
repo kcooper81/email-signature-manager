@@ -51,7 +51,7 @@ export default function NewTemplatePage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
 
-  const handleSave = async (name: string, description: string, blocks: SignatureBlock[]) => {
+  const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry: string) => {
     setSaving(true);
 
     try {
@@ -99,6 +99,7 @@ export default function NewTemplatePage() {
           name,
           description,
           blocks,
+          industry,
           is_default: false,
         })
         .select('id')

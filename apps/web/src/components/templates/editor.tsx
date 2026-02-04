@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   DndContext,
@@ -22,13 +22,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ArrowLeft,
   Save,
@@ -44,21 +38,19 @@ import {
   Loader2,
   Code,
   FileText,
+  Shield,
 } from 'lucide-react';
-import type { SignatureBlock, SignatureBlockType } from './types';
+import type { SignatureBlock, SignatureBlockType, IndustryType } from './types';
 import { BlockEditor } from './block-editor';
-import { SignaturePreview } from './preview';
 import { EmailClientPreview } from './email-client-preview';
-import { QuickForm } from './quick-form';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
+import { IndustrySelector } from './industry-selector';
 
 interface TemplateEditorProps {
   initialBlocks: SignatureBlock[];
   initialName?: string;
   initialDescription?: string;
-  onSave: (name: string, description: string, blocks: SignatureBlock[]) => Promise<void>;
+  initialIndustry?: IndustryType;
+  onSave: (name: string, description: string, blocks: SignatureBlock[], industry: IndustryType) => Promise<void>;
   saving: boolean;
 }
 
@@ -70,7 +62,9 @@ const BLOCK_TYPES: { type: SignatureBlockType; label: string; icon: React.ReactN
   { type: 'spacer', label: 'Spacer', icon: <Space className="h-4 w-4" /> },
   { type: 'contact-info', label: 'Contact', icon: <Phone className="h-4 w-4" /> },
   { type: 'button', label: 'Button', icon: <Square className="h-4 w-4" /> },
+  { type: 'banner', label: 'Banner', icon: <Image className="h-4 w-4" /> },
   { type: 'disclaimer', label: 'Disclaimer', icon: <FileText className="h-4 w-4" /> },
+  { type: 'compliance', label: 'Compliance', icon: <Shield className="h-4 w-4" /> },
   { type: 'html', label: 'HTML', icon: <Code className="h-4 w-4" /> },
 ];
 
@@ -78,17 +72,16 @@ export function TemplateEditor({
   initialBlocks,
   initialName = '',
   initialDescription = '',
+  initialIndustry = 'general',
   onSave,
   saving,
 }: TemplateEditorProps) {
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
+  const [industry, setIndustry] = useState<IndustryType>(initialIndustry);
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [editorMode, setEditorMode] = useState<'quick' | 'advanced'>(initialBlocks.length === 0 ? 'quick' : 'advanced');
-  const [quickFormCompatible, setQuickFormCompatible] = useState(true);
-  const [showCompatibilityWarning, setShowCompatibilityWarning] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -114,9 +107,9 @@ export function TemplateEditor({
 
   const addBlock = (type: SignatureBlockType) => {
     const newBlock: SignatureBlock = {
-      id: crypto.randomUUID(),
+      id: Math.random().toString(36).substr(2, 9),
       type,
-      content: getDefaultContent(type),
+      content: getDefaultContent(type, industry),
     };
     setBlocks([...blocks, newBlock]);
     setSelectedBlockId(newBlock.id);
@@ -138,258 +131,141 @@ export function TemplateEditor({
       alert('Please enter a template name');
       return;
     }
-    await onSave(name, description, blocks);
-  };
-
-  const handleQuickFormGenerate = (generatedBlocks: SignatureBlock[]) => {
-    setBlocks(generatedBlocks);
-    setQuickFormCompatible(true);
-    setShowCompatibilityWarning(false);
-  };
-
-  const handleQuickFormUpdate = (updatedBlocks: SignatureBlock[]) => {
-    setBlocks(updatedBlocks);
-    setQuickFormCompatible(true);
-  };
-
-  // Check if blocks are compatible with Quick Form
-  const isQuickFormCompatible = (blocks: SignatureBlock[]): boolean => {
-    if (blocks.length === 0) return true;
-
-    // Count block types
-    const blockCounts = {
-      text: blocks.filter(b => b.type === 'text').length,
-      image: blocks.filter(b => b.type === 'image').length,
-      contactInfo: blocks.filter(b => b.type === 'contact-info').length,
-      social: blocks.filter(b => b.type === 'social').length,
-      disclaimer: blocks.filter(b => b.type === 'disclaimer').length,
-      html: blocks.filter(b => b.type === 'html').length,
-      button: blocks.filter(b => b.type === 'button').length,
-    };
-
-    // Quick Form doesn't support:
-    // - Custom HTML blocks
-    // - Multiple images (only 1 profile photo)
-    // - Buttons
-    // - Multiple contact-info blocks
-    // - Multiple social blocks
-    // - Multiple disclaimer blocks
-    if (blockCounts.html > 0) return false;
-    if (blockCounts.button > 0) return false;
-    if (blockCounts.image > 1) return false;
-    if (blockCounts.contactInfo > 1) return false;
-    if (blockCounts.social > 1) return false;
-    if (blockCounts.disclaimer > 1) return false;
-
-    // Text blocks should be reasonable (name, title, company)
-    if (blockCounts.text > 5) return false;
-
-    return true;
-  };
-
-  // Check compatibility whenever blocks change
-  useEffect(() => {
-    const compatible = isQuickFormCompatible(blocks);
-    setQuickFormCompatible(compatible);
-    if (!compatible && editorMode === 'quick') {
-      setShowCompatibilityWarning(true);
-    }
-  }, [blocks, editorMode]);
-
-  const handleModeChange = (mode: 'quick' | 'advanced') => {
-    // Re-check compatibility before switching to quick mode
-    if (mode === 'quick') {
-      const compatible = isQuickFormCompatible(blocks);
-      if (!compatible) {
-        setQuickFormCompatible(false);
-        setShowCompatibilityWarning(true);
-        return;
-      }
-    }
-    setEditorMode(mode);
-    setShowCompatibilityWarning(false);
+    await onSave(name, description, blocks, industry);
   };
 
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
 
   return (
-    <div className="min-h-0">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0">
-            <ArrowLeft className="h-5 w-5" />
+      <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4 flex-1">
+          <Button variant="ghost" size="sm" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
           </Button>
-          <div className="space-y-1">
+          <div className="flex-1">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Untitled Template"
-              className="text-2xl font-semibold bg-transparent border-none outline-none w-full placeholder:text-slate-300 focus:placeholder:text-slate-400"
-            />
-            <input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add a description..."
-              className="text-sm text-muted-foreground bg-transparent border-none outline-none w-full placeholder:text-slate-400"
+              className="text-lg font-semibold bg-transparent border-none outline-none w-full"
             />
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save Template
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      {/* Editor Mode Toggle */}
-      <div className="mb-6 space-y-3">
-        <Tabs value={editorMode} onValueChange={(v) => handleModeChange(v as 'quick' | 'advanced')}>
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="quick" disabled={!quickFormCompatible}>
-              Quick Form
-              {!quickFormCompatible && ' (Unavailable)'}
-            </TabsTrigger>
-            <TabsTrigger value="advanced">Advanced Builder</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        {showCompatibilityWarning && (
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Quick Form is disabled because this signature contains custom blocks (HTML, buttons, or multiple images). 
-              Continue using Advanced Builder to edit this signature.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {editorMode === 'quick' && blocks.length > 0 && quickFormCompatible && (
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Editing in Quick Form will update your signature blocks. Switch to Advanced Builder for more control.
-            </AlertDescription>
-          </Alert>
-        )}
-      </div>
-
-      {/* Main content - 2 column layout: editor | preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 pb-6">
-        {/* Left: Editor area (changes based on mode) */}
-        <div className="lg:col-span-7">
-          {editorMode === 'quick' ? (
-            <QuickForm 
-              onGenerate={handleQuickFormGenerate}
-              onUpdate={handleQuickFormUpdate}
-              initialBlocks={blocks}
-            />
+        <Button onClick={handleSave} disabled={saving}>
+          {saving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-              {/* Column 1: Add blocks + Block list */}
-              <div className="lg:col-span-5 space-y-4">
-                {/* Add Block buttons */}
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-sm">Add Block</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {BLOCK_TYPES.map((blockType) => (
-                        <Button
-                          key={blockType.type}
-                          variant="outline"
-                          size="sm"
-                          className="justify-start text-xs h-8"
-                          onClick={() => addBlock(blockType.type)}
-                        >
-                          {blockType.icon}
-                          <span className="ml-1">{blockType.label}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Block list */}
-                <Card>
-                  <CardHeader className="py-3">
-                    <CardTitle className="text-sm">Blocks</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    {blocks.length === 0 ? (
-                      <div className="text-center py-6 text-muted-foreground text-sm">
-                        <p>No blocks yet</p>
-                      </div>
-                    ) : (
-                      <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCenter}
-                        onDragEnd={handleDragEnd}
-                      >
-                        <SortableContext
-                          items={blocks.map((b) => b.id)}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          {blocks.map((block) => (
-                            <SortableBlock
-                              key={block.id}
-                              block={block}
-                              isSelected={selectedBlockId === block.id}
-                              onSelect={() => setSelectedBlockId(block.id)}
-                              onDelete={() => deleteBlock(block.id)}
-                            />
-                          ))}
-                        </SortableContext>
-                      </DndContext>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Column 2: Block editor (sticky) */}
-              <div className="lg:col-span-7">
-                <div className="lg:sticky lg:top-4">
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-sm">
-                        {selectedBlock ? `Edit: ${selectedBlock.type.replace('-', ' ')}` : 'Block Settings'}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      {selectedBlock ? (
-                        <BlockEditor
-                          block={selectedBlock}
-                          onChange={(content) => updateBlock(selectedBlock.id, content)}
-                        />
-                      ) : (
-                        <div className="text-center py-8 text-muted-foreground text-sm">
-                          <p>Select a block to edit</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Save Template
+            </>
           )}
-        </div>
+        </Button>
+      </div>
 
-        {/* Right: Shared Preview (sticky) */}
-        <div className="lg:col-span-5">
-          <div className="lg:sticky lg:top-4">
+      {/* Main Content - 3 Column Grid */}
+      <div className="p-6">
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - Add Block */}
+          <div className="col-span-3 space-y-6">
             <Card>
-              <CardHeader className="py-3">
+              <CardHeader>
+                <CardTitle className="text-sm">Add Block</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Industry Selector */}
+                <div className="pb-4 border-b">
+                  <IndustrySelector value={industry} onChange={setIndustry} />
+                </div>
+                
+                {/* Block Type Buttons */}
+                <div className="grid grid-cols-2 gap-2">
+                  {BLOCK_TYPES.map((blockType) => (
+                    <Button
+                      key={blockType.type}
+                      variant="outline"
+                      size="sm"
+                      className="justify-start h-auto py-2"
+                      onClick={() => addBlock(blockType.type)}
+                    >
+                      <span className="mr-2">{blockType.icon}</span>
+                      <span className="text-xs">{blockType.label}</span>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Blocks</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {blocks.length === 0 ? (
+                  <div className="text-center py-6 text-muted-foreground text-sm">
+                    <p>No blocks yet</p>
+                  </div>
+                ) : (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={blocks.map((b) => b.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-2">
+                        {blocks.map((block) => (
+                          <SortableBlock
+                            key={block.id}
+                            block={block}
+                            isSelected={selectedBlockId === block.id}
+                            onSelect={() => setSelectedBlockId(block.id)}
+                            onDelete={() => deleteBlock(block.id)}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Center Column - Block Settings */}
+          <div className="col-span-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm capitalize">
+                  {selectedBlock ? selectedBlock.type.replace('-', ' ') : 'Block Settings'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {selectedBlock ? (
+                  <BlockEditor
+                    block={selectedBlock}
+                    onChange={(content) => updateBlock(selectedBlock.id, content)}
+                  />
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground text-sm">
+                    <p>Select a block to edit</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Email Client Preview */}
+          <div className="col-span-5">
+            <Card>
+              <CardHeader>
                 <CardTitle className="text-sm">Email Client Preview</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -403,7 +279,7 @@ export function TemplateEditor({
   );
 }
 
-// Sortable block component for drag-and-drop
+// Sortable block component
 interface SortableBlockProps {
   block: SignatureBlock;
   isSelected: boolean;
@@ -412,14 +288,9 @@ interface SortableBlockProps {
 }
 
 function SortableBlock({ block, isSelected, onSelect, onDelete }: SortableBlockProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: block.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: block.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -431,54 +302,43 @@ function SortableBlock({ block, isSelected, onSelect, onDelete }: SortableBlockP
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors mb-2 ${
-        isSelected
-          ? 'border-primary bg-primary/5'
-          : 'hover:bg-accent bg-card'
-      } ${isDragging ? 'shadow-lg' : ''}`}
+      className={`flex items-center gap-2 p-2 border rounded cursor-pointer transition-colors ${
+        isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+      }`}
       onClick={onSelect}
     >
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing touch-none"
-      >
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium capitalize">{block.type.replace('-', ' ')}</p>
-        <p className="text-xs text-muted-foreground truncate">
-          {getBlockPreviewText(block)}
-        </p>
-      </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
-        onClick={(e: React.MouseEvent) => {
+      <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+        <GripVertical className="h-4 w-4 text-gray-400" />
+      </button>
+      <div className="flex-1 text-sm capitalize">{block.type.replace('-', ' ')}</div>
+      <button
+        onClick={(e) => {
           e.stopPropagation();
           onDelete();
         }}
+        className="text-gray-400 hover:text-red-600"
       >
         <Trash2 className="h-4 w-4" />
-      </Button>
+      </button>
     </div>
   );
 }
 
-function getDefaultContent(type: SignatureBlockType): SignatureBlock['content'] {
+// Helper function to get default content
+function getDefaultContent(type: SignatureBlockType, industry: IndustryType): any {
+  // ... (keep existing getDefaultContent implementation)
   switch (type) {
     case 'text':
       return {
-        text: 'Enter text here',
+        text: 'Your text here',
         fontSize: 14,
         fontWeight: 'normal',
-        color: '#1a1a1a',
+        color: '#333333',
       };
     case 'image':
       return {
         src: '',
-        alt: 'Logo',
+        alt: '',
         width: 150,
       };
     case 'social':
@@ -490,7 +350,7 @@ function getDefaultContent(type: SignatureBlockType): SignatureBlock['content'] 
     case 'divider':
       return {
         color: '#e5e5e5',
-        width: 100,
+        width: 1,
         style: 'solid',
       };
     case 'spacer':
@@ -501,6 +361,7 @@ function getDefaultContent(type: SignatureBlockType): SignatureBlock['content'] 
       return {
         email: '{{email}}',
         phone: '{{phone}}',
+        website: '{{website}}',
         showIcons: true,
       };
     case 'button':
@@ -511,50 +372,43 @@ function getDefaultContent(type: SignatureBlockType): SignatureBlock['content'] 
         textColor: '#ffffff',
         borderRadius: 4,
       };
+    case 'banner':
+      return {
+        src: '',
+        alt: 'Banner',
+        width: 600,
+      };
     case 'disclaimer':
       return {
-        text: 'This email and any attachments are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the sender immediately and delete it from your system.',
+        text: '',
         template: 'confidentiality',
-        fontSize: 10,
+        fontSize: 11,
         color: '#666666',
       };
+    case 'compliance':
+      return getDefaultComplianceFields(industry);
     case 'html':
       return {
         html: '',
       };
     default:
-      // Default to text block content
-      return {
-        text: '',
-        fontSize: 14,
-        fontWeight: 'normal' as const,
-        color: '#333333',
-      };
+      return {};
   }
 }
 
-function getBlockPreviewText(block: SignatureBlock): string {
-  const content = block.content as any;
-  switch (block.type) {
-    case 'text':
-      return content.text || 'Empty text';
-    case 'image':
-      return content.src ? 'Image set' : 'No image';
-    case 'social':
-      return `${content.platforms?.length || 0} platforms`;
-    case 'divider':
-      return `${content.style} line`;
-    case 'spacer':
-      return `${content.height}px`;
-    case 'contact-info':
-      return 'Contact details';
-    case 'button':
-      return content.text || 'Button';
-    case 'disclaimer':
-      return 'Legal disclaimer';
-    case 'html':
-      return content.html ? 'Custom HTML' : 'Empty HTML';
+function getDefaultComplianceFields(industry: IndustryType): any {
+  const baseFields = { industry };
+  
+  switch (industry) {
+    case 'legal':
+      return { ...baseFields, barNumber: '', barState: '', credentials: '' };
+    case 'healthcare':
+      return { ...baseFields, npiNumber: '', licenseNumber: '', licenseState: '' };
+    case 'finance':
+      return { ...baseFields, crdNumber: '', licenseNumber: '', registeredWith: '' };
+    case 'real_estate':
+      return { ...baseFields, licenseNumber: '', licenseState: '', dreNumber: '' };
     default:
-      return block.type;
+      return baseFields;
   }
 }

@@ -584,9 +584,14 @@ export default function HomePage() {
               description="Add promotional banners that rotate automatically. Perfect for product launches and events."
             />
             <FeatureCard
+              icon={<Shield className="h-5 w-5" />}
+              title="Industry Compliance"
+              description="Built-in compliance blocks for Legal, Healthcare, Finance, and Real Estate. Auto-populate bar numbers, NPI, CRD, and license info."
+            />
+            <FeatureCard
               icon={<Lock className="h-5 w-5" />}
-              title="Security & Compliance"
-              description="GDPR-ready disclaimers, audit trails, and verified sender badges to fight spoofing."
+              title="Security & Disclaimers"
+              description="GDPR-ready disclaimers, HIPAA notices, and legal compliance templates. Protect your organization."
             />
             <FeatureCard
               icon={<Globe className="h-5 w-5" />}

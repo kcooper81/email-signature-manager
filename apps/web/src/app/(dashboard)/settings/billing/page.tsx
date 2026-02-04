@@ -59,6 +59,7 @@ export default function BillingPage() {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
   const [purchaseTracked, setPurchaseTracked] = useState(false);
+  const [expandedPlans, setExpandedPlans] = useState<Set<string>>(new Set());
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -513,7 +514,7 @@ export default function BillingPage() {
                     )}
                   </div>
                   <ul className="space-y-2 text-sm mb-4 max-h-64 overflow-y-auto">
-                    {plan.featureList.slice(0, 8).map((feature) => (
+                    {(expandedPlans.has(plan.id) ? plan.featureList : plan.featureList.slice(0, 8)).map((feature) => (
                       <li key={feature.text} className="flex items-center gap-2">
                         {feature.included ? (
                           <Check className="h-4 w-4 text-green-600 shrink-0" />
@@ -526,8 +527,23 @@ export default function BillingPage() {
                       </li>
                     ))}
                     {plan.featureList.length > 8 && (
-                      <li className="text-xs text-muted-foreground italic pl-6">
-                        + {plan.featureList.length - 8} more features
+                      <li>
+                        <button
+                          onClick={() => {
+                            const newExpanded = new Set(expandedPlans);
+                            if (expandedPlans.has(plan.id)) {
+                              newExpanded.delete(plan.id);
+                            } else {
+                              newExpanded.add(plan.id);
+                            }
+                            setExpandedPlans(newExpanded);
+                          }}
+                          className="text-xs text-violet-600 hover:text-violet-700 font-medium pl-6"
+                        >
+                          {expandedPlans.has(plan.id) 
+                            ? '− Show less' 
+                            : `+ ${plan.featureList.length - 8} more features`}
+                        </button>
                       </li>
                     )}
                   </ul>

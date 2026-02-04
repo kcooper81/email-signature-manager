@@ -54,32 +54,57 @@ const CLIENT_ICONS: Record<EmailClient, React.ReactNode> = {
 export function EmailClientPreview({ blocks, className }: EmailClientPreviewProps) {
   const [selectedClient, setSelectedClient] = useState<EmailClient>('gmail');
   const [showQuirks, setShowQuirks] = useState(false);
+  const [previewWidth, setPreviewWidth] = useState<'desktop' | 'mobile'>('desktop');
 
   const clientInfo = CLIENT_INFO[selectedClient];
 
   return (
     <div className={cn('bg-card', className)}>
-      {/* Client Tabs */}
-      <div className="flex items-center gap-1 p-2 bg-muted rounded-t-lg">
-        {(Object.keys(CLIENT_INFO) as EmailClient[]).map((client) => (
+      {/* Client Tabs & Controls */}
+      <div className="flex items-center justify-between p-2 border-b">
+        <div className="flex items-center gap-1">
+          {(Object.keys(CLIENT_INFO) as EmailClient[]).map((client) => (
+            <button
+              key={client}
+              onClick={() => setSelectedClient(client)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
+                selectedClient === client
+                  ? 'bg-violet-600 text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              )}
+            >
+              {CLIENT_ICONS[client]}
+              <span>{CLIENT_INFO[client].name}</span>
+            </button>
+          ))}
+        </div>
+        
+        {/* Responsive Toggle - Far Right */}
+        <div className="flex items-center gap-1 bg-gray-100 rounded p-0.5">
           <button
-            key={client}
-            onClick={() => setSelectedClient(client)}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
-              selectedClient === client
-                ? 'bg-background text-violet-600 shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-            )}
+            onClick={() => setPreviewWidth('desktop')}
+            className={`p-1.5 rounded transition-colors ${
+              previewWidth === 'desktop' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
+            }`}
+            title="Desktop view"
           >
-            {CLIENT_ICONS[client]}
-            <span>{CLIENT_INFO[client].name}</span>
+            <Monitor className="h-3.5 w-3.5" />
           </button>
-        ))}
+          <button
+            onClick={() => setPreviewWidth('mobile')}
+            className={`p-1.5 rounded transition-colors ${
+              previewWidth === 'mobile' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
+            }`}
+            title="Mobile view"
+          >
+            <Smartphone className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* Client Description */}
-      <div className="flex items-center justify-between px-4 py-3 border-b text-sm">
+      <div className="flex items-center justify-between px-4 py-2 border-b text-sm bg-gray-50">
         <div>
           <span className="font-medium text-foreground">{clientInfo.name}</span>
           <span className="text-muted-foreground ml-2">{clientInfo.description}</span>
@@ -89,7 +114,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
           className="flex items-center gap-1.5 text-amber-600 hover:text-amber-700 text-xs"
         >
           <AlertCircle className="h-3.5 w-3.5" />
-          <span>{showQuirks ? 'Hide' : 'View'} rendering notes</span>
+          <span>{showQuirks ? 'Hide' : 'View'} notes</span>
         </button>
       </div>
 
@@ -113,8 +138,11 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
       {/* Preview Container */}
       <div className="p-4 overflow-auto">
         <div 
-          className="bg-background rounded border shadow-sm p-4"
-          style={selectedClient === 'outlook' ? { borderRadius: 0 } : {}}
+          className="bg-background rounded border shadow-sm p-4 mx-auto transition-all"
+          style={{
+            borderRadius: selectedClient === 'outlook' ? 0 : undefined,
+            maxWidth: previewWidth === 'mobile' ? '375px' : '600px',
+          }}
         >
           {/* Email Header Simulation */}
           <div className="border-b pb-3 mb-4">
@@ -149,6 +177,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
             <SignatureRenderer 
               blocks={blocks} 
               client={selectedClient}
+              isMobile={previewWidth === 'mobile'}
             />
           </div>
         </div>
@@ -174,7 +203,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
 }
 
 // Internal signature renderer that applies client-specific styles
-function SignatureRenderer({ blocks, client }: { blocks: any[]; client: EmailClient }) {
+function SignatureRenderer({ blocks, client, isMobile }: { blocks: any[]; client: EmailClient; isMobile: boolean }) {
   if (!blocks || blocks.length === 0) {
     return (
       <div className="text-muted-foreground text-sm italic">
@@ -189,9 +218,10 @@ function SignatureRenderer({ blocks, client }: { blocks: any[]; client: EmailCli
       cellSpacing={0} 
       style={{ 
         fontFamily: 'Arial, sans-serif', 
-        fontSize: '14px', 
+        fontSize: isMobile ? '12px' : '14px', 
         color: '#333333',
         borderCollapse: 'collapse',
+        width: '100%',
       }}
     >
       <tbody>
@@ -199,7 +229,8 @@ function SignatureRenderer({ blocks, client }: { blocks: any[]; client: EmailCli
           <BlockPreview 
             key={block.id} 
             block={block} 
-            client={client} 
+            client={client}
+            isMobile={isMobile}
           />
         ))}
       </tbody>
@@ -207,7 +238,7 @@ function SignatureRenderer({ blocks, client }: { blocks: any[]; client: EmailCli
   );
 }
 
-function BlockPreview({ block, client }: { block: any; client: EmailClient }) {
+function BlockPreview({ block, client, isMobile }: { block: any; client: EmailClient; isMobile: boolean }) {
   const content = block.content;
   const isOutlook = client === 'outlook';
 
@@ -232,16 +263,18 @@ function BlockPreview({ block, client }: { block: any; client: EmailClient }) {
 
     case 'image':
       if (!content.src) return null;
+      const imgWidth = isMobile ? Math.min(content.width, 300) : content.width;
       return (
         <tr>
           <td style={{ padding: '4px 0' }}>
             <img 
               src={content.src} 
               alt={content.alt || ''} 
-              width={content.width}
+              width={imgWidth}
               style={{ 
                 display: 'block', 
                 maxWidth: '100%',
+                height: 'auto',
                 borderRadius: isOutlook ? 0 : undefined,
               }} 
             />
@@ -337,18 +370,44 @@ function BlockPreview({ block, client }: { block: any; client: EmailClient }) {
       );
 
     case 'button':
+      // Outlook uses VML for buttons, others use regular styling
+      if (isOutlook) {
+        return (
+          <tr>
+            <td style={{ padding: '8px 0' }}>
+              <table cellPadding={0} cellSpacing={0} style={{ borderCollapse: 'collapse' }}>
+                <tbody>
+                  <tr>
+                    <td
+                      style={{
+                        backgroundColor: content.backgroundColor || '#0066cc',
+                        padding: '10px 20px',
+                        fontWeight: 'bold',
+                        color: content.textColor || '#ffffff',
+                      }}
+                    >
+                      {content.text || 'Click Here'}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        );
+      }
       return (
         <tr>
           <td style={{ padding: '8px 0' }}>
             <span
               style={{
                 display: 'inline-block',
-                padding: '10px 20px',
+                padding: isMobile ? '8px 16px' : '10px 20px',
                 backgroundColor: content.backgroundColor || '#0066cc',
                 color: content.textColor || '#ffffff',
                 textDecoration: 'none',
-                borderRadius: isOutlook ? 0 : `${content.borderRadius || 4}px`,
+                borderRadius: `${content.borderRadius || 4}px`,
                 fontWeight: 'bold',
+                fontSize: isMobile ? '12px' : '14px',
               }}
             >
               {content.text || 'Click Here'}
@@ -384,6 +443,49 @@ function BlockPreview({ block, client }: { block: any; client: EmailClient }) {
             style={{ padding: '4px 0' }}
             dangerouslySetInnerHTML={{ __html: content.html }}
           />
+        </tr>
+      );
+
+    case 'disclaimer':
+      if (!content.text) return null;
+      return (
+        <tr>
+          <td 
+            style={{
+              padding: content.padding ? `${content.padding}px` : '8px',
+              fontSize: `${content.fontSize || 11}px`,
+              color: content.color || '#666666',
+              backgroundColor: content.backgroundColor || 'transparent',
+              fontStyle: 'italic',
+            }}
+          >
+            {content.text}
+          </td>
+        </tr>
+      );
+
+    case 'compliance':
+      // Render compliance fields based on what's filled in
+      const complianceItems: string[] = [];
+      
+      // Add all non-empty compliance fields
+      Object.entries(content).forEach(([key, value]) => {
+        if (value && typeof value === 'string' && key !== 'industry') {
+          complianceItems.push(value);
+        }
+      });
+      
+      if (complianceItems.length === 0) return null;
+      
+      return (
+        <tr>
+          <td style={{ padding: '8px 0', fontSize: '11px', color: '#666666' }}>
+            {complianceItems.map((item, i) => (
+              <div key={i} style={{ marginBottom: i < complianceItems.length - 1 ? '4px' : 0 }}>
+                {item}
+              </div>
+            ))}
+          </td>
         </tr>
       );
 

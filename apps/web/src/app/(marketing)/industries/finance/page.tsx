@@ -60,6 +60,7 @@ const financialRoles = [
 ];
 
 const complianceChecklist = [
+  'Built-in compliance blocks with CRD numbers and licenses',
   'SEC Rule 17a-4 compliant record keeping',
   'FINRA advertising rule compliance',
   'Sarbanes-Oxley audit trail requirements',

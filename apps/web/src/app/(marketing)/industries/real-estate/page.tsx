@@ -32,7 +32,8 @@ const realtorFeatures = [
 
 const signatureElements = [
   { element: 'Professional headshot', benefit: 'Build trust and recognition' },
-  { element: 'MLS/License numbers', benefit: 'Meet regulatory requirements' },
+  { element: 'Built-in compliance blocks with license & DRE numbers', benefit: 'Auto-populate regulatory info' },
+  { element: 'MLS/License numbers', benefit: 'Meet state requirements' },
   { element: 'Brokerage logo & info', benefit: 'Brand consistency' },
   { element: 'Service areas', benefit: 'Target local markets' },
   { element: 'Social media links', benefit: 'Grow your following' },
