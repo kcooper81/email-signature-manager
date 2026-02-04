@@ -191,6 +191,17 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
                   <div className="text-xs text-gray-500">Outlook signature management</div>
                 </div>
               </Link>
+              <Link href="/integrations/hubspot" className="flex items-start gap-3 px-3 py-3 rounded-lg hover:bg-gray-50 group/item transition-colors">
+                <div className="h-10 w-10 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#FF7A59">
+                    <path d="M18.164 7.93V5.084a2.198 2.198 0 001.267-1.978v-.07A2.199 2.199 0 0017.232.837h-.068a2.199 2.199 0 00-2.199 2.199v.07a2.196 2.196 0 001.267 1.977v2.847a4.301 4.301 0 00-2.066.7L9.77 4.233a2.25 2.25 0 10-1.342 1.342l4.396 4.396a4.3 4.3 0 00-.7 2.066H9.278a2.196 2.196 0 00-1.978-1.267h-.07a2.199 2.199 0 00-2.199 2.199v.068a2.199 2.199 0 002.199 2.199h.07a2.196 2.196 0 001.977-1.267h2.847a4.301 4.301 0 107.04-4.04z"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-gray-900 mb-0.5">HubSpot CRM</div>
+                  <div className="text-xs text-gray-500">Sync contact data</div>
+                </div>
+              </Link>
             </div>
           </div>
 

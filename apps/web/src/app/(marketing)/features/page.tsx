@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Mail, ArrowRight, Check, Users, Palette, Rocket, Shield, BarChart3, Zap, Globe, Clock, Building2, RefreshCw, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { IntegrationsSection } from '@/components/marketing/integrations-section';
 
 export const metadata = {
   title: 'Features | Siggly - Email Signature Management',
@@ -52,12 +53,6 @@ const features = [
   },
 ];
 
-const integrations = [
-  { name: 'Google Workspace', description: 'Gmail signature deployment', available: true },
-  { name: 'Microsoft 365', description: 'Outlook signature deployment', available: false },
-  { name: 'Slack', description: 'Deployment notifications', available: false },
-  { name: 'Zapier', description: 'Workflow automation', available: false },
-];
 
 export default function FeaturesPage() {
   return (
@@ -109,30 +104,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* Integrations */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Integrations</h2>
-            <p className="text-gray-600">Connect with the tools you already use</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {integrations.map((integration) => (
-              <div key={integration.name} className="bg-white border border-gray-200 rounded-xl p-6 text-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                  <Globe className="h-6 w-6 text-gray-400" />
-                </div>
-                <h3 className="font-semibold mb-1">{integration.name}</h3>
-                <p className="text-sm text-gray-500 mb-3">{integration.description}</p>
-                {integration.available ? (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Available</span>
-                ) : (
-                  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full">Coming Soon</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <IntegrationsSection />
 
       {/* CTA */}
       <section className="py-20">
