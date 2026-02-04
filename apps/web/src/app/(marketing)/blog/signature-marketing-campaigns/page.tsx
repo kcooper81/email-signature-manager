@@ -105,19 +105,19 @@ export default function BlogPost() {
 
             <div className="space-y-4 my-8">
               <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                <h4 className="font-semibold text-green-800">✓ Keep banners small and focused</h4>
+                <h4 className="font-semibold text-green-800">Keep banners small and focused</h4>
                 <p className="text-green-700 text-sm">One message, one CTA. Don't try to promote everything at once.</p>
               </div>
               <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                <h4 className="font-semibold text-green-800">✓ Use compelling visuals</h4>
+                <h4 className="font-semibold text-green-800">Use compelling visuals</h4>
                 <p className="text-green-700 text-sm">Eye-catching graphics increase click-through rates significantly.</p>
               </div>
               <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                <h4 className="font-semibold text-green-800">✓ Add UTM tracking</h4>
+                <h4 className="font-semibold text-green-800">Add UTM tracking</h4>
                 <p className="text-green-700 text-sm">Track clicks in Google Analytics to measure campaign performance.</p>
               </div>
               <div className="bg-green-50 border border-green-100 rounded-xl p-4">
-                <h4 className="font-semibold text-green-800">✓ Rotate regularly</h4>
+                <h4 className="font-semibold text-green-800">Rotate regularly</h4>
                 <p className="text-green-700 text-sm">Change banners every 2-4 weeks to keep content fresh.</p>
               </div>
             </div>

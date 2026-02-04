@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail, ChevronDown, Building2, Users, Briefcase, Crown, Scale, Heart, TrendingUp, Home, Zap, FileText, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -37,9 +38,13 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-            <Mail className="h-5 w-5 text-white" />
-          </div>
+          <Image 
+            src="/siggly-logo.png" 
+            alt="Siggly Logo" 
+            width={48} 
+            height={48}
+            className="h-10 w-auto"
+          />
           <span className="font-bold text-xl tracking-tight text-gray-900">Siggly</span>
         </Link>
         

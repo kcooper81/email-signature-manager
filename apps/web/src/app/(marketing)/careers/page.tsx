@@ -158,7 +158,7 @@ export default function CareersPage() {
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-xl p-6">
-              <h3 className="font-semibold mb-3">🚀 Fast-Paced Environment</h3>
+              <h3 className="font-semibold mb-3">Fast-Paced Environment</h3>
               <p className="text-gray-600">
                 We move quickly and ship often. You'll have the autonomy to make decisions and see your work impact thousands of users.
               </p>
@@ -170,7 +170,7 @@ export default function CareersPage() {
               </p>
             </div>
             <div className="bg-white border border-gray-200 rounded-xl p-6">
-              <h3 className="font-semibold mb-3">🎉 Team Connection</h3>
+              <h3 className="font-semibold mb-3">Team Connection</h3>
               <p className="text-gray-600">
                 Regular virtual hangouts, annual team retreats, and a supportive, collaborative environment where everyone's voice matters.
               </p>

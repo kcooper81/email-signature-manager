@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Mail, LogOut, Settings, User } from 'lucide-react';
+import { LogOut, Settings, User } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface DashboardHeaderProps {
@@ -37,7 +38,13 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
       <div className="flex h-14 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Mail className="h-5 w-5 text-violet-400" />
+          <Image 
+            src="/siggly-logo.png" 
+            alt="Siggly Logo" 
+            width={32} 
+            height={32}
+            className="h-8 w-auto"
+          />
           <span className="font-semibold text-lg text-white">Siggly</span>
         </Link>
 

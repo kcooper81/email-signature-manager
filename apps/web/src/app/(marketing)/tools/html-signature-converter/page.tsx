@@ -251,7 +251,7 @@ export default function HtmlSignatureConverterPage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-4 text-green-600">✓ Keeps & Optimizes</h3>
+              <h3 className="font-semibold text-lg mb-4 text-green-600">Keeps & Optimizes</h3>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="text-green-500">•</span>

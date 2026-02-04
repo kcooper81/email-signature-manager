@@ -1,4 +1,4 @@
-import { Mail } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function AuthLayout({
@@ -7,12 +7,18 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4">
           <Link href="/" className="flex items-center gap-2">
-            <Mail className="h-6 w-6 text-primary" />
+            <Image 
+              src="/siggly-logo.png" 
+              alt="Siggly Logo" 
+              width={32} 
+              height={32}
+              className="h-8 w-auto"
+            />
             <span className="font-semibold text-xl">Siggly</span>
           </Link>
         </div>

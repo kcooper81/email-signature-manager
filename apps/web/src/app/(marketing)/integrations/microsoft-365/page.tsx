@@ -109,7 +109,7 @@ export default function Microsoft365Page() {
                 </Link>
               </div>
               <p className="text-sm text-gray-500 mt-4">
-                ✓ Works with Exchange Online &nbsp; ✓ Azure AD integration &nbsp; ✓ No IT required
+                Works with Exchange Online • Azure AD integration • No IT required
               </p>
             </div>
             <div className="bg-gray-100 rounded-2xl p-8">

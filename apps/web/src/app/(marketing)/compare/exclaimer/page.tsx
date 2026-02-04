@@ -56,9 +56,6 @@ export default function ExclaimerComparisonPage() {
             <Link href="/signup">
               <Button size="lg">Try Siggly Free <ArrowRight className="ml-2 h-4 w-4" /></Button>
             </Link>
-            <Link href="/demo">
-              <Button size="lg" variant="outline">See Demo</Button>
-            </Link>
           </div>
         </div>
       </section>
