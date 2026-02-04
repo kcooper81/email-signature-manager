@@ -16,7 +16,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, description, icon: Icon, trend, className }: StatCardProps) {
   return (
-    <div className={cn('rounded-xl border bg-white p-6 shadow-sm', className)}>
+    <div className={cn('rounded-xl border bg-card p-6 shadow-sm', className)}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{title}</p>
         {Icon && (
@@ -26,7 +26,7 @@ export function StatCard({ title, value, description, icon: Icon, trend, classNa
         )}
       </div>
       <div className="mt-2">
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
+        <p className="text-3xl font-bold text-foreground">{value}</p>
         {(description || trend) && (
           <div className="mt-1 flex items-center gap-2">
             {trend && (

@@ -111,20 +111,20 @@ function FAQItem({ faq }: { faq: FAQ }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-border last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-4 text-left hover:bg-gray-50 px-4 -mx-4 transition-colors"
+        className="w-full flex items-center justify-between py-4 text-left hover:bg-accent px-4 -mx-4 transition-colors"
       >
-        <span className="font-medium text-gray-900 pr-4">{faq.question}</span>
+        <span className="font-medium text-foreground pr-4">{faq.question}</span>
         {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-400 shrink-0" />
+          <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
+          <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
         )}
       </button>
       {isOpen && (
-        <div className="pb-4 text-gray-600 text-sm leading-relaxed">
+        <div className="pb-4 text-muted-foreground text-sm leading-relaxed">
           {faq.answer}
         </div>
       )}
@@ -154,8 +154,8 @@ export default function HelpPage() {
               <Mail className="h-6 w-6 text-violet-600" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">Email Support</h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <h3 className="font-semibold text-foreground">Email Support</h3>
+              <p className="text-sm text-muted-foreground mt-1">
                 Get help from our support team. We typically respond within 24 hours.
               </p>
               <a
@@ -185,7 +185,7 @@ export default function HelpPage() {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCategory === null
                   ? 'bg-violet-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-muted text-muted-foreground hover:bg-accent'
               }`}
             >
               All
@@ -197,7 +197,7 @@ export default function HelpPage() {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   selectedCategory === category.name
                     ? 'bg-violet-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-muted text-muted-foreground hover:bg-accent'
                 }`}
               >
                 <category.icon className="h-3.5 w-3.5" />
@@ -214,7 +214,7 @@ export default function HelpPage() {
           </div>
 
           {filteredFaqs.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               No FAQs found for this category.
             </div>
           )}
@@ -224,8 +224,8 @@ export default function HelpPage() {
       {/* Still Need Help */}
       <Card className="bg-gradient-to-r from-violet-50 to-blue-50 border-violet-200">
         <CardContent className="p-6 text-center">
-          <h3 className="font-semibold text-gray-900 mb-2">Still need help?</h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <h3 className="font-semibold text-foreground mb-2">Still need help?</h3>
+          <p className="text-sm text-muted-foreground mb-4">
             Can't find what you're looking for? Our support team is here to help.
           </p>
           <a

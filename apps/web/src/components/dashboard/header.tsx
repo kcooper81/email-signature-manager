@@ -33,12 +33,12 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
     .toUpperCase() || user.email?.[0]?.toUpperCase() || 'U';
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900 backdrop-blur-sm shadow-md">
       <div className="flex h-14 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Mail className="h-5 w-5 text-violet-600" />
-          <span className="font-semibold text-lg">Siggly</span>
+          <Mail className="h-5 w-5 text-violet-400" />
+          <span className="font-semibold text-lg text-white">Siggly</span>
         </Link>
 
         {/* Right side */}
@@ -46,10 +46,10 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           {/* User menu */}
           <div className="flex items-center gap-2.5">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-white">
                 {user.user_metadata?.first_name} {user.user_metadata?.last_name}
               </p>
-              <p className="text-xs text-gray-500">{user.email}</p>
+              <p className="text-xs text-gray-300">{user.email}</p>
             </div>
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 text-white flex items-center justify-center text-xs font-medium">
               {initials}
@@ -58,7 +58,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
           {/* Settings */}
           <Link href="/settings">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-slate-800">
               <Settings className="h-5 w-5" />
             </Button>
           </Link>
@@ -69,6 +69,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             size="icon"
             onClick={handleSignOut}
             disabled={loading}
+            className="text-gray-300 hover:text-white hover:bg-slate-800"
           >
             <LogOut className="h-5 w-5" />
           </Button>

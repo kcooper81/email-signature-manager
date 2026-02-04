@@ -49,6 +49,8 @@ export default function SettingsPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [orgName, setOrgName] = useState('');
+  const [orgDomain, setOrgDomain] = useState('');
+  const [domainSource, setDomainSource] = useState<'manual' | 'google_workspace' | 'microsoft_365' | 'hubspot' | null>(null);
   
   // Notification preferences
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -71,11 +73,12 @@ export default function SettingsPage() {
   const [showSessions, setShowSessions] = useState(false);
   
   // Appearance
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark-blue' | 'charcoal'>('light');
 
   useEffect(() => {
     loadSettings();
   }, []);
+
 
   const loadSettings = async () => {
     const supabase = createClient();
@@ -86,7 +89,7 @@ export default function SettingsPage() {
     // Load user profile
     const { data: userData } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, organization_id, email_notifications, deployment_alerts, weekly_digest')
+      .select('id, email, first_name, last_name, organization_id, email_notifications, deployment_alerts, weekly_digest, theme')
       .eq('auth_id', user.id)
       .single();
 
@@ -97,18 +100,45 @@ export default function SettingsPage() {
       setEmailNotifications(userData.email_notifications ?? true);
       setDeploymentAlerts(userData.deployment_alerts ?? true);
       setWeeklyDigest(userData.weekly_digest ?? false);
+      
+      // Load and apply theme
+      const userTheme = (userData.theme || 'light') as 'light' | 'dark-blue' | 'charcoal';
+      setTheme(userTheme);
+      applyTheme(userTheme);
+
+      // Check 2FA status
+      try {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        if (factors && factors.totp && factors.totp.length > 0) {
+          setTwoFactorEnabled(true);
+        }
+      } catch (error) {
+        console.log('2FA not available or not configured');
+      }
 
       // Load organization
       if (userData.organization_id) {
         const { data: orgData } = await supabase
           .from('organizations')
-          .select('id, name, domain')
+          .select('id, name, domain, google_workspace_connected, microsoft_365_connected, hubspot_connected')
           .eq('id', userData.organization_id)
           .single();
 
         if (orgData) {
           setOrganization(orgData);
           setOrgName(orgData.name || '');
+          setOrgDomain(orgData.domain || '');
+          
+          // Determine domain source based on integration
+          if (orgData.google_workspace_connected) {
+            setDomainSource('google_workspace');
+          } else if (orgData.microsoft_365_connected) {
+            setDomainSource('microsoft_365');
+          } else if (orgData.hubspot_connected) {
+            setDomainSource('hubspot');
+          } else {
+            setDomainSource('manual');
+          }
         }
       }
     }
@@ -141,11 +171,18 @@ export default function SettingsPage() {
     setSaving(true);
     const supabase = createClient();
 
+    const updateData: any = {
+      name: orgName,
+    };
+
+    // Only update domain if it's manually set (not from integration)
+    if (domainSource === 'manual') {
+      updateData.domain = orgDomain;
+    }
+
     await supabase
       .from('organizations')
-      .update({
-        name: orgName,
-      })
+      .update(updateData)
       .eq('id', organization.id);
 
     setSaving(false);
@@ -212,21 +249,25 @@ export default function SettingsPage() {
     setSaving(true);
     const supabase = createClient();
 
-    // In production, this would call Supabase MFA enrollment
-    // For now, we'll simulate the process
-    const { data, error } = await supabase.auth.mfa.enroll({
-      factorType: 'totp',
-    });
+    try {
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp',
+      });
 
-    if (error) {
+      if (error) {
+        console.error('2FA enrollment error:', error);
+        setPasswordError('2FA enrollment failed. Please try again.');
+        setSaving(false);
+        return;
+      }
+
+      if (data) {
+        setQrCode(data.totp.qr_code);
+        setShow2FASetup(true);
+      }
+    } catch (error) {
       console.error('2FA enrollment error:', error);
-      setSaving(false);
-      return;
-    }
-
-    if (data) {
-      setQrCode(data.totp.qr_code);
-      setShow2FASetup(true);
+      setPasswordError('2FA is not available. Please contact support.');
     }
 
     setSaving(false);
@@ -240,15 +281,33 @@ export default function SettingsPage() {
     setSaving(true);
     const supabase = createClient();
 
-    // Verify the TOTP code
-    const { data, error } = await supabase.auth.mfa.challenge({
-      factorId: 'factor-id', // This would come from enrollment
-    });
+    try {
+      // Get enrolled factors
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      
+      if (!factors || factors.totp.length === 0) {
+        setPasswordError('No 2FA factor found. Please try enrolling again.');
+        setSaving(false);
+        return;
+      }
 
-    if (!error && data) {
+      const factorId = factors.totp[0].id;
+
+      // Create challenge
+      const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId,
+      });
+
+      if (challengeError || !challengeData) {
+        setPasswordError('Failed to create verification challenge.');
+        setSaving(false);
+        return;
+      }
+
+      // Verify the code
       const { error: verifyError } = await supabase.auth.mfa.verify({
-        factorId: 'factor-id',
-        challengeId: data.id,
+        factorId,
+        challengeId: challengeData.id,
         code: verificationCode,
       });
 
@@ -256,9 +315,15 @@ export default function SettingsPage() {
         setTwoFactorEnabled(true);
         setShow2FASetup(false);
         setVerificationCode('');
+        setPasswordError('');
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
+      } else {
+        setPasswordError('Invalid verification code. Please try again.');
       }
+    } catch (error) {
+      console.error('2FA verification error:', error);
+      setPasswordError('Verification failed. Please try again.');
     }
 
     setSaving(false);
@@ -268,15 +333,29 @@ export default function SettingsPage() {
     setSaving(true);
     const supabase = createClient();
 
-    // Unenroll from MFA
-    const { error } = await supabase.auth.mfa.unenroll({
-      factorId: 'factor-id',
-    });
+    try {
+      // Get enrolled factors
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      
+      if (!factors || factors.totp.length === 0) {
+        setSaving(false);
+        return;
+      }
 
-    if (!error) {
-      setTwoFactorEnabled(false);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      const factorId = factors.totp[0].id;
+
+      // Unenroll from MFA
+      const { error } = await supabase.auth.mfa.unenroll({
+        factorId,
+      });
+
+      if (!error) {
+        setTwoFactorEnabled(false);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      }
+    } catch (error) {
+      console.error('2FA disable error:', error);
     }
 
     setSaving(false);
@@ -327,36 +406,45 @@ export default function SettingsPage() {
 
     if (!profile) return;
 
-    // Delete user data
-    await supabase.from('users').delete().eq('id', profile.id);
+    try {
+      // Mark user as deleted in database (soft delete)
+      // The actual auth user deletion should be handled by a server-side function
+      await supabase
+        .from('users')
+        .update({ 
+          is_active: false,
+          deleted_at: new Date().toISOString()
+        })
+        .eq('id', profile.id);
 
-    // Delete auth user
-    await supabase.auth.admin.deleteUser(profile.id);
+      // Sign out
+      await supabase.auth.signOut();
 
-    // Sign out
-    await supabase.auth.signOut();
-
-    // Redirect to home
-    window.location.href = '/';
+      // Redirect to home
+      window.location.href = '/?deleted=true';
+    } catch (error) {
+      console.error('Delete account error:', error);
+      setPasswordError('Failed to delete account. Please contact support.');
+      setSaving(false);
+    }
   };
 
-  const saveTheme = async (newTheme: 'light' | 'dark' | 'system') => {
-    setTheme(newTheme);
+  const applyTheme = (themeToApply: 'light' | 'dark-blue' | 'charcoal') => {
+    // Remove all theme classes
+    document.documentElement.classList.remove('dark', 'theme-dark-blue', 'theme-charcoal');
     
-    // Apply theme to document
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else if (newTheme === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
-      // System theme
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+    // Apply selected theme
+    if (themeToApply === 'dark-blue') {
+      document.documentElement.classList.add('theme-dark-blue');
+    } else if (themeToApply === 'charcoal') {
+      document.documentElement.classList.add('theme-charcoal');
     }
+    // Light theme is default (no class needed)
+  };
+
+  const saveTheme = async (newTheme: 'light' | 'dark-blue' | 'charcoal') => {
+    setTheme(newTheme);
+    applyTheme(newTheme);
 
     // Save to database
     if (profile) {
@@ -404,7 +492,7 @@ export default function SettingsPage() {
                 <Link
                   key={tab.id}
                   href={tab.href}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-100"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors text-muted-foreground hover:bg-accent"
                 >
                   <tab.icon className="h-5 w-5" />
                   {tab.label}
@@ -415,8 +503,8 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-violet-100 text-violet-900 font-medium'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-violet-100 text-violet-900 font-medium dark:bg-violet-900/30 dark:text-violet-300'
+                      : 'text-muted-foreground hover:bg-accent'
                   }`}
                 >
                   <tab.icon className="h-5 w-5" />
@@ -462,7 +550,7 @@ export default function SettingsPage() {
                   <Input
                     value={profile?.email || ''}
                     disabled
-                    className="bg-gray-50"
+                    className="bg-muted"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Email cannot be changed
@@ -504,13 +592,37 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium mb-2">Domain</label>
                   <Input
-                    value={organization?.domain || ''}
-                    disabled
-                    className="bg-gray-50"
+                    value={orgDomain}
+                    onChange={(e) => setOrgDomain(e.target.value)}
+                    disabled={domainSource !== 'manual' && domainSource !== null}
+                    className={domainSource !== 'manual' && domainSource !== null ? 'bg-muted' : ''}
+                    placeholder="company.com"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Domain is set from your Google Workspace
-                  </p>
+                  {domainSource === 'google_workspace' && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Domain is synced from Google Workspace integration
+                    </p>
+                  )}
+                  {domainSource === 'microsoft_365' && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Domain is synced from Microsoft 365 integration
+                    </p>
+                  )}
+                  {domainSource === 'hubspot' && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Domain is synced from HubSpot integration
+                    </p>
+                  )}
+                  {domainSource === 'manual' && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Enter your organization's email domain (e.g., company.com)
+                    </p>
+                  )}
+                  {domainSource === null && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Connect an integration or enter manually
+                    </p>
+                  )}
                 </div>
 
                 <Button onClick={saveOrganization} disabled={saving}>
@@ -606,29 +718,29 @@ export default function SettingsPage() {
                     <button 
                       onClick={() => saveTheme('light')}
                       className={`p-4 border-2 rounded-lg text-center transition-colors ${
-                        theme === 'light' ? 'border-violet-600' : 'border-gray-200 hover:border-gray-400'
+                        theme === 'light' ? 'border-violet-600' : 'border hover:border-primary/50'
                       }`}
                     >
-                      <div className="w-full h-8 bg-white border rounded mb-2" />
+                      <div className="w-full h-8 bg-background border rounded mb-2" />
                       <span className={`text-sm ${theme === 'light' ? 'font-medium' : ''}`}>Light</span>
                     </button>
                     <button 
-                      onClick={() => saveTheme('dark')}
+                      onClick={() => saveTheme('dark-blue')}
                       className={`p-4 border-2 rounded-lg text-center transition-colors ${
-                        theme === 'dark' ? 'border-violet-600' : 'border-gray-200 hover:border-gray-400'
+                        theme === 'dark-blue' ? 'border-violet-600' : 'border hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="w-full h-8 bg-blue-900 rounded mb-2" />
+                      <span className={`text-sm ${theme === 'dark-blue' ? 'font-medium' : ''}`}>Dark Blue</span>
+                    </button>
+                    <button 
+                      onClick={() => saveTheme('charcoal')}
+                      className={`p-4 border-2 rounded-lg text-center transition-colors ${
+                        theme === 'charcoal' ? 'border-violet-600' : 'border hover:border-primary/50'
                       }`}
                     >
                       <div className="w-full h-8 bg-gray-900 rounded mb-2" />
-                      <span className={`text-sm ${theme === 'dark' ? 'font-medium' : ''}`}>Dark</span>
-                    </button>
-                    <button 
-                      onClick={() => saveTheme('system')}
-                      className={`p-4 border-2 rounded-lg text-center transition-colors ${
-                        theme === 'system' ? 'border-violet-600' : 'border-gray-200 hover:border-gray-400'
-                      }`}
-                    >
-                      <div className="w-full h-8 bg-gradient-to-r from-white to-gray-900 rounded mb-2" />
-                      <span className={`text-sm ${theme === 'system' ? 'font-medium' : ''}`}>System</span>
+                      <span className={`text-sm ${theme === 'charcoal' ? 'font-medium' : ''}`}>Charcoal</span>
                     </button>
                   </div>
                 </div>
@@ -751,7 +863,7 @@ export default function SettingsPage() {
                           Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
                         </p>
                         {qrCode && (
-                          <div className="bg-white p-4 rounded-lg inline-block">
+                          <div className="bg-card p-4 rounded-lg inline-block">
                             <img src={qrCode} alt="2FA QR Code" className="w-48 h-48" />
                           </div>
                         )}
@@ -808,9 +920,9 @@ export default function SettingsPage() {
                         <p className="text-sm text-muted-foreground">No active sessions found.</p>
                       ) : (
                         sessions.map((session) => (
-                          <div key={session.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div key={session.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                             <div className="flex items-center gap-3">
-                              <Monitor className="h-5 w-5 text-gray-400" />
+                              <Monitor className="h-5 w-5 text-muted-foreground" />
                               <div>
                                 <p className="text-sm font-medium">
                                   {session.device}

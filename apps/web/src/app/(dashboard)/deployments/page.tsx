@@ -254,10 +254,10 @@ export default function DeploymentsPage() {
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md mx-4 text-center relative animate-in fade-in zoom-in duration-300">
+          <div className="bg-card rounded-xl shadow-2xl p-8 max-w-md mx-4 text-center relative animate-in fade-in zoom-in duration-300">
             <button
               onClick={() => setShowSuccessModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -266,29 +266,29 @@ export default function DeploymentsPage() {
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <PartyPopper className="h-10 w-10 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-foreground mb-2">
                 Signatures Deployed!
               </h2>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Your email signatures have been successfully deployed.
               </p>
             </div>
 
             {deploymentResult && (
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <div className="bg-muted rounded-lg p-4 mb-6">
                 <div className="flex justify-center gap-8">
                   <div>
                     <div className="text-3xl font-bold text-green-600">
                       {deploymentResult.successCount}
                     </div>
-                    <div className="text-sm text-gray-500">Successful</div>
+                    <div className="text-sm text-muted-foreground">Successful</div>
                   </div>
                   {deploymentResult.failCount > 0 && (
                     <div>
                       <div className="text-3xl font-bold text-red-600">
                         {deploymentResult.failCount}
                       </div>
-                      <div className="text-sm text-gray-500">Failed</div>
+                      <div className="text-sm text-muted-foreground">Failed</div>
                     </div>
                   )}
                 </div>
@@ -340,19 +340,38 @@ export default function DeploymentsPage() {
             Follow the steps to deploy signatures to your team
           </CardDescription>
           {/* Step indicator */}
-          <div className="flex items-center gap-2 pt-4">
-            {[1, 2, 3].map((s) => (
-              <div key={s} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step === s 
-                    ? 'bg-primary text-primary-foreground' 
-                    : step > s 
-                    ? 'bg-green-500 text-white'
-                    : 'bg-slate-200 text-slate-500'
-                }`}>
-                  {step > s ? <CheckCircle2 className="h-4 w-4" /> : s}
+          <div className="flex items-center justify-between pt-6 pb-2">
+            {[
+              { num: 1, label: 'Select Template' },
+              { num: 2, label: 'Choose Recipients' },
+              { num: 3, label: 'Review & Deploy' }
+            ].map((s, idx) => (
+              <div key={s.num} className="flex items-center flex-1">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                    step === s.num 
+                      ? 'bg-violet-600 text-white shadow-lg ring-4 ring-violet-100' 
+                      : step > s.num 
+                      ? 'bg-emerald-500 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
+                  }`}>
+                    {step > s.num ? <CheckCircle2 className="h-5 w-5" /> : s.num}
+                  </div>
+                  <div className="hidden sm:block">
+                    <p className={`text-sm font-medium ${
+                      step === s.num ? 'text-violet-600' : step > s.num ? 'text-emerald-600' : 'text-gray-400'
+                    }`}>
+                      {s.label}
+                    </p>
+                  </div>
                 </div>
-                {s < 3 && <div className={`w-12 h-0.5 mx-1 ${step > s ? 'bg-green-500' : 'bg-slate-200'}`} />}
+                {idx < 2 && (
+                  <div className="flex-1 mx-4">
+                    <div className={`h-1 rounded-full transition-all ${
+                      step > s.num ? 'bg-emerald-500' : 'bg-gray-200'
+                    }`} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -361,8 +380,10 @@ export default function DeploymentsPage() {
           {/* Step 1: Select Template */}
           {step === 1 && (
             <div className="space-y-4">
-              <h3 className="font-medium">Step 1: Select Template</h3>
-              <p className="text-sm text-muted-foreground">Choose which signature template to deploy</p>
+              <div className="border-b pb-3 mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Select Template</h3>
+                <p className="text-sm text-muted-foreground mt-1">Choose which signature template to deploy</p>
+              </div>
               
               {templates.length === 0 ? (
                 <div className="text-center py-8 border rounded-lg">
@@ -377,10 +398,10 @@ export default function DeploymentsPage() {
                   {templates.map((template) => (
                     <label
                       key={template.id}
-                      className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
+                      className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all shadow-sm ${
                         selectedTemplate === template.id 
-                          ? 'border-primary bg-primary/5' 
-                          : 'hover:bg-slate-50'
+                          ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' 
+                          : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
                       }`}
                     >
                       <input
@@ -413,15 +434,17 @@ export default function DeploymentsPage() {
           {/* Step 2: Select Recipients */}
           {step === 2 && (
             <div className="space-y-4">
-              <h3 className="font-medium">Step 2: Select Recipients</h3>
-              <p className="text-sm text-muted-foreground">Choose who should receive this signature</p>
+              <div className="border-b pb-3 mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Select Recipients</h3>
+                <p className="text-sm text-muted-foreground mt-1">Choose who should receive this signature</p>
+              </div>
               
               {/* Target type selection */}
               <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => { setDeployTarget('me'); setSelectedUsers([]); }}
-                  className={`p-4 border rounded-lg text-center transition-colors ${
-                    deployTarget === 'me' ? 'border-primary bg-primary/5' : 'hover:bg-slate-50'
+                  className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
+                    deployTarget === 'me' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
                   }`}
                 >
                   <UserIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
@@ -430,8 +453,8 @@ export default function DeploymentsPage() {
                 </button>
                 <button
                   onClick={() => setDeployTarget('selected')}
-                  className={`p-4 border rounded-lg text-center transition-colors ${
-                    deployTarget === 'selected' ? 'border-primary bg-primary/5' : 'hover:bg-slate-50'
+                  className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
+                    deployTarget === 'selected' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
                   }`}
                   disabled={users.length === 0}
                 >
@@ -441,8 +464,8 @@ export default function DeploymentsPage() {
                 </button>
                 <button
                   onClick={() => { setDeployTarget('all'); setSelectedUsers([]); }}
-                  className={`p-4 border rounded-lg text-center transition-colors ${
-                    deployTarget === 'all' ? 'border-primary bg-primary/5' : 'hover:bg-slate-50'
+                  className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
+                    deployTarget === 'all' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
                   }`}
                   disabled={users.length === 0}
                 >
@@ -501,7 +524,7 @@ export default function DeploymentsPage() {
                           <button
                             key={dept}
                             onClick={() => selectByDepartment(dept)}
-                            className="text-xs px-2 py-1 bg-white border rounded hover:bg-slate-100"
+                            className="text-xs px-2 py-1 bg-background border rounded hover:bg-accent"
                           >
                             {dept}
                           </button>
@@ -524,10 +547,10 @@ export default function DeploymentsPage() {
                         {filteredUsers.map((user) => (
                           <label
                             key={user.id}
-                            className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
+                            className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-all shadow-sm ${
                               selectedUsers.includes(user.id) 
-                                ? 'bg-primary/10 border border-primary/30' 
-                                : 'hover:bg-slate-50 border border-transparent'
+                                ? 'bg-violet-50 border-2 border-violet-500 shadow-md ring-2 ring-violet-200' 
+                                : 'border-2 border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
                             }`}
                           >
                             <input
@@ -568,8 +591,10 @@ export default function DeploymentsPage() {
           {/* Step 3: Review & Deploy */}
           {step === 3 && (
             <div className="space-y-4">
-              <h3 className="font-medium">Step 3: Review & Deploy</h3>
-              <p className="text-sm text-muted-foreground">Confirm your deployment settings</p>
+              <div className="border-b pb-3 mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Review & Deploy</h3>
+                <p className="text-sm text-muted-foreground mt-1">Confirm your deployment settings</p>
+              </div>
               
               <div className="border rounded-lg divide-y">
                 <div className="p-4 flex justify-between items-center">

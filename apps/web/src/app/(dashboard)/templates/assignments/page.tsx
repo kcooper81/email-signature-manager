@@ -226,7 +226,7 @@ export default function TemplateAssignmentsPage() {
             </div>
             <div className="flex items-center gap-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search employees..."
                   value={searchQuery}
@@ -238,7 +238,7 @@ export default function TemplateAssignmentsPage() {
                 <select
                   value={selectedDepartment}
                   onChange={(e) => setSelectedDepartment(e.target.value)}
-                  className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white"
+                  className="text-sm border rounded-lg px-3 py-2 bg-background"
                 >
                   <option value="all">All Departments</option>
                   {departments.map(dept => (
@@ -272,7 +272,7 @@ export default function TemplateAssignmentsPage() {
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                     {emps.slice(0, 6).map(emp => (
-                      <div key={emp.id} className="flex items-center gap-2 p-2 rounded-lg bg-gray-50">
+                      <div key={emp.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted">
                         <Avatar 
                           alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
                           fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
@@ -289,7 +289,7 @@ export default function TemplateAssignmentsPage() {
                       </div>
                     ))}
                     {emps.length > 6 && (
-                      <div className="flex items-center justify-center p-2 rounded-lg bg-gray-50 text-sm text-muted-foreground">
+                      <div className="flex items-center justify-center p-2 rounded-lg bg-muted text-sm text-muted-foreground">
                         +{emps.length - 6} more
                       </div>
                     )}

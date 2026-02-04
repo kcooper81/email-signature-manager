@@ -89,13 +89,13 @@ export function GettingStartedCard({
   ];
 
   return (
-    <Card className="border-gray-200 overflow-hidden">
+    <Card className="overflow-hidden">
       {/* Header */}
-      <CardHeader className="py-4 bg-gradient-to-r from-violet-50 to-blue-50 border-b border-gray-100">
+      <CardHeader className="py-4 bg-gradient-to-r from-violet-50 to-blue-50 border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-base font-semibold text-gray-900">
+              <CardTitle className="text-base font-semibold text-foreground">
                 Getting Started
               </CardTitle>
               <span className="text-xs font-medium text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full">
@@ -106,7 +106,7 @@ export function GettingStartedCard({
           <div className="flex items-center gap-1">
             <button
               onClick={handleMinimize}
-              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-lg transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-lg transition-colors"
               title={isMinimized ? 'Expand' : 'Minimize'}
             >
               {isMinimized ? (
@@ -117,7 +117,7 @@ export function GettingStartedCard({
             </button>
             <button
               onClick={handleDismiss}
-              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-lg transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-lg transition-colors"
               title="Dismiss"
             >
               <X className="h-4 w-4" />
@@ -127,7 +127,7 @@ export function GettingStartedCard({
         
         {/* Progress bar */}
         {!isMinimized && (
-          <div className="mt-3 h-1.5 bg-white/50 rounded-full overflow-hidden">
+          <div className="mt-3 h-1.5 bg-background/50 rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-violet-500 to-blue-500 rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
@@ -145,7 +145,7 @@ export function GettingStartedCard({
             ))}
           </div>
           
-          <p className="text-xs text-gray-400 mt-4 text-center">
+          <p className="text-xs text-muted-foreground mt-4 text-center">
             You can dismiss this card anytime. Access setup from Settings if needed.
           </p>
         </CardContent>
@@ -171,7 +171,7 @@ function StepItem({ step, stepNumber }: { step: Step; stepNumber: number }) {
       className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 ${
         step.completed
           ? 'bg-emerald-50 border-emerald-200'
-          : 'bg-white border-gray-200 hover:border-violet-300 hover:shadow-sm cursor-pointer'
+          : 'bg-card border hover:border-violet-300 hover:shadow-sm cursor-pointer'
       }`}
     >
       {/* Icon */}
@@ -179,7 +179,7 @@ function StepItem({ step, stepNumber }: { step: Step; stepNumber: number }) {
         className={`shrink-0 h-10 w-10 rounded-lg flex items-center justify-center ${
           step.completed
             ? 'bg-emerald-500 text-white'
-            : 'bg-gray-100 text-gray-500'
+            : 'bg-muted text-muted-foreground'
         }`}
       >
         {step.completed ? (
@@ -191,10 +191,10 @@ function StepItem({ step, stepNumber }: { step: Step; stepNumber: number }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${step.completed ? 'text-emerald-700' : 'text-gray-900'}`}>
+        <p className={`text-sm font-medium ${step.completed ? 'text-emerald-700' : 'text-foreground'}`}>
           {step.title}
         </p>
-        <p className="text-xs text-gray-500 truncate">{step.description}</p>
+        <p className="text-xs text-muted-foreground truncate">{step.description}</p>
       </div>
 
       {/* Step number */}
