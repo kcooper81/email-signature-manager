@@ -28,10 +28,31 @@ export default function EditTemplatePage({ params }: PageProps) {
 
   const loadTemplate = async () => {
     const supabase = createClient();
+    
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      router.push('/templates');
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      router.push('/templates');
+      return;
+    }
+
+    // Load template - FILTERED BY ORGANIZATION
     const { data, error } = await supabase
       .from('signature_templates')
       .select('*')
       .eq('id', params.id)
+      .eq('organization_id', currentUser.organization_id)
       .single();
 
     if (error || !data) {
@@ -53,6 +74,26 @@ export default function EditTemplatePage({ params }: PageProps) {
 
     try {
       const supabase = createClient();
+      
+      // Get current user's organization for security
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/templates');
+        return;
+      }
+
+      const { data: currentUser } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (!currentUser?.organization_id) {
+        router.push('/templates');
+        return;
+      }
+
+      // Update template - FILTERED BY ORGANIZATION to prevent cross-org modification
       const { error } = await supabase
         .from('signature_templates')
         .update({
@@ -62,7 +103,8 @@ export default function EditTemplatePage({ params }: PageProps) {
           industry,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', params.id);
+        .eq('id', params.id)
+        .eq('organization_id', currentUser.organization_id);
 
       if (error) {
         console.error('Failed to save template:', error);

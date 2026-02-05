@@ -55,9 +55,30 @@ export default function IntegrationsPage() {
 
   const loadConnections = async () => {
     const supabase = createClient();
+    
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    // Load connections - ONLY for current organization
     const { data, error } = await supabase
       .from('provider_connections')
-      .select('id, provider, is_active, created_at, token_expires_at');
+      .select('id, provider, is_active, created_at, token_expires_at')
+      .eq('organization_id', currentUser.organization_id);
 
     if (!error && data) {
       setConnections(data);
@@ -217,10 +238,25 @@ export default function IntegrationsPage() {
     if (!confirm(`Are you sure you want to disconnect ${provider}?`)) return;
 
     const supabase = createClient();
+    
+    // Get current user's organization for security
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) return;
+
+    // Delete connection - FILTERED BY ORGANIZATION to prevent cross-org deletion
     const { error } = await supabase
       .from('provider_connections')
       .delete()
-      .eq('provider', provider);
+      .eq('provider', provider)
+      .eq('organization_id', currentUser.organization_id);
 
     if (!error) {
       setConnections(connections.filter((c) => c.provider !== provider));

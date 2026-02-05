@@ -112,27 +112,51 @@ export default function AnalyticsPage() {
     const previousStartDate = new Date(startDate);
     previousStartDate.setDate(previousStartDate.getDate() - daysAgo);
 
-    // Get all users with department info
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    const organizationId = currentUser.organization_id;
+
+    // Get all users with department info - FILTERED BY ORGANIZATION
     const { data: users, count: userCount } = await supabase
       .from('users')
-      .select('id, email, department, source, created_at', { count: 'exact' });
+      .select('id, email, department, source, created_at', { count: 'exact' })
+      .eq('organization_id', organizationId);
 
-    // Get all templates
+    // Get all templates - FILTERED BY ORGANIZATION
     const { data: templates, count: templateCount } = await supabase
       .from('signature_templates')
-      .select('id, name, created_at');
+      .select('id, name, created_at')
+      .eq('organization_id', organizationId);
 
-    // Get deployments for current period (include target_emails for accurate tracking)
+    // Get deployments for current period - FILTERED BY ORGANIZATION
     const { data: deployments } = await supabase
       .from('signature_deployments')
       .select('id, status, total_users, successful_count, failed_count, created_at, template_id, target_emails, template:signature_templates(id, name)')
+      .eq('organization_id', organizationId)
       .gte('created_at', startDate.toISOString())
       .order('created_at', { ascending: false });
 
-    // Get deployments for previous period (comparison)
+    // Get deployments for previous period - FILTERED BY ORGANIZATION
     const { data: previousDeployments } = await supabase
       .from('signature_deployments')
       .select('id, status, successful_count, target_emails')
+      .eq('organization_id', organizationId)
       .gte('created_at', previousStartDate.toISOString())
       .lt('created_at', startDate.toISOString());
 

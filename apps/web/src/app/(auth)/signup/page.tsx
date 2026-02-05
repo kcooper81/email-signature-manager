@@ -53,12 +53,12 @@ export default function SignupPage() {
 
       if (error) {
         setError(error.message);
-      } else {
-        trackSignUpComplete('google');
+        setLoading(false);
       }
+      // Keep loading state active - OAuth will redirect to Google
+      // trackSignUpComplete will be called after callback confirms signup
     } catch (err) {
       setError('An unexpected error occurred');
-    } finally {
       setLoading(false);
     }
   };

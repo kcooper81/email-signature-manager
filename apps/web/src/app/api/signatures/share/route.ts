@@ -10,6 +10,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get current user's organization
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
     const { signatureId, userIds } = await request.json();
 
     if (!signatureId || !userIds || !Array.isArray(userIds)) {
@@ -19,11 +30,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the signature template
+    // Get the signature template - FILTERED BY ORGANIZATION
     const { data: template, error: templateError } = await supabase
       .from('signature_templates')
       .select('*, signature_blocks(*)')
       .eq('id', signatureId)
+      .eq('organization_id', currentUser.organization_id)
       .single();
 
     if (templateError || !template) {

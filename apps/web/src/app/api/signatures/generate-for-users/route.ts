@@ -20,11 +20,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the signature template with blocks
+    // Get organization info FIRST for security
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id, organizations(name)')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      return NextResponse.json(
+        { error: 'Organization not found' },
+        { status: 404 }
+      );
+    }
+
+    // Get the signature template with blocks - FILTERED BY ORGANIZATION
     const { data: template, error: templateError } = await supabase
       .from('signature_templates')
       .select('*')
       .eq('id', templateId)
+      .eq('organization_id', currentUser.organization_id)
       .single();
 
     if (templateError) {
@@ -38,20 +53,6 @@ export async function POST(request: NextRequest) {
     if (!template) {
       return NextResponse.json(
         { error: 'Signature template not found' },
-        { status: 404 }
-      );
-    }
-
-    // Get organization info
-    const { data: currentUser } = await supabase
-      .from('users')
-      .select('organization_id, organizations(name)')
-      .eq('auth_id', user.id)
-      .single();
-
-    if (!currentUser?.organization_id) {
-      return NextResponse.json(
-        { error: 'Organization not found' },
         { status: 404 }
       );
     }

@@ -57,45 +57,31 @@ export default function NewTemplatePage() {
     try {
       const supabase = createClient();
       
-      // Get current user's organization
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         router.push('/login');
         return;
       }
 
-      // For now, create org if doesn't exist (simplified)
-      let orgId: string;
-      const { data: existingOrg } = await supabase
-        .from('organizations')
-        .select('id')
-        .limit(1)
+      // Get CURRENT USER's organization - CRITICAL for multi-tenant security
+      const { data: userData } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user.id)
         .single();
 
-      if (existingOrg) {
-        orgId = existingOrg.id;
-      } else {
-        const { data: newOrg, error: orgError } = await supabase
-          .from('organizations')
-          .insert({
-            name: user.user_metadata?.organization_name || 'My Organization',
-            slug: user.email?.split('@')[0] || 'org',
-          })
-          .select('id')
-          .single();
-
-        if (orgError || !newOrg) {
-          console.error('Failed to create org:', orgError);
-          return;
-        }
-        orgId = newOrg.id;
+      if (!userData?.organization_id) {
+        console.error('User has no organization');
+        router.push('/dashboard');
+        return;
       }
 
-      // Create the template
+      // Create the template under user's organization
       const { data: template, error } = await supabase
         .from('signature_templates')
         .insert({
-          organization_id: orgId,
+          organization_id: userData.organization_id,
           name,
           description,
           blocks,

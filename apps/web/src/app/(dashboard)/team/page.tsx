@@ -109,20 +109,40 @@ export default function TeamMembersPage() {
   const loadData = async () => {
     const supabase = createClient();
     
-    // Load members
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    // Load members - ONLY for current organization
     const { data: membersData } = await supabase
       .from('users')
       .select('*')
+      .eq('organization_id', currentUser.organization_id)
       .order('email');
     
     if (membersData) {
       setMembers(membersData);
     }
 
-    // Load connections
+    // Load connections - ONLY for current organization
     const { data: connectionsData } = await supabase
       .from('provider_connections')
-      .select('provider, is_active');
+      .select('provider, is_active')
+      .eq('organization_id', currentUser.organization_id);
     
     if (connectionsData) setConnections(connectionsData);
 
@@ -131,9 +151,24 @@ export default function TeamMembersPage() {
 
   const loadTemplates = async () => {
     const supabase = createClient();
+    
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) return;
+
+    // Load templates - ONLY for current organization
     const { data } = await supabase
       .from('signature_templates')
       .select('id, name, description')
+      .eq('organization_id', currentUser.organization_id)
       .order('name');
     
     if (data) setTemplates(data);

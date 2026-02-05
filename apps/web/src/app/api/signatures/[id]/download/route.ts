@@ -13,13 +13,25 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get current user's organization
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
     const signatureId = params.id;
 
-    // Get the signature template with blocks
+    // Get the signature template with blocks - FILTERED BY ORGANIZATION
     const { data: template, error: templateError } = await supabase
       .from('signature_templates')
       .select('*, signature_blocks(*)')
       .eq('id', signatureId)
+      .eq('organization_id', currentUser.organization_id)
       .single();
 
     if (templateError || !template) {

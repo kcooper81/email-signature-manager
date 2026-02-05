@@ -28,22 +28,34 @@ export default async function DashboardPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Fetch actual counts for dashboard stats
+  // Get current user's organization
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('organization_id')
+    .eq('auth_id', user?.id)
+    .single();
+
+  const organizationId = currentUser?.organization_id;
+
+  // Fetch actual counts for dashboard stats - FILTERED BY ORGANIZATION
   const { count: templateCount } = await supabase
     .from('signature_templates')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .eq('organization_id', organizationId);
 
   const { count: teamMemberCount } = await supabase
     .from('users')
-    .select('*', { count: 'exact', head: true });
+    .select('*', { count: 'exact', head: true })
+    .eq('organization_id', organizationId);
   
   const { data: connections } = await supabase
     .from('provider_connections')
     .select('id')
+    .eq('organization_id', organizationId)
     .eq('is_active', true)
     .limit(1);
 
-  // Get deployments from this month
+  // Get deployments from this month - FILTERED BY ORGANIZATION
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
   startOfMonth.setHours(0, 0, 0, 0);
@@ -51,6 +63,7 @@ export default async function DashboardPage() {
   const { data: deployments, count: deploymentCount } = await supabase
     .from('signature_deployments')
     .select('id, status, successful_count, failed_count, total_users, created_at, template:signature_templates(name)', { count: 'exact' })
+    .eq('organization_id', organizationId)
     .gte('created_at', startOfMonth.toISOString())
     .order('created_at', { ascending: false })
     .limit(5);
@@ -62,10 +75,11 @@ export default async function DashboardPage() {
     ? Math.round((successfulDeployments / totalDeployments) * 100) 
     : 0;
 
-  // Get users with signatures (from successful deployments)
+  // Get users with signatures (from successful deployments) - FILTERED BY ORGANIZATION
   const { data: allDeployments } = await supabase
     .from('signature_deployments')
     .select('target_emails, successful_count, status')
+    .eq('organization_id', organizationId)
     .eq('status', 'completed');
   
   const uniqueUsersWithSignatures = new Set<string>();
