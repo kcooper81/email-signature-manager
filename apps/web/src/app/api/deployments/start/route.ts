@@ -81,33 +81,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the template - try with org first, then without
-    let template = null;
-    
-    const { data: templateWithOrg } = await supabase
+    // Get the template - MUST be in user's organization (no fallback for security)
+    const { data: template } = await supabase
       .from('signature_templates')
       .select('*')
       .eq('id', templateId)
       .eq('organization_id', organizationId)
       .single();
 
-    if (templateWithOrg) {
-      template = templateWithOrg;
-    } else {
-      // Fallback: try to get template without org filter (for templates created before org assignment)
-      const { data: templateAny } = await supabase
-        .from('signature_templates')
-        .select('*')
-        .eq('id', templateId)
-        .single();
-      
-      template = templateAny;
-    }
-
     if (!template) {
-      console.error('Template not found:', { templateId, organizationId });
+      console.error('Template not found or access denied:', { templateId, organizationId });
       return NextResponse.json(
-        { error: 'Template not found' },
+        { error: 'Template not found or access denied' },
         { status: 404 }
       );
     }
