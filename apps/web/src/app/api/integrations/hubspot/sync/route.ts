@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { listHubSpotContacts, getContactsFromList } from '@/lib/hubspot/crm';
 import { refreshHubSpotToken } from '@/lib/hubspot/oauth';
+import { getContactsFromList, listHubSpotContacts } from '@/lib/hubspot/crm';
+import { getPlan } from '@/lib/billing/plans';
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
@@ -66,16 +67,58 @@ export async function POST(request: NextRequest) {
       ? await getContactsFromList(accessToken, listId)
       : await listHubSpotContacts(accessToken);
 
-    const usersToUpsert = contacts.map((contact) => ({
-      email: contact.email,
-      first_name: contact.firstName,
-      last_name: contact.lastName,
-      title: contact.jobTitle,
-      department: contact.department,
-      phone: contact.phone,
-      mobile: contact.mobilePhone,
+    // Check plan limits before syncing
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('organization_id', userData.organization_id)
+      .single();
+
+    const planId = subscription?.plan || 'free';
+    const plan = getPlan(planId);
+    const maxUsers = plan.features.maxUsers;
+
+    // Count existing users
+    const { count: existingUserCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', userData.organization_id);
+
+    const currentCount = existingUserCount || 0;
+
+    // Check if dev bypass is enabled
+    const devBypass = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+
+    // Filter contacts to only sync up to the limit (unless unlimited or dev bypass)
+    let contactsToSync = contacts;
+    if (!devBypass && maxUsers !== -1) {
+      const availableSlots = maxUsers - currentCount;
+      if (availableSlots <= 0) {
+        return NextResponse.json(
+          { 
+            error: 'User limit reached',
+            message: `Your ${plan.name} plan allows up to ${maxUsers} users. Please upgrade to add more team members.`,
+            limit: maxUsers,
+            current: currentCount
+          },
+          { status: 403 }
+        );
+      }
+      // Only sync contacts that fit within the limit
+      contactsToSync = contacts.slice(0, availableSlots);
+    }
+
+    const usersToUpsert = contactsToSync.map((contact) => ({
+      email: contact.properties.email,
+      first_name: contact.properties.firstname,
+      last_name: contact.properties.lastname,
+      title: contact.properties.jobtitle,
+      department: contact.properties.department,
+      phone: contact.properties.phone,
+      mobile: contact.properties.mobilephone,
       organization_id: userData.organization_id,
       role: 'member' as const,
+      source: 'hubspot' as const,
     }));
 
     const { data: upsertedUsers, error: upsertError } = await supabase
