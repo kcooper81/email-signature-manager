@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { SignaturePreview } from '@/components/templates/preview';
+import type { SignatureBlock } from '@/components/templates/types';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -27,12 +29,14 @@ import {
   User as UserIcon,
   PartyPopper,
   X,
+  Mail,
 } from 'lucide-react';
 
 interface Template {
   id: string;
   name: string;
   description: string | null;
+  blocks: SignatureBlock[];
 }
 
 interface Deployment {
@@ -57,6 +61,11 @@ interface User {
   first_name: string | null;
   last_name: string | null;
   department: string | null;
+  company: string | null;
+  office_location: string | null;
+  title: string | null;
+  created_at: string;
+  source: 'manual' | 'google' | 'microsoft' | 'hubspot' | null;
 }
 
 export default function DeploymentsPage() {
@@ -76,6 +85,7 @@ export default function DeploymentsPage() {
   const [deploying, setDeploying] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<{ successCount: number; failCount: number } | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -84,10 +94,10 @@ export default function DeploymentsPage() {
   const loadData = async () => {
     const supabase = createClient();
     
-    // Load templates
+    // Load templates with blocks for preview
     const { data: templatesData } = await supabase
       .from('signature_templates')
-      .select('id, name, description')
+      .select('id, name, description, blocks')
       .order('name');
     
     if (templatesData) setTemplates(templatesData);
@@ -109,13 +119,26 @@ export default function DeploymentsPage() {
     
     if (connectionsData) setConnections(connectionsData);
 
-    // Load users with department
-    const { data: usersData } = await supabase
+    // Load users with all fields (gracefully handle missing columns)
+    const { data: usersData, error: usersError } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, department')
+      .select('id, email, first_name, last_name, department, title, created_at')
       .order('email');
     
-    if (usersData) setUsers(usersData);
+    if (usersError) {
+      console.error('Failed to load users:', usersError);
+    }
+    
+    if (usersData) {
+      // Map to include null values for missing fields
+      const mappedUsers = usersData.map(u => ({
+        ...u,
+        company: null,
+        office_location: null,
+        source: null,
+      }));
+      setUsers(mappedUsers as any);
+    }
 
     setLoading(false);
   };
@@ -394,29 +417,37 @@ export default function DeploymentsPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {templates.map((template) => (
                     <label
                       key={template.id}
-                      className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all shadow-sm ${
+                      className={`flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all shadow-sm ${
                         selectedTemplate === template.id 
                           ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' 
                           : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name="template"
-                        value={template.id}
-                        checked={selectedTemplate === template.id}
-                        onChange={(e) => setSelectedTemplate(e.target.value)}
-                        className="h-4 w-4"
-                      />
-                      <div>
-                        <p className="font-medium">{template.name}</p>
-                        {template.description && (
-                          <p className="text-sm text-muted-foreground">{template.description}</p>
-                        )}
+                      <div className="flex items-start gap-3 mb-3">
+                        <input
+                          type="radio"
+                          name="template"
+                          value={template.id}
+                          checked={selectedTemplate === template.id}
+                          onChange={(e) => setSelectedTemplate(e.target.value)}
+                          className="h-4 w-4 mt-1"
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium">{template.name}</p>
+                          {template.description && (
+                            <p className="text-xs text-muted-foreground line-clamp-2">{template.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      {/* Template preview */}
+                      <div className="bg-white border rounded overflow-hidden" style={{ maxHeight: '200px' }}>
+                        <div className="scale-50 origin-top-left" style={{ width: '200%', height: '200%' }}>
+                          <SignaturePreview blocks={template.blocks || []} />
+                        </div>
                       </div>
                     </label>
                   ))}
@@ -532,8 +563,8 @@ export default function DeploymentsPage() {
                       </div>
                     )}
                   </div>
-                  {/* User list - grid layout for better visibility */}
-                  <div className="max-h-64 overflow-y-auto p-2">
+                  {/* User table - matches team page format */}
+                  <div className="max-h-96 overflow-y-auto overflow-x-auto">
                     {filteredUsers.length === 0 ? (
                       <p className="text-sm text-muted-foreground p-4 text-center">
                         {users.length === 0 ? (
@@ -543,35 +574,54 @@ export default function DeploymentsPage() {
                         )}
                       </p>
                     ) : (
-                      <div className="grid grid-cols-2 gap-2">
-                        {filteredUsers.map((user) => (
-                          <label
-                            key={user.id}
-                            className={`flex items-center gap-2 p-3 rounded-lg cursor-pointer transition-all shadow-sm ${
-                              selectedUsers.includes(user.id) 
-                                ? 'bg-violet-50 border-2 border-violet-500 shadow-md ring-2 ring-violet-200' 
-                                : 'border-2 border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={selectedUsers.includes(user.id)}
-                              onChange={() => toggleUserSelection(user.id)}
-                              className="h-4 w-4 rounded"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">
+                      <table className="w-full min-w-[1000px]">
+                        <thead className="bg-muted/50 border-b sticky top-0">
+                          <tr>
+                            <th className="w-12 p-2 text-left">
+                              <input
+                                type="checkbox"
+                                checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                                onChange={selectAllFiltered}
+                                className="h-4 w-4 rounded"
+                              />
+                            </th>
+                            <th className="p-2 text-left text-xs font-medium">Name</th>
+                            <th className="p-2 text-left text-xs font-medium">Email</th>
+                            <th className="p-2 text-left text-xs font-medium">Department</th>
+                            <th className="p-2 text-left text-xs font-medium">Company</th>
+                            <th className="p-2 text-left text-xs font-medium">Office</th>
+                            <th className="p-2 text-left text-xs font-medium">Title</th>
+                            <th className="p-2 text-left text-xs font-medium">Added</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredUsers.map((user) => (
+                            <tr key={user.id} className="border-b hover:bg-accent/50 transition-colors">
+                              <td className="p-2">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedUsers.includes(user.id)}
+                                  onChange={() => toggleUserSelection(user.id)}
+                                  className="h-4 w-4 rounded"
+                                />
+                              </td>
+                              <td className="p-2 text-sm font-medium">
                                 {user.first_name && user.last_name
                                   ? `${user.first_name} ${user.last_name}`
                                   : user.email.split('@')[0]}
-                              </p>
-                              <p className="text-xs text-muted-foreground truncate">
-                                {user.department || user.email}
-                              </p>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
+                              </td>
+                              <td className="p-2 text-sm text-muted-foreground">{user.email}</td>
+                              <td className="p-2 text-sm">{user.department || '-'}</td>
+                              <td className="p-2 text-sm">{user.company || '-'}</td>
+                              <td className="p-2 text-sm text-muted-foreground">{user.office_location || '-'}</td>
+                              <td className="p-2 text-sm text-muted-foreground">{user.title || '-'}</td>
+                              <td className="p-2 text-sm text-muted-foreground">
+                                {new Date(user.created_at).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     )}
                   </div>
                 </div>
@@ -637,69 +687,81 @@ export default function DeploymentsPage() {
         </CardContent>
       </Card>
 
-      {/* Recent deployments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Deployments</CardTitle>
-          <CardDescription>
-            History of signature deployments
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {deployments.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <FileSignature className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No deployments yet</p>
-              <p className="text-sm">Deploy your first signature above</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {deployments.map((deployment) => (
-                <div
-                  key={deployment.id}
-                  className="p-4 border rounded-lg"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      {getStatusIcon(deployment.status)}
-                      <div>
-                        <p className="font-medium">
-                          {deployment.template?.name || 'Unknown Template'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(deployment.created_at).toLocaleString()}
-                        </p>
+      {/* View deployment history button */}
+      {deployments.length > 0 && (
+        <div className="flex justify-center">
+          <Button variant="outline" onClick={() => setShowHistory(!showHistory)}>
+            <FileSignature className="mr-2 h-4 w-4" />
+            {showHistory ? 'Hide' : 'View'} Deployment History ({deployments.length})
+          </Button>
+        </div>
+      )}
+
+      {/* Recent deployments - collapsible */}
+      {showHistory && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Deployments</CardTitle>
+            <CardDescription>
+              History of signature deployments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {deployments.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <FileSignature className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No deployments yet</p>
+                <p className="text-sm">Deploy your first signature above</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {deployments.map((deployment) => (
+                  <div
+                    key={deployment.id}
+                    className="p-4 border rounded-lg"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {getStatusIcon(deployment.status)}
+                        <div>
+                          <p className="font-medium">
+                            {deployment.template?.name || 'Unknown Template'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(deployment.created_at).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <p className="text-sm font-medium">
+                            {getStatusText(deployment.status)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {deployment.successful_count}/{deployment.total_users} users
+                          </p>
+                        </div>
+                        {deployment.failed_count > 0 && (
+                          <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                            {deployment.failed_count} failed
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                      <div className="text-right">
-                        <p className="text-sm font-medium">
-                          {getStatusText(deployment.status)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {deployment.successful_count}/{deployment.total_users} users
-                        </p>
-                      </div>
-                      {deployment.failed_count > 0 && (
-                        <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
-                          {deployment.failed_count} failed
-                        </span>
-                      )}
+                    {/* Deployment summary */}
+                    <div className="mt-3 pt-3 border-t flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        {deployment.total_users} user{deployment.total_users !== 1 ? 's' : ''} targeted
+                      </span>
                     </div>
                   </div>
-                  {/* Deployment summary */}
-                  <div className="mt-3 pt-3 border-t flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3 w-3" />
-                      {deployment.total_users} user{deployment.total_users !== 1 ? 's' : ''} targeted
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

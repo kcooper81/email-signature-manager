@@ -38,6 +38,232 @@
 
 ---
 
+## Integration Roadmap
+
+### Current Integrations (Live)
+
+| Integration | Status | Purpose | Technical Details |
+|-------------|--------|---------|-------------------|
+| **Google Workspace** | ✅ Live | Gmail signature deployment, user sync | Gmail API, Google Directory API, OAuth 2.0 |
+| **Microsoft 365** | ✅ Live | Outlook signature deployment, user sync | Microsoft Graph API, Azure AD sync, OAuth 2.0 |
+| **HubSpot CRM** | ✅ Live | Contact data sync for signature enrichment | HubSpot CRM API, OAuth 2.0, contact import |
+| **Stripe** | ✅ Live | Subscription billing and payments | Stripe Checkout, Customer Portal, Webhooks |
+
+---
+
+### Competitor Integration Analysis
+
+**What Exclaimer Has:**
+- ✅ Google Workspace
+- ✅ Microsoft 365
+- ✅ Salesforce (full CRM integration with account/contact/opportunity targeting)
+- ✅ HubSpot (contact, company, deal-based lists)
+- ✅ Calendly (meeting scheduling links)
+- ✅ Microsoft Bookings
+- ✅ Chili Piper
+- ✅ Salesloft (sales automation)
+- ✅ Outreach (sales automation)
+- ✅ Facebook (social media)
+- ✅ LinkedIn (social media)
+- ✅ Customer Thermometer (feedback)
+- ✅ Okta Universal Directory
+- ✅ Azure AD (Entra ID)
+
+**What CodeTwo Has:**
+- ✅ Microsoft 365 (primary focus)
+- ✅ Microsoft Exchange
+- ✅ Microsoft Teams (direct meeting links)
+- ✅ Microsoft Bookings
+- ✅ Google Analytics (tracking)
+- ✅ Matomo/Piwik (analytics)
+- ✅ Woopra (analytics)
+- ⚠️ Limited CRM support (requires Outlook add-ins)
+
+**What WiseStamp Has:**
+- ✅ Gmail/Google Workspace
+- ✅ Outlook
+- ✅ HubSpot (basic)
+- ✅ Salesforce (basic)
+- ⚠️ More individual-focused, fewer enterprise integrations
+
+---
+
+### Integration Priority Tiers
+
+#### 🔥 **Tier 1: High Priority (Quick Wins)**
+*Easy to implement, high customer demand, competitive necessity*
+
+| Integration | Effort | Impact | Why It Matters | Technical Approach |
+|-------------|--------|--------|----------------|-------------------|
+| **Zapier** | Medium | 🔥 Huge | Gives access to 5,000+ apps instantly. Marketing gold: "Connect to anything" | Zapier Platform, webhooks, triggers/actions |
+| **Calendly** | Easy | High | Every competitor has this. Users expect meeting links in signatures | Calendly API, OAuth, dynamic link insertion |
+| **Google Analytics** | Easy | Medium | Click tracking for signature links. Prove ROI to marketing teams | UTM parameters, GA4 Measurement Protocol |
+| **Microsoft Bookings** | Easy | Medium | Natural fit for Microsoft 365 customers | Graph API, booking page links |
+
+**Estimated Timeline:** 2-4 weeks for all Tier 1
+
+---
+
+#### 🎯 **Tier 2: Strategic (Competitive Parity)**
+*Harder to build, but necessary to compete with Exclaimer*
+
+| Integration | Effort | Impact | Why It Matters | Technical Approach |
+|-------------|--------|--------|----------------|-------------------|
+| **Salesforce** | Hard | High | Enterprise customers expect this. Exclaimer's killer feature | Salesforce REST API, OAuth, SOQL queries, custom fields |
+| **LinkedIn** | Medium | Medium | Social profile enrichment, auto-populate LinkedIn URLs | LinkedIn API (limited), or manual URL builder |
+| **Microsoft Teams** | Medium | Medium | Direct meeting links for Microsoft 365 users | Graph API, Teams meeting creation |
+| **Okta** | Medium | Low | Enterprise SSO/directory sync | Okta SCIM API, OAuth, user provisioning |
+
+**Estimated Timeline:** 6-12 weeks for all Tier 2
+
+---
+
+#### 🔮 **Tier 3: Future Enhancements**
+*Nice-to-have, lower priority, niche use cases*
+
+| Integration | Effort | Impact | Why It Matters | Technical Approach |
+|-------------|--------|--------|----------------|-------------------|
+| **Salesloft** | Hard | Low | Sales automation platform (niche) | Salesloft API, webhook events |
+| **Outreach** | Hard | Low | Sales automation platform (niche) | Outreach API, webhook events |
+| **Chili Piper** | Medium | Low | Meeting scheduling (less popular than Calendly) | Chili Piper API, booking links |
+| **Customer Thermometer** | Easy | Low | Feedback surveys in signatures | Simple link insertion, no API needed |
+| **Facebook** | Easy | Low | Social media links (less professional than LinkedIn) | Manual URL builder |
+| **Matomo/Piwik** | Medium | Low | Privacy-focused analytics (niche) | Self-hosted analytics, tracking pixels |
+| **Woopra** | Medium | Low | Customer analytics (niche) | Woopra API, event tracking |
+
+**Estimated Timeline:** As needed based on customer requests
+
+---
+
+### Strategic Recommendations
+
+#### **Why Zapier is the Game-Changer:**
+- **One integration = 5,000+ apps**: Calendly, Salesforce, Slack, Asana, Trello, etc.
+- **Marketing advantage**: "Connect Siggly to any tool you use"
+- **Lower maintenance**: Zapier handles API changes, not you
+- **Customer self-service**: Users can build their own integrations
+- **Competitive differentiation**: Exclaimer doesn't have Zapier
+
+**Zapier Use Cases:**
+- Trigger: New team member added → Action: Send Slack notification
+- Trigger: Signature deployed → Action: Log to Google Sheets
+- Trigger: New HubSpot contact → Action: Update signature data
+- Trigger: Calendly meeting booked → Action: Update signature with next availability
+
+#### **Why Salesforce Matters (But Can Wait):**
+- **Enterprise requirement**: Large orgs expect Salesforce integration
+- **Complex to build**: Requires deep Salesforce knowledge, custom objects, SOQL
+- **Zapier alternative**: Users can connect Salesforce via Zapier in the meantime
+- **ROI question**: How many customers will actually use it vs. just expect it?
+
+**Recommendation:** Build Zapier first, then gauge Salesforce demand. Zapier might satisfy 80% of Salesforce use cases.
+
+#### **Analytics Integration Strategy:**
+- **Start with Google Analytics**: Most popular, easy to implement
+- **UTM parameters**: Auto-add tracking to all signature links
+- **Click tracking dashboard**: Show "Your signatures generated 1,234 clicks this month"
+- **Defer advanced analytics**: Matomo, Woopra are niche, wait for customer requests
+
+---
+
+### Integration Implementation Checklist
+
+For each new integration, follow this process:
+
+**1. Research & Planning**
+- [ ] Review competitor implementations
+- [ ] Read API documentation
+- [ ] Identify OAuth requirements
+- [ ] Map data fields to signature blocks
+- [ ] Estimate effort and timeline
+
+**2. Development**
+- [ ] Set up OAuth flow (if needed)
+- [ ] Create API client library
+- [ ] Build data sync logic
+- [ ] Add UI for connection management
+- [ ] Implement error handling and retries
+- [ ] Add rate limiting
+
+**3. Testing**
+- [ ] Test OAuth flow end-to-end
+- [ ] Test data sync with sample accounts
+- [ ] Test error scenarios (expired tokens, API errors)
+- [ ] Test rate limiting behavior
+- [ ] Security review (token storage, permissions)
+
+**4. Documentation**
+- [ ] Update SCOPE.md with integration details
+- [ ] Create help docs for users
+- [ ] Add integration to marketing site
+- [ ] Create demo video/screenshots
+
+**5. Launch**
+- [ ] Add to integrations page in app
+- [ ] Create landing page (e.g., `/integrations/calendly`)
+- [ ] Announce to existing customers
+- [ ] Update pricing page if gated feature
+
+---
+
+### Integration Data Model
+
+**Table: `integration_connections`**
+```sql
+CREATE TABLE integration_connections (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+  provider VARCHAR(50) NOT NULL, -- 'google', 'microsoft', 'hubspot', 'salesforce', 'calendly', etc.
+  access_token TEXT,
+  refresh_token TEXT,
+  token_expires_at TIMESTAMPTZ,
+  scopes TEXT[],
+  metadata JSONB, -- Provider-specific data (e.g., Salesforce instance URL)
+  status VARCHAR(20) DEFAULT 'active', -- 'active', 'expired', 'revoked', 'error'
+  last_synced_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_integration_connections_org ON integration_connections(organization_id);
+CREATE INDEX idx_integration_connections_provider ON integration_connections(provider);
+```
+
+**Table: `integration_field_mappings`**
+```sql
+CREATE TABLE integration_field_mappings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+  provider VARCHAR(50) NOT NULL,
+  source_field VARCHAR(100) NOT NULL, -- e.g., 'salesforce.account.name'
+  target_field VARCHAR(100) NOT NULL, -- e.g., 'signature.company'
+  transform_rule JSONB, -- Optional transformation logic
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+---
+
+### Next Steps
+
+**Immediate (Next Sprint):**
+1. ✅ Document current integrations (Google, Microsoft, HubSpot)
+2. 🔄 Build Zapier integration (2 weeks)
+3. 🔄 Build Calendly integration (1 week)
+4. 🔄 Add Google Analytics tracking (3 days)
+
+**Short-term (Next Quarter):**
+5. Build Salesforce integration (4-6 weeks)
+6. Add Microsoft Teams meeting links (2 weeks)
+7. Build LinkedIn profile enrichment (1 week)
+
+**Long-term (6+ months):**
+8. Evaluate sales automation tools (Salesloft, Outreach) based on demand
+9. Consider Okta integration for enterprise customers
+10. Add advanced analytics (Matomo, Woopra) if requested
+
+---
+
 ## Project Structure
 
 ```

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { listWorkspaceUsers } from '@/lib/google/gmail';
 import { createAuthenticatedClient } from '@/lib/google/oauth';
+import { getPlan } from '@/lib/billing/plans';
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
@@ -77,7 +78,48 @@ export async function POST(request: NextRequest) {
       domain
     );
 
-    const usersToUpsert = workspaceUsers.map((workspaceUser) => ({
+    // Check plan limits before syncing
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('organization_id', userData.organization_id)
+      .single();
+
+    const planId = subscription?.plan || 'free';
+    const plan = getPlan(planId);
+    const maxUsers = plan.features.maxUsers;
+
+    // Count existing users
+    const { count: existingUserCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', userData.organization_id);
+
+    const currentCount = existingUserCount || 0;
+
+    // Check if dev bypass is enabled
+    const devBypass = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+
+    // Filter users to only sync up to the limit (unless unlimited or dev bypass)
+    let usersToSync = workspaceUsers;
+    if (!devBypass && maxUsers !== -1) {
+      const availableSlots = maxUsers - currentCount;
+      if (availableSlots <= 0) {
+        return NextResponse.json(
+          { 
+            error: 'User limit reached',
+            message: `Your ${plan.name} plan allows up to ${maxUsers} users. Please upgrade to add more team members.`,
+            limit: maxUsers,
+            current: currentCount
+          },
+          { status: 403 }
+        );
+      }
+      // Only sync users that fit within the limit
+      usersToSync = workspaceUsers.slice(0, availableSlots);
+    }
+
+    const usersToUpsert = usersToSync.map((workspaceUser) => ({
       email: workspaceUser.email,
       first_name: workspaceUser.name.split(' ')[0] || workspaceUser.name,
       last_name: workspaceUser.name.split(' ').slice(1).join(' ') || undefined,
@@ -85,6 +127,7 @@ export async function POST(request: NextRequest) {
       department: workspaceUser.department,
       organization_id: userData.organization_id,
       role: 'member' as const,
+      source: 'google' as const,
     }));
 
     const { data: upsertedUsers, error: upsertError } = await supabase

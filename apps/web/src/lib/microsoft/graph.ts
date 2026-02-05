@@ -7,6 +7,8 @@ export interface MicrosoftUser {
   mail?: string;
   jobTitle?: string;
   department?: string;
+  companyName?: string;
+  officeLocation?: string;
   mobilePhone?: string;
   businessPhones?: string[];
 }
@@ -28,7 +30,7 @@ export async function getMicrosoftProfile(accessToken: string): Promise<Microsof
 
 export async function listMicrosoftUsers(accessToken: string): Promise<MicrosoftUser[]> {
   const users: MicrosoftUser[] = [];
-  let nextLink: string | null = 'https://graph.microsoft.com/v1.0/users?$select=id,userPrincipalName,displayName,givenName,surname,mail,jobTitle,department,mobilePhone,businessPhones';
+  let nextLink: string | null = 'https://graph.microsoft.com/v1.0/users?$select=id,userPrincipalName,displayName,givenName,surname,mail,jobTitle,department,companyName,officeLocation,mobilePhone,businessPhones';
 
   while (nextLink) {
     const response: Response = await fetch(nextLink, {

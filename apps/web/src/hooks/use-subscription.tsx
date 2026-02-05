@@ -5,7 +5,17 @@ import { createClient } from '@/lib/supabase/client';
 import { getPlan, canAccessFeature, isWithinLimit, Plan, PlanFeatures } from '@/lib/billing/plans';
 
 // Development toggle - set to true to bypass all pay gates during development
-const DEV_BYPASS_PAY_GATES = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+// localStorage takes precedence over env var when explicitly set
+const getDevBypassEnabled = () => {
+  if (typeof window === 'undefined') return process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+  
+  const localStorageValue = localStorage.getItem('dev_bypass_pay_gates');
+  // If localStorage has explicit value, use it; otherwise fall back to env var
+  if (localStorageValue !== null) {
+    return localStorageValue === 'true';
+  }
+  return process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+};
 
 interface SubscriptionState {
   plan: Plan;
@@ -42,11 +52,11 @@ const defaultState: SubscriptionState = {
     maxTemplates: 1,
     maxTeamMembers: 5,
   },
-  canAccess: () => DEV_BYPASS_PAY_GATES,
-  isWithinTemplateLimit: () => DEV_BYPASS_PAY_GATES,
-  isWithinTeamMemberLimit: () => DEV_BYPASS_PAY_GATES,
-  canCreateTemplate: () => DEV_BYPASS_PAY_GATES,
-  canAddTeamMember: () => DEV_BYPASS_PAY_GATES,
+  canAccess: () => getDevBypassEnabled(),
+  isWithinTemplateLimit: () => getDevBypassEnabled(),
+  isWithinTeamMemberLimit: () => getDevBypassEnabled(),
+  canCreateTemplate: () => getDevBypassEnabled(),
+  canAddTeamMember: () => getDevBypassEnabled(),
   refresh: async () => {},
 };
 
@@ -54,6 +64,7 @@ const SubscriptionContext = createContext<SubscriptionState>(defaultState);
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SubscriptionState>(defaultState);
+  const [bypassState, setBypassState] = useState(getDevBypassEnabled());
 
   const loadSubscription = async () => {
     const supabase = createClient();
@@ -111,29 +122,29 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
     // Create helper functions with dev bypass
     const canAccess = (feature: keyof PlanFeatures): boolean => {
-      if (DEV_BYPASS_PAY_GATES) return true;
+      if (getDevBypassEnabled()) return true;
       return canAccessFeature(planId, feature);
     };
 
     const isWithinTemplateLimit = (): boolean => {
-      if (DEV_BYPASS_PAY_GATES) return true;
+      if (getDevBypassEnabled()) return true;
       return isWithinLimit(planId, 'maxTemplates', usage.templateCount);
     };
 
     const isWithinTeamMemberLimit = (): boolean => {
-      if (DEV_BYPASS_PAY_GATES) return true;
+      if (getDevBypassEnabled()) return true;
       return isWithinLimit(planId, 'maxUsers', usage.teamMemberCount);
     };
 
     const canCreateTemplate = (): boolean => {
-      if (DEV_BYPASS_PAY_GATES) return true;
+      if (getDevBypassEnabled()) return true;
       // Can create if within limit (current count < max)
       if (limits.maxTemplates === -1) return true;
       return usage.templateCount < limits.maxTemplates;
     };
 
     const canAddTeamMember = (): boolean => {
-      if (DEV_BYPASS_PAY_GATES) return true;
+      if (getDevBypassEnabled()) return true;
       // Can add if within limit
       if (limits.maxTeamMembers === -1) return true;
       return usage.teamMemberCount < limits.maxTeamMembers;
@@ -159,6 +170,21 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     loadSubscription();
   }, []);
 
+  // Reload subscription when dev bypass changes
+  useEffect(() => {
+    const checkBypass = () => {
+      const currentBypass = getDevBypassEnabled();
+      if (currentBypass !== bypassState) {
+        setBypassState(currentBypass);
+        loadSubscription();
+      }
+    };
+
+    // Check on interval (since we can't listen to localStorage changes from same tab)
+    const interval = setInterval(checkBypass, 500);
+    return () => clearInterval(interval);
+  }, [bypassState]);
+
   return (
     <SubscriptionContext.Provider value={state}>
       {children}
@@ -176,5 +202,5 @@ export function useSubscription() {
 
 // Utility hook for checking if pay gates are bypassed (for dev UI indicators)
 export function usePayGatesBypass() {
-  return DEV_BYPASS_PAY_GATES;
+  return getDevBypassEnabled();
 }

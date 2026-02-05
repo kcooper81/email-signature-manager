@@ -23,7 +23,7 @@ import {
   Download,
   X,
 } from 'lucide-react';
-import { useSubscription } from '@/hooks/use-subscription';
+import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 
 interface TeamMember {
   id: string;
@@ -32,8 +32,10 @@ interface TeamMember {
   last_name: string | null;
   title: string | null;
   department: string | null;
+  company: string | null;
+  office_location: string | null;
   role: string;
-  source: 'manual' | 'google' | 'microsoft' | null;
+  source: 'manual' | 'google' | 'microsoft' | 'hubspot' | null;
   created_at: string;
   updated_at: string;
 }
@@ -56,7 +58,7 @@ interface GeneratedSignature {
   html: string;
 }
 
-type SortField = 'name' | 'email' | 'department' | 'created_at';
+type SortField = 'name' | 'email' | 'department' | 'company' | 'office_location' | 'title' | 'created_at' | 'source' | 'role';
 type SortOrder = 'asc' | 'desc';
 type SourceFilter = 'all' | 'manual' | 'synced';
 
@@ -66,7 +68,11 @@ export default function TeamMembersPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{ synced: number; errors: number } | null>(null);
-  const { canAddTeamMember, plan, usage, limits } = useSubscription();
+  const { plan, usage, limits } = useSubscription();
+  const devBypass = usePayGatesBypass();
+  
+  // Check if user can add more team members
+  const canAddTeamMember = () => devBypass || limits.maxTeamMembers === -1 || usage.teamMemberCount < limits.maxTeamMembers;
   
   // Signature sharing state
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -247,6 +253,15 @@ export default function TeamMembersPage() {
       return;
     }
 
+    // Check if user can add more team members
+    if (!canAddTeamMember()) {
+      alert(`Team member limit reached!\n\nYour ${plan.name} plan allows up to ${limits.maxTeamMembers} team members. You currently have ${usage.teamMemberCount}.\n\nPlease upgrade your plan to add more team members.`);
+      setShowAddModal(false);
+      // Optionally redirect to billing
+      // window.location.href = '/settings/billing';
+      return;
+    }
+
     setAdding(true);
     try {
       const supabase = createClient();
@@ -341,9 +356,29 @@ export default function TeamMembersPage() {
           aVal = a.department || '';
           bVal = b.department || '';
           break;
+        case 'company':
+          aVal = a.company || '';
+          bVal = b.company || '';
+          break;
+        case 'office_location':
+          aVal = a.office_location || '';
+          bVal = b.office_location || '';
+          break;
+        case 'title':
+          aVal = a.title || '';
+          bVal = b.title || '';
+          break;
         case 'created_at':
           aVal = a.created_at;
           bVal = b.created_at;
+          break;
+        case 'source':
+          aVal = a.source || 'manual';
+          bVal = b.source || 'manual';
+          break;
+        case 'role':
+          aVal = a.role;
+          bVal = b.role;
           break;
       }
 
@@ -540,26 +575,10 @@ export default function TeamMembersPage() {
             {/* Sort dropdown */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Sort:</span>
-              <select
-                value={sortField}
-                onChange={(e) => setSortField(e.target.value as SortField)}
-                className="text-sm border rounded-lg px-2 py-1.5 bg-background"
-              >
-                <option value="name">Name</option>
-                <option value="email">Email</option>
-                <option value="department">Department</option>
-                <option value="created_at">Date Added</option>
-              </select>
-              <button
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-              </button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-hidden">
           {members.length === 0 ? (
             <EmptyState
               icon={UsersIcon}
@@ -577,70 +596,220 @@ export default function TeamMembersPage() {
               No members match your search or filters.
             </div>
           ) : (
-            <div className="space-y-2">
-              {filteredMembers.map((emp) => (
-                <div
-                  key={emp.id}
-                  className="flex items-center justify-between p-4 border rounded-xl hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedMembers.has(emp.id)}
-                      onChange={() => toggleMemberSelection(emp.id)}
-                      className="h-4 w-4 rounded border-gray-300"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <Avatar 
-                      alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
-                      fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
-                    />
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {emp.first_name && emp.last_name 
-                          ? `${emp.first_name} ${emp.last_name}`
-                          : emp.email}
-                      </p>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          {emp.email}
-                        </span>
-                        {emp.department && (
-                          <span className="flex items-center gap-1">
-                            <Building2 className="h-3 w-3" />
-                            {emp.department}
+            <div className="border rounded-lg overflow-x-auto">
+              <table className="w-full min-w-[1200px]">
+                <thead className="bg-muted/50 border-b">
+                  <tr>
+                    <th className="w-12 p-3 text-left">
+                      <input
+                        type="checkbox"
+                        checked={selectedMembers.size === filteredMembers.length && filteredMembers.length > 0}
+                        onChange={selectAllMembers}
+                        className="h-4 w-4 rounded border-gray-300"
+                      />
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'name') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('name');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Name
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'name' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'email') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('email');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Email
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'email' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'department') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('department');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Department
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'department' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'company') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('company');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Company
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'company' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'office_location') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('office_location');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Office
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'office_location' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'title') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('title');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Title
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'title' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'created_at') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('created_at');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Date Added
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'created_at' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'source') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('source');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Source
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'source' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                    <th className="p-3 text-left">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'role') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('role');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Role
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'role' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredMembers.map((emp) => (
+                    <tr key={emp.id} className="border-b hover:bg-accent/50 transition-colors">
+                      <td className="p-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedMembers.has(emp.id)}
+                          onChange={() => toggleMemberSelection(emp.id)}
+                          className="h-4 w-4 rounded border-gray-300"
+                        />
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-3">
+                          <Avatar 
+                            alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
+                            fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
+                          />
+                          <span className="font-medium">
+                            {emp.first_name && emp.last_name 
+                              ? `${emp.first_name} ${emp.last_name}`
+                              : emp.email}
                           </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {emp.title && (
-                      <span className="text-sm text-muted-foreground">
-                        {emp.title}
-                      </span>
-                    )}
-                    {/* Source badge */}
-                    <Badge variant={emp.source === 'google' || emp.source === 'microsoft' ? 'info' : 'outline'}>
-                      {emp.source === 'google' || emp.source === 'microsoft' ? (
-                        <><Cloud className="h-3 w-3 mr-1" />Synced</>
-                      ) : (
-                        <><UserIcon className="h-3 w-3 mr-1" />Manual</>
-                      )}
-                    </Badge>
-                    <Badge variant={
-                      emp.role === 'owner' 
-                        ? 'default'
-                        : emp.role === 'admin'
-                        ? 'info'
-                        : 'secondary'
-                    }>
-                      {emp.role}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+                        </div>
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground">{emp.email}</td>
+                      <td className="p-3 text-sm">{emp.department || '-'}</td>
+                      <td className="p-3 text-sm">{emp.company || '-'}</td>
+                      <td className="p-3 text-sm text-muted-foreground">{emp.office_location || '-'}</td>
+                      <td className="p-3 text-sm text-muted-foreground">{emp.title || '-'}</td>
+                      <td className="p-3 text-sm text-muted-foreground">
+                        {new Date(emp.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="p-3">
+                        <Badge variant={emp.source === 'google' || emp.source === 'microsoft' || emp.source === 'hubspot' ? 'info' : 'outline'} className="text-xs">
+                          {emp.source === 'google' || emp.source === 'microsoft' || emp.source === 'hubspot' ? (
+                            <><Cloud className="h-3 w-3 mr-1" />Synced</>
+                          ) : (
+                            <><UserIcon className="h-3 w-3 mr-1" />Manual</>
+                          )}
+                        </Badge>
+                      </td>
+                      <td className="p-3">
+                        <Badge variant={
+                          emp.role === 'owner' 
+                            ? 'default'
+                            : emp.role === 'admin'
+                            ? 'info'
+                            : 'secondary'
+                        } className="text-xs">
+                          {emp.role}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

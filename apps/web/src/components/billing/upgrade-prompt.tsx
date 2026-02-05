@@ -123,10 +123,11 @@ const featureRequirements = {
 } as const;
 
 export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
-  const { canAccess } = useSubscription();
+  const { plan } = useSubscription();
   const devBypass = usePayGatesBypass();
 
-  const hasAccess = devBypass || canAccess(feature);
+  // Check feature access directly for fresh devBypass state
+  const hasAccess = devBypass || plan.features[feature];
 
   if (hasAccess) {
     return <>{children}</>;
@@ -152,10 +153,13 @@ interface LimitGateProps {
 }
 
 export function LimitGate({ type, children, fallback }: LimitGateProps) {
-  const { canCreateTemplate, canAddTeamMember, plan, usage, limits } = useSubscription();
+  const { plan, usage, limits } = useSubscription();
   const devBypass = usePayGatesBypass();
 
-  const isWithinLimit = devBypass || (type === 'template' ? canCreateTemplate() : canAddTeamMember());
+  // Check limits directly for fresh devBypass state
+  const isWithinTemplateLimit = limits.maxTemplates === -1 || usage.templateCount < limits.maxTemplates;
+  const isWithinTeamMemberLimit = limits.maxTeamMembers === -1 || usage.teamMemberCount < limits.maxTeamMembers;
+  const isWithinLimit = devBypass || (type === 'template' ? isWithinTemplateLimit : isWithinTeamMemberLimit);
 
   if (isWithinLimit) {
     return <>{children}</>;

@@ -28,11 +28,14 @@ export default async function DashboardPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Fetch actual data for progress tracking
-  const { data: templates } = await supabase
+  // Fetch actual counts for dashboard stats
+  const { count: templateCount } = await supabase
     .from('signature_templates')
-    .select('id')
-    .limit(1);
+    .select('*', { count: 'exact', head: true });
+
+  const { count: teamMemberCount } = await supabase
+    .from('users')
+    .select('*', { count: 'exact', head: true });
   
   const { data: connections } = await supabase
     .from('provider_connections')
@@ -40,14 +43,48 @@ export default async function DashboardPage() {
     .eq('is_active', true)
     .limit(1);
 
-  const { data: deployments } = await supabase
-    .from('signature_deployments')
-    .select('id')
-    .limit(1);
+  // Get deployments from this month
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
 
-  const hasTemplates = (templates?.length || 0) > 0;
+  const { data: deployments, count: deploymentCount } = await supabase
+    .from('signature_deployments')
+    .select('id, status, successful_count, failed_count, total_users, created_at, template:signature_templates(name)', { count: 'exact' })
+    .gte('created_at', startOfMonth.toISOString())
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  // Calculate success rate from actual deployment data
+  const successfulDeployments = deployments?.filter(d => d.status === 'completed').length || 0;
+  const totalDeployments = deployments?.length || 0;
+  const successRate = totalDeployments > 0 
+    ? Math.round((successfulDeployments / totalDeployments) * 100) 
+    : 0;
+
+  // Get users with signatures (from successful deployments)
+  const { data: allDeployments } = await supabase
+    .from('signature_deployments')
+    .select('target_emails, successful_count, status')
+    .eq('status', 'completed');
+  
+  const uniqueUsersWithSignatures = new Set<string>();
+  let estimatedUsers = 0;
+  allDeployments?.forEach(d => {
+    if (d.target_emails && (d.target_emails as string[]).length > 0) {
+      (d.target_emails as string[]).forEach(email => uniqueUsersWithSignatures.add(email.toLowerCase()));
+    } else {
+      estimatedUsers += d.successful_count || 0;
+    }
+  });
+  const usersWithSignatures = Math.min(
+    uniqueUsersWithSignatures.size + estimatedUsers,
+    teamMemberCount || 0
+  );
+
+  const hasTemplates = (templateCount || 0) > 0;
   const hasConnection = (connections?.length || 0) > 0;
-  const hasDeployments = (deployments?.length || 0) > 0;
+  const hasDeployments = (deploymentCount || 0) > 0;
 
   const completedSteps = [hasConnection, hasTemplates, hasDeployments].filter(Boolean).length;
   const totalSteps = 3;
@@ -85,25 +122,25 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Team Members"
-          value="0"
+          value={`${usersWithSignatures}/${teamMemberCount || 0}`}
           description="Team members with signatures"
           icon={<Users className="h-4 w-4 text-muted-foreground" />}
         />
         <StatsCard
           title="Templates"
-          value={String(templates?.length || 0)}
+          value={String(templateCount || 0)}
           description="Active signature templates"
           icon={<FileSignature className="h-4 w-4 text-muted-foreground" />}
         />
         <StatsCard
           title="Deployments"
-          value={String(deployments?.length || 0)}
+          value={String(deploymentCount || 0)}
           description="Signatures deployed this month"
           icon={<Send className="h-4 w-4 text-muted-foreground" />}
         />
         <StatsCard
           title="Success Rate"
-          value={hasDeployments ? '100%' : '--'}
+          value={hasDeployments ? `${successRate}%` : '--'}
           description="Deployment success rate"
           icon={<Activity className="h-4 w-4 text-muted-foreground" />}
         />
@@ -118,11 +155,43 @@ export default async function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-sm text-muted-foreground text-center py-8">
-            No recent activity yet.
-            <br />
-            Start by creating a template!
-          </div>
+          {deployments && deployments.length > 0 ? (
+            <div className="space-y-4">
+              {deployments.map((deployment: any) => (
+                <div key={deployment.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {deployment.status === 'completed' ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ) : deployment.status === 'failed' ? (
+                      <X className="h-4 w-4 text-red-600" />
+                    ) : (
+                      <Activity className="h-4 w-4 text-amber-600" />
+                    )}
+                    <div>
+                      <p className="text-sm font-medium">
+                        {deployment.template?.name || 'Deployment'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {deployment.successful_count || 0}/{deployment.total_users || 0} users
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(deployment.created_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground text-center py-8">
+              No recent activity yet.
+              <br />
+              Start by creating a template!
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

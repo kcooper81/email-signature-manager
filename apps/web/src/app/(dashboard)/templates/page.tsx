@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/dashboard';
 import { Plus, FileSignature, Pencil, Trash2, Users, Lock } from 'lucide-react';
 import { SignaturePreview } from '@/components/templates/preview';
 import type { SignatureBlock } from '@/components/templates/types';
-import { useSubscription } from '@/hooks/use-subscription';
+import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import { LimitGate } from '@/components/billing';
 
 interface Template {
@@ -26,7 +26,8 @@ interface Template {
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
-  const { canCreateTemplate, plan, usage, limits } = useSubscription();
+  const { plan, usage, limits } = useSubscription();
+  const devBypass = usePayGatesBypass();
 
   useEffect(() => {
     loadTemplates();
@@ -59,7 +60,8 @@ export default function TemplatesPage() {
     }
   };
 
-  const canCreate = canCreateTemplate();
+  // Check if user can create more templates
+  const canCreate = devBypass || limits.maxTemplates === -1 || usage.templateCount < limits.maxTemplates;
   const templateLimitReached = !canCreate;
 
   const actionButtons = (

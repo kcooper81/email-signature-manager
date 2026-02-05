@@ -69,10 +69,7 @@ export async function GET(request: NextRequest) {
         refresh_token: tokens.refresh_token,
         token_expires_at: expiresAt.toISOString(),
         is_active: true,
-        metadata: {
-          tenant_id: profile.id,
-          user_principal_name: profile.userPrincipalName,
-        },
+        scopes: ['openid', 'profile', 'email', 'offline_access', 'User.Read', 'User.ReadBasic.All', 'MailboxSettings.ReadWrite'],
       }, {
         onConflict: 'organization_id,provider',
       });

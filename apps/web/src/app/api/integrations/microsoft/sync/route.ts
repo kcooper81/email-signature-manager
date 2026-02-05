@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { listMicrosoftUsers } from '@/lib/microsoft/graph';
 import { refreshMicrosoftToken } from '@/lib/microsoft/oauth';
+import { getPlan } from '@/lib/billing/plans';
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
@@ -59,7 +60,48 @@ export async function POST(request: NextRequest) {
 
     const microsoftUsers = await listMicrosoftUsers(accessToken);
 
-    const usersToUpsert = microsoftUsers
+    // Check plan limits before syncing
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('organization_id', userData.organization_id)
+      .single();
+
+    const planId = subscription?.plan || 'free';
+    const plan = getPlan(planId);
+    const maxUsers = plan.features.maxUsers;
+
+    // Count existing users
+    const { count: existingUserCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', userData.organization_id);
+
+    const currentCount = existingUserCount || 0;
+
+    // Check if dev bypass is enabled
+    const devBypass = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+
+    // Filter users to only sync up to the limit (unless unlimited or dev bypass)
+    let usersToSync = microsoftUsers;
+    if (!devBypass && maxUsers !== -1) {
+      const availableSlots = maxUsers - currentCount;
+      if (availableSlots <= 0) {
+        return NextResponse.json(
+          { 
+            error: 'User limit reached',
+            message: `Your ${plan.name} plan allows up to ${maxUsers} users. Please upgrade to add more team members.`,
+            limit: maxUsers,
+            current: currentCount
+          },
+          { status: 403 }
+        );
+      }
+      // Only sync users that fit within the limit
+      usersToSync = microsoftUsers.slice(0, availableSlots);
+    }
+
+    const usersToUpsert = usersToSync
       .filter(u => u.mail || u.userPrincipalName)
       .map((msUser) => ({
         email: msUser.mail || msUser.userPrincipalName,
@@ -67,10 +109,13 @@ export async function POST(request: NextRequest) {
         last_name: msUser.surname,
         title: msUser.jobTitle,
         department: msUser.department,
+        company: msUser.companyName,
+        office_location: msUser.officeLocation,
         phone: msUser.businessPhones?.[0] || msUser.mobilePhone,
         mobile: msUser.mobilePhone,
         organization_id: userData.organization_id,
         role: 'member' as const,
+        source: 'microsoft' as const,
       }));
 
     const { data: upsertedUsers, error: upsertError } = await supabase
