@@ -38,14 +38,15 @@ export default function LoginPage() {
 
       if (error) {
         setError(error.message);
+        setLoading(false);
         return;
       }
 
+      // Keep loading state active during redirect
       router.push('/dashboard');
       router.refresh();
     } catch (err) {
       setError('An unexpected error occurred');
-    } finally {
       setLoading(false);
     }
   };
@@ -97,10 +98,11 @@ export default function LoginPage() {
 
       if (error) {
         setError(error.message);
+        setLoading(false);
       }
+      // Keep loading state active - OAuth will redirect to Google
     } catch (err) {
       setError('An unexpected error occurred');
-    } finally {
       setLoading(false);
     }
   };

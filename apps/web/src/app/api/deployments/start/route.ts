@@ -113,11 +113,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine target users based on deployment target
-    let targetUsers: { email: string; name: string; firstName?: string; lastName?: string }[] = [];
+    let targetUsers: { id?: string; email: string; name: string; firstName?: string; lastName?: string }[] = [];
 
     if (target === 'me') {
-      // Deploy to current user only
+      // Deploy to current user only - get their user ID from the users table
+      const { data: currentUserData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+      
       targetUsers = [{
+        id: currentUserData?.id,
         email: user.email!,
         name: user.user_metadata?.full_name || user.email!,
         firstName: user.user_metadata?.first_name,
@@ -127,12 +134,13 @@ export async function POST(request: NextRequest) {
       // Deploy to selected users
       const { data: selectedUsers } = await supabase
         .from('users')
-        .select('email, first_name, last_name')
+        .select('id, email, first_name, last_name')
         .eq('organization_id', organizationId)
         .in('id', userIds);
 
       if (selectedUsers) {
         targetUsers = selectedUsers.map(u => ({
+          id: u.id,
           email: u.email,
           name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
           firstName: u.first_name || undefined,
@@ -143,11 +151,12 @@ export async function POST(request: NextRequest) {
       // Deploy to all users in organization
       const { data: allUsers } = await supabase
         .from('users')
-        .select('email, first_name, last_name')
+        .select('id, email, first_name, last_name')
         .eq('organization_id', organizationId);
 
       if (allUsers) {
         targetUsers = allUsers.map(u => ({
+          id: u.id,
           email: u.email,
           name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
           firstName: u.first_name || undefined,
@@ -191,6 +200,9 @@ export async function POST(request: NextRequest) {
     let failCount = 0;
 
     for (const targetUser of targetUsers) {
+      let deploymentStatus = 'success';
+      let errorMessage: string | null = null;
+      
       try {
         // Render signature with user data in RenderContext format
         const renderContext = {
@@ -215,9 +227,26 @@ export async function POST(request: NextRequest) {
         );
 
         successCount++;
-      } catch (err) {
+      } catch (err: any) {
         console.error(`Failed to deploy to ${targetUser.email}:`, err);
+        deploymentStatus = 'failed';
+        errorMessage = err?.message || 'Unknown error';
         failCount++;
+      }
+
+      // Record per-user deployment history (if user has an id)
+      if (targetUser.id) {
+        await supabase
+          .from('user_deployment_history')
+          .insert({
+            organization_id: organizationId,
+            user_id: targetUser.id,
+            deployment_id: deployment.id,
+            template_id: templateId,
+            status: deploymentStatus,
+            error_message: errorMessage,
+            deployed_at: new Date().toISOString(),
+          });
       }
     }
 

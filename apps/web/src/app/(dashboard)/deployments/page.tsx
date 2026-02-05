@@ -68,6 +68,23 @@ interface User {
   source: 'manual' | 'google' | 'microsoft' | 'hubspot' | null;
 }
 
+interface UserDeploymentHistory {
+  id: string;
+  user_id: string;
+  template_id: string;
+  status: string;
+  deployed_at: string;
+  user: {
+    email: string;
+    first_name: string | null;
+    last_name: string | null;
+    department: string | null;
+  };
+  template: {
+    name: string;
+  };
+}
+
 export default function DeploymentsPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [deployments, setDeployments] = useState<Deployment[]>([]);
@@ -86,6 +103,9 @@ export default function DeploymentsPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<{ successCount: number; failCount: number } | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [userDeploymentHistory, setUserDeploymentHistory] = useState<UserDeploymentHistory[]>([]);
+  const [showTeamDeployments, setShowTeamDeployments] = useState(true);
+  const [teamSearchQuery, setTeamSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -138,6 +158,25 @@ export default function DeploymentsPage() {
         source: null,
       }));
       setUsers(mappedUsers as any);
+    }
+
+    // Load user deployment history (per-user deployment records)
+    const { data: historyData } = await supabase
+      .from('user_deployment_history')
+      .select(`
+        id,
+        user_id,
+        template_id,
+        status,
+        deployed_at,
+        user:users(email, first_name, last_name, department),
+        template:signature_templates(name)
+      `)
+      .order('deployed_at', { ascending: false })
+      .limit(100);
+    
+    if (historyData) {
+      setUserDeploymentHistory(historyData as any);
     }
 
     setLoading(false);
@@ -762,6 +801,151 @@ export default function DeploymentsPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Team Deployment Status Table */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Team Deployment Status
+              </CardTitle>
+              <CardDescription>
+                See which team members have received signature deployments
+              </CardDescription>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setShowTeamDeployments(!showTeamDeployments)}
+            >
+              {showTeamDeployments ? 'Hide' : 'Show'}
+            </Button>
+          </div>
+        </CardHeader>
+        {showTeamDeployments && (
+          <CardContent>
+            {/* Search filter */}
+            <div className="mb-4">
+              <div className="relative max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={teamSearchQuery}
+                  onChange={(e) => setTeamSearchQuery(e.target.value)}
+                  className="w-full h-9 pl-9 pr-3 border rounded-md text-sm"
+                />
+              </div>
+            </div>
+
+            {users.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No team members yet</p>
+                <p className="text-sm">
+                  <Link href="/team" className="text-primary hover:underline">Add team members</Link> to see their deployment status
+                </p>
+              </div>
+            ) : (
+              <div className="border rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px]">
+                    <thead className="bg-muted/50 border-b">
+                      <tr>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Team Member</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Email</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Department</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Current Signature</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Last Deployed</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users
+                        .filter(user => {
+                          if (!teamSearchQuery) return true;
+                          const search = teamSearchQuery.toLowerCase();
+                          return (
+                            user.email.toLowerCase().includes(search) ||
+                            `${user.first_name || ''} ${user.last_name || ''}`.toLowerCase().includes(search)
+                          );
+                        })
+                        .map((user) => {
+                          // Find the most recent deployment for this user
+                          const userHistory = userDeploymentHistory.find(h => h.user_id === user.id);
+                          
+                          return (
+                            <tr key={user.id} className="border-b last:border-b-0 hover:bg-accent/50 transition-colors">
+                              <td className="p-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center">
+                                    <span className="text-sm font-medium text-violet-600">
+                                      {(user.first_name?.[0] || user.email[0]).toUpperCase()}
+                                    </span>
+                                  </div>
+                                  <span className="font-medium text-sm">
+                                    {user.first_name && user.last_name
+                                      ? `${user.first_name} ${user.last_name}`
+                                      : user.email.split('@')[0]}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="p-3 text-sm text-muted-foreground">{user.email}</td>
+                              <td className="p-3 text-sm">{user.department || '-'}</td>
+                              <td className="p-3 text-sm">
+                                {userHistory?.template?.name ? (
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-violet-50 text-violet-700 rounded text-xs font-medium">
+                                    <FileSignature className="h-3 w-3" />
+                                    {userHistory.template.name}
+                                  </span>
+                                ) : (
+                                  <span className="text-muted-foreground">No signature</span>
+                                )}
+                              </td>
+                              <td className="p-3 text-sm text-muted-foreground">
+                                {userHistory?.deployed_at 
+                                  ? new Date(userHistory.deployed_at).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })
+                                  : '-'}
+                              </td>
+                              <td className="p-3">
+                                {userHistory ? (
+                                  userHistory.status === 'success' ? (
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
+                                      <CheckCircle2 className="h-3 w-3" />
+                                      Deployed
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 px-2 py-1 rounded">
+                                      <XCircle className="h-3 w-3" />
+                                      Failed
+                                    </span>
+                                  )
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                    <Clock className="h-3 w-3" />
+                                    Not deployed
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        )}
+      </Card>
     </div>
   );
 }
