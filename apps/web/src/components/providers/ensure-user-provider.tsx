@@ -67,10 +67,7 @@ export function EnsureUserProvider({ children }: { children: ReactNode }) {
   if (!state.isReady) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
-          <p className="text-sm text-muted-foreground">Setting up your account...</p>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
       </div>
     );
   }

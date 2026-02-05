@@ -103,6 +103,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   if (existingSub) {
+    const oldPlan = existingSub.plan;
+    
     // Update existing subscription
     const { error } = await supabase
       .from('subscriptions')
@@ -120,6 +122,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       console.error('[Webhook] Failed to update subscription after checkout:', error);
     } else {
       console.log('[Webhook] Successfully updated subscription to plan:', plan);
+      
+      // Log the subscription event
+      const eventType = oldPlan === 'free' ? 'created' : 
+                        getPlanRank(plan) > getPlanRank(oldPlan) ? 'upgraded' : 'downgraded';
+      
+      await logSubscriptionEvent(supabase, {
+        organizationId: existingSub.organization_id,
+        subscriptionId: existingSub.id,
+        eventType,
+        fromPlan: oldPlan,
+        toPlan: plan,
+        fromStatus: existingSub.status,
+        toStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
+      });
     }
   } else {
     console.error('[Webhook] No subscription record found for customer:', customerId);
@@ -135,6 +151,14 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   console.log('[Webhook] Subscription updated:', { customerId, subscriptionId: subscription.id, plan, status });
 
   const supabase = getSupabaseAdmin();
+  
+  // Get existing subscription to compare
+  const { data: existingSub } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('stripe_customer_id', customerId)
+    .single();
+
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -152,6 +176,24 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     console.error('[Webhook] Failed to update subscription:', error);
   } else {
     console.log('[Webhook] Successfully updated subscription');
+    
+    // Log event if plan or status changed
+    if (existingSub && (existingSub.plan !== plan || existingSub.status !== status)) {
+      let eventType = 'updated';
+      if (existingSub.plan !== plan) {
+        eventType = getPlanRank(plan) > getPlanRank(existingSub.plan) ? 'upgraded' : 'downgraded';
+      }
+      
+      await logSubscriptionEvent(supabase, {
+        organizationId: existingSub.organization_id,
+        subscriptionId: existingSub.id,
+        eventType,
+        fromPlan: existingSub.plan,
+        toPlan: plan,
+        fromStatus: existingSub.status,
+        toStatus: status,
+      });
+    }
   }
 }
 
@@ -159,6 +201,14 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string;
 
   const supabase = getSupabaseAdmin();
+  
+  // Get existing subscription first
+  const { data: existingSub } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('stripe_customer_id', customerId)
+    .single();
+
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -172,6 +222,16 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
   if (error) {
     console.error('Failed to handle subscription deletion:', error);
+  } else if (existingSub) {
+    await logSubscriptionEvent(supabase, {
+      organizationId: existingSub.organization_id,
+      subscriptionId: existingSub.id,
+      eventType: 'canceled',
+      fromPlan: existingSub.plan,
+      toPlan: 'free',
+      fromStatus: existingSub.status,
+      toStatus: 'canceled',
+    });
   }
 }
 
@@ -179,6 +239,13 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
 
   const supabase = getSupabaseAdmin();
+  
+  const { data: existingSub } = await supabase
+    .from('subscriptions')
+    .select('*')
+    .eq('stripe_customer_id', customerId)
+    .single();
+
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -189,6 +256,14 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   if (error) {
     console.error('Failed to update subscription status to past_due:', error);
+  } else if (existingSub) {
+    await logSubscriptionEvent(supabase, {
+      organizationId: existingSub.organization_id,
+      subscriptionId: existingSub.id,
+      eventType: 'payment_failed',
+      fromStatus: existingSub.status,
+      toStatus: 'past_due',
+    });
   }
 }
 
@@ -259,5 +334,52 @@ function mapStripeStatus(status: Stripe.Subscription.Status): string {
       return 'canceled';
     default:
       return 'active';
+  }
+}
+
+function getPlanRank(plan: string): number {
+  switch (plan) {
+    case 'free': return 0;
+    case 'starter': return 1;
+    case 'professional': return 2;
+    case 'enterprise': return 3;
+    default: return 0;
+  }
+}
+
+interface SubscriptionEventData {
+  organizationId: string;
+  subscriptionId: string;
+  eventType: string;
+  fromPlan?: string;
+  toPlan?: string;
+  fromStatus?: string;
+  toStatus?: string;
+  stripeEventId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+async function logSubscriptionEvent(
+  supabase: ReturnType<typeof getSupabaseAdmin>,
+  data: SubscriptionEventData
+) {
+  const { error } = await supabase
+    .from('subscription_events')
+    .insert({
+      organization_id: data.organizationId,
+      subscription_id: data.subscriptionId,
+      event_type: data.eventType,
+      from_plan: data.fromPlan,
+      to_plan: data.toPlan,
+      from_status: data.fromStatus,
+      to_status: data.toStatus,
+      stripe_event_id: data.stripeEventId,
+      metadata: data.metadata,
+    });
+
+  if (error) {
+    console.error('[Webhook] Failed to log subscription event:', error);
+  } else {
+    console.log('[Webhook] Logged subscription event:', data.eventType);
   }
 }

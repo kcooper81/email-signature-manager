@@ -9,14 +9,16 @@ import {
   CreditCard,
   Users,
   AlertTriangle,
+  Ticket,
 } from 'lucide-react';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/accounts', label: 'Accounts', icon: Building2 },
+  { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
+  { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard },
   { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText },
   { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle },
-  { href: '/admin/billing', label: 'Billing', icon: CreditCard },
 ];
 
 export function AdminNav() {
