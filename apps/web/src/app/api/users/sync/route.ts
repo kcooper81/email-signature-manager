@@ -14,46 +14,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Try to get user's organization from users table first
-    let organizationId: string | null = null;
-    
+    // Get user's organization - REQUIRED for security
     const { data: userData } = await supabase
       .from('users')
       .select('organization_id')
       .eq('auth_id', user.id)
       .single();
 
-    if (userData?.organization_id) {
-      organizationId = userData.organization_id;
+    if (!userData?.organization_id) {
+      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    // Get Google connection - if no org from user, get it from connection
-    const connectionQuery = supabase
+    const organizationId = userData.organization_id;
+
+    // Get Google connection - MUST filter by organization_id for security
+    const { data: connection } = await supabase
       .from('provider_connections')
       .select('*')
       .eq('provider', 'google')
-      .eq('is_active', true);
-
-    if (organizationId) {
-      connectionQuery.eq('organization_id', organizationId);
-    }
-
-    const { data: connection } = await connectionQuery.single();
+      .eq('is_active', true)
+      .eq('organization_id', organizationId)
+      .single();
 
     if (!connection) {
       return NextResponse.json(
         { error: 'Google Workspace not connected' },
         { status: 400 }
       );
-    }
-
-    // Use organization from connection if we didn't have it
-    if (!organizationId) {
-      organizationId = connection.organization_id;
-    }
-
-    if (!organizationId) {
-      return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
     // Get the domain from the user's email

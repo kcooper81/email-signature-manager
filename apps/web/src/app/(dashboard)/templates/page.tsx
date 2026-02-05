@@ -35,9 +35,30 @@ export default function TemplatesPage() {
 
   const loadTemplates = async () => {
     const supabase = createClient();
+    
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    // Load templates - ONLY for current organization
     const { data, error } = await supabase
       .from('signature_templates')
       .select('*')
+      .eq('organization_id', currentUser.organization_id)
       .order('created_at', { ascending: false });
 
     if (!error && data) {
@@ -50,10 +71,25 @@ export default function TemplatesPage() {
     if (!confirm('Are you sure you want to delete this template?')) return;
 
     const supabase = createClient();
+    
+    // Get current user's organization for security
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) return;
+
+    // Delete template - FILTERED BY ORGANIZATION to prevent cross-org deletion
     const { error } = await supabase
       .from('signature_templates')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('organization_id', currentUser.organization_id);
 
     if (!error) {
       setTemplates(templates.filter((t) => t.id !== id));

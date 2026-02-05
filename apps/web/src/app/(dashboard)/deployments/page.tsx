@@ -114,35 +114,59 @@ export default function DeploymentsPage() {
   const loadData = async () => {
     const supabase = createClient();
     
-    // Load templates with blocks for preview
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    const organizationId = currentUser.organization_id;
+
+    // Load templates with blocks for preview - FILTERED BY ORGANIZATION
     const { data: templatesData } = await supabase
       .from('signature_templates')
       .select('id, name, description, blocks')
+      .eq('organization_id', organizationId)
       .order('name');
     
     if (templatesData) setTemplates(templatesData);
 
-    // Load recent deployments
+    // Load recent deployments - FILTERED BY ORGANIZATION
     const { data: deploymentsData, error: deploymentsError } = await supabase
       .from('signature_deployments')
       .select('id, status, total_users, successful_count, failed_count, created_at, completed_at, template:signature_templates(name)')
+      .eq('organization_id', organizationId)
       .order('created_at', { ascending: false })
       .limit(20);
     
     console.log('Deployments loaded:', deploymentsData, deploymentsError);
     if (deploymentsData) setDeployments(deploymentsData as any);
 
-    // Load connections
+    // Load connections - FILTERED BY ORGANIZATION
     const { data: connectionsData } = await supabase
       .from('provider_connections')
-      .select('provider, is_active');
+      .select('provider, is_active')
+      .eq('organization_id', organizationId);
     
     if (connectionsData) setConnections(connectionsData);
 
-    // Load users with all fields (gracefully handle missing columns)
+    // Load users with all fields - FILTERED BY ORGANIZATION
     const { data: usersData, error: usersError } = await supabase
       .from('users')
       .select('id, email, first_name, last_name, department, title, created_at')
+      .eq('organization_id', organizationId)
       .order('email');
     
     if (usersError) {
@@ -160,7 +184,7 @@ export default function DeploymentsPage() {
       setUsers(mappedUsers as any);
     }
 
-    // Load user deployment history (per-user deployment records)
+    // Load user deployment history - FILTERED BY ORGANIZATION (via user relation)
     const { data: historyData } = await supabase
       .from('user_deployment_history')
       .select(`
@@ -169,9 +193,10 @@ export default function DeploymentsPage() {
         template_id,
         status,
         deployed_at,
-        user:users(email, first_name, last_name, department),
+        user:users!inner(email, first_name, last_name, department, organization_id),
         template:signature_templates(name)
       `)
+      .eq('user.organization_id', organizationId)
       .order('deployed_at', { ascending: false })
       .limit(100);
     

@@ -64,18 +64,40 @@ export default function TemplateAssignmentsPage() {
   const loadData = async () => {
     const supabase = createClient();
     
-    // Load templates
+    // Get current user's organization
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentUser } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (!currentUser?.organization_id) {
+      setLoading(false);
+      return;
+    }
+
+    const organizationId = currentUser.organization_id;
+
+    // Load templates - FILTERED BY ORGANIZATION
     const { data: templatesData } = await supabase
       .from('signature_templates')
       .select('id, name')
+      .eq('organization_id', organizationId)
       .order('name');
     
     if (templatesData) setTemplates(templatesData);
 
-    // Load deployments with template info
+    // Load deployments with template info - FILTERED BY ORGANIZATION
     const { data: deploymentsData } = await supabase
       .from('signature_deployments')
       .select('id, template_id, status, total_users, successful_count, created_at, signature_templates(name)')
+      .eq('organization_id', organizationId)
       .order('created_at', { ascending: false });
     
     if (deploymentsData) {
@@ -85,10 +107,11 @@ export default function TemplateAssignmentsPage() {
       })));
     }
 
-    // Load employees
+    // Load employees - FILTERED BY ORGANIZATION
     const { data: employeesData } = await supabase
       .from('users')
       .select('id, email, first_name, last_name, department')
+      .eq('organization_id', organizationId)
       .order('email');
     
     if (employeesData) setEmployees(employeesData);
