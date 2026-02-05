@@ -99,7 +99,7 @@ export default function HubSpotIntegrationPage() {
               <div className="flex items-center gap-4">
                 <Link href="/signup">
                   <Button size="lg" className="bg-orange-600 hover:bg-orange-700">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
@@ -228,7 +228,7 @@ export default function HubSpotIntegrationPage() {
           <div className="flex items-center justify-center gap-4">
             <Link href="/signup">
               <Button size="lg" className="bg-white text-orange-600 hover:bg-gray-100">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link href="/contact">

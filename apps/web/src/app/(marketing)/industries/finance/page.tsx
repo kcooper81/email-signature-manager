@@ -93,7 +93,7 @@ export default function FinanceIndustryPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/signup">
                   <Button size="lg" className="bg-white text-emerald-900 hover:bg-emerald-50">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
@@ -277,12 +277,12 @@ export default function FinanceIndustryPage() {
           </h2>
           <p className="text-emerald-100 mb-8 max-w-2xl mx-auto">
             Join financial services firms using Siggly to manage compliant email signatures. 
-            Start your free trial today.
+            Get started with our free plan today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <Button size="lg" className="bg-white text-emerald-900 hover:bg-emerald-50">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link href="/contact">

@@ -23,7 +23,7 @@ import {
   Shield,
   RefreshCw,
 } from 'lucide-react';
-import { PLANS, getPlan, formatPrice, TRIAL_DAYS } from '@/lib/billing/plans';
+import { PLANS, getPlan, formatPrice } from '@/lib/billing/plans';
 import { trackViewItem, trackBeginCheckout, trackAddToCart, trackPurchase, trackSubscriptionEvent } from '@/components/analytics';
 import { useSearchParams } from 'next/navigation';
 
@@ -57,24 +57,53 @@ export default function BillingPage() {
   const [usage, setUsage] = useState<UsageStats>({ templateCount: 0, userCount: 0 });
   const [loading, setLoading] = useState(true);
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
-  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
-  const [purchaseTracked, setPurchaseTracked] = useState(false);
+    const [purchaseTracked, setPurchaseTracked] = useState(false);
   const [expandedPlans, setExpandedPlans] = useState<Set<string>>(new Set());
+  const [isSyncing, setIsSyncing] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     loadBillingData();
   }, []);
 
-  // Reload data after successful checkout
+  // Sync and reload data after successful checkout
   useEffect(() => {
     const success = searchParams.get('success');
     if (success === 'true') {
-      // Wait a bit for webhook to process, then reload
-      const timer = setTimeout(() => {
-        loadBillingData();
-      }, 2000);
-      return () => clearTimeout(timer);
+      setIsSyncing(true);
+      // Sync subscription from Stripe and poll until updated
+      const syncSubscription = async (attempts = 0): Promise<void> => {
+        try {
+          const response = await fetch('/api/billing/sync', { method: 'POST' });
+          const data = await response.json();
+          
+          if (data.success && data.plan !== 'free') {
+            // Subscription synced successfully
+            await loadBillingData();
+            setIsSyncing(false);
+            return;
+          }
+          
+          // Retry up to 5 times with increasing delay
+          if (attempts < 5) {
+            const delay = Math.min(1000 * Math.pow(2, attempts), 8000);
+            setTimeout(() => syncSubscription(attempts + 1), delay);
+          } else {
+            // Final attempt - just reload data
+            await loadBillingData();
+            setIsSyncing(false);
+          }
+        } catch (error) {
+          console.error('Sync error:', error);
+          if (attempts < 5) {
+            setTimeout(() => syncSubscription(attempts + 1), 2000);
+          } else {
+            setIsSyncing(false);
+          }
+        }
+      };
+      
+      syncSubscription();
     }
   }, [searchParams]);
 
@@ -100,9 +129,8 @@ export default function BillingPage() {
       );
 
       // Track subscription event
-      const isTrialing = subscription.status === 'trialing';
       trackSubscriptionEvent(
-        isTrialing ? 'trial_started' : 'subscription_started',
+        'subscription_started',
         plan.name,
         estimatedValue
       );
@@ -138,17 +166,6 @@ export default function BillingPage() {
 
     if (subData) {
       setSubscription(subData);
-    }
-
-    // Get organization for trial info
-    const { data: orgData } = await supabase
-      .from('organizations')
-      .select('trial_ends_at')
-      .eq('id', userData.organization_id)
-      .single();
-
-    if (orgData?.trial_ends_at) {
-      setTrialEndsAt(orgData.trial_ends_at);
     }
 
     // Get usage stats
@@ -231,13 +248,8 @@ export default function BillingPage() {
   };
 
   const currentPlan = getPlan(subscription?.plan || 'free');
-  const isTrialing = subscription?.status === 'trialing';
   const isCanceled = subscription?.cancel_at_period_end;
   const isPastDue = subscription?.status === 'past_due';
-
-  const trialDaysRemaining = trialEndsAt
-    ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-    : 0;
 
   if (loading) {
     return (
@@ -290,28 +302,22 @@ export default function BillingPage() {
             </Button>
           </div>
 
-      {/* Trial/Status Banner */}
-      {isTrialing && trialDaysRemaining > 0 && (
-        <Card className="bg-gradient-to-r from-violet-50 to-blue-50 border-violet-200">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-violet-600" />
-              <div>
-                <p className="font-medium text-foreground">
-                  You're on a {TRIAL_DAYS}-day free trial
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {trialDaysRemaining} days remaining. Upgrade now to keep all features.
-                </p>
-              </div>
+      {/* Syncing Banner */}
+      {isSyncing && (
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-4 flex items-center gap-3">
+            <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+            <div>
+              <p className="font-medium text-blue-900">Syncing your subscription...</p>
+              <p className="text-sm text-blue-700">
+                Please wait while we confirm your purchase with Stripe.
+              </p>
             </div>
-            <Button onClick={() => handleUpgrade('professional')}>
-              Upgrade Now
-            </Button>
           </CardContent>
         </Card>
       )}
 
+      
       {isPastDue && (
         <Card className="bg-red-50 border-red-200">
           <CardContent className="p-4 flex items-center gap-3">
@@ -365,8 +371,7 @@ export default function BillingPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-semibold">{currentPlan.name}</h3>
-                  {isTrialing && <Badge variant="info">Trial</Badge>}
-                  {isCanceled && <Badge variant="warning">Canceling</Badge>}
+                                    {isCanceled && <Badge variant="warning">Canceling</Badge>}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">{currentPlan.description}</p>
                 {currentPlan.pricePerUser > 0 && (
