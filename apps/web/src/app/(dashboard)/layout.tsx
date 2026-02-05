@@ -21,13 +21,23 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
+  // Check if user is an admin
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('is_admin, email')
+    .eq('email', user.email)
+    .single();
+
+  console.log('Admin check:', { email: user.email, userData, userError });
+  const isAdmin = userData?.is_admin === true;
+
   return (
     <EnsureUserProvider>
       <ImpersonationProvider>
         <SubscriptionProvider>
           <ImpersonationBanner />
           <div className="min-h-screen bg-background">
-            <DashboardHeader user={user} />
+            <DashboardHeader user={user} isAdmin={isAdmin} />
             <div className="flex">
               <DashboardNav />
               <main className="flex-1 p-6 min-w-0 overflow-x-hidden">{children}</main>
