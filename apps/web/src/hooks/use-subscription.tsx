@@ -3,6 +3,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getPlan, canAccessFeature, isWithinLimit, Plan, PlanFeatures } from '@/lib/billing/plans';
+import { getImpersonatedOrgId } from '@/hooks/use-impersonation';
 
 // Development toggle - set to true to bypass all pay gates during development
 // localStorage takes precedence over env var when explicitly set
@@ -76,14 +77,23 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Get user's organization
-    const { data: userData } = await supabase
-      .from('users')
-      .select('organization_id')
-      .eq('auth_id', user.id)
-      .single();
+    // Check for impersonation (admin viewing as customer)
+    const impersonatedOrgId = getImpersonatedOrgId();
+    
+    // Get user's organization (or use impersonated org)
+    let organizationId: string | null = impersonatedOrgId;
+    
+    if (!organizationId) {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user.id)
+        .single();
+      
+      organizationId = userData?.organization_id || null;
+    }
 
-    if (!userData?.organization_id) {
+    if (!organizationId) {
       setState(prev => ({ ...prev, isLoading: false, status: 'active' }));
       return;
     }
@@ -92,7 +102,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     const { data: subData } = await supabase
       .from('subscriptions')
       .select('*')
-      .eq('organization_id', userData.organization_id)
+      .eq('organization_id', organizationId)
       .single();
 
     const planId = subData?.plan || 'free';
@@ -103,12 +113,12 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     const { count: templateCount } = await supabase
       .from('signature_templates')
       .select('*', { count: 'exact', head: true })
-      .eq('organization_id', userData.organization_id);
+      .eq('organization_id', organizationId);
 
     const { count: teamMemberCount } = await supabase
       .from('users')
       .select('*', { count: 'exact', head: true })
-      .eq('organization_id', userData.organization_id);
+      .eq('organization_id', organizationId);
 
     const usage = {
       templateCount: templateCount || 0,
