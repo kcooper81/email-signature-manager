@@ -33,17 +33,39 @@ export async function POST(request: NextRequest) {
       .eq('organization_id', userData.organization_id)
       .single();
 
-    if (!subscription?.stripe_customer_id) {
+    let stripeCustomerId = subscription?.stripe_customer_id;
+
+    // If no stripe_customer_id, try to find customer by email in Stripe
+    if (!stripeCustomerId && user.email) {
+      const customers = await stripe.customers.list({
+        email: user.email,
+        limit: 1,
+      });
+
+      if (customers.data.length > 0) {
+        stripeCustomerId = customers.data[0].id;
+        
+        // Update the subscription record with the found customer ID
+        if (subscription) {
+          await supabase
+            .from('subscriptions')
+            .update({ stripe_customer_id: stripeCustomerId })
+            .eq('organization_id', userData.organization_id);
+        }
+      }
+    }
+
+    if (!stripeCustomerId) {
       return NextResponse.json({ 
         success: false, 
         message: 'No Stripe customer found',
-        plan: 'free' 
+        plan: subscription?.plan || 'free' 
       });
     }
 
     // Fetch active subscriptions from Stripe
     const stripeSubscriptions = await stripe.subscriptions.list({
-      customer: subscription.stripe_customer_id,
+      customer: stripeCustomerId,
       status: 'all',
       limit: 1,
     });
