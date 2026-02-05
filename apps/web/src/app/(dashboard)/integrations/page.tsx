@@ -90,18 +90,28 @@ export default function IntegrationsPage() {
         method: 'POST',
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to sync users');
+        // Check if it's a pay gate limit error
+        if (response.status === 403 && data.error === 'User limit reached') {
+          setSyncError(`${data.message}\n\nUpgrade your plan to sync more users.`);
+          // Show upgrade prompt
+          if (confirm(`${data.message}\n\nWould you like to upgrade your plan now?`)) {
+            window.location.href = '/settings/billing';
+          }
+          return;
+        }
+        throw new Error(data.error || 'Failed to sync users');
       }
       
-      const data = await response.json();
       setSyncSuccess(`Synced ${data.count || 0} users from Google Workspace`);
       
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-    } catch (err) {
-      setSyncError('Failed to sync Google Workspace users. Please try again.');
+    } catch (err: any) {
+      setSyncError(err.message || 'Failed to sync Google Workspace users. Please try again.');
       console.error('Google sync error:', err);
     } finally {
       setSyncing(null);
@@ -118,18 +128,28 @@ export default function IntegrationsPage() {
         method: 'POST',
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to sync users');
+        // Check if it's a pay gate limit error
+        if (response.status === 403 && data.error === 'User limit reached') {
+          setSyncError(`${data.message}\n\nUpgrade your plan to sync more users.`);
+          // Show upgrade prompt
+          if (confirm(`${data.message}\n\nWould you like to upgrade your plan now?`)) {
+            window.location.href = '/settings/billing';
+          }
+          return;
+        }
+        throw new Error(data.error || 'Failed to sync users');
       }
       
-      const data = await response.json();
       setSyncSuccess(`Synced ${data.count || 0} users from Microsoft 365`);
       
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-    } catch (err) {
-      setSyncError('Failed to sync Microsoft 365 users. Please try again.');
+    } catch (err: any) {
+      setSyncError(err.message || 'Failed to sync Microsoft 365 users. Please try again.');
       console.error('Microsoft sync error:', err);
     } finally {
       setSyncing(null);
@@ -165,18 +185,28 @@ export default function IntegrationsPage() {
         body: JSON.stringify({ listId: selectedListId }),
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to sync contacts');
+        // Check if it's a pay gate limit error
+        if (response.status === 403 && data.error === 'User limit reached') {
+          setSyncError(`${data.message}\n\nUpgrade your plan to sync more users.`);
+          // Show upgrade prompt
+          if (confirm(`${data.message}\n\nWould you like to upgrade your plan now?`)) {
+            window.location.href = '/settings/billing';
+          }
+          return;
+        }
+        throw new Error(data.error || 'Failed to sync contacts');
       }
       
-      const data = await response.json();
       setSyncSuccess(`Synced ${data.count || 0} contacts from HubSpot`);
       
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-    } catch (err) {
-      setSyncError('Failed to sync HubSpot contacts. Please try again.');
+    } catch (err: any) {
+      setSyncError(err.message || 'Failed to sync HubSpot contacts. Please try again.');
       console.error('HubSpot sync error:', err);
     } finally {
       setSyncing(null);
