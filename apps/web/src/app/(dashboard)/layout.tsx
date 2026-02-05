@@ -5,6 +5,8 @@ import { DashboardHeader } from '@/components/dashboard/header';
 import { FeedbackWidget } from '@/components/feedback';
 import { SubscriptionProvider } from '@/components/providers/subscription-provider';
 import { DevBypassIndicator, DevBypassToggle } from '@/components/billing';
+import { ImpersonationBanner } from '@/components/admin/impersonation-banner';
+import { ImpersonationProvider } from '@/hooks/use-impersonation';
 
 export default async function DashboardLayout({
   children,
@@ -19,17 +21,20 @@ export default async function DashboardLayout({
   }
 
   return (
-    <SubscriptionProvider>
-      <div className="min-h-screen bg-background">
-        <DashboardHeader user={user} />
-        <div className="flex">
-          <DashboardNav />
-          <main className="flex-1 p-6 min-w-0 overflow-x-hidden">{children}</main>
+    <ImpersonationProvider>
+      <SubscriptionProvider>
+        <ImpersonationBanner />
+        <div className="min-h-screen bg-background">
+          <DashboardHeader user={user} />
+          <div className="flex">
+            <DashboardNav />
+            <main className="flex-1 p-6 min-w-0 overflow-x-hidden">{children}</main>
+          </div>
+          <FeedbackWidget />
+          <DevBypassIndicator />
+          <DevBypassToggle />
         </div>
-        <FeedbackWidget />
-        <DevBypassIndicator />
-        <DevBypassToggle />
-      </div>
-    </SubscriptionProvider>
+      </SubscriptionProvider>
+    </ImpersonationProvider>
   );
 }

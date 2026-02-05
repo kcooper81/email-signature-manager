@@ -61,6 +61,7 @@ export const users = pgTable('users', {
   avatarUrl: text('avatar_url'),
   organizationId: uuid('organization_id').references(() => organizations.id).notNull(),
   role: userRoleEnum('role').default('member').notNull(),
+  isAdmin: boolean('is_admin').default(false).notNull(), // Platform admin flag
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
