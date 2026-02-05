@@ -15,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Mail, Loader2, Chrome } from 'lucide-react';
+import { Mail, Loader2, Chrome, CheckCircle, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,6 +23,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,8 +75,7 @@ export default function LoginPage() {
         return;
       }
 
-      setError(null);
-      alert('Check your email for the magic link!');
+      setMagicLinkSent(true);
     } catch (err) {
       setError('An unexpected error occurred');
     } finally {
@@ -106,6 +106,44 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // Magic link sent success state
+  if (magicLinkSent) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <CheckCircle className="h-16 w-16 text-green-500" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-center">
+            Check your email
+          </CardTitle>
+          <CardDescription className="text-center">
+            We&apos;ve sent a magic link to{' '}
+            <span className="font-medium text-foreground">{email}</span>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center text-sm text-muted-foreground">
+          <p>Click the link in the email to sign in.</p>
+          <p className="mt-4">
+            Didn&apos;t receive the email? Check your spam folder or{' '}
+            <button
+              onClick={() => setMagicLinkSent(false)}
+              className="text-primary hover:underline"
+            >
+              try again
+            </button>
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button variant="outline" className="w-full" onClick={() => setMagicLinkSent(false)}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to login
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md">

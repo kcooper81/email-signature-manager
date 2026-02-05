@@ -8,12 +8,14 @@ import {
   ScrollText,
   CreditCard,
   Users,
+  AlertTriangle,
 } from 'lucide-react';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/accounts', label: 'Accounts', icon: Building2 },
   { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText },
+  { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle },
   { href: '/admin/billing', label: 'Billing', icon: CreditCard },
 ];
 

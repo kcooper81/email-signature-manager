@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { setGmailSignature } from '@/lib/google/gmail';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
+import { logException } from '@/lib/error-logging';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,10 +14,12 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   console.log('POST /api/deployments/start called');
   
+  let requestBody: any = {};
+  
   try {
-    const body = await request.json();
-    console.log('Request body:', body);
-    const { templateId, target = 'me', userIds } = body;
+    requestBody = await request.json();
+    console.log('Request body:', requestBody);
+    const { templateId, target = 'me', userIds } = requestBody;
     
     const supabase = createClient();
 
@@ -252,8 +255,17 @@ export async function POST(request: NextRequest) {
       successCount,
       failCount,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Deployment error:', err);
+    
+    // Log error for admin monitoring
+    await logException(err, {
+      route: '/api/deployments/start',
+      method: 'POST',
+      errorType: 'deployment_error',
+      metadata: { templateId: requestBody?.templateId, target: requestBody?.target },
+    });
+
     return NextResponse.json(
       { error: 'Deployment failed' },
       { status: 500 }

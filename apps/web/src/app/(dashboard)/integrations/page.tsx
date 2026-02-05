@@ -45,6 +45,9 @@ export default function IntegrationsPage() {
   const [hubspotLists, setHubspotLists] = useState<HubSpotList[]>([]);
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const [loadingLists, setLoadingLists] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState<string | null>(null);
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -116,11 +119,8 @@ export default function IntegrationsPage() {
       if (!response.ok) {
         // Check if it's a pay gate limit error
         if (response.status === 403 && data.error === 'User limit reached') {
-          setSyncError(`${data.message}\n\nUpgrade your plan to sync more users.`);
-          // Show upgrade prompt
-          if (confirm(`${data.message}\n\nWould you like to upgrade your plan now?`)) {
-            window.location.href = '/settings/billing';
-          }
+          setUpgradeMessage(data.message);
+          setShowUpgradePrompt(true);
           return;
         }
         throw new Error(data.error || 'Failed to sync users');
@@ -154,11 +154,8 @@ export default function IntegrationsPage() {
       if (!response.ok) {
         // Check if it's a pay gate limit error
         if (response.status === 403 && data.error === 'User limit reached') {
-          setSyncError(`${data.message}\n\nUpgrade your plan to sync more users.`);
-          // Show upgrade prompt
-          if (confirm(`${data.message}\n\nWould you like to upgrade your plan now?`)) {
-            window.location.href = '/settings/billing';
-          }
+          setUpgradeMessage(data.message);
+          setShowUpgradePrompt(true);
           return;
         }
         throw new Error(data.error || 'Failed to sync users');
@@ -211,11 +208,8 @@ export default function IntegrationsPage() {
       if (!response.ok) {
         // Check if it's a pay gate limit error
         if (response.status === 403 && data.error === 'User limit reached') {
-          setSyncError(`${data.message}\n\nUpgrade your plan to sync more users.`);
-          // Show upgrade prompt
-          if (confirm(`${data.message}\n\nWould you like to upgrade your plan now?`)) {
-            window.location.href = '/settings/billing';
-          }
+          setUpgradeMessage(data.message);
+          setShowUpgradePrompt(true);
           return;
         }
         throw new Error(data.error || 'Failed to sync contacts');
@@ -234,8 +228,12 @@ export default function IntegrationsPage() {
     }
   };
 
+  const handleDisconnectClick = (provider: string) => {
+    setShowDisconnectConfirm(provider);
+  };
+
   const disconnectProvider = async (provider: string) => {
-    if (!confirm(`Are you sure you want to disconnect ${provider}?`)) return;
+    setShowDisconnectConfirm(null);
 
     const supabase = createClient();
     
@@ -402,7 +400,7 @@ export default function IntegrationsPage() {
                     variant="outline" 
                     size="sm" 
                     className="text-destructive"
-                    onClick={() => disconnectProvider('google')}
+                    onClick={() => handleDisconnectClick('google')}
                   >
                     Disconnect
                   </Button>
@@ -485,7 +483,7 @@ export default function IntegrationsPage() {
                     variant="outline" 
                     size="sm" 
                     className="text-destructive"
-                    onClick={() => disconnectProvider('microsoft')}
+                    onClick={() => handleDisconnectClick('microsoft')}
                   >
                     Disconnect
                   </Button>
@@ -616,7 +614,7 @@ export default function IntegrationsPage() {
                     variant="outline" 
                     size="sm" 
                     className="text-destructive"
-                    onClick={() => disconnectProvider('hubspot')}
+                    onClick={() => handleDisconnectClick('hubspot')}
                   >
                     Disconnect
                   </Button>
@@ -640,6 +638,50 @@ export default function IntegrationsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Upgrade Prompt Modal */}
+      {showUpgradePrompt && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader>
+              <CardTitle>Upgrade Required</CardTitle>
+              <CardDescription>
+                {upgradeMessage || 'You have reached your plan limit.'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowUpgradePrompt(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => window.location.href = '/settings/billing'}>
+                Upgrade Now
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Disconnect Confirmation Modal */}
+      {showDisconnectConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader>
+              <CardTitle>Disconnect {showDisconnectConfirm}?</CardTitle>
+              <CardDescription>
+                Are you sure you want to disconnect this integration? You can reconnect at any time.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowDisconnectConfirm(null)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={() => disconnectProvider(showDisconnectConfirm)}>
+                Disconnect
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Setup instructions */}
       {!googleConnection?.is_active && (

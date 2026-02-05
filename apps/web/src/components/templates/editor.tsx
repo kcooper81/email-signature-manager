@@ -39,6 +39,7 @@ import {
   Code,
   FileText,
   Shield,
+  AlertCircle,
 } from 'lucide-react';
 import type { SignatureBlock, SignatureBlockType, IndustryType } from './types';
 import { BlockEditor } from './block-editor';
@@ -82,6 +83,7 @@ export function TemplateEditor({
   const [industry, setIndustry] = useState<IndustryType>(initialIndustry);
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -128,9 +130,10 @@ export function TemplateEditor({
 
   const handleSave = async () => {
     if (!name.trim()) {
-      alert('Please enter a template name');
+      setValidationError('Please enter a template name');
       return;
     }
+    setValidationError(null);
     await onSave(name, description, blocks, industry);
   };
 
@@ -154,19 +157,27 @@ export function TemplateEditor({
             />
           </div>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              Save Template
-            </>
+        <div className="flex items-center gap-3">
+          {validationError && (
+            <div className="flex items-center gap-2 text-destructive text-sm">
+              <AlertCircle className="h-4 w-4" />
+              {validationError}
+            </div>
           )}
-        </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Template
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Main Content - 3 Column Grid */}

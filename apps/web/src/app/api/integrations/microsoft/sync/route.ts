@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { listMicrosoftUsers } from '@/lib/microsoft/graph';
 import { refreshMicrosoftToken } from '@/lib/microsoft/oauth';
 import { getPlan } from '@/lib/billing/plans';
+import { logException } from '@/lib/error-logging';
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
@@ -141,11 +142,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Microsoft sync error:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
+    
+    await logException(error, {
+      route: '/api/integrations/microsoft/sync',
+      method: 'POST',
+      errorType: 'sync_error',
     });
+
     return NextResponse.json(
       { error: error.message || 'Sync failed' },
       { status: 500 }

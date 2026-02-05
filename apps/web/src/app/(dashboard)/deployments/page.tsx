@@ -106,6 +106,7 @@ export default function DeploymentsPage() {
   const [userDeploymentHistory, setUserDeploymentHistory] = useState<UserDeploymentHistory[]>([]);
   const [showTeamDeployments, setShowTeamDeployments] = useState(true);
   const [teamSearchQuery, setTeamSearchQuery] = useState('');
+  const [deployError, setDeployError] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -283,7 +284,7 @@ export default function DeploymentsPage() {
       setSelectedUsers([]);
       await loadData();
     } catch (err: any) {
-      alert(err.message || 'Failed to start deployment');
+      setDeployError(err.message || 'Failed to start deployment');
     } finally {
       setDeploying(false);
     }
@@ -389,6 +390,19 @@ export default function DeploymentsPage() {
               Continue
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* Error message */}
+      {deployError && (
+        <div className="bg-destructive/10 text-destructive p-4 rounded-lg flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p>{deployError}</p>
+          </div>
+          <button onClick={() => setDeployError(null)} className="text-destructive hover:text-destructive/80">
+            <X className="h-4 w-4" />
+          </button>
         </div>
       )}
 
