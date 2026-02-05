@@ -60,6 +60,7 @@ export default function BillingPage() {
     const [purchaseTracked, setPurchaseTracked] = useState(false);
   const [expandedPlans, setExpandedPlans] = useState<Set<string>>(new Set());
   const [isSyncing, setIsSyncing] = useState(false);
+  const [billingError, setBillingError] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -189,6 +190,7 @@ export default function BillingPage() {
 
   const handleManageBilling = async () => {
     setLoadingPlanId('billing-portal');
+    setBillingError(null);
     try {
       const response = await fetch('/api/billing/portal', {
         method: 'POST',
@@ -196,9 +198,14 @@ export default function BillingPage() {
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.error) {
+        setBillingError(data.error === 'No billing account found' 
+          ? 'No active subscription found. Please upgrade to a paid plan first.'
+          : data.error);
       }
     } catch (error) {
       console.error('Failed to open billing portal:', error);
+      setBillingError('Failed to open billing portal. Please try again.');
     } finally {
       setLoadingPlanId(null);
     }
@@ -440,6 +447,12 @@ export default function BillingPage() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            {billingError && (
+              <div className="p-3 text-sm bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>{billingError}</span>
+              </div>
+            )}
             {subscription?.stripe_subscription_id ? (
               <>
                 <Button 
@@ -448,7 +461,7 @@ export default function BillingPage() {
                   onClick={handleManageBilling}
                   disabled={loadingPlanId === 'billing-portal'}
                 >
-                  <CreditCard className="mr-2 h-4 w-4" />
+                  {loadingPlanId === 'billing-portal' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}
                   Update Payment Method
                 </Button>
                 <Button 
@@ -457,7 +470,7 @@ export default function BillingPage() {
                   onClick={handleManageBilling}
                   disabled={loadingPlanId === 'billing-portal'}
                 >
-                  <ExternalLink className="mr-2 h-4 w-4" />
+                  {loadingPlanId === 'billing-portal' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />}
                   View Invoices
                 </Button>
               </>
@@ -471,6 +484,31 @@ export default function BillingPage() {
                 Upgrade to Pro
               </Button>
             )}
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-muted-foreground" 
+              onClick={async () => {
+                setIsSyncing(true);
+                setBillingError(null);
+                try {
+                  const res = await fetch('/api/billing/sync', { method: 'POST' });
+                  const data = await res.json();
+                  if (data.success) {
+                    await loadBillingData();
+                  } else if (data.error || data.message) {
+                    setBillingError(data.error || data.message);
+                  }
+                } catch (e) {
+                  setBillingError('Failed to sync subscription');
+                } finally {
+                  setIsSyncing(false);
+                }
+              }}
+              disabled={isSyncing}
+            >
+              {isSyncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+              Sync Subscription
+            </Button>
           </CardContent>
         </Card>
       </div>
