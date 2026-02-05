@@ -6,14 +6,15 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, Settings, User, Shield } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface DashboardHeaderProps {
   user: SupabaseUser;
+  isAdmin?: boolean;
 }
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -62,6 +63,15 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
               {initials}
             </div>
           </div>
+
+          {/* Admin link - only visible to admins */}
+          {isAdmin && (
+            <Link href="/admin">
+              <Button variant="ghost" size="icon" className="text-amber-400 hover:text-amber-300 hover:bg-slate-800" title="Admin Panel">
+                <Shield className="h-5 w-5" />
+              </Button>
+            </Link>
+          )}
 
           {/* Settings */}
           <Link href="/settings">
