@@ -93,7 +93,7 @@ export default function AgenciesPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/signup">
                   <Button size="lg" className="bg-white text-indigo-700 hover:bg-gray-100">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/contact">
@@ -218,7 +218,7 @@ export default function AgenciesPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
-              <Button size="lg">Start Free Trial</Button>
+              <Button size="lg">Get Started Free</Button>
             </Link>
             <Link href="/contact">
               <Button size="lg" variant="outline">Contact Sales</Button>

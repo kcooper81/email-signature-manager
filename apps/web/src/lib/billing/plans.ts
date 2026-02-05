@@ -84,7 +84,7 @@ export const PLANS: Record<string, Plan> = {
     priceMonthly: 5, // Base price display
     pricePerUser: 50, // $0.50/team member/month - cheaper than WiseStamp's $1
     period: '/team member/mo',
-    cta: 'Start Free Trial',
+    cta: 'Upgrade',
     ctaLink: '/signup',
     features: {
       maxTemplates: 5,
@@ -126,7 +126,7 @@ export const PLANS: Record<string, Plan> = {
     priceMonthly: 29, // Base price
     pricePerUser: 100, // $1/team member/month - same as WiseStamp but more features
     period: '/mo + $1/member',
-    cta: 'Start Free Trial',
+    cta: 'Upgrade',
     ctaLink: '/signup',
     popular: true,
     features: {
@@ -206,7 +206,6 @@ export const PLANS: Record<string, Plan> = {
 // Array version for easy iteration
 export const PLANS_LIST = Object.values(PLANS);
 
-export const TRIAL_DAYS = 14;
 
 export function getPlan(planId: string): Plan {
   return PLANS[planId] || PLANS.free;

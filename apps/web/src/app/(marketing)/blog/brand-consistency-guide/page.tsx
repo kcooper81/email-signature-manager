@@ -157,7 +157,7 @@ export default function BlogPost() {
                 Free for up to 5 users.
               </p>
               <Link href="/signup">
-                <Button>Start Free Trial <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button>Get Started Free <ArrowRight className="ml-2 h-4 w-4" /></Button>
               </Link>
             </div>
           </div>

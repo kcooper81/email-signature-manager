@@ -80,7 +80,7 @@ export function MarketingHero({
   badge,
   title,
   description,
-  primaryButtonText = 'Start Free Trial',
+  primaryButtonText = 'Get Started Free',
   primaryButtonHref = '/signup',
   secondaryButtonText,
   secondaryButtonHref,

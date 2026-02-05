@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Check, X, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PLANS_LIST, TRIAL_DAYS } from '@/lib/billing/plans';
+import { PLANS_LIST } from '@/lib/billing/plans';
 import { PricingPageTracker } from '@/components/analytics';
 import { generateMetadata as genMeta, generateFAQSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -17,7 +17,7 @@ export const metadata = genMeta({
 const faqs = [
   {
     question: 'Can I try Siggly for free?',
-    answer: `Yes! Our Free plan lets you try Siggly with up to 5 team members forever. Paid plans also come with a ${TRIAL_DAYS}-day free trial.`,
+    answer: `Yes! Our Free plan lets you use Siggly with up to 5 team members and 1 signature template—forever free. Upgrade anytime for more features.`,
   },
   {
     question: 'How does per-user/team member pricing work?',
@@ -200,7 +200,7 @@ export default function PricingPage() {
           </p>
           <Link href="/signup">
             <Button size="lg">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>

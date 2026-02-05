@@ -147,7 +147,7 @@ export default function CodeTwoComparisonPage() {
           <p className="text-blue-100 mb-8">No servers. No IT tickets. Just beautiful signatures in minutes.</p>
           <Link href="/signup">
             <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>

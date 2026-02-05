@@ -101,7 +101,7 @@ export default function Microsoft365Page() {
               <div className="flex items-center gap-4">
                 <Link href="/signup">
                   <Button size="lg">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
@@ -322,7 +322,7 @@ export default function Microsoft365Page() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link href="/pricing">

@@ -170,7 +170,7 @@ export default function SiggyComparisonPage() {
           <p className="text-emerald-100 mb-8">Switch from Siggy.io and keep more money in your budget.</p>
           <Link href="/signup">
             <Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
