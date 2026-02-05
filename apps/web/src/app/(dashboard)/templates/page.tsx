@@ -28,6 +28,7 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true);
   const { plan, usage, limits } = useSubscription();
   const devBypass = usePayGatesBypass();
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     loadTemplates();
@@ -67,8 +68,12 @@ export default function TemplatesPage() {
     setLoading(false);
   };
 
+  const handleDeleteClick = (id: string) => {
+    setDeleteConfirmId(id);
+  };
+
   const deleteTemplate = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this template?')) return;
+    setDeleteConfirmId(null);
 
     const supabase = createClient();
     
@@ -207,7 +212,7 @@ export default function TemplatesPage() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive"
-                      onClick={() => deleteTemplate(template.id)}
+                      onClick={() => handleDeleteClick(template.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -234,6 +239,28 @@ export default function TemplatesPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardHeader>
+              <CardTitle>Delete Template?</CardTitle>
+              <CardDescription>
+                Are you sure you want to delete this template? This action cannot be undone.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex gap-3">
+              <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={() => deleteTemplate(deleteConfirmId)}>
+                Delete
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

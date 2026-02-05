@@ -11,3 +11,5 @@ export { Select } from './select';
 export { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from './modal';
 export { EmptyState } from './empty-state';
 export { LoadingSpinner, LoadingPage } from './loading';
+export { ConfirmDialog } from './confirm-dialog';
+export { ToastProvider, useToast } from './toast';

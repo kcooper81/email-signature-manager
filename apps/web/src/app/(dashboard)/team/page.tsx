@@ -100,6 +100,8 @@ export default function TeamMembersPage() {
     department: '',
   });
   const [adding, setAdding] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -194,9 +196,10 @@ export default function TeamMembersPage() {
 
   const generateSignatures = async () => {
     if (!selectedTemplate || selectedMembers.size === 0) {
-      alert('Please select a template and at least one team member');
+      setErrorMessage('Please select a template and at least one team member');
       return;
     }
+    setErrorMessage(null);
 
     setGenerating(true);
     try {
@@ -217,7 +220,7 @@ export default function TeamMembersPage() {
 
       setGeneratedSignatures(data.signatures);
     } catch (err: any) {
-      alert(err.message || 'Failed to generate signatures');
+      setErrorMessage(err.message || 'Failed to generate signatures');
     } finally {
       setGenerating(false);
     }
@@ -229,7 +232,7 @@ export default function TeamMembersPage() {
       setCopiedId(userId);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
-      alert('Failed to copy to clipboard');
+      setErrorMessage('Failed to copy to clipboard');
     }
   };
 
@@ -276,7 +279,7 @@ export default function TeamMembersPage() {
       setSyncResult({ synced: data.synced, errors: data.errors });
       await loadData();
     } catch (err: any) {
-      alert(err.message || 'Failed to sync users');
+      setErrorMessage(err.message || 'Failed to sync users');
     } finally {
       setSyncing(false);
     }
@@ -284,18 +287,17 @@ export default function TeamMembersPage() {
 
   const addMember = async () => {
     if (!newMember.email) {
-      alert('Email is required');
+      setErrorMessage('Email is required');
       return;
     }
 
     // Check if user can add more team members
     if (!canAddTeamMember()) {
-      alert(`Team member limit reached!\n\nYour ${plan.name} plan allows up to ${limits.maxTeamMembers} team members. You currently have ${usage.teamMemberCount}.\n\nPlease upgrade your plan to add more team members.`);
+      setErrorMessage(`Team member limit reached! Your ${plan.name} plan allows up to ${limits.maxTeamMembers} team members. You currently have ${usage.teamMemberCount}. Please upgrade your plan to add more team members.`);
       setShowAddModal(false);
-      // Optionally redirect to billing
-      // window.location.href = '/settings/billing';
       return;
     }
+    setErrorMessage(null);
 
     setAdding(true);
     try {
@@ -328,7 +330,7 @@ export default function TeamMembersPage() {
       setNewMember({ email: '', first_name: '', last_name: '', title: '', department: '' });
       await loadData();
     } catch (err: any) {
-      alert(err.message || 'Failed to add team member');
+      setErrorMessage(err.message || 'Failed to add team member');
     } finally {
       setAdding(false);
     }
@@ -489,6 +491,19 @@ export default function TeamMembersPage() {
         description="Manage team members and their email signatures"
         action={actionButtons}
       />
+
+      {/* Error message */}
+      {errorMessage && (
+        <div className="bg-destructive/10 text-destructive p-4 rounded-lg flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p>{errorMessage}</p>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="text-destructive hover:text-destructive/80">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Usage indicator */}
       {limits.maxTeamMembers !== -1 && (

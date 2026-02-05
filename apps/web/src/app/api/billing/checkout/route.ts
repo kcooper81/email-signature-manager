@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createCustomer, createCheckoutSession } from '@/lib/billing/stripe';
+import { logException } from '@/lib/error-logging';
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,6 +92,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error('Checkout error:', error);
+    
+    await logException(error, {
+      route: '/api/billing/checkout',
+      method: 'POST',
+      errorType: 'billing_error',
+    });
+
     return NextResponse.json(
       { error: error.message || 'Failed to create checkout session' },
       { status: 500 }
