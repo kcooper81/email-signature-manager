@@ -32,14 +32,23 @@ export function FeedbackWidget() {
     
     setIsSubmitting(true);
     
-    // Simulate API call - replace with actual endpoint
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // In production, send to your feedback endpoint:
-    // await fetch('/api/feedback', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ type: feedbackType, message }),
-    // });
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: feedbackType,
+          message,
+          pageUrl: typeof window !== 'undefined' ? window.location.href : null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+    } catch (error) {
+      console.error('Feedback submission error:', error);
+    }
     
     setIsSubmitting(false);
     setIsSubmitted(true);
@@ -66,7 +75,7 @@ export function FeedbackWidget() {
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          'fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105',
+          'fixed bottom-20 right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105',
           isOpen && 'hidden'
         )}
       >
@@ -76,7 +85,7 @@ export function FeedbackWidget() {
 
       {/* Feedback Panel */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-80 rounded-2xl bg-card shadow-2xl border overflow-hidden animate-in slide-in-from-bottom-4 fade-in-0">
+        <div className="fixed bottom-20 right-6 z-50 w-80 rounded-2xl bg-card shadow-2xl border overflow-hidden animate-in slide-in-from-bottom-4 fade-in-0">
           {/* Header */}
           <div className="bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 flex items-center justify-between">
             <h3 className="text-white font-semibold">
