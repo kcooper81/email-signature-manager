@@ -109,13 +109,13 @@ export async function POST(request: NextRequest) {
     }
 
     const usersToUpsert = contactsToSync.map((contact) => ({
-      email: contact.properties.email,
-      first_name: contact.properties.firstname,
-      last_name: contact.properties.lastname,
-      title: contact.properties.jobtitle,
-      department: contact.properties.department,
-      phone: contact.properties.phone,
-      mobile: contact.properties.mobilephone,
+      email: contact.email,
+      first_name: contact.firstName,
+      last_name: contact.lastName,
+      title: contact.jobTitle,
+      department: contact.department,
+      phone: contact.phone,
+      mobile: contact.mobilePhone,
       organization_id: userData.organization_id,
       role: 'member' as const,
       source: 'hubspot' as const,
