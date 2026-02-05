@@ -53,18 +53,20 @@ export async function POST(request: NextRequest) {
       );
       customerId = customer.id;
 
-      // Create subscription record
-      const { error: insertError } = await supabase
+      // Upsert subscription record with stripe_customer_id
+      const { error: upsertError } = await supabase
         .from('subscriptions')
-        .insert({
+        .upsert({
           organization_id: userData.organization_id,
           stripe_customer_id: customerId,
-          plan: 'free',
-          status: 'active',
+          plan: subscription?.plan || 'free',
+          status: subscription?.status || 'active',
+        }, {
+          onConflict: 'organization_id',
         });
 
-      if (insertError) {
-        console.error('Failed to create subscription record:', insertError);
+      if (upsertError) {
+        console.error('Failed to upsert subscription record:', upsertError);
       }
     }
 
