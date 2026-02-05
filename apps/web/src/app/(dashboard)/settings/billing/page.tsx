@@ -213,6 +213,7 @@ export default function BillingPage() {
 
   const handleUpgrade = async (planId: string) => {
     setLoadingPlanId(planId);
+    setBillingError(null);
     try {
       // Track plan selection and checkout start
       const selectedPlan = getPlan(planId);
@@ -246,9 +247,14 @@ export default function BillingPage() {
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
+      } else if (data.error) {
+        setBillingError(data.error);
+      } else {
+        setBillingError('Failed to start checkout. Please try again or contact support.');
       }
     } catch (error) {
       console.error('Failed to start checkout:', error);
+      setBillingError('Failed to connect to payment provider. Please check your connection and try again.');
     } finally {
       setLoadingPlanId(null);
     }
@@ -522,6 +528,12 @@ export default function BillingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {billingError && (
+            <div className="mb-4 p-3 text-sm bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <span>{billingError}</span>
+            </div>
+          )}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {Object.values(PLANS).map((plan) => {
               const isCurrentPlan = currentPlan.id === plan.id;
