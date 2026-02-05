@@ -42,7 +42,7 @@ export default function HomePage() {
                 href="/signup"
                 className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 px-6 md:px-8 py-3.5 md:py-4 text-base font-semibold text-white shadow-lg shadow-violet-600/25 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
               >
-                Start free trial
+                Get started free
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -51,7 +51,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 gap-y-3 text-xs md:text-sm text-gray-500 mb-10 md:mb-16 px-4">
               <div className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-violet-600" />
-                <span>Free 14-day trial</span>
+                <span>Free plan available</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-blue-600" />
@@ -630,7 +630,7 @@ export default function HomePage() {
                   href="/signup"
                   className="group inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-semibold text-violet-600 shadow-lg hover:bg-gray-50 transition-all"
                 >
-                  Start your free trial
+                  Get started free
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>

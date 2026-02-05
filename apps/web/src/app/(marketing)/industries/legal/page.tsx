@@ -89,7 +89,7 @@ export default function LegalIndustryPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/signup">
                   <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
@@ -180,7 +180,7 @@ export default function LegalIndustryPage() {
               <div className="mt-8">
                 <Link href="/signup">
                   <Button size="lg">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </div>
@@ -282,12 +282,12 @@ export default function LegalIndustryPage() {
           </h2>
           <p className="text-slate-300 mb-8 max-w-2xl mx-auto">
             Join law firms using Siggly to manage compliant email signatures. 
-            Start your free trial today.
+            Get started with our free plan today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link href="/contact">

@@ -35,7 +35,7 @@ export default function GoogleWorkspacePage() {
               <div className="flex items-center gap-4">
                 <Link href="/signup">
                   <Button size="lg">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/pricing">
@@ -159,11 +159,11 @@ export default function GoogleWorkspacePage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to manage Gmail signatures?</h2>
           <p className="text-gray-600 mb-8">
-            Start your free trial and deploy your first signature in minutes.
+            Get started and deploy your first signature in minutes.
           </p>
           <Link href="/signup">
             <Button size="lg">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>

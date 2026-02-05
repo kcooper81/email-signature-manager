@@ -72,7 +72,7 @@ export default function FeaturesPage() {
           </p>
           <Link href="/signup">
             <Button size="lg">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
@@ -111,11 +111,11 @@ export default function FeaturesPage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
           <p className="text-gray-600 mb-8">
-            Start your free trial today. No credit card required.
+            Get started with our free plan. No credit card required.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link href="/signup">
-              <Button size="lg">Start Free Trial</Button>
+              <Button size="lg">Get Started Free</Button>
             </Link>
           </div>
         </div>

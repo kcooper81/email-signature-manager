@@ -98,7 +98,7 @@ export default function AboutPage() {
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link href="/signup">
-              <Button size="lg">Start Free Trial</Button>
+              <Button size="lg">Get Started Free</Button>
             </Link>
             <Link href="/contact">
               <Button size="lg" variant="outline">Contact Sales</Button>

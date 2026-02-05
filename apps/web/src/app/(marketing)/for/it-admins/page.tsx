@@ -95,7 +95,7 @@ export default function ITAdminsPage() {
         badge={{ icon: Shield, text: 'Built for IT Teams' }}
         title="Centralized Email Signature Control for IT Admins"
         description="Deploy consistent, compliant email signatures across your entire organization. No end-user involvement. No support tickets. No mistakes."
-        primaryButtonText="Start Free Trial"
+        primaryButtonText="Get Started Free"
         primaryButtonHref="/signup"
         image={{
           src: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop',
@@ -198,7 +198,7 @@ export default function ITAdminsPage() {
       <MarketingCTA
         title="Ready to take control of your email signatures?"
         description="Join IT teams at hundreds of companies who trust Siggly for centralized signature management."
-        primaryButtonText="Start Free Trial"
+        primaryButtonText="Get Started Free"
         primaryButtonHref="/signup"
         secondaryButtonText="View Pricing"
         secondaryButtonHref="/pricing"

@@ -94,7 +94,7 @@ export default function MarketingPage() {
         badge={{ icon: Megaphone, text: 'Built for Marketing Teams' }}
         title="Turn Every Email Into a Marketing Opportunity"
         description="Your team sends thousands of emails every day. Each one is a chance to promote your brand, drive traffic, and generate leads—for free."
-        primaryButtonText="Start Free Trial"
+        primaryButtonText="Get Started Free"
         primaryButtonHref="/signup"
         image={{
           src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
@@ -239,7 +239,7 @@ export default function MarketingPage() {
       <MarketingCTA
         title="Ready to unlock your hidden marketing channel?"
         description="Start turning every email into a marketing opportunity. Free to try, no credit card required."
-        primaryButtonText="Start Free Trial"
+        primaryButtonText="Get Started Free"
         primaryButtonHref="/signup"
         secondaryButtonText="View Pricing"
         secondaryButtonHref="/pricing"

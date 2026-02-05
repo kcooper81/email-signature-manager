@@ -111,7 +111,7 @@ export default function EnterprisePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/signup">
                   <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
-                    Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/contact">
@@ -356,13 +356,13 @@ export default function EnterprisePage() {
             Ready to deploy at enterprise scale?
           </h2>
           <p className="text-violet-100 mb-8 max-w-2xl mx-auto">
-            Start your free trial or contact our enterprise team to discuss 
+            Get started with our free plan or contact our enterprise team to discuss 
             your organization's unique requirements.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
               <Button size="lg" className="bg-white text-violet-700 hover:bg-gray-100">
-                Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link href="/contact">

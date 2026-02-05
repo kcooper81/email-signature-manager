@@ -164,12 +164,12 @@ export default function DemoPage() {
         <div className="max-w-4xl mx-auto px-6 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
           <p className="text-white/80 mb-8 text-lg">
-            Start your free trial today. No credit card required.
+            Get started with our free plan. No credit card required.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link href="/signup">
               <Button size="lg" variant="secondary">
-                Start Free Trial
+                Get Started Free
               </Button>
             </Link>
             <Link href="/contact">

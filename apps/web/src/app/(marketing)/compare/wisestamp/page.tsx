@@ -226,7 +226,7 @@ export default function WiseStampComparisonPage() {
           <p className="text-violet-100 mb-8">Start free today. Deploy to your entire team in minutes, not hours.</p>
           <Link href="/signup">
             <Button size="lg" className="bg-white text-violet-700 hover:bg-gray-100">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>

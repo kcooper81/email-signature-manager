@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createCustomer, createCheckoutSession } from '@/lib/billing/stripe';
-import { TRIAL_DAYS } from '@/lib/billing/plans';
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,9 +76,6 @@ export async function POST(request: NextRequest) {
 
     const quantity = Math.max(1, userCount || 1);
 
-    // Check if this is a new customer (eligible for trial)
-    const isNewCustomer = !subscription?.stripe_subscription_id;
-
     // Create checkout session
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const session = await createCheckoutSession({
@@ -88,7 +84,6 @@ export async function POST(request: NextRequest) {
       quantity,
       successUrl: `${baseUrl}/settings/billing?success=true`,
       cancelUrl: `${baseUrl}/settings/billing?canceled=true`,
-      trialDays: isNewCustomer ? TRIAL_DAYS : undefined,
     });
 
     return NextResponse.json({ url: session.url });

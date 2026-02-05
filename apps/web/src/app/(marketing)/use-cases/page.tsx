@@ -102,7 +102,7 @@ export default function UseCasesPage() {
           </p>
           <Link href="/signup">
             <Button size="lg">
-              Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
