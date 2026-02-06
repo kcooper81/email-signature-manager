@@ -225,6 +225,35 @@ Consider adding:
 - Blog post: "How to Sync HubSpot Contacts to Email Signatures"
 - Case study: "How [Company] Automated Signatures with HubSpot"
 
+## Employee Filtering
+
+By default, HubSpot CRM contains ALL contacts (customers, leads, prospects, employees). When syncing, you typically only want employees.
+
+### Using Lists (Recommended)
+
+1. In HubSpot: Create a list called "Employees"
+2. Add all employee contacts to this list
+3. After connecting HubSpot, select the "Employees" list from the dropdown
+4. Sync will only pull contacts from that list
+
+### Using Contact Type Property
+
+Alternatively, create a `contact_type` property:
+
+1. In HubSpot: Settings → Properties → Create "Contact Type" dropdown
+2. Add options: Employee, Customer, Lead, etc.
+3. Tag all employees with `contact_type = "Employee"`
+4. The sync filters for employee-type contacts automatically
+
+### Filtering Logic
+
+Located in `apps/web/src/lib/hubspot/crm.ts`:
+```typescript
+const isEmployee = !props.contact_type || 
+                 props.contact_type === 'employee' || 
+                 props.contact_type === 'Employee';
+```
+
 ## Resources
 
 - [HubSpot OAuth Documentation](https://developers.hubspot.com/docs/api/oauth-quickstart-guide)

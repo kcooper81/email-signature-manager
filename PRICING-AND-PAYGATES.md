@@ -8,7 +8,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 ## Pricing Tiers
 
 ### Free Plan
-**Price:** $0/month  
+**Price:** $0 forever  
 **Target:** Individuals and small teams trying out Siggly
 
 **Limits:**
@@ -23,7 +23,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 
 **Integrations:**
 - **Google Workspace:** ✅ Yes
-- **Microsoft 365:** ✅ Yes (feature flag says no, but works)
+- **Microsoft 365:** ❌ No
 - **HubSpot CRM:** ❌ No
 
 **Features Included:**
@@ -31,23 +31,23 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - ✅ 1 signature template
 - ✅ Visual drag-and-drop editor
 - ✅ Google Workspace integration
-- ✅ Microsoft 365 integration
 - ✅ Auto-sync user directory
 - ✅ One-click deployment
 - ✅ Mobile-responsive signatures
 - ✅ Industry compliance blocks (Legal, Healthcare, Finance, Real Estate)
 - ✅ Disclaimer templates
 - ✅ Email support
+- ✅ Manual signature copy (for non-integrated users)
 
 ---
 
 ### Starter Plan
-**Price:** $3/user/month  
+**Price:** $0.50/user/month  
 **Target:** Growing teams needing more templates and integrations
 
 **Limits:**
-- **Max Templates:** 10
-- **Max Users:** 25
+- **Max Templates:** 5
+- **Max Users:** Unlimited (-1)
 - **Analytics:** ✅ Yes
 - **Custom Branding:** ✅ Yes
 - **Priority Support:** ❌ No
@@ -58,26 +58,25 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 **Integrations:**
 - **Google Workspace:** ✅ Yes
 - **Microsoft 365:** ✅ Yes
-- **HubSpot CRM:** ✅ Yes
+- **HubSpot CRM:** ❌ No
 
 **Additional Features:**
-- ✅ Up to 25 team members
-- ✅ 10 signature templates
+- ✅ Unlimited team members
+- ✅ 5 signature templates
 - ✅ Analytics dashboard
-- ✅ HubSpot CRM integration
-- ✅ Bulk operations
+- ✅ Microsoft 365 integration
 - ✅ Custom branding
 - ✅ Remove watermark
 
 ---
 
 ### Professional Plan
-**Price:** $5/user/month  
+**Price:** $29/month + $1/user/month  
 **Target:** Professional teams with advanced needs
 
 **Limits:**
 - **Max Templates:** Unlimited (-1)
-- **Max Users:** 100
+- **Max Users:** Unlimited (-1)
 - **Analytics:** ✅ Yes
 - **Custom Branding:** ✅ Yes
 - **Priority Support:** ✅ Yes
@@ -92,13 +91,13 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **Scheduled Deployments:** ✅ Yes
 
 **Additional Features:**
-- ✅ Up to 100 team members
+- ✅ Unlimited team members
 - ✅ Unlimited templates
+- ✅ HubSpot CRM integration
 - ✅ Advanced analytics
 - ✅ API access
 - ✅ Scheduled deployments
 - ✅ Priority support
-- ✅ Advanced automation
 
 ---
 
@@ -184,7 +183,7 @@ getPlan() Function (Backend)
 
 **Limits:**
 - Free: 1 template
-- Starter: 10 templates
+- Starter: 5 templates
 - Professional: Unlimited
 - Enterprise: Unlimited
 
@@ -201,8 +200,8 @@ getPlan() Function (Backend)
 
 **Limits:**
 - Free: 5 users
-- Starter: 25 users
-- Professional: 100 users
+- Starter: Unlimited
+- Professional: Unlimited
 - Enterprise: Unlimited
 
 ---
@@ -272,26 +271,28 @@ getPlan() Function (Backend)
 ---
 
 ### 7. Microsoft 365 Integration Access
-**Location:** Integration settings  
+**Location:** `/integrations` page  
 **Type:** Feature Gate  
 **Check:** `microsoft365` feature flag  
 **Enforcement:**
-- Feature flag in plans.ts
-- Shows as premium feature
+- Shows "Upgrade Required" on Free plan
+- Connect button disabled
+- Upgrade prompt displayed
 
-**Requirement:** Starter plan (but currently works on Free)
+**Requirement:** Starter plan or higher
 
 ---
 
 ### 8. HubSpot CRM Integration Access
-**Location:** Integration settings  
+**Location:** `/integrations` page  
 **Type:** Feature Gate  
 **Check:** `hubspotCRM` feature flag  
 **Enforcement:**
-- Integration disabled on free plan
-- Shows upgrade prompt
+- Shows "Upgrade Required" on Free and Starter plans
+- Connect button disabled
+- Upgrade prompt displayed
 
-**Requirement:** Starter plan or higher
+**Requirement:** Professional plan or higher
 
 ---
 
@@ -519,5 +520,5 @@ const getDevBypassEnabled = () => {
 
 ---
 
-*Last Updated: February 4, 2026*  
-*Version: 1.0*
+*Last Updated: February 5, 2026*  
+*Version: 1.1*
