@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Mail, Monitor, Smartphone, AlertCircle, ExternalLink, Apple } from 'lucide-react';
+import { Mail, Monitor, Smartphone, AlertCircle, ExternalLink, Apple, Moon, Sun } from 'lucide-react';
 
 type EmailClient = 'gmail' | 'outlook' | 'apple-mail';
 
@@ -55,6 +55,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
   const [selectedClient, setSelectedClient] = useState<EmailClient>('gmail');
   const [showQuirks, setShowQuirks] = useState(false);
   const [previewWidth, setPreviewWidth] = useState<'desktop' | 'mobile'>('desktop');
+  const [colorMode, setColorMode] = useState<'light' | 'dark'>('light');
 
   const clientInfo = CLIENT_INFO[selectedClient];
 
@@ -80,26 +81,51 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
           ))}
         </div>
         
-        {/* Responsive Toggle - Far Right */}
-        <div className="flex items-center gap-1 bg-gray-100 rounded p-0.5">
-          <button
-            onClick={() => setPreviewWidth('desktop')}
-            className={`p-1.5 rounded transition-colors ${
-              previewWidth === 'desktop' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
-            }`}
-            title="Desktop view"
-          >
-            <Monitor className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => setPreviewWidth('mobile')}
-            className={`p-1.5 rounded transition-colors ${
-              previewWidth === 'mobile' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
-            }`}
-            title="Mobile view"
-          >
-            <Smartphone className="h-3.5 w-3.5" />
-          </button>
+        {/* Controls - Far Right */}
+        <div className="flex items-center gap-2">
+          {/* Dark Mode Toggle */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded p-0.5">
+            <button
+              onClick={() => setColorMode('light')}
+              className={`p-1.5 rounded transition-colors ${
+                colorMode === 'light' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
+              }`}
+              title="Light mode"
+            >
+              <Sun className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setColorMode('dark')}
+              className={`p-1.5 rounded transition-colors ${
+                colorMode === 'dark' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
+              }`}
+              title="Dark mode"
+            >
+              <Moon className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          
+          {/* Responsive Toggle */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded p-0.5">
+            <button
+              onClick={() => setPreviewWidth('desktop')}
+              className={`p-1.5 rounded transition-colors ${
+                previewWidth === 'desktop' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
+              }`}
+              title="Desktop view"
+            >
+              <Monitor className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setPreviewWidth('mobile')}
+              className={`p-1.5 rounded transition-colors ${
+                previewWidth === 'mobile' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-600'
+              }`}
+              title="Mobile view"
+            >
+              <Smartphone className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -138,10 +164,12 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
       {/* Preview Container */}
       <div className="p-4 overflow-auto">
         <div 
-          className="bg-background rounded border shadow-sm p-4 mx-auto transition-all"
+          className="rounded border shadow-sm p-4 mx-auto transition-all"
           style={{
             borderRadius: selectedClient === 'outlook' ? 0 : undefined,
             maxWidth: previewWidth === 'mobile' ? '375px' : '600px',
+            backgroundColor: colorMode === 'dark' ? '#1a1a1a' : '#ffffff',
+            color: colorMode === 'dark' ? '#e5e5e5' : '#1a1a1a',
           }}
         >
           {/* Email Header Simulation */}
@@ -178,6 +206,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
               blocks={blocks} 
               client={selectedClient}
               isMobile={previewWidth === 'mobile'}
+              colorMode={colorMode}
             />
           </div>
         </div>
@@ -203,7 +232,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
 }
 
 // Internal signature renderer that applies client-specific styles
-function SignatureRenderer({ blocks, client, isMobile }: { blocks: any[]; client: EmailClient; isMobile: boolean }) {
+function SignatureRenderer({ blocks, client, isMobile, colorMode = 'light' }: { blocks: any[]; client: EmailClient; isMobile: boolean; colorMode?: 'light' | 'dark' }) {
   if (!blocks || blocks.length === 0) {
     return (
       <div className="text-muted-foreground text-sm italic">
