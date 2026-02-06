@@ -103,8 +103,8 @@ export default function TemplatesPage() {
     }
   };
 
-  // Check if user can create more templates
-  const canCreate = devBypass || limits.maxTemplates === -1 || usage.templateCount < limits.maxTemplates;
+  // Check if user can create more templates (use actual templates.length for accuracy)
+  const canCreate = devBypass || limits.maxTemplates === -1 || templates.length < limits.maxTemplates;
   const templateLimitReached = !canCreate;
 
   const actionButtons = (
@@ -145,9 +145,9 @@ export default function TemplatesPage() {
       {limits.maxTemplates !== -1 && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>
-            {usage.templateCount} / {limits.maxTemplates} templates used
+            {templates.length} / {limits.maxTemplates} templates used
           </span>
-          {templateLimitReached && (
+          {templates.length >= limits.maxTemplates && !devBypass && (
             <Badge variant="secondary" className="text-xs">
               Limit reached
             </Badge>
