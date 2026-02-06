@@ -15,8 +15,10 @@ import {
   HelpCircle,
   Menu,
   X,
+  MessageCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FeedbackWidget } from '@/components/feedback';
 
 const mainNavItems = [
   {
@@ -64,9 +66,15 @@ const bottomNavItems = [
   },
 ];
 
+const feedbackItem = {
+  title: 'Send Feedback',
+  icon: MessageCircle,
+};
+
 export function DashboardNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const renderNavItem = (item: typeof mainNavItems[0], mobile = false) => {
     const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -123,6 +131,16 @@ export function DashboardNav() {
         {/* Bottom nav items */}
         <div className="space-y-1.5 pt-4 border-t">
           {bottomNavItems.map((item) => renderNavItem(item, true))}
+          <button
+            onClick={() => {
+              setFeedbackOpen(true);
+              setMobileMenuOpen(false);
+            }}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-foreground w-full"
+          >
+            <feedbackItem.icon className="h-4 w-4" />
+            {feedbackItem.title}
+          </button>
         </div>
       </nav>
 
@@ -136,8 +154,18 @@ export function DashboardNav() {
         {/* Bottom nav items */}
         <div className="space-y-1.5 pt-4 border-t">
           {bottomNavItems.map((item) => renderNavItem(item))}
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-foreground w-full text-left"
+          >
+            <feedbackItem.icon className="h-4 w-4" />
+            {feedbackItem.title}
+          </button>
         </div>
       </nav>
+
+      {/* Feedback Modal */}
+      <FeedbackWidget isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </>
   );
 }

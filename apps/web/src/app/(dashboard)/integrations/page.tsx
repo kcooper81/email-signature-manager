@@ -800,62 +800,22 @@ export default function IntegrationsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3">
-                <p className="text-sm font-medium text-amber-900">Domain-Wide Delegation Required</p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                 <p className="text-sm text-amber-800">
-                  Your Google Workspace admin must authorize Siggly in the Admin Console:
+                  <strong>First time?</strong> You&apos;ll need to{' '}
+                  <a 
+                    href="/help/google-workspace-setup#org-setup" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline font-medium"
+                  >
+                    configure domain-wide delegation
+                  </a>
+                  {' '}in your Google Admin Console (5 min).
                 </p>
-                <ol className="text-sm text-amber-800 space-y-2 list-decimal list-inside">
-                  <li>Go to <a href="https://admin.google.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">admin.google.com</a> → Security → API controls</li>
-                  <li>Click <strong>Manage Domain-Wide Delegation</strong></li>
-                  <li>Click <strong>Add new</strong> and enter:</li>
-                </ol>
-                <div className="bg-white rounded border p-3 space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500">Client ID:</p>
-                      <code className="text-sm font-mono">{process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_CLIENT_ID || 'Not configured'}</code>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="shrink-0"
-                      onClick={() => copyToClipboard(process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_CLIENT_ID || '', 'clientId')}
-                    >
-                      {copiedField === 'clientId' ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500">OAuth Scopes:</p>
-                      <code className="text-xs font-mono break-all">https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/admin.directory.user.readonly</code>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="shrink-0"
-                      onClick={() => copyToClipboard('https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/admin.directory.user.readonly', 'scopes')}
-                    >
-                      {copiedField === 'scopes' ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
-                <a 
-                  href="https://www.siggly.io/help/google-workspace-setup" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-amber-700 hover:text-amber-900 underline"
-                >
-                  <ExternalLink className="h-3 w-3" />
-                  View step-by-step setup guide
-                </a>
               </div>
 
               <div className="space-y-3">
-                <p className="text-sm font-medium">Enter Your Organization Details</p>
-                <p className="text-sm text-muted-foreground">
-                  Enter your Google Workspace admin email and domain to connect.
-                </p>
                 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Admin Email</label>
