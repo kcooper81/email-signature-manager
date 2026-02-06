@@ -189,12 +189,20 @@ Email Signature Manager (Siggly) - A SaaS platform for managing email signatures
 - Deployment tracking
 - Usage metrics
 
+## Current Integrations
+
+### Live Integrations
+- **Google Workspace** - Gmail signature management, user sync
+- **Microsoft 365** - Outlook signature management, Azure AD sync
+- **HubSpot CRM** - Contact data sync for signature fields
+- **Stripe** - Subscription billing and payments
+
 ## Future Considerations
 
 ### Planned Integrations
-- Microsoft 365 support
-- Outlook signature management
-- Additional CRM integrations
+- Zapier integration
+- Calendly links
+- Additional CRM integrations (Salesforce)
 
 ### Scaling
 - Database read replicas
