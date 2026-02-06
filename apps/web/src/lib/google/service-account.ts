@@ -27,11 +27,17 @@ export interface ServiceAccountCredentials {
  */
 export function getServiceAccountCredentials(): ServiceAccountCredentials | null {
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  let privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
 
   if (!clientEmail || !privateKey) {
     return null;
   }
+
+  // Handle various escape formats from different env var sources
+  // Vercel may store as literal \n or actual newlines
+  privateKey = privateKey
+    .replace(/\\\\n/g, '\n')  // Double-escaped \\n
+    .replace(/\\n/g, '\n');    // Single-escaped \n
 
   return {
     client_email: clientEmail,
