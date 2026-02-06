@@ -30,6 +30,9 @@ import {
   PartyPopper,
   X,
   Mail,
+  Copy,
+  Download,
+  Check,
 } from 'lucide-react';
 
 interface Template {
@@ -107,6 +110,12 @@ export default function DeploymentsPage() {
   const [showTeamDeployments, setShowTeamDeployments] = useState(true);
   const [teamSearchQuery, setTeamSearchQuery] = useState('');
   const [deployError, setDeployError] = useState<string | null>(null);
+  
+  // Manual copy state (for users without integrations)
+  const [showManualCopy, setShowManualCopy] = useState(false);
+  const [generatedSignatures, setGeneratedSignatures] = useState<Array<{ userId: string; userName: string; email: string; html: string }>>([]);
+  const [generating, setGenerating] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -301,7 +310,96 @@ export default function DeploymentsPage() {
     return `${selectedUsers.length} selected user${selectedUsers.length !== 1 ? 's' : ''}`;
   };
 
+  // Manual copy functions
+  const generateSignaturesManually = async () => {
+    if (!selectedTemplate) {
+      setDeployError('Please select a template first');
+      return;
+    }
+
+    setGenerating(true);
+    setDeployError(null);
+
+    try {
+      // Get target user IDs
+      let targetUserIds: string[] = [];
+      if (deployTarget === 'me') {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', user.id)
+            .single();
+          if (userData) targetUserIds = [userData.id];
+        }
+      } else if (deployTarget === 'all') {
+        targetUserIds = users.map(u => u.id);
+      } else {
+        targetUserIds = selectedUsers;
+      }
+
+      const response = await fetch('/api/signatures/generate-for-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateId: selectedTemplate,
+          userIds: targetUserIds,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate signatures');
+      }
+
+      setGeneratedSignatures(data.signatures);
+      setShowManualCopy(true);
+    } catch (err: any) {
+      setDeployError(err.message || 'Failed to generate signatures');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const copySignature = async (html: string, userId: string) => {
+    try {
+      await navigator.clipboard.writeText(html);
+      setCopiedId(userId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      setDeployError('Failed to copy to clipboard');
+    }
+  };
+
+  const downloadSignature = (html: string, userName: string) => {
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `signature-${userName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadAllSignatures = () => {
+    generatedSignatures.forEach(sig => {
+      downloadSignature(sig.html, sig.userName);
+    });
+  };
+
+  const closeManualCopyModal = () => {
+    setShowManualCopy(false);
+    setGeneratedSignatures([]);
+  };
+
   const googleConnected = connections.some(c => c.provider === 'google' && c.is_active);
+  const microsoftConnected = connections.some(c => c.provider === 'microsoft' && c.is_active);
+  const hasEmailProvider = googleConnected || microsoftConnected;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -393,6 +491,88 @@ export default function DeploymentsPage() {
         </div>
       )}
 
+      {/* Manual Copy Modal */}
+      {showManualCopy && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card rounded-xl shadow-2xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold">Copy Signatures Manually</h2>
+                <p className="text-sm text-muted-foreground">
+                  Copy the HTML signature and paste it into your email client settings
+                </p>
+              </div>
+              <button
+                onClick={closeManualCopyModal}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {generatedSignatures.length > 0 && (
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium">
+                  {generatedSignatures.length} signature{generatedSignatures.length !== 1 ? 's' : ''} generated
+                </p>
+                <Button variant="outline" size="sm" onClick={downloadAllSignatures}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download All
+                </Button>
+              </div>
+            )}
+
+            <div className="flex-1 overflow-y-auto space-y-3">
+              {generatedSignatures.map((sig) => (
+                <div key={sig.userId} className="border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-medium">{sig.userName}</p>
+                      <p className="text-sm text-muted-foreground">{sig.email}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => copySignature(sig.html, sig.userId)}
+                      >
+                        {copiedId === sig.userId ? (
+                          <>
+                            <Check className="mr-2 h-4 w-4 text-green-600" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-4 w-4" />
+                            Copy HTML
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => downloadSignature(sig.html, sig.userName)}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 border rounded p-3 max-h-32 overflow-auto">
+                    <div dangerouslySetInnerHTML={{ __html: sig.html }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 pt-4 border-t">
+              <Button onClick={closeManualCopyModal} className="w-full">
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Error message */}
       {deployError && (
         <div className="bg-destructive/10 text-destructive p-4 rounded-lg flex items-start gap-3">
@@ -413,20 +593,27 @@ export default function DeploymentsPage() {
         </p>
       </div>
 
-      {/* Connection warning */}
-      {!googleConnected && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="h-5 w-5 text-amber-600" />
-          <div className="flex-1">
-            <p className="text-amber-800">
-              Connect Google Workspace to deploy signatures to Gmail.
-            </p>
+      {/* Connection warning with manual option */}
+      {!hasEmailProvider && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+            <div className="flex-1">
+              <p className="text-amber-800 font-medium">
+                No email provider connected
+              </p>
+              <p className="text-amber-700 text-sm mt-1">
+                Connect Google Workspace or Microsoft 365 to auto-deploy signatures, or copy them manually.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Link href="/integrations">
+                <Button variant="outline" size="sm">
+                  Connect Provider
+                </Button>
+              </Link>
+            </div>
           </div>
-          <Link href="/integrations">
-            <Button variant="outline" size="sm">
-              Connect Now
-            </Button>
-          </Link>
         </div>
       )}
 
@@ -532,8 +719,27 @@ export default function DeploymentsPage() {
                 </div>
               )}
               
-              <div className="flex justify-end pt-4">
-                <Button onClick={() => setStep(2)} disabled={!canProceedToStep2 || !googleConnected}>
+              <div className="flex justify-end gap-3 pt-4">
+                {!hasEmailProvider && (
+                  <Button 
+                    variant="outline" 
+                    onClick={generateSignaturesManually} 
+                    disabled={!canProceedToStep2 || generating}
+                  >
+                    {generating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy Manually
+                      </>
+                    )}
+                  </Button>
+                )}
+                <Button onClick={() => setStep(2)} disabled={!canProceedToStep2 || !hasEmailProvider}>
                   Next <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -743,7 +949,7 @@ export default function DeploymentsPage() {
 
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <p className="text-sm text-amber-800">
-                  <strong>Note:</strong> This will update the Gmail signature for {getTargetSummary().toLowerCase()}. 
+                  <strong>Note:</strong> This will update the email signature for {getTargetSummary().toLowerCase()}. 
                   The change will take effect immediately.
                 </p>
               </div>
