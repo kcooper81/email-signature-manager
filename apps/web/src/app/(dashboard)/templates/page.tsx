@@ -26,7 +26,7 @@ interface Template {
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
-  const { plan, usage, limits } = useSubscription();
+  const { plan, usage, limits, refresh } = useSubscription();
   const devBypass = usePayGatesBypass();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
@@ -98,6 +98,8 @@ export default function TemplatesPage() {
 
     if (!error) {
       setTemplates(templates.filter((t) => t.id !== id));
+      // Refresh subscription usage counts
+      refresh();
     }
   };
 
