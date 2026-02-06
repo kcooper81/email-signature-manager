@@ -480,11 +480,11 @@ export default function IntegrationsPage() {
                     )}
                   </Button>
                   <Button onClick={() => setShowMarketplaceSetup(true)} variant="default">
-                    Install from Marketplace
+                    Connect Organization
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  <strong>Recommended:</strong> Install from Google Workspace Marketplace for easier setup and automatic domain-wide access.
+                  <strong>Recommended:</strong> Connect Organization for automatic domain-wide signature management.
                 </p>
               </div>
             )}
@@ -755,32 +755,24 @@ export default function IntegrationsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg mx-4">
             <CardHeader>
-              <CardTitle>Connect via Google Workspace Marketplace</CardTitle>
+              <CardTitle>Connect Google Workspace</CardTitle>
               <CardDescription>
-                Install Siggly from the Google Workspace Marketplace for seamless integration with your organization.
+                Connect your Google Workspace organization for centralized signature management.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-                <p className="text-sm font-medium text-blue-900">Step 1: Install from Marketplace</p>
-                <p className="text-sm text-blue-800">
-                  Click the button below to install Siggly from the Google Workspace Marketplace. 
-                  You&apos;ll need to be a Google Workspace admin.
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
+                <p className="text-sm font-medium text-amber-900">Domain-Wide Delegation Required</p>
+                <p className="text-sm text-amber-800">
+                  This connection method requires your Google Workspace admin to configure domain-wide delegation 
+                  for the Siggly service account. Contact support if you need setup assistance.
                 </p>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => window.open('https://workspace.google.com/marketplace', '_blank')}
-                >
-                  Open Google Workspace Marketplace
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
               </div>
 
               <div className="space-y-3">
-                <p className="text-sm font-medium">Step 2: Verify Installation</p>
+                <p className="text-sm font-medium">Enter Your Organization Details</p>
                 <p className="text-sm text-muted-foreground">
-                  After installing, enter your admin email and domain to verify the connection.
+                  Enter your Google Workspace admin email and domain to connect.
                 </p>
                 
                 <div className="space-y-2">
