@@ -385,6 +385,17 @@ function DividerEditor({
       </div>
 
       <div className="space-y-2">
+        <Label>Thickness (px)</Label>
+        <Input
+          type="number"
+          value={content.thickness}
+          onChange={(e) => onChange({ ...content, thickness: parseInt(e.target.value) || 1 })}
+          min={1}
+          max={10}
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label>Color</Label>
         <div className="flex gap-2">
           <Input

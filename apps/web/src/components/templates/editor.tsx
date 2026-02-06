@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   DndContext,
@@ -84,6 +84,12 @@ export function TemplateEditor({
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (blocks.length > 0 && !selectedBlockId) {
+      setSelectedBlockId(blocks[0].id);
+    }
+  }, [blocks.length]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -361,7 +367,8 @@ function getDefaultContent(type: SignatureBlockType, industry: IndustryType): an
     case 'divider':
       return {
         color: '#e5e5e5',
-        width: 1,
+        width: 100,
+        thickness: 1,
         style: 'solid',
       };
     case 'spacer':

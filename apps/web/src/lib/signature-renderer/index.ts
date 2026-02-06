@@ -23,6 +23,7 @@ interface RenderContext {
 /**
  * Renders signature blocks to email-safe HTML
  * Uses simple table-based HTML for maximum email client compatibility
+ * Includes dark mode support via CSS media queries
  */
 export async function renderSignatureToHtml(
   blocks: TemplateBlock[],
@@ -31,12 +32,15 @@ export async function renderSignatureToHtml(
   try {
     const bodyContent = blocks.map((block) => blockToHtml(block, context)).join('');
     
+    // Add dark mode support with color-scheme and media queries
     const html = `
-      <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; color: #333333;">
-        <tbody>
-          ${bodyContent}
-        </tbody>
-      </table>
+      <div style="color-scheme: light dark;">
+        <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; color: #333333;">
+          <tbody>
+            ${bodyContent}
+          </tbody>
+        </table>
+      </div>
     `;
 
     return {
@@ -106,12 +110,20 @@ function renderTextBlock(content: any, context: RenderContext): string {
   const fontStyle = content.fontStyle || 'normal';
   const align = content.align || 'left';
 
+  // Adapt color for dark mode if it's a dark text color
+  const darkModeColor = (color === '#333333' || color === '#000000') ? '#e5e5e5' : (color === '#666666' ? '#a0a0a0' : color);
+
   return `
     <tr>
-      <td style="font-size: ${fontSize}px; color: ${color}; font-weight: ${fontWeight}; font-style: ${fontStyle}; text-align: ${align}; padding: 2px 0;">
-        ${text}
+      <td class="text-block" style="font-size: ${fontSize}px; color: ${color}; font-weight: ${fontWeight}; font-style: ${fontStyle}; text-align: ${align}; padding: 2px 0;">
+        <span style="color: ${color};">${text}</span>
       </td>
     </tr>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .text-block span { color: ${darkModeColor} !important; }
+      }
+    </style>
   `;
 }
 
@@ -136,20 +148,29 @@ function renderImageBlock(content: any): string {
 
 function renderDividerBlock(content: any): string {
   const color = content.color || '#cccccc';
-  const thickness = content.width || 1;
+  const thickness = content.thickness || 1;
+  const width = content.width || 100;
+
+  // Adapt divider color for dark mode
+  const darkModeColor = (color === '#cccccc' || color === '#e5e5e5') ? '#444444' : color;
 
   // Gmail-safe divider using a colored table cell instead of border
   // This approach works better across email clients
   return `
     <tr>
       <td style="padding: 10px 0;">
-        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse: collapse;">
+        <table cellpadding="0" cellspacing="0" border="0" width="${width}%" style="border-collapse: collapse;">
           <tr>
-            <td style="background-color: ${color}; height: ${thickness}px; line-height: ${thickness}px; font-size: ${thickness}px;">&nbsp;</td>
+            <td class="divider-line" style="background-color: ${color}; height: ${thickness}px; line-height: ${thickness}px; font-size: ${thickness}px;">&nbsp;</td>
           </tr>
         </table>
       </td>
     </tr>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .divider-line { background-color: ${darkModeColor} !important; }
+      }
+    </style>
   `;
 }
 
@@ -172,7 +193,7 @@ function renderSocialBlock(content: any): string {
     .map((p: any) => {
       if (!p.url) return '';
       const name = p.type.charAt(0).toUpperCase() + p.type.slice(1);
-      return `<a href="${p.url}" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
+      return `<a href="${p.url}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
     })
     .filter(Boolean)
     .join('');
@@ -183,6 +204,11 @@ function renderSocialBlock(content: any): string {
         ${links}
       </td>
     </tr>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .social-link { color: #66b3ff !important; }
+      }
+    </style>
   `;
 }
 
@@ -192,19 +218,19 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
   if (content.email) {
     const email = replacePlaceholders(content.email, context);
     if (email) {
-      items.push(`<a href="mailto:${email}" style="color: #0066cc; text-decoration: none;">${email}</a>`);
+      items.push(`<a href="mailto:${email}" class="contact-link" style="color: #0066cc; text-decoration: none;">${email}</a>`);
     }
   }
   if (content.phone) {
     const phone = replacePlaceholders(content.phone, context);
     if (phone) {
-      items.push(`<a href="tel:${phone}" style="color: #0066cc; text-decoration: none;">${phone}</a>`);
+      items.push(`<a href="tel:${phone}" class="contact-link" style="color: #0066cc; text-decoration: none;">${phone}</a>`);
     }
   }
   if (content.website) {
     const website = replacePlaceholders(content.website, context);
     if (website) {
-      items.push(`<a href="${website}" style="color: #0066cc; text-decoration: none;">${website}</a>`);
+      items.push(`<a href="${website}" class="contact-link" style="color: #0066cc; text-decoration: none;">${website}</a>`);
     }
   }
   if (content.address) {
@@ -218,10 +244,16 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
 
   return `
     <tr>
-      <td style="padding: 4px 0; font-size: 12px; color: #666666;">
+      <td class="contact-info" style="padding: 4px 0; font-size: 12px; color: #666666;">
         ${items.join(' | ')}
       </td>
     </tr>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .contact-info { color: #a0a0a0 !important; }
+        .contact-link { color: #66b3ff !important; }
+      }
+    </style>
   `;
 }
 
