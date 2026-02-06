@@ -89,7 +89,38 @@ export default function TemplatesPage() {
 
     if (!currentUser?.organization_id) return;
 
-    // Delete template - FILTERED BY ORGANIZATION to prevent cross-org deletion
+    // First, delete deployment history records for this template
+    await supabase
+      .from('user_deployment_history')
+      .delete()
+      .eq('template_id', id)
+      .eq('organization_id', currentUser.organization_id);
+
+    // Get all assignments for this template
+    const { data: assignments } = await supabase
+      .from('signature_assignments')
+      .select('id')
+      .eq('template_id', id)
+      .eq('organization_id', currentUser.organization_id);
+
+    if (assignments && assignments.length > 0) {
+      const assignmentIds = assignments.map(a => a.id);
+
+      // Delete deployments that reference these assignments
+      await supabase
+        .from('signature_deployments')
+        .delete()
+        .in('assignment_id', assignmentIds);
+
+      // Delete the assignments
+      await supabase
+        .from('signature_assignments')
+        .delete()
+        .eq('template_id', id)
+        .eq('organization_id', currentUser.organization_id);
+    }
+
+    // Now delete the template - FILTERED BY ORGANIZATION to prevent cross-org deletion
     const { error } = await supabase
       .from('signature_templates')
       .delete()
