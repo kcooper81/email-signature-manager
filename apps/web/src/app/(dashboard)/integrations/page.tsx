@@ -25,6 +25,8 @@ interface ProviderConnection {
   is_active: boolean;
   created_at: string;
   token_expires_at: string | null;
+  auth_type?: 'oauth' | 'marketplace';
+  domain?: string;
 }
 
 interface HubSpotList {
@@ -48,6 +50,11 @@ export default function IntegrationsPage() {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [upgradeMessage, setUpgradeMessage] = useState<string | null>(null);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState<string | null>(null);
+  const [showMarketplaceSetup, setShowMarketplaceSetup] = useState(false);
+  const [marketplaceAdminEmail, setMarketplaceAdminEmail] = useState('');
+  const [marketplaceDomain, setMarketplaceDomain] = useState('');
+  const [verifyingMarketplace, setVerifyingMarketplace] = useState(false);
+  const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -80,7 +87,7 @@ export default function IntegrationsPage() {
     // Load connections - ONLY for current organization
     const { data, error } = await supabase
       .from('provider_connections')
-      .select('id, provider, is_active, created_at, token_expires_at')
+      .select('id, provider, is_active, created_at, token_expires_at, auth_type, domain')
       .eq('organization_id', currentUser.organization_id);
 
     if (!error && data) {
@@ -102,6 +109,45 @@ export default function IntegrationsPage() {
   const connectHubSpot = () => {
     setConnecting('hubspot');
     window.location.href = '/api/integrations/hubspot/connect';
+  };
+
+  const verifyMarketplaceInstall = async () => {
+    if (!marketplaceAdminEmail || !marketplaceDomain) {
+      setMarketplaceError('Please enter both admin email and domain');
+      return;
+    }
+
+    setVerifyingMarketplace(true);
+    setMarketplaceError(null);
+
+    try {
+      const response = await fetch('/api/integrations/google/verify-marketplace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminEmail: marketplaceAdminEmail,
+          domain: marketplaceDomain,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.installed) {
+        setMarketplaceError(data.error || 'App not installed. Please install from Google Workspace Marketplace first.');
+        return;
+      }
+
+      // Success - reload connections
+      setShowMarketplaceSetup(false);
+      setMarketplaceAdminEmail('');
+      setMarketplaceDomain('');
+      await loadConnections();
+      setSyncSuccess('Google Workspace Marketplace app connected successfully!');
+    } catch (err: any) {
+      setMarketplaceError(err.message || 'Failed to verify installation');
+    } finally {
+      setVerifyingMarketplace(false);
+    }
   };
 
   const syncGoogle = async () => {
@@ -376,6 +422,16 @@ export default function IntegrationsPage() {
               <div className="space-y-3">
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(googleConnection.created_at).toLocaleDateString()}
+                  {googleConnection.auth_type === 'marketplace' && (
+                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                      Marketplace
+                    </span>
+                  )}
+                  {googleConnection.domain && (
+                    <span className="ml-2 text-muted-foreground">
+                      ({googleConnection.domain})
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <Button 
@@ -393,9 +449,11 @@ export default function IntegrationsPage() {
                       'Sync Users'
                     )}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={connectGoogle}>
-                    Reconnect
-                  </Button>
+                  {googleConnection.auth_type !== 'marketplace' && (
+                    <Button variant="outline" size="sm" onClick={connectGoogle}>
+                      Reconnect
+                    </Button>
+                  )}
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -407,19 +465,26 @@ export default function IntegrationsPage() {
                 </div>
               </div>
             ) : (
-              <Button onClick={connectGoogle} disabled={connecting === 'google'}>
-                {connecting === 'google' ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    Connect Google Workspace
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Button onClick={connectGoogle} disabled={connecting === 'google'} variant="outline">
+                    {connecting === 'google' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      'Connect with OAuth'
+                    )}
+                  </Button>
+                  <Button onClick={() => setShowMarketplaceSetup(true)} variant="default">
+                    Install from Marketplace
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  <strong>Recommended:</strong> Install from Google Workspace Marketplace for easier setup and automatic domain-wide access.
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -678,6 +743,99 @@ export default function IntegrationsPage() {
               <Button variant="destructive" onClick={() => disconnectProvider(showDisconnectConfirm)}>
                 Disconnect
               </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Google Workspace Marketplace Setup Modal */}
+      {showMarketplaceSetup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg mx-4">
+            <CardHeader>
+              <CardTitle>Connect via Google Workspace Marketplace</CardTitle>
+              <CardDescription>
+                Install Siggly from the Google Workspace Marketplace for seamless integration with your organization.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-blue-900">Step 1: Install from Marketplace</p>
+                <p className="text-sm text-blue-800">
+                  Click the button below to install Siggly from the Google Workspace Marketplace. 
+                  You&apos;ll need to be a Google Workspace admin.
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open('https://workspace.google.com/marketplace', '_blank')}
+                >
+                  Open Google Workspace Marketplace
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Step 2: Verify Installation</p>
+                <p className="text-sm text-muted-foreground">
+                  After installing, enter your admin email and domain to verify the connection.
+                </p>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Admin Email</label>
+                  <input
+                    type="email"
+                    className="w-full px-3 py-2 border rounded-md text-sm"
+                    placeholder="admin@yourcompany.com"
+                    value={marketplaceAdminEmail}
+                    onChange={(e) => setMarketplaceAdminEmail(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Domain</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border rounded-md text-sm"
+                    placeholder="yourcompany.com"
+                    value={marketplaceDomain}
+                    onChange={(e) => setMarketplaceDomain(e.target.value)}
+                  />
+                </div>
+
+                {marketplaceError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className="text-sm text-red-800">{marketplaceError}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowMarketplaceSetup(false);
+                    setMarketplaceError(null);
+                    setMarketplaceAdminEmail('');
+                    setMarketplaceDomain('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={verifyMarketplaceInstall}
+                  disabled={verifyingMarketplace || !marketplaceAdminEmail || !marketplaceDomain}
+                >
+                  {verifyingMarketplace ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    'Verify & Connect'
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

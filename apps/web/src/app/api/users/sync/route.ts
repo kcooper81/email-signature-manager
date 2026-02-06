@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { listWorkspaceUsers } from '@/lib/google/gmail';
+import { logException } from '@/lib/error-logging';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,6 +102,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: any) {
     console.error('User sync error:', err);
+    
+    await logException(err, {
+      route: '/api/users/sync',
+      method: 'POST',
+      errorType: 'sync_error',
+    });
+
     return NextResponse.json(
       { error: err.message || 'Failed to sync users' },
       { status: 500 }

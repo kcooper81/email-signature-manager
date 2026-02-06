@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { stripe } from '@/lib/billing/stripe';
+import { logException } from '@/lib/error-logging';
 
 /**
  * Sync subscription status directly from Stripe
@@ -130,6 +131,13 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('[Sync] Error:', error);
+    
+    await logException(error, {
+      route: '/api/billing/sync',
+      method: 'POST',
+      errorType: 'billing_error',
+    });
+
     return NextResponse.json(
       { error: error.message || 'Failed to sync subscription' },
       { status: 500 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { exchangeMicrosoftCode } from '@/lib/microsoft/oauth';
 import { getMicrosoftProfile } from '@/lib/microsoft/graph';
+import { logException } from '@/lib/error-logging';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -86,6 +87,14 @@ export async function GET(request: NextRequest) {
     );
   } catch (err: any) {
     console.error('Microsoft OAuth callback error:', err);
+    
+    await logException(err, {
+      route: '/api/integrations/microsoft/callback',
+      method: 'GET',
+      errorType: 'integration_error',
+      metadata: { provider: 'microsoft' },
+    });
+
     return NextResponse.redirect(
       new URL(`/integrations?error=oauth_failed&message=${encodeURIComponent(err.message)}`, request.url)
     );
