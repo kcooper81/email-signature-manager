@@ -182,9 +182,9 @@ export function TemplateEditor({
 
       {/* Main Content - 3 Column Grid */}
       <div className="p-6">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left Column - Add Block */}
-          <div className="col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-4 lg:space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Add Block</CardTitle>
@@ -196,17 +196,17 @@ export function TemplateEditor({
                 </div>
                 
                 {/* Block Type Buttons */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-wrap gap-2">
                   {BLOCK_TYPES.map((blockType) => (
                     <Button
                       key={blockType.type}
                       variant="outline"
                       size="sm"
-                      className="justify-start h-auto py-2"
+                      className="justify-start h-auto py-2 px-2 min-w-[70px] flex-shrink-0"
                       onClick={() => addBlock(blockType.type)}
                     >
-                      <span className="mr-2">{blockType.icon}</span>
-                      <span className="text-xs">{blockType.label}</span>
+                      <span className="mr-1.5">{blockType.icon}</span>
+                      <span className="text-xs truncate">{blockType.label}</span>
                     </Button>
                   ))}
                 </div>
@@ -251,7 +251,7 @@ export function TemplateEditor({
           </div>
 
           {/* Center Column - Block Settings */}
-          <div className="col-span-4">
+          <div className="lg:col-span-4">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm capitalize">
@@ -274,7 +274,7 @@ export function TemplateEditor({
           </div>
 
           {/* Right Column - Email Client Preview */}
-          <div className="col-span-5">
+          <div className="lg:col-span-5">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Email Client Preview</CardTitle>
