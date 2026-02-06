@@ -20,8 +20,12 @@ const feedbackOptions: FeedbackOption[] = [
   { type: 'question', icon: HelpCircle, label: 'Ask a Question', placeholder: 'What do you need help with?' },
 ];
 
-export function FeedbackWidget() {
-  const [isOpen, setIsOpen] = useState(false);
+interface FeedbackWidgetProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
   const [feedbackType, setFeedbackType] = useState<FeedbackType | null>(null);
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,7 +59,7 @@ export function FeedbackWidget() {
     
     // Reset after showing success
     setTimeout(() => {
-      setIsOpen(false);
+      onClose();
       setIsSubmitted(false);
       setFeedbackType(null);
       setMessage('');
@@ -63,29 +67,24 @@ export function FeedbackWidget() {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
+    onClose();
     setFeedbackType(null);
     setMessage('');
     setIsSubmitted(false);
   };
 
+  if (!isOpen) return null;
+
   return (
     <>
-      {/* Floating Button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className={cn(
-          'fixed bottom-20 right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105',
-          isOpen && 'hidden'
-        )}
-      >
-        <MessageCircle className="h-5 w-5" />
-        <span className="text-sm font-medium">Feedback</span>
-      </button>
-
-      {/* Feedback Panel */}
-      {isOpen && (
-        <div className="fixed bottom-20 right-6 z-50 w-80 rounded-2xl bg-card shadow-2xl border overflow-hidden animate-in slide-in-from-bottom-4 fade-in-0">
+      {/* Overlay */}
+      <div 
+        className="fixed inset-0 bg-black/50 z-50" 
+        onClick={handleClose}
+      />
+      
+      {/* Feedback Modal */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md mx-4 rounded-2xl bg-card shadow-2xl border overflow-hidden animate-in fade-in-0 zoom-in-95">
           {/* Header */}
           <div className="bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 flex items-center justify-between">
             <h3 className="text-white font-semibold">
@@ -168,7 +167,6 @@ export function FeedbackWidget() {
             )}
           </div>
         </div>
-      )}
     </>
   );
 }
