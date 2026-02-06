@@ -526,7 +526,7 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium mb-2">First Name</label>
                     <Input
@@ -714,7 +714,7 @@ export default function SettingsPage() {
               <CardContent className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-4">Theme</label>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     <button 
                       onClick={() => saveTheme('light')}
                       className={`p-4 border-2 rounded-lg text-center transition-colors ${

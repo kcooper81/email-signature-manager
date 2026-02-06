@@ -425,13 +425,13 @@ export default function AnalyticsPage() {
       />
 
       {/* Health Score & Key Metrics Row */}
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-5">
         {/* Health Score */}
         <Card className="md:col-span-1">
           <CardContent className="pt-6">
             <div className="flex flex-col items-center text-center">
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center ${getHealthColor(data?.healthScore || 0)}`}>
-                <span className="text-2xl font-bold">{data?.healthScore || 0}</span>
+              <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center ${getHealthColor(data?.healthScore || 0)}`}>
+                <span className="text-xl sm:text-2xl font-bold">{data?.healthScore || 0}</span>
               </div>
               <p className="mt-2 font-semibold">Health Score</p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -451,7 +451,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold">{data?.adoptionRate || 0}%</span>
+              <span className="text-2xl sm:text-3xl font-bold">{data?.adoptionRate || 0}%</span>
               {data?.adoptionChange !== undefined && data.adoptionChange !== 0 && (
                 <span className={`text-sm flex items-center ${data.adoptionChange > 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {data.adoptionChange > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
@@ -480,7 +480,7 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold">{data?.totalDeployments || 0}</span>
+              <span className="text-2xl sm:text-3xl font-bold">{data?.totalDeployments || 0}</span>
               {data?.deploymentsChange !== undefined && data.deploymentsChange !== 0 && (
                 <span className={`text-sm flex items-center ${data.deploymentsChange > 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {data.deploymentsChange > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
@@ -488,7 +488,7 @@ export default function AnalyticsPage() {
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-2 mt-3">
+            <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-3">
               <div className="text-center p-2 bg-green-50 rounded">
                 <p className="text-lg font-semibold text-green-700">{data?.successfulDeployments || 0}</p>
                 <p className="text-xs text-green-600">Successful</p>
@@ -547,7 +547,7 @@ export default function AnalyticsPage() {
       )}
 
       {/* Charts Row */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
         {/* Deployment Trend Chart */}
         <Card>
           <CardHeader>
@@ -637,7 +637,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Template Performance & Recent Activity */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
         {/* Template Performance */}
         <Card>
           <CardHeader>
@@ -748,7 +748,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Quick Stats Footer */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
@@ -756,7 +756,7 @@ export default function AnalyticsPage() {
                 <Users className="h-5 w-5 text-violet-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{data?.totalUsers || 0}</p>
+                <p className="text-xl sm:text-2xl font-bold">{data?.totalUsers || 0}</p>
                 <p className="text-xs text-muted-foreground">Total Team Members</p>
               </div>
             </div>
@@ -769,7 +769,7 @@ export default function AnalyticsPage() {
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{data?.usersWithSignatures || 0}</p>
+                <p className="text-xl sm:text-2xl font-bold">{data?.usersWithSignatures || 0}</p>
                 <p className="text-xs text-muted-foreground">With Signatures</p>
               </div>
             </div>
@@ -782,7 +782,7 @@ export default function AnalyticsPage() {
                 <FileSignature className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{data?.totalTemplates || 0}</p>
+                <p className="text-xl sm:text-2xl font-bold">{data?.totalTemplates || 0}</p>
                 <p className="text-xs text-muted-foreground">Active Templates</p>
               </div>
             </div>
@@ -795,7 +795,7 @@ export default function AnalyticsPage() {
                 <Shield className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{successRate}%</p>
+                <p className="text-xl sm:text-2xl font-bold">{successRate}%</p>
                 <p className="text-xs text-muted-foreground">Deployment Success</p>
               </div>
             </div>

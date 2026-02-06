@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, ChevronDown, Building2, Users, Briefcase, Crown, Scale, Heart, TrendingUp, Home, Zap, FileText, Wrench } from 'lucide-react';
+import { Mail, ChevronDown, Building2, Users, Briefcase, Crown, Scale, Heart, TrendingUp, Home, Zap, FileText, Wrench, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +13,7 @@ interface MarketingHeaderProps {
 
 export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,16 +37,16 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
           : 'bg-white border-b border-gray-200'
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
           <Image 
             src="/siggly-logo.png" 
             alt="Siggly Logo" 
             width={48} 
             height={48}
-            className="h-10 w-auto"
+            className="h-8 sm:h-10 w-auto"
           />
-          <span className="font-bold text-xl tracking-tight text-gray-900">Siggly</span>
+          <span className="font-bold text-lg sm:text-xl tracking-tight text-gray-900">Siggly</span>
         </Link>
         
         <nav className="hidden lg:flex items-center gap-1">
@@ -244,7 +245,16 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Mobile menu button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="lg:hidden p-2 text-gray-700 hover:text-gray-900"
+        >
+          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+
+        {/* Desktop buttons */}
+        <div className="hidden lg:flex items-center gap-3">
           <Link href="/login">
             <Button variant="ghost" className="text-gray-700 hover:text-gray-900">
               Sign in
@@ -257,6 +267,64 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
           </Link>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-gray-200 bg-white">
+          <div className="px-4 py-4 space-y-3">
+            <Link 
+              href="/features" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Features
+            </Link>
+            
+            {/* Solutions submenu */}
+            <div className="space-y-2">
+              <div className="px-3 py-2 text-sm font-semibold text-gray-500 uppercase">Solutions</div>
+              <Link href="/for/it-admins" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>IT Admins</Link>
+              <Link href="/for/marketing" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Marketing Teams</Link>
+              <Link href="/for/small-business" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Small Business</Link>
+              <Link href="/for/enterprise" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Enterprise</Link>
+            </div>
+
+            {/* Integrations submenu */}
+            <div className="space-y-2">
+              <div className="px-3 py-2 text-sm font-semibold text-gray-500 uppercase">Integrations</div>
+              <Link href="/google-workspace" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Google Workspace</Link>
+              <Link href="/integrations/microsoft-365" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Microsoft 365</Link>
+              <Link href="/integrations/hubspot" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>HubSpot CRM</Link>
+            </div>
+
+            {/* Resources submenu */}
+            <div className="space-y-2">
+              <div className="px-3 py-2 text-sm font-semibold text-gray-500 uppercase">Resources</div>
+              <Link href="/blog" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+              <Link href="/tools/signature-generator" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Free Generator</Link>
+              <Link href="/help" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>Help Center</Link>
+            </div>
+
+            <Link 
+              href="/pricing" 
+              className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+
+            {/* Mobile CTA buttons */}
+            <div className="pt-4 space-y-2">
+              <Link href="/login" className="block" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="outline" className="w-full">Sign in</Button>
+              </Link>
+              <Link href="/signup" className="block" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full bg-gradient-to-r from-violet-600 to-blue-600">Get Started</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

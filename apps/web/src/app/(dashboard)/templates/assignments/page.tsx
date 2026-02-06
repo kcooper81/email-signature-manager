@@ -195,7 +195,7 @@ export default function TemplateAssignmentsPage() {
       </div>
 
       {/* Template Usage Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {templates.map(template => {
           const usage = templateUsage.get(template.id);
           return (
@@ -293,7 +293,7 @@ export default function TemplateAssignmentsPage() {
                       </Link>
                     )}
                   </div>
-                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {emps.slice(0, 6).map(emp => (
                       <div key={emp.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted">
                         <Avatar 
