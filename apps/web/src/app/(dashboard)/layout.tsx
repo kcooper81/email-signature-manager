@@ -40,7 +40,7 @@ export default async function DashboardLayout({
             <DashboardHeader user={user} isAdmin={isAdmin} />
             <div className="flex">
               <DashboardNav />
-              <main className="flex-1 p-6 min-w-0 overflow-x-hidden">{children}</main>
+              <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
             </div>
             <FeedbackWidget />
             <DevBypassIndicator />

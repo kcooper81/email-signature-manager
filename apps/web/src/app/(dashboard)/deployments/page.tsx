@@ -452,7 +452,7 @@ export default function DeploymentsPage() {
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <PartyPopper className="h-10 w-10 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
                 Signatures Deployed!
               </h2>
               <p className="text-muted-foreground">
@@ -464,17 +464,17 @@ export default function DeploymentsPage() {
               <div className="bg-muted rounded-lg p-4 mb-6">
                 <div className="flex justify-center gap-8">
                   <div>
-                    <div className="text-3xl font-bold text-green-600">
+                    <div className="text-2xl sm:text-3xl font-bold text-green-600">
                       {deploymentResult.successCount}
                     </div>
-                    <div className="text-sm text-muted-foreground">Successful</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">Successful</div>
                   </div>
                   {deploymentResult.failCount > 0 && (
                     <div>
-                      <div className="text-3xl font-bold text-red-600">
+                      <div className="text-2xl sm:text-3xl font-bold text-red-600">
                         {deploymentResult.failCount}
                       </div>
-                      <div className="text-sm text-muted-foreground">Failed</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Failed</div>
                     </div>
                   )}
                 </div>
@@ -587,8 +587,8 @@ export default function DeploymentsPage() {
       )}
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Deployments</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Deployments</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Deploy email signatures to your team
         </p>
       </div>
@@ -682,7 +682,7 @@ export default function DeploymentsPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {templates.map((template) => (
                     <label
                       key={template.id}
@@ -755,7 +755,7 @@ export default function DeploymentsPage() {
               </div>
               
               {/* Target type selection */}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                 <button
                   onClick={() => { setDeployTarget('me'); setSelectedUsers([]); }}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
@@ -1094,7 +1094,7 @@ export default function DeploymentsPage() {
                 </p>
               </div>
             ) : (
-              <div className="border rounded-lg overflow-hidden">
+              <div className="border rounded-lg">
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[800px]">
                     <thead className="bg-muted/50 border-b">
