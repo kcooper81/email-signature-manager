@@ -248,7 +248,7 @@ function SignatureRenderer({ blocks, client, isMobile, colorMode = 'light' }: { 
       style={{ 
         fontFamily: 'Arial, sans-serif', 
         fontSize: isMobile ? '12px' : '14px', 
-        color: '#333333',
+        color: colorMode === 'dark' ? '#e5e5e5' : '#333333',
         borderCollapse: 'collapse',
         width: '100%',
       }}
@@ -260,6 +260,7 @@ function SignatureRenderer({ blocks, client, isMobile, colorMode = 'light' }: { 
             block={block} 
             client={client}
             isMobile={isMobile}
+            colorMode={colorMode}
           />
         ))}
       </tbody>
@@ -267,9 +268,25 @@ function SignatureRenderer({ blocks, client, isMobile, colorMode = 'light' }: { 
   );
 }
 
-function BlockPreview({ block, client, isMobile }: { block: any; client: EmailClient; isMobile: boolean }) {
+function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block: any; client: EmailClient; isMobile: boolean; colorMode?: 'light' | 'dark' }) {
   const content = block.content;
   const isOutlook = client === 'outlook';
+  const isGmail = client === 'gmail';
+  const isAppleMail = client === 'apple-mail';
+  
+  // Helper to adapt colors for dark mode
+  const adaptColor = (color: string) => {
+    if (colorMode === 'light') return color;
+    // Convert common dark text colors to light ones
+    if (color === '#333333' || color === '#000000') return '#e5e5e5';
+    if (color === '#666666') return '#a0a0a0';
+    // Keep brand colors and light colors as-is
+    return color;
+  };
+  
+  // Outlook adds extra spacing and uses Calibri font
+  const outlookFont = isOutlook ? 'Calibri, Arial, sans-serif' : undefined;
+  const outlookPadding = isOutlook ? '4px 0' : '2px 0';
 
   switch (block.type) {
     case 'text':
@@ -278,11 +295,14 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
           <td 
             style={{
               fontSize: `${content.fontSize || 14}px`,
-              color: content.color || '#333333',
+              color: adaptColor(content.color || '#333333'),
               fontWeight: content.fontWeight || 'normal',
               fontStyle: content.fontStyle || 'normal',
               textAlign: content.align || 'left',
-              padding: '2px 0',
+              padding: outlookPadding,
+              fontFamily: outlookFont,
+              // Gmail slightly increases line height
+              lineHeight: isGmail ? '1.6' : '1.4',
             }}
           >
             {content.text || ''}
@@ -295,7 +315,7 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
       const imgWidth = isMobile ? Math.min(content.width, 300) : content.width;
       return (
         <tr>
-          <td style={{ padding: '4px 0' }}>
+          <td style={{ padding: isOutlook ? '8px 0' : '4px 0' }}>
             <img 
               src={content.src} 
               alt={content.alt || ''} 
@@ -304,7 +324,10 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
                 display: 'block', 
                 maxWidth: '100%',
                 height: 'auto',
+                // Outlook strips border-radius completely
                 borderRadius: isOutlook ? 0 : undefined,
+                // Outlook adds extra spacing around images
+                margin: isOutlook ? '4px 0' : undefined,
               }} 
             />
           </td>
@@ -312,22 +335,27 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
       );
 
     case 'divider':
+      const dividerColor = colorMode === 'dark' && (content.color === '#cccccc' || content.color === '#e5e5e5') 
+        ? '#444444' 
+        : content.color || '#cccccc';
+      // Outlook sometimes adds extra padding around dividers
+      const dividerPadding = isOutlook ? '12px 0' : '10px 0';
       return (
         <tr>
-          <td style={{ padding: '10px 0' }}>
+          <td style={{ padding: dividerPadding }}>
             <table 
               cellPadding={0} 
               cellSpacing={0} 
-              style={{ width: '100%', borderCollapse: 'collapse' }}
+              style={{ width: `${content.width || 100}%`, borderCollapse: 'collapse' }}
             >
               <tbody>
                 <tr>
                   <td 
                     style={{
-                      backgroundColor: content.color || '#cccccc',
-                      height: `${content.width || 1}px`,
-                      lineHeight: `${content.width || 1}px`,
-                      fontSize: `${content.width || 1}px`,
+                      backgroundColor: dividerColor,
+                      height: `${content.thickness || 1}px`,
+                      lineHeight: `${content.thickness || 1}px`,
+                      fontSize: `${content.thickness || 1}px`,
                     }}
                   >
                     &nbsp;
@@ -364,11 +392,20 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
       
       return (
         <tr>
-          <td style={{ padding: '4px 0', fontSize: '12px', color: '#666666' }}>
+          <td style={{ 
+            padding: isOutlook ? '6px 0' : '4px 0', 
+            fontSize: isOutlook ? '11px' : '12px', 
+            color: adaptColor('#666666'),
+            fontFamily: outlookFont,
+          }}>
             {items.map((item, i) => (
               <span key={i}>
                 {i > 0 && ' | '}
-                <span style={{ color: '#0066cc' }}>{item}</span>
+                <span style={{ 
+                  color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                  // Outlook renders links with underline by default
+                  textDecoration: isOutlook ? 'underline' : 'none',
+                }}>{item}</span>
               </span>
             ))}
           </td>
@@ -381,14 +418,16 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
       
       return (
         <tr>
-          <td style={{ padding: '4px 0' }}>
+          <td style={{ padding: isOutlook ? '6px 0' : '4px 0' }}>
             {platforms.map((p: any, i: number) => (
               <span 
                 key={i} 
                 style={{ 
-                  marginRight: '16px', 
-                  color: '#0066cc',
-                  textDecoration: 'none',
+                  marginRight: isOutlook ? '12px' : '16px',
+                  color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                  // Outlook shows underlines on links
+                  textDecoration: isOutlook ? 'underline' : 'none',
+                  fontSize: isOutlook ? '13px' : '14px',
                 }}
               >
                 {p.type.charAt(0).toUpperCase() + p.type.slice(1)}
@@ -434,7 +473,8 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
                 backgroundColor: content.backgroundColor || '#0066cc',
                 color: content.textColor || '#ffffff',
                 textDecoration: 'none',
-                borderRadius: `${content.borderRadius || 4}px`,
+                // Gmail and Apple Mail support border-radius
+                borderRadius: isAppleMail || isGmail ? `${content.borderRadius || 4}px` : 0,
                 fontWeight: 'bold',
                 fontSize: isMobile ? '12px' : '14px',
               }}
@@ -481,11 +521,14 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
         <tr>
           <td 
             style={{
-              padding: content.padding ? `${content.padding}px` : '8px',
-              fontSize: `${content.fontSize || 11}px`,
-              color: content.color || '#666666',
+              padding: content.padding ? `${content.padding}px` : (isOutlook ? '10px' : '8px'),
+              fontSize: isOutlook ? `${(content.fontSize || 11) - 1}px` : `${content.fontSize || 11}px`,
+              color: adaptColor(content.color || '#666666'),
               backgroundColor: content.backgroundColor || 'transparent',
               fontStyle: 'italic',
+              fontFamily: outlookFont,
+              // Outlook increases line height for small text
+              lineHeight: isOutlook ? '1.5' : '1.3',
             }}
           >
             {content.text}
@@ -508,7 +551,7 @@ function BlockPreview({ block, client, isMobile }: { block: any; client: EmailCl
       
       return (
         <tr>
-          <td style={{ padding: '8px 0', fontSize: '11px', color: '#666666' }}>
+          <td style={{ padding: '8px 0', fontSize: '11px', color: adaptColor('#666666') }}>
             {complianceItems.map((item, i) => (
               <div key={i} style={{ marginBottom: i < complianceItems.length - 1 ? '4px' : 0 }}>
                 {item}
