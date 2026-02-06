@@ -113,14 +113,45 @@ interface FeatureGateProps {
   fallback?: React.ReactNode;
 }
 
+// SINGLE SOURCE OF TRUTH: All feature requirements
+// Update this when plan features change
+// Note: Free plan features (googleWorkspace) don't need gating
 const featureRequirements = {
+  // Starter plan features
   analytics: 'starter',
   microsoft365: 'starter',
+  customBranding: 'starter',
+  removeWatermark: 'starter',
+  
+  // Professional plan features
+  hubspotCRM: 'professional',
   scheduledDeployments: 'professional',
   apiAccess: 'professional',
+  prioritySupport: 'professional',
+  
+  // Enterprise plan features
   sso: 'enterprise',
   whiteLabel: 'enterprise',
 } as const;
+
+// SINGLE SOURCE OF TRUTH: All limit requirements
+export const limitRequirements = {
+  templates: {
+    free: 1,
+    starter: 5,
+    professional: -1, // unlimited
+    enterprise: -1,
+  },
+  teamMembers: {
+    free: 5,
+    starter: -1, // unlimited
+    professional: -1,
+    enterprise: -1,
+  },
+} as const;
+
+// Export for use in other files
+export { featureRequirements };
 
 export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
   const { plan } = useSubscription();
