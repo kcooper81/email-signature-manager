@@ -106,14 +106,14 @@ export async function POST(request: NextRequest) {
       .filter(u => u.mail || u.userPrincipalName)
       .map((msUser) => ({
         email: msUser.mail || msUser.userPrincipalName,
-        first_name: msUser.givenName,
-        last_name: msUser.surname,
-        title: msUser.jobTitle,
-        department: msUser.department,
-        company: msUser.companyName,
-        office_location: msUser.officeLocation,
-        phone: msUser.businessPhones?.[0] || msUser.mobilePhone,
-        mobile: msUser.mobilePhone,
+        first_name: msUser.givenName || null,
+        last_name: msUser.surname || null,
+        title: msUser.jobTitle || null,
+        department: msUser.department || null,
+        company: msUser.companyName || null,
+        office_location: msUser.officeLocation || null,
+        phone: msUser.businessPhones?.[0] || msUser.mobilePhone || null,
+        mobile: msUser.mobilePhone || null,
         organization_id: userData.organization_id,
         role: 'member' as const,
         source: 'microsoft' as const,
@@ -129,8 +129,9 @@ export async function POST(request: NextRequest) {
 
     if (upsertError) {
       console.error('Failed to sync Microsoft users:', upsertError);
+      console.error('Upsert error details:', JSON.stringify(upsertError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to sync users' },
+        { error: 'Failed to sync users', details: upsertError.message },
         { status: 500 }
       );
     }
