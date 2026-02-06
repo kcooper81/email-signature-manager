@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getHubSpotLists } from '@/lib/hubspot/crm';
 import { refreshHubSpotToken } from '@/lib/hubspot/oauth';
+import { logException } from '@/lib/error-logging';
 
 export async function GET(request: NextRequest) {
   const supabase = createClient();
@@ -65,6 +66,14 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Failed to fetch HubSpot lists:', error);
+    
+    await logException(error, {
+      route: '/api/integrations/hubspot/lists',
+      method: 'GET',
+      errorType: 'integration_error',
+      metadata: { provider: 'hubspot' },
+    });
+
     return NextResponse.json(
       { error: error.message || 'Failed to fetch lists' },
       { status: 500 }

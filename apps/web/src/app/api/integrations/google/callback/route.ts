@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getGoogleTokens } from '@/lib/google/oauth';
+import { logException } from '@/lib/error-logging';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -116,6 +117,14 @@ export async function GET(request: NextRequest) {
     );
   } catch (err) {
     console.error('Google callback error:', err);
+    
+    await logException(err, {
+      route: '/api/integrations/google/callback',
+      method: 'GET',
+      errorType: 'integration_error',
+      metadata: { provider: 'google' },
+    });
+
     return NextResponse.redirect(
       new URL('/integrations?error=callback_failed', request.url)
     );

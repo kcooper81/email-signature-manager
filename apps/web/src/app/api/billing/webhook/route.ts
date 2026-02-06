@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { stripe } from '@/lib/billing/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { logException } from '@/lib/error-logging';
 
 function getSupabaseAdmin() {
   return createClient(
@@ -22,6 +23,14 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message);
+    
+    await logException(err, {
+      route: '/api/billing/webhook',
+      method: 'POST',
+      errorType: 'billing_error',
+      metadata: { reason: 'signature_verification_failed' },
+    });
+
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
@@ -65,6 +74,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error('Webhook handler error:', error);
+    
+    await logException(error, {
+      route: '/api/billing/webhook',
+      method: 'POST',
+      errorType: 'billing_error',
+      metadata: { eventType: event?.type },
+    });
+
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
