@@ -30,7 +30,7 @@ export async function POST(
     const { data: userData } = await supabase
       .from('users')
       .select('id, email, is_admin')
-      .eq('auth_id', user.id)
+      .eq('auth_id', user.id.toString())
       .single();
 
     if (!userData?.is_admin) {

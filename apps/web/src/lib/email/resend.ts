@@ -28,7 +28,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
   try {
     const client = getResendClient();
     const { data: emailData, error } = await client.emails.send({
-      from: 'Siggly Support <support@siggly.io>',
+      from: process.env.RESEND_FROM_EMAIL || 'Siggly Support <onboarding@resend.dev>',
       to: [to],
       subject: `Re: Your ${ticketType} submission`,
       html: `

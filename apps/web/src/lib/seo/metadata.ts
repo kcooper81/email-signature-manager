@@ -163,7 +163,9 @@ export function generateBlogPostSchema({
   image,
   datePublished,
   dateModified,
-  author,
+  author = 'Siggly Team',
+  readTime,
+  category,
 }: {
   title: string;
   description: string;
@@ -171,14 +173,18 @@ export function generateBlogPostSchema({
   image: string;
   datePublished: string;
   dateModified?: string;
-  author: string;
+  author?: string;
+  readTime?: string;
+  category?: string;
 }) {
+  const imageUrl = image.startsWith('http') ? image : `${SITE_URL}${image}`;
+  
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: title,
     description,
-    image,
+    image: imageUrl,
     url: `${SITE_URL}${url}`,
     datePublished,
     dateModified: dateModified || datePublished,
@@ -198,6 +204,8 @@ export function generateBlogPostSchema({
       '@type': 'WebPage',
       '@id': `${SITE_URL}${url}`,
     },
+    ...(readTime && { timeRequired: `PT${readTime.replace(' min', 'M')}` }),
+    ...(category && { articleSection: category }),
   };
 }
 
@@ -254,6 +262,87 @@ export function generateComparisonSchema({
       })),
     },
   };
+}
+
+export function generateBlogListSchema({
+  page,
+  totalPages,
+  posts,
+}: {
+  page: number;
+  totalPages: number;
+  posts: { title: string; url: string; date: string }[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: page === 1 ? 'Siggly Blog' : `Siggly Blog - Page ${page}`,
+    description: 'Tips, guides, and insights about email signatures and brand consistency',
+    url: page === 1 ? `${SITE_URL}/blog` : `${SITE_URL}/blog/page/${page}`,
+    isPartOf: {
+      '@type': 'Blog',
+      name: 'Siggly Blog',
+      url: `${SITE_URL}/blog`,
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${SITE_URL}${post.url}`,
+        name: post.title,
+      })),
+    },
+    ...(page > 1 && { previousPage: page === 2 ? `${SITE_URL}/blog` : `${SITE_URL}/blog/page/${page - 1}` }),
+    ...(page < totalPages && { nextPage: `${SITE_URL}/blog/page/${page + 1}` }),
+  };
+}
+
+export function generateBlogPostMetadata({
+  slug,
+  title,
+  excerpt,
+  date,
+  category,
+  image,
+}: {
+  slug: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  category: string;
+  image: string;
+}): Metadata {
+  return generateMetadata({
+    title,
+    description: excerpt,
+    canonical: `/blog/${slug}`,
+    ogImage: image,
+    ogType: 'article',
+    keywords: [category.toLowerCase(), 'email signature', slug.split('-').join(' ')],
+    article: {
+      publishedTime: date,
+      modifiedTime: date,
+      authors: ['Siggly Team'],
+      tags: [category],
+    },
+  });
+}
+
+export function generateBlogIndexMetadata(page: number, totalPages: number): Metadata {
+  const isFirstPage = page === 1;
+  const title = isFirstPage ? 'Blog' : `Blog - Page ${page}`;
+  const description = isFirstPage
+    ? 'Tips, guides, and insights about email signatures and brand consistency'
+    : `Email signature tips and guides - Page ${page} of ${totalPages}`;
+
+  return generateMetadata({
+    title,
+    description,
+    canonical: isFirstPage ? '/blog' : `/blog/page/${page}`,
+    keywords: ['email signature blog', 'signature tips', 'email branding'],
+  });
 }
 
 export function generateProductSchema({

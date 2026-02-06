@@ -3,16 +3,19 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NewsletterSignupSection } from '@/components/newsletter';
-import { blogPosts, getPostsForPage, getTotalPages, POSTS_PER_PAGE } from './blog-data';
+import { BlogListJsonLd } from '@/components/seo';
+import { generateBlogIndexMetadata } from '@/lib/seo';
+import { blogPosts, getPostsForPage, getTotalPages } from './blog-data';
 
-export const metadata = {
-  title: 'Blog | Siggly',
-  description: 'Tips, guides, and insights about email signatures and brand consistency',
-};
+export const metadata = generateBlogIndexMetadata(1, getTotalPages());
 
 export default function BlogPage() {
+  const totalPages = getTotalPages();
+  const posts = getPostsForPage(1);
+
   return (
     <>
+      <BlogListJsonLd page={1} totalPages={totalPages} posts={posts} />
       {/* Hero */}
       <section className="py-16 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-6xl mx-auto px-6">
@@ -31,7 +34,7 @@ export default function BlogPage() {
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {getPostsForPage(1).map((post) => (
+            {posts.map((post) => (
               <Link href={`/blog/${post.slug}`} key={post.slug}>
                 <article className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow h-full">
                   <div className="h-48 relative">

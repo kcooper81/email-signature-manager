@@ -107,7 +107,7 @@ export default function TicketsPage() {
   const [newNote, setNewNote] = useState('');
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [sendAsEmail, setSendAsEmail] = useState(false);
+  const [isInternalNote, setIsInternalNote] = useState(false);
 
   useEffect(() => {
     loadTickets();
@@ -264,7 +264,7 @@ export default function TicketsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: newNote.trim(),
-          isInternal: !sendAsEmail,
+          isInternal: isInternalNote,
         }),
       });
 
@@ -287,7 +287,7 @@ export default function TicketsPage() {
           notes: [...prev.notes, newNoteEntry],
         } : null);
         setNewNote('');
-        setSendAsEmail(false);
+        setIsInternalNote(false);
 
         if (result.warning) {
           console.warn(result.warning);
@@ -696,33 +696,36 @@ export default function TicketsPage() {
                   <Textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    placeholder={sendAsEmail 
-                      ? "Write a response to send to the user via email..." 
-                      : "Add an internal note (not visible to user)..."
+                    placeholder={isInternalNote 
+                      ? "Add an internal note (not visible to user)..." 
+                      : "Write a response to send to the user via email..."
                     }
                     className="min-h-[80px] resize-none"
                   />
                   
-                  {selectedTicket.userEmail && (
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={sendAsEmail}
-                        onChange={(e) => setSendAsEmail(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-slate-700">
-                        📧 Send response to user via email ({selectedTicket.userEmail})
-                      </span>
-                    </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isInternalNote}
+                      onChange={(e) => setIsInternalNote(e.target.checked)}
+                      className="w-4 h-4 text-amber-600 rounded focus:ring-2 focus:ring-amber-500"
+                    />
+                    <span className="text-sm text-slate-700">
+                      � Internal note only (not sent to user)
+                    </span>
+                  </label>
+                  {selectedTicket.userEmail && !isInternalNote && (
+                    <p className="text-xs text-blue-600">
+                      📧 Response will be sent to {selectedTicket.userEmail}
+                    </p>
                   )}
                   
                   <Button
                     onClick={addNote}
                     disabled={!newNote.trim() || addingNote}
-                    className={sendAsEmail 
-                      ? "w-full bg-blue-600 hover:bg-blue-700" 
-                      : "w-full"
+                    className={isInternalNote 
+                      ? "w-full" 
+                      : "w-full bg-blue-600 hover:bg-blue-700"
                     }
                   >
                     {addingNote ? (
@@ -730,7 +733,7 @@ export default function TicketsPage() {
                     ) : (
                       <Send className="h-4 w-4 mr-2" />
                     )}
-                    {sendAsEmail ? 'Send Email Response' : 'Add Internal Note'}
+                    {isInternalNote ? 'Add Internal Note' : (selectedTicket.userEmail ? 'Send Email Response' : 'Add Note')}
                   </Button>
                 </div>
               </div>

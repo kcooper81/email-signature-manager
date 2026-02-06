@@ -3,7 +3,9 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NewsletterSignupSection } from '@/components/newsletter';
-import { blogPosts, getPostsForPage, getTotalPages, POSTS_PER_PAGE } from '../../blog-data';
+import { BlogListJsonLd } from '@/components/seo';
+import { generateBlogIndexMetadata } from '@/lib/seo';
+import { blogPosts, getPostsForPage, getTotalPages } from '../../blog-data';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
@@ -15,10 +17,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { page: string } }) {
   const page = parseInt(params.page, 10);
-  return {
-    title: `Blog - Page ${page} | Siggly`,
-    description: `Tips, guides, and insights about email signatures and brand consistency - Page ${page}`,
-  };
+  const totalPages = getTotalPages();
+  return generateBlogIndexMetadata(page, totalPages);
 }
 
 export default function BlogPaginatedPage({ params }: { params: { page: string } }) {
@@ -35,6 +35,7 @@ export default function BlogPaginatedPage({ params }: { params: { page: string }
 
   return (
     <>
+      <BlogListJsonLd page={page} totalPages={totalPages} posts={posts} />
       {/* Hero */}
       <section className="py-16 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-6xl mx-auto px-6">
