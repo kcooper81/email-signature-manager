@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Get current user if authenticated
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Insert feedback
+    // Insert feedback - user_id references auth.users(id), so use auth user ID directly
     const { error: insertError } = await supabase
       .from('feedback')
       .insert({
