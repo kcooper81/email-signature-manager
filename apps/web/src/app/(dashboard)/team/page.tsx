@@ -68,7 +68,7 @@ export default function TeamMembersPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<{ synced: number; errors: number } | null>(null);
-  const { plan, usage, limits } = useSubscription();
+  const { plan, usage, limits, refresh } = useSubscription();
   const devBypass = usePayGatesBypass();
   
   // Check if user can add more team members
@@ -278,6 +278,8 @@ export default function TeamMembersPage() {
 
       setSyncResult({ synced: data.synced, errors: data.errors });
       await loadData();
+      // Refresh subscription usage counts
+      refresh();
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to sync users');
     } finally {
@@ -329,6 +331,8 @@ export default function TeamMembersPage() {
       setShowAddModal(false);
       setNewMember({ email: '', first_name: '', last_name: '', title: '', department: '' });
       await loadData();
+      // Refresh subscription usage counts
+      refresh();
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to add team member');
     } finally {
