@@ -154,6 +154,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/compare/wisestamp`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
   ];
 
+  // Blog pagination (12 posts per page = 9 pages for 106 posts)
+  const POSTS_PER_PAGE = 12;
+  const totalBlogPages = Math.ceil(blogPosts.length / POSTS_PER_PAGE);
+
   // Blog pages
   const blogPages: MetadataRoute.Sitemap = [
     {
@@ -162,6 +166,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 0.8,
     },
+    // Paginated blog index pages (page 2 onwards)
+    ...Array.from({ length: totalBlogPages - 1 }, (_, i) => ({
+      url: `${baseUrl}/blog/page/${i + 2}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.75,
+    })),
+    // Individual blog posts
     ...blogPosts.map((post) => ({
       url: `${baseUrl}/blog/${post.slug}`,
       lastModified: new Date(post.date),

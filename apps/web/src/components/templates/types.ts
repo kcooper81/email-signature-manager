@@ -42,6 +42,7 @@ export interface SocialBlockContent {
 export interface DividerBlockContent {
   color: string;
   width: number;
+  thickness: number;
   style: 'solid' | 'dashed' | 'dotted';
 }
 
