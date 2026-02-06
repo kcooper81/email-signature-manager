@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
+import { logException } from '@/lib/error-logging';
 
 export async function POST(request: NextRequest) {
   try {
@@ -119,6 +120,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Signature generation error:', error);
+    
+    await logException(error, {
+      route: '/api/signatures/generate-for-users',
+      method: 'POST',
+      errorType: 'api_error',
+    });
+
     return NextResponse.json(
       { error: 'Failed to generate signatures' },
       { status: 500 }

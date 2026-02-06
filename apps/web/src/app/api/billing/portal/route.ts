@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createBillingPortalSession } from '@/lib/billing/stripe';
+import { logException } from '@/lib/error-logging';
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,6 +44,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error('Billing portal error:', error);
+    
+    await logException(error, {
+      route: '/api/billing/portal',
+      method: 'POST',
+      errorType: 'billing_error',
+    });
+
     return NextResponse.json(
       { error: error.message || 'Failed to create billing portal session' },
       { status: 500 }

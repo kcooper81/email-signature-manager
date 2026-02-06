@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logException } from '@/lib/error-logging';
 
 export async function POST() {
   try {
@@ -96,6 +97,13 @@ export async function POST() {
     });
   } catch (error: any) {
     console.error('Ensure user error:', error);
+    
+    await logException(error, {
+      route: '/api/users/ensure',
+      method: 'POST',
+      errorType: 'auth_error',
+    });
+
     return NextResponse.json(
       { error: error.message || 'Failed to ensure user record' },
       { status: 500 }

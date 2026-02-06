@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getHubSpotTokens } from '@/lib/hubspot/oauth';
+import { logException } from '@/lib/error-logging';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -126,6 +127,14 @@ export async function GET(request: NextRequest) {
     );
   } catch (err) {
     console.error('HubSpot callback error:', err);
+    
+    await logException(err, {
+      route: '/api/integrations/hubspot/callback',
+      method: 'GET',
+      errorType: 'integration_error',
+      metadata: { provider: 'hubspot' },
+    });
+
     return NextResponse.redirect(
       new URL('/integrations?error=callback_failed', request.url)
     );

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logException } from '@/lib/error-logging';
 
 export async function POST(request: NextRequest) {
   try {
@@ -73,6 +74,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Signature share error:', error);
+    
+    await logException(error, {
+      route: '/api/signatures/share',
+      method: 'POST',
+      errorType: 'api_error',
+    });
+
     return NextResponse.json(
       { error: 'Failed to share signature' },
       { status: 500 }

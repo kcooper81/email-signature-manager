@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { logException } from '@/lib/error-logging';
 
 export async function GET(
   request: NextRequest,
@@ -58,6 +59,13 @@ export async function GET(
     });
   } catch (error) {
     console.error('Signature download error:', error);
+    
+    await logException(error, {
+      route: '/api/signatures/[id]/download',
+      method: 'GET',
+      errorType: 'api_error',
+    });
+
     return NextResponse.json(
       { error: 'Failed to download signature' },
       { status: 500 }
