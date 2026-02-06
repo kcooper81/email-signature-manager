@@ -650,8 +650,9 @@ export default function TeamMembersPage() {
               No members match your search or filters.
             </div>
           ) : (
-            <div className="border rounded-lg overflow-x-auto">
-              <table className="w-full min-w-[1200px]">
+            <div className="border rounded-lg">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[1200px]">
                 <thead className="bg-muted/50 border-b">
                   <tr>
                     <th className="w-12 p-3 text-left">
@@ -863,7 +864,8 @@ export default function TeamMembersPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>
@@ -878,7 +880,7 @@ export default function TeamMembersPage() {
           </ModalDescription>
         </ModalHeader>
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="first_name">First Name</Label>
               <Input

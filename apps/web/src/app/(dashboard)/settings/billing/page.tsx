@@ -367,7 +367,7 @@ export default function BillingPage() {
         </Card>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
         {/* Current Plan */}
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -412,7 +412,7 @@ export default function BillingPage() {
             {/* Usage */}
             <div>
               <h4 className="font-medium mb-3">Current Usage</h4>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-2">
                     <FileSignature className="h-4 w-4 text-muted-foreground" />
@@ -534,7 +534,7 @@ export default function BillingPage() {
               <span>{billingError}</span>
             </div>
           )}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {Object.values(PLANS).map((plan) => {
               const isCurrentPlan = currentPlan.id === plan.id;
               return (
@@ -553,16 +553,16 @@ export default function BillingPage() {
                   <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
                   <div className="mb-4">
                     {plan.pricePerUser === 0 ? (
-                      <p className="text-2xl font-bold">
+                      <p className="text-xl sm:text-2xl font-bold">
                         {plan.id === 'enterprise' ? 'Custom' : 'Free'}
                       </p>
                     ) : plan.id === 'professional' ? (
                       <div>
-                        <p className="text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                        <p className="text-xl sm:text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
                         <p className="text-sm text-muted-foreground">+ $1/user/mo</p>
                       </div>
                     ) : (
-                      <p className="text-2xl font-bold">
+                      <p className="text-xl sm:text-2xl font-bold">
                         {formatPrice(plan.pricePerUser)}
                         <span className="text-sm font-normal text-muted-foreground">/user/mo</span>
                       </p>
