@@ -30,7 +30,7 @@ export function AdminNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const renderNavItem = (item: typeof navItems[0], mobile = false) => {
+  const renderNavItem = (item: typeof navItems[0], mobile?: boolean) => {
     const isActive = pathname === item.href || 
       (item.href !== '/admin' && pathname.startsWith(item.href));
     
@@ -86,7 +86,7 @@ export function AdminNav() {
       {/* Desktop Sidebar */}
       <nav className="hidden lg:block w-64 min-h-[calc(100vh-64px)] bg-slate-900 text-white p-4">
         <div className="space-y-1">
-          {navItems.map(renderNavItem)}
+          {navItems.map((item) => renderNavItem(item))}
         </div>
       </nav>
     </>
