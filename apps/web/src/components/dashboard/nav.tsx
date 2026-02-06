@@ -130,12 +130,12 @@ export function DashboardNav() {
       <nav className="hidden lg:flex w-52 border-r bg-card h-[calc(100vh-3.5rem)] sticky top-14 p-3 flex-col overflow-y-auto shadow-sm">
         {/* Main nav items */}
         <div className="space-y-1.5 flex-1">
-          {mainNavItems.map(renderNavItem)}
+          {mainNavItems.map((item) => renderNavItem(item))}
         </div>
 
         {/* Bottom nav items */}
         <div className="space-y-1.5 pt-4 border-t">
-          {bottomNavItems.map(renderNavItem)}
+          {bottomNavItems.map((item) => renderNavItem(item))}
         </div>
       </nav>
     </>
