@@ -55,6 +55,8 @@ export default function IntegrationsPage() {
   const [marketplaceDomain, setMarketplaceDomain] = useState('');
   const [verifyingMarketplace, setVerifyingMarketplace] = useState(false);
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
+  const [showGoogleOAuthSetup, setShowGoogleOAuthSetup] = useState(false);
+  const [showMicrosoftSetup, setShowMicrosoftSetup] = useState(false);
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -467,7 +469,7 @@ export default function IntegrationsPage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex gap-2">
-                  <Button onClick={connectGoogle} disabled={connecting === 'google'} variant="outline">
+                  <Button onClick={() => setShowGoogleOAuthSetup(true)} disabled={connecting === 'google'} variant="outline">
                     {connecting === 'google' ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -555,7 +557,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
             ) : (
-              <Button onClick={connectMicrosoft} disabled={connecting === 'microsoft'}>
+              <Button onClick={() => setShowMicrosoftSetup(true)} disabled={connecting === 'microsoft'}>
                 {connecting === 'microsoft' ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -841,30 +843,100 @@ export default function IntegrationsPage() {
         </div>
       )}
 
-      {/* Setup instructions */}
-      {!googleConnection?.is_active && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Setup Instructions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h4 className="font-medium mb-2">Google Workspace Requirements</h4>
-              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                <li>You must be a Google Workspace admin</li>
-                <li>Domain-wide delegation must be enabled (for managing all users)</li>
-                <li>The Gmail API must be enabled in your Google Cloud project</li>
-              </ul>
-            </div>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-              <p className="text-sm text-amber-800">
-                <strong>Note:</strong> You'll need to set up a Google Cloud project with OAuth credentials. 
-                Contact support if you need help with the setup process.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Google OAuth Setup Modal */}
+      {showGoogleOAuthSetup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg mx-4">
+            <CardHeader>
+              <CardTitle>Connect Google Workspace via OAuth</CardTitle>
+              <CardDescription>
+                Connect using your Google Workspace admin account for direct OAuth access.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-blue-900">Before you connect:</p>
+                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                  <li>You must be a <strong>Google Workspace administrator</strong></li>
+                  <li>You&apos;ll be asked to grant permissions to manage Gmail signatures</li>
+                  <li>The app will only access signature settings, not email content</li>
+                </ol>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>Note:</strong> If you see &quot;This app isn&apos;t verified&quot;, click &quot;Advanced&quot; then &quot;Go to Siggly&quot; to continue. 
+                  Our app is currently in the verification process with Google.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowGoogleOAuthSetup(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  setShowGoogleOAuthSetup(false);
+                  connectGoogle();
+                }}>
+                  Continue to Google
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
+
+      {/* Microsoft 365 Setup Modal */}
+      {showMicrosoftSetup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-lg mx-4">
+            <CardHeader>
+              <CardTitle>Connect Microsoft 365</CardTitle>
+              <CardDescription>
+                Connect your Microsoft 365 organization to manage Outlook signatures.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-blue-900">Before you connect:</p>
+                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                  <li>You must be a <strong>Microsoft 365 administrator</strong></li>
+                  <li>You&apos;ll be asked to grant permissions to manage mail settings</li>
+                  <li>Admin consent may be required for organization-wide access</li>
+                </ol>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>Admin Consent:</strong> If prompted, check &quot;Consent on behalf of your organization&quot; to allow 
+                  signature management for all users. Without this, only your personal signature can be managed.
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowMicrosoftSetup(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  setShowMicrosoftSetup(false);
+                  connectMicrosoft();
+                }}>
+                  Continue to Microsoft
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
     </div>
   );
 }
