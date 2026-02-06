@@ -37,6 +37,7 @@ const defaultBlocks: SignatureBlock[] = [
     content: {
       color: '#e5e5e5',
       width: 100,
+      thickness: 1,
       style: 'solid',
     },
   },
