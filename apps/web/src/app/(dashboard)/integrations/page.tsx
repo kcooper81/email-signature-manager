@@ -17,7 +17,10 @@ import {
   ExternalLink, 
   Loader2,
   AlertCircle,
+  Lock,
 } from 'lucide-react';
+import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
+import Link from 'next/link';
 
 interface ProviderConnection {
   id: string;
@@ -57,6 +60,12 @@ export default function IntegrationsPage() {
   const [marketplaceError, setMarketplaceError] = useState<string | null>(null);
   const [showGoogleOAuthSetup, setShowGoogleOAuthSetup] = useState(false);
   const [showMicrosoftSetup, setShowMicrosoftSetup] = useState(false);
+  
+  // Plan-based access control
+  const { plan } = useSubscription();
+  const devBypass = usePayGatesBypass();
+  const hasMicrosoft365Access = devBypass || plan.features.microsoft365;
+  const hasHubSpotAccess = devBypass || plan.features.hubspotCRM;
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -522,7 +531,18 @@ export default function IntegrationsPage() {
               Connect your Microsoft 365 to automatically deploy email signatures to Outlook users.
             </p>
             
-            {microsoftConnection?.is_active ? (
+            {!hasMicrosoft365Access ? (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
+                <Lock className="h-8 w-8 mx-auto mb-2 text-slate-400" />
+                <p className="text-sm font-medium text-slate-700 mb-1">Upgrade Required</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Microsoft 365 integration is available on Starter plans and above.
+                </p>
+                <Link href="/settings/billing">
+                  <Button size="sm">Upgrade Plan</Button>
+                </Link>
+              </div>
+            ) : microsoftConnection?.is_active ? (
               <div className="space-y-3">
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(microsoftConnection.created_at).toLocaleDateString()}
@@ -602,21 +622,45 @@ export default function IntegrationsPage() {
               Connect your HubSpot CRM to automatically sync contact data and populate signature fields with employee information.
             </p>
 
-            {!hubspotConnection?.is_active && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                <p className="text-sm font-medium text-blue-900 mb-2">Recommended Setup:</p>
-                <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
-                  <li>Create a list in HubSpot called "Employees"</li>
-                  <li>Add all employee contacts to this list</li>
-                  <li>After connecting, select the list to sync from</li>
-                </ol>
-                <p className="text-xs text-blue-700 mt-2">
-                  <strong>Note:</strong> HubSpot typically contains customers/leads. We recommend using Google Workspace or Microsoft 365 for employee management.
+            {!hasHubSpotAccess ? (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
+                <Lock className="h-8 w-8 mx-auto mb-2 text-slate-400" />
+                <p className="text-sm font-medium text-slate-700 mb-1">Upgrade Required</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  HubSpot CRM integration is available on Professional plans and above.
                 </p>
+                <Link href="/settings/billing">
+                  <Button size="sm">Upgrade Plan</Button>
+                </Link>
               </div>
-            )}
-            
-            {hubspotConnection?.is_active ? (
+            ) : !hubspotConnection?.is_active ? (
+              <>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm font-medium text-blue-900 mb-2">Recommended Setup:</p>
+                  <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                    <li>Create a list in HubSpot called "Employees"</li>
+                    <li>Add all employee contacts to this list</li>
+                    <li>After connecting, select the list to sync from</li>
+                  </ol>
+                  <p className="text-xs text-blue-700 mt-2">
+                    <strong>Note:</strong> HubSpot typically contains customers/leads. We recommend using Google Workspace or Microsoft 365 for employee management.
+                  </p>
+                </div>
+                <Button onClick={connectHubSpot} disabled={connecting === 'hubspot'}>
+                  {connecting === 'hubspot' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      Connect HubSpot CRM
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </>
+            ) : (
               <div className="space-y-3">
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(hubspotConnection.created_at).toLocaleDateString()}
@@ -687,20 +731,6 @@ export default function IntegrationsPage() {
                   </Button>
                 </div>
               </div>
-            ) : (
-              <Button onClick={connectHubSpot} disabled={connecting === 'hubspot'}>
-                {connecting === 'hubspot' ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    Connect HubSpot CRM
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </>
-                )}
-              </Button>
             )}
           </CardContent>
         </Card>
