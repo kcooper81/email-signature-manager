@@ -107,6 +107,7 @@ export default function TicketsPage() {
   const [newNote, setNewNote] = useState('');
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [sendAsEmail, setSendAsEmail] = useState(false);
 
   useEffect(() => {
     loadTickets();
@@ -253,38 +254,47 @@ export default function TicketsPage() {
   };
 
   const addNote = async () => {
-    if (!selectedTicket || !newNote.trim() || !currentUserId) return;
+    if (!selectedTicket || !newNote.trim()) return;
     
     setAddingNote(true);
-    const supabase = createClient();
 
-    const { data, error } = await supabase
-      .from('ticket_notes')
-      .insert({
-        ticket_id: selectedTicket.id,
-        author_id: currentUserId,
-        content: newNote.trim(),
-        is_internal: true,
-      })
-      .select('id, content, is_internal, created_at')
-      .single();
+    try {
+      const response = await fetch(`/api/admin/tickets/${selectedTicket.id}/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: newNote.trim(),
+          isInternal: !sendAsEmail,
+        }),
+      });
 
-    if (error) {
+      if (!response.ok) {
+        throw new Error('Failed to add note');
+      }
+
+      const result = await response.json();
+      
+      if (result.success && result.note) {
+        const newNoteEntry: TicketNote = {
+          id: result.note.id,
+          content: result.note.content,
+          authorEmail: result.note.authorEmail,
+          isInternal: result.note.is_internal,
+          createdAt: result.note.created_at,
+        };
+        setSelectedTicket(prev => prev ? {
+          ...prev,
+          notes: [...prev.notes, newNoteEntry],
+        } : null);
+        setNewNote('');
+        setSendAsEmail(false);
+
+        if (result.warning) {
+          console.warn(result.warning);
+        }
+      }
+    } catch (error) {
       console.error('Error adding note:', error);
-    } else if (data) {
-      const { data: { user } } = await supabase.auth.getUser();
-      const newNoteEntry: TicketNote = {
-        id: data.id,
-        content: data.content,
-        authorEmail: user?.email || 'Unknown',
-        isInternal: data.is_internal,
-        createdAt: data.created_at,
-      };
-      setSelectedTicket(prev => prev ? {
-        ...prev,
-        notes: [...prev.notes, newNoteEntry],
-      } : null);
-      setNewNote('');
     }
 
     setAddingNote(false);
@@ -659,7 +669,20 @@ export default function TicketsPage() {
                 {selectedTicket.notes.length > 0 && (
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {selectedTicket.notes.map((note) => (
-                      <div key={note.id} className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                      <div 
+                        key={note.id} 
+                        className={note.isInternal 
+                          ? "bg-amber-50 border border-amber-200 rounded-lg p-3" 
+                          : "bg-blue-50 border border-blue-200 rounded-lg p-3"
+                        }
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <span className={`text-xs font-medium ${
+                            note.isInternal ? 'text-amber-700' : 'text-blue-700'
+                          }`}>
+                            {note.isInternal ? '🔒 Internal Note' : '📧 Sent to User'}
+                          </span>
+                        </div>
                         <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
                         <p className="text-xs text-slate-500 mt-2">
                           {note.authorEmail} • {new Date(note.createdAt).toLocaleString()}
@@ -673,20 +696,41 @@ export default function TicketsPage() {
                   <Textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    placeholder="Add an internal note..."
-                    className="min-h-[80px]"
+                    placeholder={sendAsEmail 
+                      ? "Write a response to send to the user via email..." 
+                      : "Add an internal note (not visible to user)..."
+                    }
+                    className="min-h-[80px] resize-none"
                   />
+                  
+                  {selectedTicket.userEmail && (
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={sendAsEmail}
+                        onChange={(e) => setSendAsEmail(e.target.checked)}
+                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-slate-700">
+                        📧 Send response to user via email ({selectedTicket.userEmail})
+                      </span>
+                    </label>
+                  )}
+                  
                   <Button
                     onClick={addNote}
                     disabled={!newNote.trim() || addingNote}
-                    className="w-full"
+                    className={sendAsEmail 
+                      ? "w-full bg-blue-600 hover:bg-blue-700" 
+                      : "w-full"
+                    }
                   >
                     {addingNote ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : (
                       <Send className="h-4 w-4 mr-2" />
                     )}
-                    Add Note
+                    {sendAsEmail ? 'Send Email Response' : 'Add Internal Note'}
                   </Button>
                 </div>
               </div>

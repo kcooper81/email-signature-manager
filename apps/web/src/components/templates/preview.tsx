@@ -15,15 +15,12 @@ import type {
   HtmlBlockContent,
 } from './types';
 import { ComplianceBlockPreview } from './compliance-block';
-import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github, Sun, Moon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github } from 'lucide-react';
 
 interface SignaturePreviewProps {
   blocks: SignatureBlock[];
   userData?: Record<string, string>;
 }
-
-type ColorMode = 'light' | 'dark';
 
 // Sample user data for preview
 const SAMPLE_USER_DATA: Record<string, string> = {
@@ -43,8 +40,6 @@ const SAMPLE_USER_DATA: Record<string, string> = {
 };
 
 export function SignaturePreview({ blocks, userData = SAMPLE_USER_DATA }: SignaturePreviewProps) {
-  const [colorMode, setColorMode] = useState<ColorMode>('light');
-
   const replacePlaceholders = (text: string): string => {
     let result = text;
     Object.entries(userData).forEach(([key, value]) => {
@@ -61,31 +56,11 @@ export function SignaturePreview({ blocks, userData = SAMPLE_USER_DATA }: Signat
     );
   }
 
-  const bgColor = colorMode === 'dark' ? '#1a1a1a' : '#ffffff';
-  const textColor = colorMode === 'dark' ? '#e5e5e5' : '#1a1a1a';
+  const bgColor = '#ffffff';
+  const textColor = '#1a1a1a';
 
   return (
     <div>
-      <div className="flex justify-end mb-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setColorMode(colorMode === 'light' ? 'dark' : 'light')}
-          className="gap-2"
-        >
-          {colorMode === 'light' ? (
-            <>
-              <Moon className="h-4 w-4" />
-              Dark Mode
-            </>
-          ) : (
-            <>
-              <Sun className="h-4 w-4" />
-              Light Mode
-            </>
-          )}
-        </Button>
-      </div>
       <div 
         className="font-sans p-4 rounded-lg border" 
         style={{ 
@@ -96,7 +71,7 @@ export function SignaturePreview({ blocks, userData = SAMPLE_USER_DATA }: Signat
       >
         {blocks.map((block) => (
           <div key={block.id}>
-            {renderBlock(block, replacePlaceholders, colorMode)}
+            {renderBlock(block, replacePlaceholders)}
           </div>
         ))}
       </div>
@@ -106,24 +81,23 @@ export function SignaturePreview({ blocks, userData = SAMPLE_USER_DATA }: Signat
 
 function renderBlock(
   block: SignatureBlock,
-  replacePlaceholders: (text: string) => string,
-  colorMode: ColorMode = 'light'
+  replacePlaceholders: (text: string) => string
 ): React.ReactNode {
   switch (block.type) {
     case 'text':
-      return renderTextBlock(block.content as TextBlockContent, replacePlaceholders, colorMode);
+      return renderTextBlock(block.content as TextBlockContent, replacePlaceholders);
     case 'image':
       return renderImageBlock(block.content as ImageBlockContent);
     case 'divider':
-      return renderDividerBlock(block.content as DividerBlockContent, colorMode);
+      return renderDividerBlock(block.content as DividerBlockContent);
     case 'spacer':
       return renderSpacerBlock(block.content as SpacerBlockContent);
     case 'contact-info':
-      return renderContactInfoBlock(block.content as ContactInfoBlockContent, replacePlaceholders, colorMode);
+      return renderContactInfoBlock(block.content as ContactInfoBlockContent, replacePlaceholders);
     case 'button':
       return renderButtonBlock(block.content as ButtonBlockContent, replacePlaceholders);
     case 'social':
-      return renderSocialBlock(block.content as SocialBlockContent, colorMode);
+      return renderSocialBlock(block.content as SocialBlockContent);
     case 'disclaimer':
       return renderDisclaimerBlock(block.content as DisclaimerBlockContent);
     case 'compliance':
@@ -137,8 +111,7 @@ function renderBlock(
 
 function renderTextBlock(
   content: TextBlockContent,
-  replacePlaceholders: (text: string) => string,
-  colorMode: ColorMode = 'light'
+  replacePlaceholders: (text: string) => string
 ): React.ReactNode {
   return (
     <p
@@ -201,8 +174,8 @@ function renderImageBlock(content: ImageBlockContent): React.ReactNode {
   return img;
 }
 
-function renderDividerBlock(content: DividerBlockContent, colorMode: ColorMode = 'light'): React.ReactNode {
-  const dividerColor = colorMode === 'dark' && content.color === '#e5e5e5' ? '#404040' : content.color;
+function renderDividerBlock(content: DividerBlockContent): React.ReactNode {
+  const dividerColor = content.color;
   return (
     <hr
       style={{
@@ -223,11 +196,10 @@ function renderSpacerBlock(content: SpacerBlockContent): React.ReactNode {
 
 function renderContactInfoBlock(
   content: ContactInfoBlockContent,
-  replacePlaceholders: (text: string) => string,
-  colorMode: ColorMode = 'light'
+  replacePlaceholders: (text: string) => string
 ): React.ReactNode {
-  const linkColor = colorMode === 'dark' ? '#9ca3af' : '#666';
-  const iconColor = colorMode === 'dark' ? '#6b7280' : '#999';
+  const linkColor = '#666';
+  const iconColor = '#999';
   const items = [];
 
   if (content.email) {
@@ -318,7 +290,7 @@ function renderButtonBlock(
   );
 }
 
-function renderSocialBlock(content: SocialBlockContent, colorMode: ColorMode = 'light'): React.ReactNode {
+function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
   const getIcon = (type: string) => {
     const size = content.iconSize || 24;
     const props = { style: { width: size, height: size } };

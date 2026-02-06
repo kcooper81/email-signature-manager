@@ -72,13 +72,12 @@ export default function NewTemplatePage() {
         .single();
 
       if (!userData?.organization_id) {
-        console.error('User has no organization');
         router.push('/dashboard');
         return;
       }
 
       // Create the template under user's organization
-      const { data: template, error } = await supabase
+      const { error } = await supabase
         .from('signature_templates')
         .insert({
           organization_id: userData.organization_id,
@@ -91,14 +90,9 @@ export default function NewTemplatePage() {
         .select('id')
         .single();
 
-      if (error) {
-        console.error('Failed to save template:', error);
-        return;
+      if (!error) {
+        router.push('/templates');
       }
-
-      router.push('/templates');
-    } catch (err) {
-      console.error('Error saving template:', err);
     } finally {
       setSaving(false);
     }
