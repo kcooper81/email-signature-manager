@@ -318,6 +318,13 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
         {content.industryType === 'healthcare' && renderHealthcareFields(content.fields as HealthcareComplianceFields)}
         {content.industryType === 'finance' && renderFinanceFields(content.fields as FinanceComplianceFields)}
         {content.industryType === 'real_estate' && renderRealEstateFields(content.fields as RealEstateComplianceFields)}
+        {content.industryType === 'general' && (
+          <div className="col-span-2 text-center py-4 text-muted-foreground">
+            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-amber-500" />
+            <p className="text-sm">Select a specific industry from the template settings to enable compliance fields.</p>
+            <p className="text-xs mt-1">Compliance blocks require Legal, Healthcare, Finance, or Real Estate industry.</p>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t">
@@ -448,6 +455,11 @@ export function ComplianceBlockPreview({ content }: { content: ComplianceBlockCo
       {content.industryType === 'healthcare' && renderHealthcarePreview(fields as HealthcareComplianceFields)}
       {content.industryType === 'finance' && renderFinancePreview(fields as FinanceComplianceFields)}
       {content.industryType === 'real_estate' && renderRealEstatePreview(fields as RealEstateComplianceFields)}
+      {content.industryType === 'general' && (
+        <div style={{ fontSize: 11, color: '#999', fontStyle: 'italic' }}>
+          Select an industry to display compliance information
+        </div>
+      )}
     </div>
   );
 }

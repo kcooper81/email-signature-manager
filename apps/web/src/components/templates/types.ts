@@ -32,8 +32,10 @@ export interface ImageBlockContent {
 
 export interface SocialBlockContent {
   platforms: {
-    type: 'linkedin' | 'twitter' | 'facebook' | 'instagram' | 'youtube' | 'github';
+    type: 'linkedin' | 'twitter' | 'facebook' | 'instagram' | 'youtube' | 'github' | 'custom';
     url: string;
+    label?: string; // For custom platforms
+    icon?: string; // URL to custom icon
   }[];
   iconSize: number;
   iconStyle: 'color' | 'mono' | 'circle';
@@ -56,6 +58,11 @@ export interface ContactInfoBlockContent {
   website?: string;
   address?: string;
   showIcons?: boolean;
+  customFields?: {
+    label: string;
+    value: string;
+    icon?: 'mail' | 'phone' | 'globe' | 'map-pin' | 'calendar' | 'briefcase' | 'user' | 'building' | 'none';
+  }[];
 }
 
 export interface ButtonBlockContent {
