@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BookOpen, Mail, MessageCircle, FileText, Zap, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
+import { DynamicFAQs } from '@/components/help/dynamic-faqs';
 
 export const metadata = genMeta({
   title: 'Help Center - Documentation & Support | Siggly',
@@ -43,40 +44,6 @@ const quickLinks = [
   },
 ];
 
-const faqs = [
-  {
-    question: 'How do I connect Google Workspace?',
-    answer: 'Go to Settings > Integrations and click "Connect Google Workspace". You\'ll be prompted to authorize Siggly to manage signatures for your organization.',
-  },
-  {
-    question: 'Can I use different signatures for different departments?',
-    answer: 'Yes! Create multiple templates and assign them to specific departments or users. Each team member can have a unique signature based on their role.',
-  },
-  {
-    question: 'How long does it take to deploy signatures?',
-    answer: 'Signature deployment is instant for most users. Once you click deploy, signatures are pushed to your team\'s email clients within seconds.',
-  },
-  {
-    question: 'Do signatures work on mobile devices?',
-    answer: 'Yes, all Siggly signatures are mobile-responsive and work perfectly on Gmail and Outlook mobile apps.',
-  },
-  {
-    question: 'Can I include marketing banners in signatures?',
-    answer: 'Absolutely! Use the visual editor to add images, buttons, and promotional content to your signatures.',
-  },
-  {
-    question: 'What happens if I exceed my plan limits?',
-    answer: 'You\'ll receive a notification when approaching your limits. You can upgrade your plan anytime to add more templates or users.',
-  },
-  {
-    question: 'How do I cancel my subscription?',
-    answer: 'Go to Settings > Billing and click "Cancel Subscription". Your account will remain active until the end of your billing period.',
-  },
-  {
-    question: 'Is my data secure?',
-    answer: 'Yes! We use enterprise-grade encryption and comply with GDPR and CCPA. Learn more on our Security page.',
-  },
-];
 
 export default function HelpPage() {
   return (
@@ -128,14 +95,7 @@ export default function HelpPage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-xl p-6">
-                <h3 className="font-semibold mb-2">{faq.question}</h3>
-                <p className="text-gray-600">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
+          <DynamicFAQs />
         </div>
       </section>
 

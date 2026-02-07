@@ -14,6 +14,7 @@ import {
   Ticket,
   Menu,
   X,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -22,6 +23,7 @@ const navItems = [
   { href: '/admin/accounts', label: 'Accounts', icon: Building2 },
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
   { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard },
+  { href: '/admin/help', label: 'Help Articles', icon: BookOpen },
   { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText },
   { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle },
 ];

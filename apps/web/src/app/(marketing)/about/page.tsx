@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Mail, ArrowLeft, Users, Shield, Zap, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MarketingCTA } from '@/components/marketing/cta';
 
 export const metadata = {
   title: 'About Us | Siggly',
@@ -90,22 +91,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-gray-600 mb-8">
-            Join thousands of teams who trust Siggly for their email signatures.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/signup">
-              <Button size="lg">Get Started Free</Button>
-            </Link>
-            <Link href="/contact">
-              <Button size="lg" variant="outline">Contact Sales</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingCTA variant="default" />
 
     </>
   );
