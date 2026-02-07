@@ -1,12 +1,28 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { getServiceAccountCredentials, isServiceAccountConfigured } from '@/lib/google/service-account';
 
 export async function GET() {
+  // Test the actual function used by the app
+  const configured = isServiceAccountConfigured();
+  const creds = getServiceAccountCredentials();
+  const credsValid = creds ? (() => {
+    try {
+      crypto.createPrivateKey(creds.private_key);
+      return true;
+    } catch {
+      return false;
+    }
+  })() : false;
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
   const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '';
   
   // Analyze the raw key
   const analysis = {
+    serviceAccountConfigured: configured,
+    credsReturned: !!creds,
+    credsValid: credsValid,
+    credsEmail: creds?.client_email,
     emailSet: !!email,
     rawKey: {
       length: rawKey.length,
