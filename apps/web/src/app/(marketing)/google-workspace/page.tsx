@@ -1,15 +1,89 @@
 import Link from 'next/link';
-import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw } from 'lucide-react';
+import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { generateMetadata as genMeta, generateFAQSchema, generateBreadcrumbSchema } from '@/lib/seo/metadata';
 
-export const metadata = {
-  title: 'Google Workspace Email Signatures | Siggly',
-  description: 'Manage Gmail signatures for your entire Google Workspace organization. Deploy consistent email signatures to all users with one click.',
-};
+export const metadata = genMeta({
+  title: 'Google Workspace Email Signatures | Deploy to All Gmail Users',
+  description: 'Manage Gmail signatures for your entire Google Workspace organization. Deploy consistent email signatures to all users with one click. Free for up to 5 users.',
+  keywords: [
+    'google workspace email signatures',
+    'gmail signature management',
+    'google workspace signature software',
+    'gmail signature for organization',
+    'centralized gmail signatures',
+    'deploy signatures google workspace',
+    'gmail signature management tool',
+  ],
+  canonical: '/google-workspace',
+});
+
+const faqs = [
+  {
+    question: 'How does Siggly deploy signatures to Google Workspace?',
+    answer: 'Siggly uses the official Gmail API to deploy signatures directly to your users\' Gmail accounts. Once you connect your Google Workspace admin account via OAuth, we can push signatures to all selected users with one click.',
+  },
+  {
+    question: 'Do users need to install anything?',
+    answer: 'No. Signatures are deployed server-side using the Gmail API. Users don\'t need to install any extensions, add-ons, or software. Signatures appear automatically in their Gmail.',
+  },
+  {
+    question: 'Is Siggly secure for Google Workspace?',
+    answer: 'Yes. We use OAuth 2.0 authentication and never store your Google password. We only request the minimum permissions needed to manage signatures. You can revoke access anytime from your Google Admin console.',
+  },
+  {
+    question: 'How long does it take to deploy signatures?',
+    answer: 'Deployment typically takes 30-60 seconds for most organizations. We can deploy to 1,000+ users in under a minute using batch API calls.',
+  },
+  {
+    question: 'Can I have different signatures for different departments?',
+    answer: 'Yes. You can create multiple signature templates and assign them based on department, location, job title, or any custom attribute synced from your Google Workspace directory.',
+  },
+  {
+    question: 'Does Siggly sync users automatically from Google Workspace?',
+    answer: 'Yes. When you connect your Google Workspace account, we automatically import all users with their names, titles, departments, and profile photos. You can also set up automatic sync to keep user data current.',
+  },
+  {
+    question: 'What happens if a user changes their signature manually?',
+    answer: 'You can choose to allow or prevent manual changes. With enforcement enabled, any manual changes will be overwritten on the next sync, ensuring brand consistency across your organization.',
+  },
+  {
+    question: 'Is there a free plan for Google Workspace?',
+    answer: 'Yes. Siggly is free for teams up to 5 users, forever. No credit card required. Paid plans start at just $0.50/user/month for larger teams.',
+  },
+];
+
+const comparisonData = [
+  { feature: 'Centralized Management', siggly: true, native: false },
+  { feature: 'Bulk Deployment', siggly: true, native: false },
+  { feature: 'Department-Based Signatures', siggly: true, native: false },
+  { feature: 'Template Library', siggly: true, native: false },
+  { feature: 'Campaign Banners', siggly: true, native: false },
+  { feature: 'Analytics & Click Tracking', siggly: true, native: false },
+  { feature: 'Scheduled Updates', siggly: true, native: false },
+  { feature: 'User Directory Sync', siggly: true, native: false },
+  { feature: 'Signature Enforcement', siggly: true, native: false },
+];
 
 export default function GoogleWorkspacePage() {
+  const faqSchema = generateFAQSchema(faqs);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'Google Workspace', url: '/google-workspace' },
+  ]);
+
   return (
     <>
+      {/* Schema Markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
       {/* Hero */}
       <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
         <div className="max-w-6xl mx-auto px-6">
@@ -154,18 +228,92 @@ export default function GoogleWorkspacePage() {
         </div>
       </section>
 
+      {/* Comparison Table */}
+      <section className="py-20 bg-blue-600 text-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Siggly vs Native Gmail Signatures</h2>
+            <p className="text-blue-100">
+              Native Gmail signatures require manual setup per user. Siggly gives you centralized control over your entire organization.
+            </p>
+          </div>
+          <div className="bg-white/10 backdrop-blur rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-3 bg-white/5 border-b border-white/10">
+              <div className="px-6 py-4 font-semibold">Feature</div>
+              <div className="px-6 py-4 font-semibold text-center">Siggly</div>
+              <div className="px-6 py-4 font-semibold text-center">Native Gmail</div>
+            </div>
+            {comparisonData.map((row) => (
+              <div key={row.feature} className="grid grid-cols-3 border-b border-white/10 last:border-0">
+                <div className="px-6 py-4 text-sm">{row.feature}</div>
+                <div className="px-6 py-4 text-center">
+                  {row.siggly ? (
+                    <Check className="h-5 w-5 text-green-400 mx-auto" />
+                  ) : (
+                    <span className="text-white/40">—</span>
+                  )}
+                </div>
+                <div className="px-6 py-4 text-center">
+                  {row.native ? (
+                    <Check className="h-5 w-5 text-green-400 mx-auto" />
+                  ) : (
+                    <span className="text-white/40">—</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <p className="text-blue-100 text-sm">
+              Save hours of manual work. Deploy signatures to your entire team in seconds.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p className="text-gray-600">
+              Everything you need to know about managing Google Workspace email signatures with Siggly.
+            </p>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div key={index} className="bg-white border border-gray-200 rounded-xl p-6">
+                <h3 className="font-semibold text-lg mb-2 flex items-start gap-3">
+                  <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  {faq.question}
+                </h3>
+                <p className="text-gray-600 ml-8">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to manage Gmail signatures?</h2>
           <p className="text-gray-600 mb-8">
-            Get started and deploy your first signature in minutes.
+            Start free today. Deploy your first signature to your entire Google Workspace organization in minutes.
           </p>
-          <Link href="/signup">
-            <Button size="lg">
-              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/signup">
+              <Button size="lg">
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/pricing">
+              <Button size="lg" variant="outline">View Pricing</Button>
+            </Link>
+          </div>
+          <p className="text-sm text-gray-500 mt-6">
+            No credit card required • Free for up to 5 users • Setup in 5 minutes
+          </p>
         </div>
       </section>
 

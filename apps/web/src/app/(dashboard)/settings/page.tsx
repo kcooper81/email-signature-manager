@@ -63,6 +63,7 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [show2FASetup, setShow2FASetup] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [qrCode, setQrCode] = useState('');
@@ -237,12 +238,12 @@ export default function SettingsPage() {
     }
 
     setSaving(false);
-    setSaved(true);
+    setPasswordSuccess(true);
     setShowPasswordChange(false);
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
-    setTimeout(() => setSaved(false), 2000);
+    setTimeout(() => setPasswordSuccess(false), 3000);
   };
 
   const enable2FA = async () => {
@@ -766,6 +767,15 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {passwordSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
+                    <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-green-800">
+                      Password updated successfully!
+                    </p>
+                  </div>
+                )}
+
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center justify-between mb-4">
                     <div>
