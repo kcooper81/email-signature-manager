@@ -11,7 +11,10 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  Play,
 } from 'lucide-react';
+
+const SUPADEMO_ID = 'cmlbpojgx46fhvhwzml7s51i5';
 
 interface GettingStartedCardProps {
   hasConnection: boolean;
@@ -102,6 +105,17 @@ export function GettingStartedCard({
                 {completedSteps}/{totalSteps}
               </span>
             </div>
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined' && (window as any).Supademo) {
+                  (window as any).Supademo.open(SUPADEMO_ID);
+                }
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700 bg-white border border-violet-200 hover:border-violet-300 px-2.5 py-1 rounded-full transition-colors"
+            >
+              <Play className="h-3 w-3" />
+              Watch tour
+            </button>
           </div>
           <div className="flex items-center gap-1">
             <button

@@ -342,6 +342,59 @@ export default function SignatureTemplatesPage() {
         </div>
       </section>
 
+      {/* Preview Modal */}
+      {previewTemplate && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setPreviewTemplate(null)}>
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6" onClick={(e) => e.stopPropagation()}>
+            {(() => {
+              const template = templates.find(t => t.id === previewTemplate);
+              if (!template) return null;
+              const colors = colorMap[template.color];
+              return (
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold">{template.name} Preview</h3>
+                    <button 
+                      onClick={() => setPreviewTemplate(null)}
+                      className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className={`${colors.bg} rounded-xl p-6 mb-4`}>
+                    <div className="bg-white rounded-lg p-6 shadow-sm">
+                      <div className="flex items-start gap-4">
+                        <div className={`w-16 h-16 ${colors.bg} rounded-full flex items-center justify-center ${colors.text} font-bold text-lg`}>
+                          {template.preview.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-semibold text-lg">{template.preview.name}</div>
+                          <div className={`${colors.text} font-medium`}>{template.preview.title}</div>
+                          <div className="text-gray-600">{template.preview.company}</div>
+                          <div className="text-gray-500 mt-3 space-y-1 text-sm">
+                            <div>✉️ {template.preview.email}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-4">{template.description}</p>
+                  <div className="flex gap-3">
+                    <Button onClick={() => downloadTemplate(template)} className="flex-1">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download HTML
+                    </Button>
+                    <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
+                      Close
+                    </Button>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
       {/* CTA */}
       <section className="py-20 bg-violet-600 text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
