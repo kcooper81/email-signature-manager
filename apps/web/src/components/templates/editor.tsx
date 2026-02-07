@@ -423,13 +423,56 @@ function getDefaultComplianceFields(industry: IndustryType): any {
   
   switch (industry) {
     case 'legal':
-      return { ...baseContent, fields: { barNumber: '', barState: '', credentials: '', disclaimer: '' } };
+      return { 
+        ...baseContent, 
+        fields: { 
+          barNumber: '', 
+          barState: '', 
+          credentials: '', 
+          firmName: '',
+          disclaimer: '' 
+        } 
+      };
     case 'healthcare':
-      return { ...baseContent, fields: { npiNumber: '', licenseNumber: '', licenseState: '', hipaaDisclaimer: '' } };
+      return { 
+        ...baseContent, 
+        fields: { 
+          npiNumber: '', 
+          licenseNumber: '', 
+          licenseState: '', 
+          credentials: '',
+          practiceName: '',
+          hipaaDisclaimer: '' 
+        } 
+      };
     case 'finance':
-      return { ...baseContent, fields: { crdNumber: '', licenseNumber: '', disclaimer: '', memberFINRASIPC: false } };
+      return { 
+        ...baseContent, 
+        fields: { 
+          crdNumber: '', 
+          secNumber: '',
+          licenseNumber: '', 
+          credentials: '',
+          brokerDealerName: '',
+          riaName: '',
+          firmName: '',
+          memberFINRASIPC: false,
+          disclaimer: '' 
+        } 
+      };
     case 'real_estate':
-      return { ...baseContent, fields: { licenseNumber: '', licenseState: '', dreNumber: '', equalHousingLogo: false } };
+      return { 
+        ...baseContent, 
+        fields: { 
+          licenseNumber: '', 
+          licenseState: '', 
+          dreNumber: '', 
+          mlsNumber: '',
+          designations: '',
+          brokerageName: '',
+          equalHousingLogo: false 
+        } 
+      };
     default:
       return { ...baseContent, fields: {} };
   }
