@@ -24,6 +24,7 @@ export interface ServiceAccountCredentials {
 
 /**
  * Get service account credentials from environment variables
+ * Supports both plain text (with \n) and base64 encoded private keys
  */
 export function getServiceAccountCredentials(): ServiceAccountCredentials | null {
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -31,6 +32,15 @@ export function getServiceAccountCredentials(): ServiceAccountCredentials | null
 
   if (!clientEmail || !privateKey) {
     return null;
+  }
+
+  // Check if the key is base64 encoded (doesn't start with -----BEGIN)
+  if (!privateKey.startsWith('-----BEGIN')) {
+    try {
+      privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+    } catch (e) {
+      console.error('Failed to decode base64 private key:', e);
+    }
   }
 
   // Handle various escape formats from different env var sources
