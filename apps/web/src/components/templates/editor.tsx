@@ -415,18 +415,22 @@ function getDefaultContent(type: SignatureBlockType, industry: IndustryType): an
 }
 
 function getDefaultComplianceFields(industry: IndustryType): any {
-  const baseFields = { industry };
+  const baseContent = {
+    industryType: industry,
+    fontSize: 11,
+    color: '#666666',
+  };
   
   switch (industry) {
     case 'legal':
-      return { ...baseFields, barNumber: '', barState: '', credentials: '' };
+      return { ...baseContent, fields: { barNumber: '', barState: '', credentials: '', disclaimer: '' } };
     case 'healthcare':
-      return { ...baseFields, npiNumber: '', licenseNumber: '', licenseState: '' };
+      return { ...baseContent, fields: { npiNumber: '', licenseNumber: '', licenseState: '', hipaaDisclaimer: '' } };
     case 'finance':
-      return { ...baseFields, crdNumber: '', licenseNumber: '', registeredWith: '' };
+      return { ...baseContent, fields: { crdNumber: '', licenseNumber: '', disclaimer: '', memberFINRASIPC: false } };
     case 'real_estate':
-      return { ...baseFields, licenseNumber: '', licenseState: '', dreNumber: '' };
+      return { ...baseContent, fields: { licenseNumber: '', licenseState: '', dreNumber: '', equalHousingLogo: false } };
     default:
-      return baseFields;
+      return { ...baseContent, fields: {} };
   }
 }
