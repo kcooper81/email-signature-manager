@@ -2,6 +2,11 @@ import { MetadataRoute } from 'next';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
+  { slug: 'google-workspace-admin-signature-guide', date: '2026-02-07' },
+  { slug: 'gmail-signature-compliance-guide', date: '2026-02-07' },
+  { slug: 'google-workspace-vs-microsoft-365-signatures', date: '2026-02-07' },
+  { slug: 'gmail-signature-troubleshooting', date: '2026-02-07' },
+  { slug: 'enforce-email-signatures-google-workspace', date: '2026-02-07' },
   { slug: 'email-signature-future-trends', date: '2026-01-28' },
   { slug: 'brand-consistency-guide', date: '2026-01-27' },
   { slug: 'google-workspace-signature-management', date: '2026-01-26' },

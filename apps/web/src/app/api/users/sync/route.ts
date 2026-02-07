@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { listWorkspaceUsers } from '@/lib/google/gmail';
 import { logException } from '@/lib/error-logging';
 
@@ -60,6 +60,9 @@ export async function POST(request: NextRequest) {
       domain
     );
 
+    // Use service client to bypass RLS for upsert operations
+    const serviceClient = createServiceClient();
+    
     // Upsert users into database
     let syncedCount = 0;
     let errorCount = 0;
@@ -69,7 +72,7 @@ export async function POST(request: NextRequest) {
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
-      const { error } = await supabase
+      const { error } = await serviceClient
         .from('users')
         .upsert({
           email: googleUser.email,
@@ -82,7 +85,7 @@ export async function POST(request: NextRequest) {
           source: 'google',
           updated_at: new Date().toISOString(),
         }, {
-          onConflict: 'email',
+          onConflict: 'email,organization_id',
           ignoreDuplicates: false,
         });
 
