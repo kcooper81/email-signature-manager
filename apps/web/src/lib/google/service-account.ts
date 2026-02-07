@@ -24,7 +24,7 @@ export interface ServiceAccountCredentials {
 
 /**
  * Get service account credentials from environment variables
- * Supports both plain text (with \n) and base64 encoded private keys
+ * Supports multiple formats: plain text, base64, and JSON-escaped
  */
 export function getServiceAccountCredentials(): ServiceAccountCredentials | null {
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -34,17 +34,32 @@ export function getServiceAccountCredentials(): ServiceAccountCredentials | null
     return null;
   }
 
-  // Check if the key is base64 encoded (doesn't start with -----BEGIN)
-  if (!privateKey.startsWith('-----BEGIN')) {
+  // Method 1: Try JSON.parse if it looks like a JSON string (starts with ")
+  if (privateKey.startsWith('"')) {
     try {
-      privateKey = Buffer.from(privateKey, 'base64').toString('utf-8');
+      privateKey = JSON.parse(privateKey) as string;
     } catch (e) {
-      console.error('Failed to decode base64 private key:', e);
+      console.error('Failed to JSON parse private key:', e);
+    }
+  }
+  
+  // Method 2: Try base64 decode if not starting with -----BEGIN
+  if (privateKey && !privateKey.startsWith('-----BEGIN')) {
+    try {
+      const decoded = Buffer.from(privateKey, 'base64').toString('utf-8');
+      if (decoded.startsWith('-----BEGIN')) {
+        privateKey = decoded;
+      }
+    } catch (e) {
+      // Not valid base64, continue with escape handling
     }
   }
 
-  // Handle various escape formats from different env var sources
-  // Vercel may store as literal \n or actual newlines
+  if (!privateKey) {
+    return null;
+  }
+
+  // Method 3: Handle escape sequences from env var sources
   privateKey = privateKey
     .replace(/\\\\n/g, '\n')  // Double-escaped \\n
     .replace(/\\n/g, '\n');    // Single-escaped \n
