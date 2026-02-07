@@ -90,7 +90,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <script async src="https://supademo.com/embed/supademo-embed.min.js"></script>
+        <script src="https://script.supademo.com/supademo.js"></script>
       </head>
       <body className={inter.className}>
         <GoogleAnalytics />

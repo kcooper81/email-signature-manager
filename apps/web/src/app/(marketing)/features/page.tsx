@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Mail, ArrowRight, Check, Users, Palette, Rocket, Shield, BarChart3, Zap, Globe, Clock, Building2, RefreshCw, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { IntegrationsSection } from '@/components/marketing/integrations-section';
+import { MarketingCTA } from '@/components/marketing/cta';
 
 export const metadata = {
   title: 'Features | Siggly - Email Signature Management',
@@ -107,19 +108,10 @@ export default function FeaturesPage() {
       <IntegrationsSection />
 
       {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-gray-600 mb-8">
-            Get started with our free plan. No credit card required.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/signup">
-              <Button size="lg">Get Started Free</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingCTA 
+        description="Get started with our free plan. No credit card required."
+        variant="default"
+      />
 
     </>
   );
