@@ -355,99 +355,232 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
 
 export function ComplianceBlockPreview({ content }: { content: ComplianceBlockContent }) {
   const fields = content.fields;
+  const placeholderStyle = { color: '#9ca3af', fontStyle: 'italic' as const };
   
-  const renderLegalPreview = (fields: LegalComplianceFields) => (
-    <div style={{ fontSize: content.fontSize, color: content.color }}>
-      {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
-      {fields.barNumber && <div>Bar Number: {fields.barNumber}</div>}
-      {fields.barState && <div>Licensed in {fields.barState}</div>}
-      {fields.firmName && <div>{fields.firmName}</div>}
-      {fields.disclaimer && (
-        <div style={{ 
-          marginTop: '8px', 
-          padding: '8px', 
-          backgroundColor: '#f9fafb', 
-          borderLeft: '3px solid #6b7280',
-          fontSize: content.fontSize - 2 
-        }}>
-          {fields.disclaimer}
-        </div>
-      )}
-    </div>
-  );
+  // Check if any fields have values
+  const hasAnyValue = (obj: Record<string, any>) => {
+    return Object.values(obj).some(v => v && v !== '' && v !== false);
+  };
 
-  const renderHealthcarePreview = (fields: HealthcareComplianceFields) => (
-    <div style={{ fontSize: content.fontSize, color: content.color }}>
-      {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
-      {fields.practiceName && <div>{fields.practiceName}</div>}
-      {fields.npiNumber && <div>NPI: {fields.npiNumber}</div>}
-      {fields.licenseNumber && <div>License: {fields.licenseNumber} ({fields.licenseState})</div>}
-      {fields.hipaaDisclaimer && (
-        <div style={{ 
-          marginTop: '8px', 
-          padding: '8px', 
-          backgroundColor: '#eff6ff', 
-          borderLeft: '3px solid #3b82f6',
-          fontSize: content.fontSize - 2 
-        }}>
-          {fields.hipaaDisclaimer}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderFinancePreview = (fields: FinanceComplianceFields) => (
-    <div style={{ fontSize: content.fontSize, color: content.color }}>
-      {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
-      {fields.firmName && <div>{fields.firmName}</div>}
-      {fields.brokerDealerName && <div>Securities offered through {fields.brokerDealerName}</div>}
-      {fields.riaName && <div>Investment advisory services through {fields.riaName}</div>}
-      {fields.memberFINRASIPC && <div style={{ fontStyle: 'italic' }}>Member FINRA/SIPC</div>}
-      {fields.crdNumber && <div>CRD: {fields.crdNumber}</div>}
-      {fields.secNumber && <div>SEC: {fields.secNumber}</div>}
-      {fields.licenseNumber && <div>License: {fields.licenseNumber}</div>}
-      {fields.disclaimer && (
-        <div style={{ 
-          marginTop: '8px', 
-          padding: '8px', 
-          backgroundColor: '#f0fdf4', 
-          borderLeft: '3px solid #10b981',
-          fontSize: content.fontSize - 2 
-        }}>
-          {fields.disclaimer}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderRealEstatePreview = (fields: RealEstateComplianceFields) => (
-    <div style={{ fontSize: content.fontSize, color: content.color }}>
-      {fields.designations && <div style={{ fontWeight: 'bold' }}>{fields.designations}</div>}
-      {fields.brokerageName && <div>{fields.brokerageName}</div>}
-      {fields.licenseNumber && <div>License: {fields.licenseNumber} ({fields.licenseState})</div>}
-      {fields.dreNumber && <div>DRE: {fields.dreNumber}</div>}
-      {fields.mlsNumber && <div>MLS: {fields.mlsNumber}</div>}
-      {fields.equalHousingLogo && (
-        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ 
-            width: '24px', 
-            height: '24px', 
-            backgroundColor: '#3b82f6',
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '12px'
-          }}>
-            =
+  const renderLegalPreview = (fields: LegalComplianceFields) => {
+    const hasValues = hasAnyValue(fields);
+    
+    if (!hasValues) {
+      return (
+        <div style={{ fontSize: content.fontSize, color: content.color }}>
+          <div style={{ ...placeholderStyle, fontSize: content.fontSize }}>
+            <div style={{ fontWeight: 'bold' }}>Esq., J.D.</div>
+            <div>Bar Number: CA Bar #123456</div>
+            <div>Licensed in California</div>
+            <div>Smith & Associates LLP</div>
+            <div style={{ 
+              marginTop: '8px', 
+              padding: '8px', 
+              backgroundColor: '#f9fafb', 
+              borderLeft: '3px solid #6b7280',
+              fontSize: content.fontSize - 2 
+            }}>
+              Attorney-client privilege disclaimer will appear here...
+            </div>
           </div>
-          <span style={{ fontSize: content.fontSize - 2 }}>Equal Housing Opportunity</span>
+          <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 8, textAlign: 'center' as const }}>
+            Fill in the compliance fields to see your actual content
+          </div>
         </div>
-      )}
-    </div>
-  );
+      );
+    }
+    
+    return (
+      <div style={{ fontSize: content.fontSize, color: content.color }}>
+        {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
+        {fields.barNumber && <div>Bar Number: {fields.barNumber}</div>}
+        {fields.barState && <div>Licensed in {fields.barState}</div>}
+        {fields.firmName && <div>{fields.firmName}</div>}
+        {(fields.disclaimer || INDUSTRY_DISCLAIMERS.legal) && (
+          <div style={{ 
+            marginTop: '8px', 
+            padding: '8px', 
+            backgroundColor: '#f9fafb', 
+            borderLeft: '3px solid #6b7280',
+            fontSize: content.fontSize - 2 
+          }}>
+            {fields.disclaimer || INDUSTRY_DISCLAIMERS.legal}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderHealthcarePreview = (fields: HealthcareComplianceFields) => {
+    const hasValues = hasAnyValue(fields);
+    
+    if (!hasValues) {
+      return (
+        <div style={{ fontSize: content.fontSize, color: content.color }}>
+          <div style={{ ...placeholderStyle, fontSize: content.fontSize }}>
+            <div style={{ fontWeight: 'bold' }}>MD, FACP</div>
+            <div>City Medical Center</div>
+            <div>NPI: 1234567890</div>
+            <div>License: MD12345 (California)</div>
+            <div style={{ 
+              marginTop: '8px', 
+              padding: '8px', 
+              backgroundColor: '#eff6ff', 
+              borderLeft: '3px solid #3b82f6',
+              fontSize: content.fontSize - 2 
+            }}>
+              HIPAA confidentiality notice will appear here...
+            </div>
+          </div>
+          <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 8, textAlign: 'center' as const }}>
+            Fill in the compliance fields to see your actual content
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div style={{ fontSize: content.fontSize, color: content.color }}>
+        {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
+        {fields.practiceName && <div>{fields.practiceName}</div>}
+        {fields.npiNumber && <div>NPI: {fields.npiNumber}</div>}
+        {fields.licenseNumber && <div>License: {fields.licenseNumber}{fields.licenseState ? ` (${fields.licenseState})` : ''}</div>}
+        {(fields.hipaaDisclaimer || INDUSTRY_DISCLAIMERS.healthcare) && (
+          <div style={{ 
+            marginTop: '8px', 
+            padding: '8px', 
+            backgroundColor: '#eff6ff', 
+            borderLeft: '3px solid #3b82f6',
+            fontSize: content.fontSize - 2 
+          }}>
+            {fields.hipaaDisclaimer || INDUSTRY_DISCLAIMERS.healthcare}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderFinancePreview = (fields: FinanceComplianceFields) => {
+    const hasValues = hasAnyValue(fields);
+    
+    if (!hasValues) {
+      return (
+        <div style={{ fontSize: content.fontSize, color: content.color }}>
+          <div style={{ ...placeholderStyle, fontSize: content.fontSize }}>
+            <div style={{ fontWeight: 'bold' }}>CFA, CFP®</div>
+            <div>Wealth Management Group</div>
+            <div>Securities offered through ABC Securities</div>
+            <div>Investment advisory services through XYZ Advisors</div>
+            <div style={{ fontStyle: 'italic' }}>Member FINRA/SIPC</div>
+            <div>CRD: 1234567</div>
+            <div style={{ 
+              marginTop: '8px', 
+              padding: '8px', 
+              backgroundColor: '#f0fdf4', 
+              borderLeft: '3px solid #10b981',
+              fontSize: content.fontSize - 2 
+            }}>
+              SEC/FINRA compliance disclaimer will appear here...
+            </div>
+          </div>
+          <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 8, textAlign: 'center' as const }}>
+            Fill in the compliance fields to see your actual content
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div style={{ fontSize: content.fontSize, color: content.color }}>
+        {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
+        {fields.firmName && <div>{fields.firmName}</div>}
+        {fields.brokerDealerName && <div>Securities offered through {fields.brokerDealerName}</div>}
+        {fields.riaName && <div>Investment advisory services through {fields.riaName}</div>}
+        {fields.memberFINRASIPC && <div style={{ fontStyle: 'italic' }}>Member FINRA/SIPC</div>}
+        {fields.crdNumber && <div>CRD: {fields.crdNumber}</div>}
+        {fields.secNumber && <div>SEC: {fields.secNumber}</div>}
+        {fields.licenseNumber && <div>License: {fields.licenseNumber}</div>}
+        {(fields.disclaimer || INDUSTRY_DISCLAIMERS.finance) && (
+          <div style={{ 
+            marginTop: '8px', 
+            padding: '8px', 
+            backgroundColor: '#f0fdf4', 
+            borderLeft: '3px solid #10b981',
+            fontSize: content.fontSize - 2 
+          }}>
+            {fields.disclaimer || INDUSTRY_DISCLAIMERS.finance}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderRealEstatePreview = (fields: RealEstateComplianceFields) => {
+    const hasValues = hasAnyValue(fields);
+    
+    if (!hasValues) {
+      return (
+        <div style={{ fontSize: content.fontSize, color: content.color }}>
+          <div style={{ ...placeholderStyle, fontSize: content.fontSize }}>
+            <div style={{ fontWeight: 'bold' }}>REALTOR®, ABR, GRI</div>
+            <div>Premier Realty Group</div>
+            <div>License: 01234567 (California)</div>
+            <div>DRE: 01234567</div>
+            <div>MLS: 12345</div>
+            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ 
+                width: '24px', 
+                height: '24px', 
+                backgroundColor: '#3b82f6',
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '12px'
+              }}>
+                =
+              </div>
+              <span style={{ fontSize: content.fontSize - 2 }}>Equal Housing Opportunity</span>
+            </div>
+          </div>
+          <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 8, textAlign: 'center' as const }}>
+            Fill in the compliance fields to see your actual content
+          </div>
+        </div>
+      );
+    }
+    
+    return (
+      <div style={{ fontSize: content.fontSize, color: content.color }}>
+        {fields.designations && <div style={{ fontWeight: 'bold' }}>{fields.designations}</div>}
+        {fields.brokerageName && <div>{fields.brokerageName}</div>}
+        {fields.licenseNumber && <div>License: {fields.licenseNumber}{fields.licenseState ? ` (${fields.licenseState})` : ''}</div>}
+        {fields.dreNumber && <div>DRE: {fields.dreNumber}</div>}
+        {fields.mlsNumber && <div>MLS: {fields.mlsNumber}</div>}
+        {fields.equalHousingLogo && (
+          <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ 
+              width: '24px', 
+              height: '24px', 
+              backgroundColor: '#3b82f6',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '12px'
+            }}>
+              =
+            </div>
+            <span style={{ fontSize: content.fontSize - 2 }}>Equal Housing Opportunity</span>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div style={{ padding: '12px', backgroundColor: '#ffffff', borderRadius: '8px' }}>
