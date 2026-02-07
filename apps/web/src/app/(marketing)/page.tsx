@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Check, Mail, Users, Zap, Shield, Building2, Globe, Clock, Sparkles, BarChart3, Palette, RefreshCw, Lock, X, AlertTriangle } from 'lucide-react';
+import { DemoButton } from '@/components/marketing/demo-button';
 
 export default function HomePage() {
   return (
@@ -36,8 +37,8 @@ export default function HomePage() {
               No more manual updates. No more rogue signatures.
             </p>
             
-            {/* CTA Button */}
-            <div className="flex items-center justify-center mb-10 md:mb-16">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 md:mb-16">
               <Link
                 href="/signup"
                 className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 px-6 md:px-8 py-3.5 md:py-4 text-base font-semibold text-white shadow-lg shadow-violet-600/25 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
@@ -45,6 +46,7 @@ export default function HomePage() {
                 Get started free
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
+              <DemoButton />
             </div>
             
             {/* Trust indicators */}

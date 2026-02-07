@@ -22,6 +22,86 @@ export interface TicketResponseEmailData {
   adminEmail: string;
 }
 
+export interface ContactFormEmailData {
+  name: string;
+  email: string;
+  company?: string;
+  subject: string;
+  message: string;
+}
+
+export async function sendContactFormEmail(data: ContactFormEmailData) {
+  const { name, email, company, subject, message } = data;
+
+  try {
+    const client = getResendClient();
+    const { data: emailData, error } = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'Siggly Contact Form <onboarding@resend.dev>',
+      to: ['sales@siggly.io'],
+      subject: `[Contact Form] ${subject}`,
+      replyTo: email,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">New Contact Form Submission</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; width: 100px;">Name:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Email:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><a href="mailto:${email}" style="color: #7c3aed;">${email}</a></td>
+                </tr>
+                ${company ? `
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Company:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${company}</td>
+                </tr>
+                ` : ''}
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Subject:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${subject}</td>
+                </tr>
+              </table>
+              
+              <div style="margin-top: 20px;">
+                <p style="font-weight: 600; margin-bottom: 10px;">Message:</p>
+                <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; white-space: pre-wrap;">${message}</div>
+              </div>
+              
+              <div style="margin-top: 20px; padding: 15px; background: #eff6ff; border-radius: 8px;">
+                <p style="margin: 0; font-size: 14px; color: #1e40af;">
+                  <strong>Quick Reply:</strong> Simply reply to this email to respond directly to ${name}.
+                </p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending contact form email:', error);
+    throw error;
+  }
+}
+
 export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
   const { to, ticketId, ticketType, originalMessage, responseMessage, adminEmail } = data;
 

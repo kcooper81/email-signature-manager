@@ -99,6 +99,18 @@ export async function POST(request: NextRequest) {
       errorType: 'billing_error',
     });
 
+    // Handle Stripe test/live mode mismatch error
+    if (error.type === 'StripeInvalidRequestError' && 
+        error.message?.includes('a similar object exists in test mode')) {
+      return NextResponse.json(
+        { 
+          error: 'Your billing account was created in test mode and cannot be used with live credentials. Please contact support to reset your billing account.',
+          code: 'STRIPE_MODE_MISMATCH'
+        },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: error.message || 'Failed to create checkout session' },
       { status: 500 }

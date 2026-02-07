@@ -4,7 +4,8 @@ import { useState } from 'react';
 
 export function ProfessionalPricingCalculator() {
   const [teamSize, setTeamSize] = useState(10);
-  const totalPrice = 29 + teamSize;
+  // $29 base includes first 10 users, then $1/user for users beyond 10
+  const totalPrice = teamSize <= 10 ? 29 : 29 + (teamSize - 10);
 
   return (
     <div>
