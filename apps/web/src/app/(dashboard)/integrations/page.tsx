@@ -537,7 +537,7 @@ export default function IntegrationsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Connect your Microsoft 365 to automatically deploy email signatures to Outlook users.
+              Connect your Microsoft 365 to sync users and manage Outlook Web signatures.
             </p>
             
             {!hasMicrosoft365Access ? (
@@ -555,6 +555,9 @@ export default function IntegrationsPage() {
               <div className="space-y-3">
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(microsoftConnection.created_at).toLocaleDateString()}
+                </div>
+                <div className="bg-blue-50 border border-blue-100 rounded p-2 text-xs text-blue-700">
+                  <strong>Note:</strong> Signatures deploy to Outlook Web only. Desktop users can copy their signature from Outlook Web or use the Copy button in the editor.
                 </div>
                 <div className="flex gap-2">
                   <Button 
@@ -948,6 +951,18 @@ export default function IntegrationsPage() {
                 <p className="text-sm text-amber-800">
                   <strong>Admin Consent:</strong> If prompted, check &quot;Consent on behalf of your organization&quot; to allow 
                   signature management for all users. Without this, only your personal signature can be managed.
+                </p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+                <p className="text-sm font-medium text-blue-900">Important: Web vs Desktop Clients</p>
+                <p className="text-sm text-blue-800">
+                  Signatures deployed via Microsoft 365 apply to <strong>Outlook Web (outlook.office.com)</strong> only. 
+                  Desktop Outlook apps store signatures locally and cannot be updated remotely.
+                </p>
+                <p className="text-sm text-blue-800">
+                  <strong>For desktop users:</strong> After deployment, users can copy their signature from Outlook Web 
+                  or use the &quot;Copy Signature&quot; button in the signature editor to paste into their desktop Outlook settings.
                 </p>
               </div>
 

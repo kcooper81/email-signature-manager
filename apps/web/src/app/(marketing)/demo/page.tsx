@@ -1,23 +1,52 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, Check, Users, Palette, Rocket, Shield, Mail } from 'lucide-react';
+import { ArrowLeft, Play, Check, Users, Palette, Rocket, Shield, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { trackEvent, trackDemoRequest } from '@/components/analytics';
+import { MarketingCTA } from '@/components/marketing/cta';
+
+const SUPADEMO_ID = 'cmlbpojgx46fhvhwzml7s51i5';
 
 export default function DemoPage() {
   const [activeTab, setActiveTab] = useState('design');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Track demo page view
   useEffect(() => {
     trackEvent('demo_page_view', 'engagement', 'demo');
   }, []);
 
-  const handlePlayDemo = () => {
+  const handlePlayDemo = useCallback(() => {
     trackEvent('demo_video_play', 'engagement', 'demo');
     trackDemoRequest();
-  };
+    
+    if (typeof window === 'undefined') return;
+
+    // If Supademo is ready, open immediately
+    if ((window as any).Supademo) {
+      (window as any).Supademo.open(SUPADEMO_ID);
+      return;
+    }
+
+    // Show loading state and wait for script
+    setIsLoading(true);
+    
+    const checkInterval = setInterval(() => {
+      if ((window as any).Supademo) {
+        clearInterval(checkInterval);
+        setIsLoading(false);
+        (window as any).Supademo.open(SUPADEMO_ID);
+      }
+    }, 100);
+
+    // Timeout after 5 seconds
+    setTimeout(() => {
+      clearInterval(checkInterval);
+      setIsLoading(false);
+    }, 5000);
+  }, []);
 
   return (
     <>
@@ -44,12 +73,20 @@ export default function DemoPage() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="aspect-video bg-gradient-to-br from-violet-900 to-blue-900 rounded-2xl flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
-            <button className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-10">
-              <Play className="h-8 w-8 text-violet-600 ml-1" />
+            <button 
+              onClick={handlePlayDemo}
+              disabled={isLoading}
+              className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-10 disabled:opacity-70 disabled:hover:scale-100"
+            >
+              {isLoading ? (
+                <Loader2 className="h-8 w-8 text-violet-600 animate-spin" />
+              ) : (
+                <Play className="h-8 w-8 text-violet-600 ml-1" />
+              )}
             </button>
             <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-white/80 text-sm">
               <span>Product Demo</span>
-              <span>3:45</span>
+              <span>Click to watch</span>
             </div>
           </div>
         </div>
@@ -160,26 +197,10 @@ export default function DemoPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-violet-600 to-blue-600">
-        <div className="max-w-4xl mx-auto px-6 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-white/80 mb-8 text-lg">
-            Get started with our free plan. No credit card required.
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Link href="/signup">
-              <Button size="lg" variant="secondary">
-                Get Started Free
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                Talk to Sales
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <MarketingCTA 
+        description="Get started with our free plan. No credit card required."
+        variant="violet"
+      />
 
     </>
   );
