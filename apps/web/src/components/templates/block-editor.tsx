@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Upload } from 'lucide-react';
+import { Upload, Plus, Trash2, Link as LinkIcon } from 'lucide-react';
 import type {
   SignatureBlock,
   TextBlockContent,
@@ -449,6 +449,42 @@ function ContactInfoEditor({
   content: ContactInfoBlockContent;
   onChange: (content: ContactInfoBlockContent) => void;
 }) {
+  const iconOptions = [
+    { value: 'none', label: 'None' },
+    { value: 'mail', label: 'Mail' },
+    { value: 'phone', label: 'Phone' },
+    { value: 'globe', label: 'Globe' },
+    { value: 'map-pin', label: 'Location' },
+    { value: 'calendar', label: 'Calendar' },
+    { value: 'briefcase', label: 'Briefcase' },
+    { value: 'user', label: 'User' },
+    { value: 'building', label: 'Building' },
+  ];
+
+  const addCustomField = () => {
+    const customFields = content.customFields || [];
+    onChange({
+      ...content,
+      customFields: [...customFields, { label: '', value: '', icon: 'none' }],
+    });
+  };
+
+  const updateCustomField = (index: number, updates: Partial<NonNullable<ContactInfoBlockContent['customFields']>[0]>) => {
+    const customFields = content.customFields || [];
+    onChange({
+      ...content,
+      customFields: customFields.map((f, i) => i === index ? { ...f, ...updates } : f),
+    });
+  };
+
+  const removeCustomField = (index: number) => {
+    const customFields = content.customFields || [];
+    onChange({
+      ...content,
+      customFields: customFields.filter((_, i) => i !== index),
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -500,6 +536,78 @@ function ContactInfoEditor({
           className="h-4 w-4"
         />
         <Label htmlFor="showIcons">Show icons</Label>
+      </div>
+
+      {/* Custom Fields Section */}
+      <div className="border-t pt-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <Label>Custom Fields</Label>
+          <Button variant="outline" size="sm" onClick={addCustomField}>
+            <Plus className="h-3 w-3 mr-1" />
+            Add Field
+          </Button>
+        </div>
+
+        {(content.customFields || []).map((field, index) => (
+          <div key={index} className="p-3 border rounded-lg bg-slate-50 space-y-2">
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={field.label}
+                onChange={(e) => updateCustomField(index, { label: e.target.value })}
+                placeholder="Label (e.g., Fax, Extension)"
+                className="w-1/3"
+              />
+              <Input
+                type="text"
+                value={field.value}
+                onChange={(e) => updateCustomField(index, { value: e.target.value })}
+                placeholder="Value or {{variable}}"
+                className="flex-1"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => removeCustomField(index)}
+                className="text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Label className="text-xs w-12">Icon:</Label>
+              <select
+                value={field.icon || 'none'}
+                onChange={(e) => updateCustomField(index, { icon: e.target.value as any })}
+                className="h-8 px-2 text-sm border rounded-md"
+              >
+                {iconOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <div className="flex-1" />
+              <div className="flex flex-wrap gap-1">
+                {DYNAMIC_FIELDS.slice(0, 4).map((df) => (
+                  <Button
+                    key={df.key}
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 px-2"
+                    onClick={() => updateCustomField(index, { value: field.value + df.key })}
+                  >
+                    {df.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {(content.customFields?.length || 0) === 0 && (
+          <p className="text-xs text-muted-foreground text-center py-2">
+            Add custom fields like Fax, Extension, Booking Link, etc.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -592,6 +700,10 @@ function SocialEditor({
   onChange: (content: SocialBlockContent) => void;
 }) {
   const socialPlatforms = ['linkedin', 'twitter', 'facebook', 'instagram', 'youtube', 'github'] as const;
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customLabel, setCustomLabel] = useState('');
+  const [customUrl, setCustomUrl] = useState('');
+  const [customIcon, setCustomIcon] = useState('');
 
   const addPlatform = (type: typeof socialPlatforms[number]) => {
     if (content.platforms.some((p) => p.type === type)) return;
@@ -601,19 +713,36 @@ function SocialEditor({
     });
   };
 
-  const updatePlatformUrl = (type: string, url: string) => {
+  const addCustomPlatform = () => {
+    if (!customLabel.trim()) return;
     onChange({
       ...content,
-      platforms: content.platforms.map((p) =>
-        p.type === type ? { ...p, url } : p
+      platforms: [...content.platforms, { 
+        type: 'custom', 
+        url: customUrl, 
+        label: customLabel,
+        icon: customIcon || undefined,
+      }],
+    });
+    setCustomLabel('');
+    setCustomUrl('');
+    setCustomIcon('');
+    setShowCustomForm(false);
+  };
+
+  const updatePlatform = (index: number, updates: Partial<SocialBlockContent['platforms'][0]>) => {
+    onChange({
+      ...content,
+      platforms: content.platforms.map((p, i) =>
+        i === index ? { ...p, ...updates } : p
       ),
     });
   };
 
-  const removePlatform = (type: string) => {
+  const removePlatform = (index: number) => {
     onChange({
       ...content,
-      platforms: content.platforms.filter((p) => p.type !== type),
+      platforms: content.platforms.filter((_, i) => i !== index),
     });
   };
 
@@ -634,30 +763,95 @@ function SocialEditor({
               {platform}
             </Button>
           ))}
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs"
+            onClick={() => setShowCustomForm(!showCustomForm)}
+          >
+            <Plus className="h-3 w-3 mr-1" />
+            Custom
+          </Button>
         </div>
       </div>
+
+      {showCustomForm && (
+        <div className="p-3 border rounded-lg bg-slate-50 space-y-3">
+          <Label className="text-sm font-medium">Add Custom Social Link</Label>
+          <div className="space-y-2">
+            <Input
+              type="text"
+              value={customLabel}
+              onChange={(e) => setCustomLabel(e.target.value)}
+              placeholder="Platform name (e.g., TikTok, Threads)"
+            />
+            <Input
+              type="url"
+              value={customUrl}
+              onChange={(e) => setCustomUrl(e.target.value)}
+              placeholder="https://..."
+            />
+            <Input
+              type="url"
+              value={customIcon}
+              onChange={(e) => setCustomIcon(e.target.value)}
+              placeholder="Icon URL (optional)"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={addCustomPlatform} disabled={!customLabel.trim()}>
+              Add
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setShowCustomForm(false)}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
 
       {content.platforms.length > 0 && (
         <div className="space-y-3">
           <Label>Platform URLs</Label>
-          {content.platforms.map((platform) => (
-            <div key={platform.type} className="flex gap-2 items-center">
-              <span className="text-sm capitalize w-20">{platform.type}</span>
-              <Input
-                type="url"
-                value={platform.url}
-                onChange={(e) => updatePlatformUrl(platform.type, e.target.value)}
-                placeholder={`https://${platform.type}.com/...`}
-                className="flex-1"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => removePlatform(platform.type)}
-                className="text-destructive"
-              >
-                ×
-              </Button>
+          {content.platforms.map((platform, index) => (
+            <div key={index} className="space-y-2 p-2 border rounded-lg">
+              <div className="flex gap-2 items-center">
+                <span className="text-sm capitalize w-20 font-medium">
+                  {platform.type === 'custom' ? platform.label : platform.type}
+                </span>
+                <Input
+                  type="url"
+                  value={platform.url}
+                  onChange={(e) => updatePlatform(index, { url: e.target.value })}
+                  placeholder={platform.type === 'custom' ? 'https://...' : `https://${platform.type}.com/...`}
+                  className="flex-1"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removePlatform(index)}
+                  className="text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              {platform.type === 'custom' && (
+                <div className="flex gap-2 items-center pl-20">
+                  <Input
+                    type="text"
+                    value={platform.label || ''}
+                    onChange={(e) => updatePlatform(index, { label: e.target.value })}
+                    placeholder="Label"
+                    className="w-32"
+                  />
+                  <Input
+                    type="url"
+                    value={platform.icon || ''}
+                    onChange={(e) => updatePlatform(index, { icon: e.target.value })}
+                    placeholder="Icon URL (optional)"
+                    className="flex-1"
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -719,6 +913,10 @@ function HtmlEditor({
 
   const warnings = getWarnings(content.html || '');
 
+  const insertVariable = (variable: string) => {
+    onChange({ html: (content.html || '') + variable });
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -729,6 +927,23 @@ function HtmlEditor({
           className="w-full min-h-[150px] p-3 border rounded-md text-sm font-mono bg-slate-50"
           placeholder="<table cellpadding='0' cellspacing='0'>&#10;  <tr>&#10;    <td>Your custom HTML here</td>&#10;  </tr>&#10;</table>"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs">Insert Dynamic Field</Label>
+        <div className="flex flex-wrap gap-1">
+          {DYNAMIC_FIELDS.map((field) => (
+            <Button
+              key={field.key}
+              variant="outline"
+              size="sm"
+              className="text-xs h-6"
+              onClick={() => insertVariable(field.key)}
+            >
+              {field.label}
+            </Button>
+          ))}
+        </div>
         <p className="text-xs text-muted-foreground">
           Use table-based layouts for best email client compatibility.
         </p>

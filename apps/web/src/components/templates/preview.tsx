@@ -15,7 +15,7 @@ import type {
   HtmlBlockContent,
 } from './types';
 import { ComplianceBlockPreview } from './compliance-block';
-import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github } from 'lucide-react';
+import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github, Calendar, Briefcase, User, Building2, Link as LinkIcon } from 'lucide-react';
 
 interface SignaturePreviewProps {
   blocks: SignatureBlock[];
@@ -234,6 +234,30 @@ function renderContactInfoBlock(
     });
   }
 
+  // Add custom fields
+  const getCustomIcon = (iconType?: string) => {
+    switch (iconType) {
+      case 'mail': return <Mail className="h-3 w-3" />;
+      case 'phone': return <Phone className="h-3 w-3" />;
+      case 'globe': return <Globe className="h-3 w-3" />;
+      case 'map-pin': return <MapPin className="h-3 w-3" />;
+      case 'calendar': return <Calendar className="h-3 w-3" />;
+      case 'briefcase': return <Briefcase className="h-3 w-3" />;
+      case 'user': return <User className="h-3 w-3" />;
+      case 'building': return <Building2 className="h-3 w-3" />;
+      default: return null;
+    }
+  };
+
+  content.customFields?.forEach((field) => {
+    if (field.value) {
+      items.push({
+        icon: getCustomIcon(field.icon),
+        text: field.label ? `${field.label}: ${replacePlaceholders(field.value)}` : replacePlaceholders(field.value),
+      });
+    }
+  });
+
   return (
     <div style={{ fontSize: 13, color: linkColor, marginTop: 8 }}>
       {items.map((item, index) => (
@@ -291,11 +315,11 @@ function renderButtonBlock(
 }
 
 function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
-  const getIcon = (type: string) => {
+  const getIcon = (platform: SocialBlockContent['platforms'][0]) => {
     const size = content.iconSize || 24;
     const props = { style: { width: size, height: size } };
 
-    switch (type) {
+    switch (platform.type) {
       case 'linkedin':
         return <Linkedin {...props} />;
       case 'twitter':
@@ -308,8 +332,13 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
         return <Youtube {...props} />;
       case 'github':
         return <Github {...props} />;
+      case 'custom':
+        if (platform.icon) {
+          return <img src={platform.icon} alt={platform.label || 'Social'} style={{ width: size, height: size, objectFit: 'contain' }} />;
+        }
+        return <LinkIcon {...props} />;
       default:
-        return null;
+        return <LinkIcon {...props} />;
     }
   };
 
@@ -323,15 +352,16 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
 
   return (
     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-      {content.platforms.map((platform) => (
+      {content.platforms.map((platform, index) => (
         <a
-          key={platform.type}
+          key={`${platform.type}-${index}`}
           href={platform.url || '#'}
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: '#666' }}
+          title={platform.type === 'custom' ? platform.label : platform.type}
         >
-          {getIcon(platform.type)}
+          {getIcon(platform)}
         </a>
       ))}
     </div>

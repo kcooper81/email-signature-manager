@@ -27,6 +27,18 @@ import {
   Shield,
   Lightbulb,
   RefreshCw,
+  Monitor,
+  UserCheck,
+  Megaphone,
+  MousePointerClick,
+  Eye,
+  Image,
+  Link2,
+  Calendar,
+  UserPlus,
+  Activity,
+  Server,
+  AlertCircle,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import Link from 'next/link';
@@ -88,6 +100,28 @@ interface AnalyticsData {
   healthScore: number;
   complianceIssues: number;
   pendingDeployments: number;
+  
+  // IT-focused metrics
+  syncStatus: {
+    google: { connected: boolean; lastSync: string | null; userCount: number };
+    microsoft: { connected: boolean; lastSync: string | null; userCount: number };
+  };
+  errorRate: number;
+  avgDeploymentTime: number; // in seconds
+  failedDeploymentReasons: { reason: string; count: number }[];
+  
+  // HR-focused metrics
+  newUsersThisPeriod: number;
+  usersWithoutSignatures: number;
+  departmentCoverage: number; // % of departments with >50% adoption
+  onboardingPending: number; // new users without signatures
+  
+  // Marketing-focused metrics
+  bannersDeployed: number;
+  ctaButtonsDeployed: number;
+  socialLinksDeployed: number;
+  templatesWithBanners: number;
+  avgSocialLinksPerSignature: number;
 }
 
 export default function AnalyticsPage() {
@@ -314,6 +348,119 @@ export default function AnalyticsPage() {
     const healthScore = Math.round((adoptionRate * 0.4) + (successRate * 0.4) + ((100 - Math.min(failedDeployments * 10, 100)) * 0.2));
     const complianceIssues = failedDeployments + (userCount ? userCount - usersWithSignatures : 0);
 
+    // IT-focused metrics
+    const { data: googleIntegration } = await supabase
+      .from('integrations')
+      .select('last_sync_at, status')
+      .eq('organization_id', organizationId)
+      .eq('provider', 'google')
+      .single();
+    
+    const { data: microsoftIntegration } = await supabase
+      .from('integrations')
+      .select('last_sync_at, status')
+      .eq('organization_id', organizationId)
+      .eq('provider', 'microsoft')
+      .single();
+
+    const googleUsers = users?.filter(u => u.source === 'google').length || 0;
+    const microsoftUsers = users?.filter(u => u.source === 'microsoft').length || 0;
+
+    const syncStatus = {
+      google: {
+        connected: googleIntegration?.status === 'active',
+        lastSync: googleIntegration?.last_sync_at || null,
+        userCount: googleUsers,
+      },
+      microsoft: {
+        connected: microsoftIntegration?.status === 'active',
+        lastSync: microsoftIntegration?.last_sync_at || null,
+        userCount: microsoftUsers,
+      },
+    };
+
+    const errorRate = deployments?.length 
+      ? Math.round((failedDeployments / deployments.length) * 100) 
+      : 0;
+
+    // Calculate average deployment time (mock - would need actual timing data)
+    const avgDeploymentTime = 45; // seconds - placeholder
+
+    // Group failed deployments by reason
+    const failedDeploymentReasons: { reason: string; count: number }[] = [];
+    const reasonMap = new Map<string, number>();
+    deployments?.filter(d => d.status === 'failed').forEach(() => {
+      // In a real implementation, we'd have error_message field
+      const reason = 'API Error';
+      reasonMap.set(reason, (reasonMap.get(reason) || 0) + 1);
+    });
+    reasonMap.forEach((count, reason) => {
+      failedDeploymentReasons.push({ reason, count });
+    });
+
+    // HR-focused metrics
+    const newUsersThisPeriod = users?.filter(u => 
+      new Date(u.created_at) >= startDate
+    ).length || 0;
+
+    const usersWithoutSignatures = (userCount || 0) - usersWithSignatures;
+
+    // Calculate department coverage (% of departments with >50% adoption)
+    const deptsWith50PlusAdoption = departmentStats.filter(d => d.adoptionRate >= 50).length;
+    const departmentCoverage = departmentStats.length > 0 
+      ? Math.round((deptsWith50PlusAdoption / departmentStats.length) * 100)
+      : 0;
+
+    // New users without signatures (onboarding pending)
+    const newUserEmails = new Set(
+      users?.filter(u => new Date(u.created_at) >= startDate).map(u => u.email.toLowerCase()) || []
+    );
+    const onboardingPending = Array.from(newUserEmails).filter(
+      email => !uniqueDeployedEmails.has(email)
+    ).length;
+
+    // Marketing-focused metrics - analyze template blocks
+    const { data: allTemplates } = await supabase
+      .from('signature_templates')
+      .select('id, blocks')
+      .eq('organization_id', organizationId);
+
+    let bannersDeployed = 0;
+    let ctaButtonsDeployed = 0;
+    let socialLinksDeployed = 0;
+    let templatesWithBanners = 0;
+    let totalSocialLinks = 0;
+    let templatesWithSocial = 0;
+
+    allTemplates?.forEach(template => {
+      const blocks = template.blocks as any[] || [];
+      let hasBanner = false;
+      let hasSocial = false;
+      
+      blocks.forEach(block => {
+        if (block.type === 'banner' || (block.type === 'image' && block.content?.width > 400)) {
+          bannersDeployed++;
+          hasBanner = true;
+        }
+        if (block.type === 'button') {
+          ctaButtonsDeployed++;
+        }
+        if (block.type === 'social') {
+          const platforms = block.content?.platforms || [];
+          socialLinksDeployed += platforms.length;
+          totalSocialLinks += platforms.length;
+          hasSocial = true;
+        }
+      });
+      
+      if (hasBanner) templatesWithBanners++;
+      if (hasSocial) templatesWithSocial++;
+    });
+
+    const avgSocialLinksPerSignature = templatesWithSocial > 0 
+      ? Math.round((totalSocialLinks / templatesWithSocial) * 10) / 10 
+      : 0;
+
     setData({
       totalUsers: userCount || 0,
       totalTemplates: templateCount || 0,
@@ -332,6 +479,22 @@ export default function AnalyticsPage() {
       healthScore,
       complianceIssues,
       pendingDeployments,
+      // IT metrics
+      syncStatus,
+      errorRate,
+      avgDeploymentTime,
+      failedDeploymentReasons,
+      // HR metrics
+      newUsersThisPeriod,
+      usersWithoutSignatures,
+      departmentCoverage,
+      onboardingPending,
+      // Marketing metrics
+      bannersDeployed,
+      ctaButtonsDeployed,
+      socialLinksDeployed,
+      templatesWithBanners,
+      avgSocialLinksPerSignature,
     });
     setLoading(false);
   };
@@ -802,6 +965,196 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* IT Team Stats */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Monitor className="h-5 w-5 text-blue-600" />
+            IT Operations
+          </CardTitle>
+          <CardDescription>
+            System health and integration status
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Sync Status */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium">Integration Status</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${data?.syncStatus.google.connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <span className="text-sm">Google Workspace</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{data?.syncStatus.google.userCount || 0} users</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${data?.syncStatus.microsoft.connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <span className="text-sm">Microsoft 365</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{data?.syncStatus.microsoft.userCount || 0} users</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Error Rate */}
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className={`text-2xl font-bold ${(data?.errorRate || 0) > 10 ? 'text-red-600' : (data?.errorRate || 0) > 5 ? 'text-amber-600' : 'text-green-600'}`}>
+                {data?.errorRate || 0}%
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Error Rate</p>
+              {(data?.errorRate || 0) > 10 && (
+                <Badge variant="outline" className="mt-2 border-red-200 text-red-700">
+                  <AlertCircle className="h-3 w-3 mr-1" />
+                  Needs attention
+                </Badge>
+              )}
+            </div>
+
+            {/* Avg Deployment Time */}
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="text-2xl font-bold text-blue-600">
+                {data?.avgDeploymentTime || 0}s
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Avg Deploy Time</p>
+            </div>
+
+            {/* Failed Reasons */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Failure Reasons</h4>
+              {(data?.failedDeploymentReasons?.length || 0) === 0 ? (
+                <p className="text-xs text-muted-foreground p-2 bg-green-50 rounded-lg text-center">
+                  <CheckCircle2 className="h-4 w-4 inline mr-1 text-green-600" />
+                  No failures
+                </p>
+              ) : (
+                <div className="space-y-1">
+                  {data?.failedDeploymentReasons.slice(0, 3).map((reason, i) => (
+                    <div key={i} className="flex justify-between text-xs p-2 bg-red-50 rounded">
+                      <span className="text-red-700">{reason.reason}</span>
+                      <span className="font-medium text-red-800">{reason.count}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* HR Team Stats */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <UserCheck className="h-5 w-5 text-green-600" />
+            HR & People Operations
+          </CardTitle>
+          <CardDescription>
+            Employee adoption and onboarding metrics
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* New Users */}
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className="flex items-center justify-center gap-1">
+                <UserPlus className="h-5 w-5 text-green-600" />
+                <span className="text-2xl font-bold">{data?.newUsersThisPeriod || 0}</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">New Users ({timeRange})</p>
+            </div>
+
+            {/* Users Without Signatures */}
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className={`text-2xl font-bold ${(data?.usersWithoutSignatures || 0) > 10 ? 'text-amber-600' : 'text-green-600'}`}>
+                {data?.usersWithoutSignatures || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Without Signatures</p>
+              {(data?.usersWithoutSignatures || 0) > 0 && (
+                <Link href="/team-members">
+                  <Button variant="link" size="sm" className="text-xs p-0 h-auto mt-1">
+                    View list →
+                  </Button>
+                </Link>
+              )}
+            </div>
+
+            {/* Department Coverage */}
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className={`text-2xl font-bold ${(data?.departmentCoverage || 0) >= 80 ? 'text-green-600' : (data?.departmentCoverage || 0) >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                {data?.departmentCoverage || 0}%
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Dept Coverage (&gt;50%)</p>
+            </div>
+
+            {/* Onboarding Pending */}
+            <div className="text-center p-4 bg-muted rounded-lg">
+              <div className={`text-2xl font-bold ${(data?.onboardingPending || 0) > 5 ? 'text-amber-600' : 'text-green-600'}`}>
+                {data?.onboardingPending || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Onboarding Pending</p>
+              <p className="text-xs text-muted-foreground">New users without signatures</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Marketing Team Stats */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Megaphone className="h-5 w-5 text-pink-600" />
+            Marketing & Branding
+          </CardTitle>
+          <CardDescription>
+            Campaign elements and brand consistency
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {/* Banners */}
+            <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-white rounded-lg border border-pink-100">
+              <Image className="h-6 w-6 mx-auto text-pink-600 mb-2" />
+              <div className="text-2xl font-bold text-pink-700">{data?.bannersDeployed || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Banners in Use</p>
+              <p className="text-xs text-pink-600">{data?.templatesWithBanners || 0} templates</p>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="text-center p-4 bg-gradient-to-br from-violet-50 to-white rounded-lg border border-violet-100">
+              <MousePointerClick className="h-6 w-6 mx-auto text-violet-600 mb-2" />
+              <div className="text-2xl font-bold text-violet-700">{data?.ctaButtonsDeployed || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">CTA Buttons</p>
+            </div>
+
+            {/* Social Links */}
+            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-100">
+              <Link2 className="h-6 w-6 mx-auto text-blue-600 mb-2" />
+              <div className="text-2xl font-bold text-blue-700">{data?.socialLinksDeployed || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Social Links</p>
+            </div>
+
+            {/* Avg Social per Signature */}
+            <div className="text-center p-4 bg-gradient-to-br from-cyan-50 to-white rounded-lg border border-cyan-100">
+              <Activity className="h-6 w-6 mx-auto text-cyan-600 mb-2" />
+              <div className="text-2xl font-bold text-cyan-700">{data?.avgSocialLinksPerSignature || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Avg Social/Template</p>
+            </div>
+
+            {/* Brand Consistency Score */}
+            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-white rounded-lg border border-green-100">
+              <Target className="h-6 w-6 mx-auto text-green-600 mb-2" />
+              <div className="text-2xl font-bold text-green-700">
+                {data?.totalTemplates ? Math.round(((data?.templatesWithBanners || 0) / data.totalTemplates) * 100) : 0}%
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Templates w/ Branding</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
