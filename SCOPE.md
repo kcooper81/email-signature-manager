@@ -47,6 +47,7 @@
 | **Google Workspace** | ✅ Live | Gmail signature deployment, user sync | Gmail API, Google Directory API, OAuth 2.0 |
 | **Microsoft 365** | ✅ Live | Outlook signature deployment, user sync | Microsoft Graph API, Azure AD sync, OAuth 2.0 |
 | **HubSpot CRM** | ✅ Live | Contact data sync for signature enrichment | HubSpot CRM API, OAuth 2.0, contact import |
+| **Calendly** | ✅ Live | Meeting scheduling links in signatures | Calendly API, OAuth 2.0, dynamic link insertion |
 | **Stripe** | ✅ Live | Subscription billing and payments | Stripe Checkout, Customer Portal, Webhooks |
 
 ---
@@ -96,11 +97,11 @@
 | Integration | Effort | Impact | Why It Matters | Technical Approach |
 |-------------|--------|--------|----------------|-------------------|
 | **Zapier** | Medium | 🔥 Huge | Gives access to 5,000+ apps instantly. Marketing gold: "Connect to anything" | Zapier Platform, webhooks, triggers/actions |
-| **Calendly** | Easy | High | Every competitor has this. Users expect meeting links in signatures | Calendly API, OAuth, dynamic link insertion |
+| ~~**Calendly**~~ | ✅ Complete | High | Every competitor has this. Users expect meeting links in signatures | Calendly API, OAuth, dynamic link insertion |
 | **Google Analytics** | Easy | Medium | Click tracking for signature links. Prove ROI to marketing teams | UTM parameters, GA4 Measurement Protocol |
 | **Microsoft Bookings** | Easy | Medium | Natural fit for Microsoft 365 customers | Graph API, booking page links |
 
-**Estimated Timeline:** 2-4 weeks for all Tier 1
+**Estimated Timeline:** 1-3 weeks for remaining Tier 1
 
 ---
 
@@ -248,8 +249,8 @@ CREATE TABLE integration_field_mappings (
 
 **Immediate (Next Sprint):**
 1. ✅ Document current integrations (Google, Microsoft, HubSpot)
-2. 🔄 Build Zapier integration (2 weeks)
-3. 🔄 Build Calendly integration (1 week)
+2. ✅ Build Calendly integration (completed)
+3. 🔄 Build Zapier integration (2 weeks)
 4. 🔄 Add Google Analytics tracking (3 days)
 
 **Short-term (Next Quarter):**
