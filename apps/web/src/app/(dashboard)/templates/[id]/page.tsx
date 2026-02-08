@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { TemplateEditor } from '@/components/templates/editor';
+import { RulesManager } from '@/components/templates/rules-manager';
 import type { SignatureBlock, IndustryType } from '@/components/templates/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Paintbrush, Target } from 'lucide-react';
 
 interface PageProps {
   params: { id: string };
@@ -19,6 +20,8 @@ export default function EditTemplatePage({ params }: PageProps) {
     blocks: SignatureBlock[];
     industry: IndustryType;
   } | null>(null);
+  const [organizationId, setOrganizationId] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'design' | 'rules'>('design');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -46,6 +49,8 @@ export default function EditTemplatePage({ params }: PageProps) {
       router.push('/templates');
       return;
     }
+
+    setOrganizationId(currentUser.organization_id);
 
     // Load template - FILTERED BY ORGANIZATION
     const { data, error } = await supabase
@@ -132,13 +137,52 @@ export default function EditTemplatePage({ params }: PageProps) {
   }
 
   return (
-    <TemplateEditor
-      initialBlocks={template.blocks}
-      initialName={template.name}
-      initialDescription={template.description}
-      initialIndustry={template.industry}
-      onSave={handleSave}
-      saving={saving}
-    />
+    <div className="space-y-6">
+      {/* Tabs */}
+      <div className="border-b">
+        <nav className="flex gap-4">
+          <button
+            onClick={() => setActiveTab('design')}
+            className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
+              activeTab === 'design'
+                ? 'border-violet-600 text-violet-600'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Paintbrush className="h-4 w-4" />
+            Design
+          </button>
+          <button
+            onClick={() => setActiveTab('rules')}
+            className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
+              activeTab === 'rules'
+                ? 'border-violet-600 text-violet-600'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Target className="h-4 w-4" />
+            Rules
+          </button>
+        </nav>
+      </div>
+
+      {/* Content */}
+      {activeTab === 'design' ? (
+        <TemplateEditor
+          initialBlocks={template.blocks}
+          initialName={template.name}
+          initialDescription={template.description}
+          initialIndustry={template.industry}
+          onSave={handleSave}
+          saving={saving}
+        />
+      ) : (
+        <RulesManager
+          templateId={params.id}
+          templateName={template.name}
+          organizationId={organizationId}
+        />
+      )}
+    </div>
   );
 }
