@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
+import { EditMemberModal } from './edit-member-modal';
 import { 
   Users as UsersIcon, 
   RefreshCw, 
@@ -36,6 +37,14 @@ interface TeamMember {
   office_location: string | null;
   role: string;
   source: 'manual' | 'google' | 'microsoft' | 'hubspot' | null;
+  calendly_url: string | null;
+  linkedin_url: string | null;
+  twitter_url: string | null;
+  github_url: string | null;
+  personal_website: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  youtube_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -98,8 +107,36 @@ export default function TeamMembersPage() {
     last_name: '',
     title: '',
     department: '',
+    calendly_url: '',
+    linkedin_url: '',
+    twitter_url: '',
+    github_url: '',
+    personal_website: '',
+    instagram_url: '',
+    facebook_url: '',
+    youtube_url: '',
   });
   const [adding, setAdding] = useState(false);
+  
+  // Edit team member modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
+  const [editForm, setEditForm] = useState({
+    first_name: '',
+    last_name: '',
+    title: '',
+    department: '',
+    calendly_url: '',
+    linkedin_url: '',
+    twitter_url: '',
+    github_url: '',
+    personal_website: '',
+    instagram_url: '',
+    facebook_url: '',
+    youtube_url: '',
+  });
+  const [updating, setUpdating] = useState(false);
+  
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -321,6 +358,16 @@ export default function TeamMembersPage() {
         email: newMember.email,
         first_name: newMember.first_name || null,
         last_name: newMember.last_name || null,
+        title: newMember.title || null,
+        department: newMember.department || null,
+        calendly_url: newMember.calendly_url || null,
+        linkedin_url: newMember.linkedin_url || null,
+        twitter_url: newMember.twitter_url || null,
+        github_url: newMember.github_url || null,
+        personal_website: newMember.personal_website || null,
+        instagram_url: newMember.instagram_url || null,
+        facebook_url: newMember.facebook_url || null,
+        youtube_url: newMember.youtube_url || null,
         organization_id: currentUser.organization_id,
         role: 'member',
         source: 'manual',
@@ -329,7 +376,21 @@ export default function TeamMembersPage() {
       if (error) throw error;
 
       setShowAddModal(false);
-      setNewMember({ email: '', first_name: '', last_name: '', title: '', department: '' });
+      setNewMember({ 
+        email: '', 
+        first_name: '', 
+        last_name: '', 
+        title: '', 
+        department: '',
+        calendly_url: '',
+        linkedin_url: '',
+        twitter_url: '',
+        github_url: '',
+        personal_website: '',
+        instagram_url: '',
+        facebook_url: '',
+        youtube_url: '',
+      });
       await loadData();
       // Refresh subscription usage counts
       refresh();
@@ -337,6 +398,67 @@ export default function TeamMembersPage() {
       setErrorMessage(err.message || 'Failed to add team member');
     } finally {
       setAdding(false);
+    }
+  };
+
+  const startEditMember = (member: TeamMember) => {
+    setEditingMember(member);
+    setEditForm({
+      first_name: member.first_name || '',
+      last_name: member.last_name || '',
+      title: member.title || '',
+      department: member.department || '',
+      calendly_url: member.calendly_url || '',
+      linkedin_url: member.linkedin_url || '',
+      twitter_url: member.twitter_url || '',
+      github_url: member.github_url || '',
+      personal_website: member.personal_website || '',
+      instagram_url: member.instagram_url || '',
+      facebook_url: member.facebook_url || '',
+      youtube_url: member.youtube_url || '',
+    });
+    setShowEditModal(true);
+  };
+
+  const updateMember = async () => {
+    if (!editingMember) return;
+    
+    setErrorMessage(null);
+    setUpdating(true);
+    
+    try {
+      const supabase = createClient();
+      
+      const { error } = await supabase
+        .from('users')
+        .update({
+          first_name: editForm.first_name || null,
+          last_name: editForm.last_name || null,
+          title: editForm.title || null,
+          department: editForm.department || null,
+          calendly_url: editForm.calendly_url || null,
+          linkedin_url: editForm.linkedin_url || null,
+          twitter_url: editForm.twitter_url || null,
+          github_url: editForm.github_url || null,
+          personal_website: editForm.personal_website || null,
+          instagram_url: editForm.instagram_url || null,
+          facebook_url: editForm.facebook_url || null,
+          youtube_url: editForm.youtube_url || null,
+        })
+        .eq('id', editingMember.id);
+
+      if (error) throw error;
+
+      setSuccessMessage('Team member updated successfully');
+      setShowEditModal(false);
+      setEditingMember(null);
+      await loadData();
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update team member');
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -807,6 +929,9 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'role' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
+                    <th className="p-3 text-left font-medium text-sm">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -860,6 +985,16 @@ export default function TeamMembersPage() {
                         } className="text-xs">
                           {emp.role}
                         </Badge>
+                      </td>
+                      <td className="p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => startEditMember(emp)}
+                          className="h-8 px-2"
+                        >
+                          Edit
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -929,6 +1064,60 @@ export default function TeamMembersPage() {
               placeholder="Engineering"
             />
           </div>
+
+          {/* Personal Links Section */}
+          <div className="space-y-4 pt-4 border-t">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">Personal Links (Optional)</h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Add personal URLs that can be used in signature templates
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="calendly_url">📅 Calendly URL</Label>
+              <Input
+                id="calendly_url"
+                type="url"
+                value={newMember.calendly_url}
+                onChange={(e) => setNewMember({ ...newMember, calendly_url: e.target.value })}
+                placeholder="https://calendly.com/yourname"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="linkedin_url">💼 LinkedIn Profile</Label>
+              <Input
+                id="linkedin_url"
+                type="url"
+                value={newMember.linkedin_url}
+                onChange={(e) => setNewMember({ ...newMember, linkedin_url: e.target.value })}
+                placeholder="https://linkedin.com/in/yourname"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="twitter_url">🐦 Twitter/X Profile</Label>
+              <Input
+                id="twitter_url"
+                type="url"
+                value={newMember.twitter_url}
+                onChange={(e) => setNewMember({ ...newMember, twitter_url: e.target.value })}
+                placeholder="https://twitter.com/yourname"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="personal_website">🌐 Personal Website</Label>
+              <Input
+                id="personal_website"
+                type="url"
+                value={newMember.personal_website}
+                onChange={(e) => setNewMember({ ...newMember, personal_website: e.target.value })}
+                placeholder="https://yourwebsite.com"
+              />
+            </div>
+          </div>
         </div>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowAddModal(false)}>
@@ -949,6 +1138,20 @@ export default function TeamMembersPage() {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Edit Member Modal */}
+      <EditMemberModal
+        open={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingMember(null);
+        }}
+        memberName={editingMember ? `${editingMember.first_name || ''} ${editingMember.last_name || ''}`.trim() || editingMember.email : ''}
+        editForm={editForm}
+        setEditForm={setEditForm}
+        onSave={updateMember}
+        updating={updating}
+      />
 
       {/* Share Signatures Modal */}
       <Modal open={showShareModal} onClose={closeShareModal}>

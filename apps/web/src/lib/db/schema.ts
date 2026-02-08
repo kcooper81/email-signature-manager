@@ -62,6 +62,14 @@ export const users = pgTable('users', {
   organizationId: uuid('organization_id').references(() => organizations.id).notNull(),
   role: userRoleEnum('role').default('member').notNull(),
   isAdmin: boolean('is_admin').default(false).notNull(), // Platform admin flag
+  calendlyUrl: text('calendly_url'),
+  linkedinUrl: text('linkedin_url'),
+  twitterUrl: text('twitter_url'),
+  githubUrl: text('github_url'),
+  personalWebsite: text('personal_website'),
+  instagramUrl: text('instagram_url'),
+  facebookUrl: text('facebook_url'),
+  youtubeUrl: text('youtube_url'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

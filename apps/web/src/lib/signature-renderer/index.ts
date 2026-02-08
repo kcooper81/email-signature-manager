@@ -14,18 +14,17 @@ interface RenderContext {
     department?: string;
     phone?: string;
     mobile?: string;
+    calendlyUrl?: string;
+    linkedinUrl?: string;
+    twitterUrl?: string;
+    githubUrl?: string;
+    personalWebsite?: string;
+    instagramUrl?: string;
+    facebookUrl?: string;
+    youtubeUrl?: string;
   };
   organization: {
     name?: string;
-  };
-  calendly?: {
-    scheduling_url?: string;
-    event_types?: Array<{
-      slug: string;
-      scheduling_url: string;
-      name: string;
-    }>;
-    default_event_type_uri?: string;
   };
 }
 
@@ -93,7 +92,7 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
 }
 
 function replacePlaceholders(text: string, context: RenderContext): string {
-  const { user, organization, calendly } = context;
+  const { user, organization } = context;
   
   let result = text
     .replace(/\{\{first_name\}\}/gi, user.firstName || '')
@@ -106,32 +105,17 @@ function replacePlaceholders(text: string, context: RenderContext): string {
     .replace(/\{\{department\}\}/gi, user.department || '')
     .replace(/\{\{company\}\}/gi, organization.name || '');
   
-  // Calendly link replacements
-  if (calendly) {
-    // Replace main Calendly link
-    result = result.replace(/\{\{calendly_link\}\}/gi, calendly.scheduling_url || '');
-    
-    // Replace default event type link
-    if (calendly.default_event_type_uri && calendly.event_types) {
-      const defaultEvent = calendly.event_types.find(
-        et => et.scheduling_url
-      );
-      result = result.replace(
-        /\{\{calendly_default\}\}/gi, 
-        defaultEvent?.scheduling_url || calendly.scheduling_url || ''
-      );
-    } else {
-      result = result.replace(/\{\{calendly_default\}\}/gi, calendly.scheduling_url || '');
-    }
-    
-    // Replace specific event type links: {{calendly_event:slug}}
-    const eventTypePattern = /\{\{calendly_event:([a-zA-Z0-9_-]+)\}\}/gi;
-    result = result.replace(eventTypePattern, (match, slug) => {
-      if (!calendly.event_types) return '';
-      const eventType = calendly.event_types.find(et => et.slug === slug);
-      return eventType?.scheduling_url || '';
-    });
-  }
+  // Personal link replacements (per-user URLs)
+  result = result
+    .replace(/\{\{calendly_url\}\}/gi, user.calendlyUrl || '')
+    .replace(/\{\{calendly_link\}\}/gi, user.calendlyUrl || '') // Alias for backwards compatibility
+    .replace(/\{\{linkedin_url\}\}/gi, user.linkedinUrl || '')
+    .replace(/\{\{twitter_url\}\}/gi, user.twitterUrl || '')
+    .replace(/\{\{github_url\}\}/gi, user.githubUrl || '')
+    .replace(/\{\{personal_website\}\}/gi, user.personalWebsite || '')
+    .replace(/\{\{instagram_url\}\}/gi, user.instagramUrl || '')
+    .replace(/\{\{facebook_url\}\}/gi, user.facebookUrl || '')
+    .replace(/\{\{youtube_url\}\}/gi, user.youtubeUrl || '');
   
   // Remove any remaining unresolved placeholders
   result = result.replace(/\{\{[^}]+\}\}/gi, '');
