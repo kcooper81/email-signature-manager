@@ -122,6 +122,7 @@ export default function TeamMembersPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [editForm, setEditForm] = useState({
+    email: '',
     first_name: '',
     last_name: '',
     title: '',
@@ -136,6 +137,7 @@ export default function TeamMembersPage() {
     youtube_url: '',
   });
   const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   
   // Invite state
   const [inviting, setInviting] = useState(false);
@@ -407,6 +409,7 @@ export default function TeamMembersPage() {
   const startEditMember = (member: TeamMember) => {
     setEditingMember(member);
     setEditForm({
+      email: member.email || '',
       first_name: member.first_name || '',
       last_name: member.last_name || '',
       title: member.title || '',
@@ -423,6 +426,13 @@ export default function TeamMembersPage() {
     setShowEditModal(true);
   };
 
+  // Check if member can have email edited (manual users without auth_id)
+  const canEditMemberEmail = (member: TeamMember | null) => {
+    if (!member) return false;
+    // Can edit email for manually added users who don't have an auth account yet
+    return member.source === 'manual' || member.source === null;
+  };
+
   const updateMember = async () => {
     if (!editingMember) return;
     
@@ -432,22 +442,30 @@ export default function TeamMembersPage() {
     try {
       const supabase = createClient();
       
+      // Build update object - include email only for manual users
+      const updateData: Record<string, any> = {
+        first_name: editForm.first_name || null,
+        last_name: editForm.last_name || null,
+        title: editForm.title || null,
+        department: editForm.department || null,
+        calendly_url: editForm.calendly_url || null,
+        linkedin_url: editForm.linkedin_url || null,
+        twitter_url: editForm.twitter_url || null,
+        github_url: editForm.github_url || null,
+        personal_website: editForm.personal_website || null,
+        instagram_url: editForm.instagram_url || null,
+        facebook_url: editForm.facebook_url || null,
+        youtube_url: editForm.youtube_url || null,
+      };
+
+      // Only update email for manually added users
+      if (canEditMemberEmail(editingMember) && editForm.email) {
+        updateData.email = editForm.email;
+      }
+
       const { error } = await supabase
         .from('users')
-        .update({
-          first_name: editForm.first_name || null,
-          last_name: editForm.last_name || null,
-          title: editForm.title || null,
-          department: editForm.department || null,
-          calendly_url: editForm.calendly_url || null,
-          linkedin_url: editForm.linkedin_url || null,
-          twitter_url: editForm.twitter_url || null,
-          github_url: editForm.github_url || null,
-          personal_website: editForm.personal_website || null,
-          instagram_url: editForm.instagram_url || null,
-          facebook_url: editForm.facebook_url || null,
-          youtube_url: editForm.youtube_url || null,
-        })
+        .update(updateData)
         .eq('id', editingMember.id);
 
       if (error) throw error;
@@ -462,6 +480,37 @@ export default function TeamMembersPage() {
       setErrorMessage(err.message || 'Failed to update team member');
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const deleteMember = async () => {
+    if (!editingMember) return;
+    
+    setErrorMessage(null);
+    setDeleting(true);
+    
+    try {
+      const supabase = createClient();
+      
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', editingMember.id);
+
+      if (error) throw error;
+
+      setSuccessMessage('Team member deleted successfully');
+      setShowEditModal(false);
+      setEditingMember(null);
+      await loadData();
+      // Refresh subscription usage counts
+      refresh();
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to delete team member');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -1213,10 +1262,14 @@ export default function TeamMembersPage() {
           setEditingMember(null);
         }}
         memberName={editingMember ? `${editingMember.first_name || ''} ${editingMember.last_name || ''}`.trim() || editingMember.email : ''}
+        memberEmail={editingMember?.email || ''}
+        canEditEmail={canEditMemberEmail(editingMember)}
         editForm={editForm}
         setEditForm={setEditForm}
         onSave={updateMember}
+        onDelete={deleteMember}
         updating={updating}
+        deleting={deleting}
       />
 
       {/* Share Signatures Modal */}

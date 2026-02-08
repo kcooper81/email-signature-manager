@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import {
   Card,
@@ -8,21 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { 
   Users, 
   FileSignature, 
   Send, 
   Activity, 
-  ArrowRight,
   CheckCircle2,
-  Link2,
-  Paintbrush,
-  UserPlus,
-  Rocket,
   X,
 } from 'lucide-react';
 import { GettingStartedCard } from './getting-started';
+import { QuickActionsPanel } from './quick-actions';
+import { IntegrationStatusWidget } from './integration-status';
+import { PendingActionsWidget } from './pending-actions';
 
 export default async function DashboardPage() {
   const supabase = createClient();
@@ -54,6 +49,39 @@ export default async function DashboardPage() {
     .eq('organization_id', organizationId)
     .eq('is_active', true)
     .limit(1);
+
+  // Fetch integration status for all providers
+  const { data: allConnections } = await supabase
+    .from('provider_connections')
+    .select('provider, is_active, last_sync_at, created_at')
+    .eq('organization_id', organizationId);
+
+  const { data: integrations } = await supabase
+    .from('integrations')
+    .select('provider, status, last_sync_at')
+    .eq('organization_id', organizationId);
+
+  // Build integration status map
+  const integrationStatus = {
+    google: {
+      connected: allConnections?.some(c => c.provider === 'google' && c.is_active) || 
+                 integrations?.some(i => i.provider === 'google' && i.status === 'active') || false,
+      lastSync: allConnections?.find(c => c.provider === 'google')?.last_sync_at ||
+                integrations?.find(i => i.provider === 'google')?.last_sync_at || null,
+    },
+    microsoft: {
+      connected: allConnections?.some(c => c.provider === 'microsoft' && c.is_active) ||
+                 integrations?.some(i => i.provider === 'microsoft' && i.status === 'active') || false,
+      lastSync: allConnections?.find(c => c.provider === 'microsoft')?.last_sync_at ||
+                integrations?.find(i => i.provider === 'microsoft')?.last_sync_at || null,
+    },
+    hubspot: {
+      connected: allConnections?.some(c => c.provider === 'hubspot' && c.is_active) ||
+                 integrations?.some(i => i.provider === 'hubspot' && i.status === 'active') || false,
+      lastSync: allConnections?.find(c => c.provider === 'hubspot')?.last_sync_at ||
+                integrations?.find(i => i.provider === 'hubspot')?.last_sync_at || null,
+    },
+  };
 
   // Get deployments from this month - FILTERED BY ORGANIZATION
   const startOfMonth = new Date();
@@ -96,6 +124,37 @@ export default async function DashboardPage() {
     teamMemberCount || 0
   );
 
+  // Calculate pending actions
+  const usersWithoutSignatures = (teamMemberCount || 0) - usersWithSignatures;
+  const failedDeploymentsCount = deployments?.filter(d => d.status === 'failed').length || 0;
+  
+  // Check for stale syncs (no sync in 7 days)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
+  const staleSyncs: string[] = [];
+  if (integrationStatus.google.connected && integrationStatus.google.lastSync) {
+    if (new Date(integrationStatus.google.lastSync) < sevenDaysAgo) {
+      staleSyncs.push('Google Workspace');
+    }
+  }
+  if (integrationStatus.microsoft.connected && integrationStatus.microsoft.lastSync) {
+    if (new Date(integrationStatus.microsoft.lastSync) < sevenDaysAgo) {
+      staleSyncs.push('Microsoft 365');
+    }
+  }
+
+  // Get new users added in last 7 days without signatures
+  const { data: recentUsers } = await supabase
+    .from('users')
+    .select('email, created_at')
+    .eq('organization_id', organizationId)
+    .gte('created_at', sevenDaysAgo.toISOString());
+  
+  const newUsersWithoutSignatures = recentUsers?.filter(
+    u => !uniqueUsersWithSignatures.has(u.email.toLowerCase())
+  ).length || 0;
+
   const hasTemplates = (templateCount || 0) > 0;
   const hasConnection = (connections?.length || 0) > 0;
   const hasDeployments = (deploymentCount || 0) > 0;
@@ -106,7 +165,6 @@ export default async function DashboardPage() {
 
   const firstName = user?.user_metadata?.first_name || 'there';
   const isNewUser = completedSteps === 0;
-  const allComplete = completedSteps === totalSteps;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -157,6 +215,24 @@ export default async function DashboardPage() {
           value={hasDeployments ? `${successRate}%` : '--'}
           description="Deployment success rate"
           icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+        />
+      </div>
+
+      {/* Quick Actions Panel */}
+      <QuickActionsPanel />
+
+      {/* Integration Status & Pending Actions Row */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
+        <IntegrationStatusWidget
+          google={integrationStatus.google}
+          microsoft={integrationStatus.microsoft}
+          hubspot={integrationStatus.hubspot}
+        />
+        <PendingActionsWidget
+          usersWithoutSignatures={usersWithoutSignatures}
+          newUsersWithoutSignatures={newUsersWithoutSignatures}
+          failedDeployments={failedDeploymentsCount}
+          staleSyncs={staleSyncs}
         />
       </div>
 

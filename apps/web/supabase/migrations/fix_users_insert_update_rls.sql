@@ -48,3 +48,17 @@ CREATE POLICY "Users can update their own data"
   FOR UPDATE
   USING (auth_id = auth.uid()::text)
   WITH CHECK (auth_id = auth.uid()::text);
+
+-- Policy for admins to delete users in their organization
+DROP POLICY IF EXISTS "Admins can delete users in their organization" ON users;
+CREATE POLICY "Admins can delete users in their organization"
+  ON users
+  FOR DELETE
+  USING (
+    organization_id IN (
+      SELECT u.organization_id 
+      FROM users u 
+      WHERE u.auth_id = auth.uid()::text 
+        AND (u.role IN ('admin', 'owner') OR u.is_admin = TRUE)
+    )
+  );

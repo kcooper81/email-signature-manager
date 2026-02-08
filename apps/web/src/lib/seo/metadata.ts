@@ -345,6 +345,37 @@ export function generateBlogIndexMetadata(page: number, totalPages: number): Met
   });
 }
 
+/**
+ * Creates metadata for a blog post with proper canonical URL.
+ * Use this in individual blog post pages to ensure proper SEO indexing.
+ */
+export function createBlogMetadata(
+  slug: string,
+  title: string,
+  description: string,
+  keywords: string[] = []
+): Metadata {
+  return {
+    title,
+    description,
+    keywords,
+    alternates: {
+      canonical: `https://siggly.io/blog/${slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      url: `https://siggly.io/blog/${slug}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  };
+}
+
 export function generateProductSchema({
   name,
   description,
