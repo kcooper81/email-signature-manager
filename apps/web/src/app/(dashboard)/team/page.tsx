@@ -29,6 +29,7 @@ import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 interface TeamMember {
   id: string;
   email: string;
+  auth_id: string | null;
   first_name: string | null;
   last_name: string | null;
   title: string | null;
@@ -426,11 +427,12 @@ export default function TeamMembersPage() {
     setShowEditModal(true);
   };
 
-  // Check if member can have email edited (manual users without auth_id)
+  // Check if member can have email edited (users without an auth account)
   const canEditMemberEmail = (member: TeamMember | null) => {
     if (!member) return false;
-    // Can edit email for manually added users who don't have an auth account yet
-    return member.source === 'manual' || member.source === null;
+    // Can edit email for users who don't have an auth account yet (auth_id is null)
+    // These are manually added users or synced users who haven't claimed their account
+    return !member.auth_id;
   };
 
   const updateMember = async () => {
@@ -458,15 +460,28 @@ export default function TeamMembersPage() {
         youtube_url: editForm.youtube_url || null,
       };
 
-      // Only update email for manually added users
-      if (canEditMemberEmail(editingMember) && editForm.email) {
+      // Only update email for manually added users (no auth_id)
+      const canEdit = canEditMemberEmail(editingMember);
+      console.log('Update member:', { 
+        memberId: editingMember.id, 
+        auth_id: editingMember.auth_id,
+        canEditEmail: canEdit,
+        newEmail: editForm.email 
+      });
+      
+      if (canEdit && editForm.email) {
         updateData.email = editForm.email;
       }
 
-      const { error } = await supabase
+      console.log('Update data:', updateData);
+
+      const { error, data } = await supabase
         .from('users')
         .update(updateData)
-        .eq('id', editingMember.id);
+        .eq('id', editingMember.id)
+        .select();
+
+      console.log('Update result:', { error, data });
 
       if (error) throw error;
 
@@ -492,12 +507,20 @@ export default function TeamMembersPage() {
     try {
       const supabase = createClient();
       
-      const { error } = await supabase
+      console.log('Deleting member:', editingMember.id, editingMember.email);
+      
+      const { error, count } = await supabase
         .from('users')
         .delete()
-        .eq('id', editingMember.id);
+        .eq('id', editingMember.id)
+        .select();
 
-      if (error) throw error;
+      console.log('Delete result:', { error, count });
+
+      if (error) {
+        console.error('Delete error:', error);
+        throw error;
+      }
 
       setSuccessMessage('Team member deleted successfully');
       setShowEditModal(false);
@@ -508,6 +531,7 @@ export default function TeamMembersPage() {
       
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
+      console.error('Delete failed:', err);
       setErrorMessage(err.message || 'Failed to delete team member');
     } finally {
       setDeleting(false);

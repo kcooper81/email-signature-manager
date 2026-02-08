@@ -11,14 +11,16 @@ import {
   Sparkles,
   LayoutDashboard,
   Rocket,
-  Users,
   FileSignature,
-  Settings,
+  Megaphone,
+  TrendingUp,
+  UserCheck,
+  Monitor,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import Link from 'next/link';
 import { AnalyticsData, EmployeeSignatureStatus } from './types';
-import { OverviewTab, DeploymentsTab, TeamTab, TemplatesTab, OperationsTab } from './tabs';
+import { OverviewTab, DeploymentsTab, TemplatesTab, MarketingTab, SalesTab, HRTab, ITTab } from './tabs';
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -96,12 +98,29 @@ export default function AnalyticsPage() {
     const failedDeployments = deployments?.filter(d => d.status === 'failed').length || 0;
     const pendingDeployments = deployments?.filter(d => d.status === 'pending' || d.status === 'running').length || 0;
 
-    // Track deployed emails and their template info
+    // Get user deployment history for accurate per-user signature status
+    const { data: userDeploymentHistory } = await supabase
+      .from('user_deployment_history')
+      .select('user_id, template_id, status, deployed_at, template:signature_templates(name)')
+      .eq('organization_id', organizationId)
+      .eq('status', 'completed')
+      .order('deployed_at', { ascending: false });
+
+    // Build a map of user_id to their latest successful deployment
+    const userIdToDeployment = new Map<string, { templateName: string; deployedAt: string }>();
+    userDeploymentHistory?.forEach(h => {
+      if (!userIdToDeployment.has(h.user_id)) {
+        userIdToDeployment.set(h.user_id, {
+          templateName: (h.template as any)?.name || 'Unknown',
+          deployedAt: h.deployed_at,
+        });
+      }
+    });
+
+    // Also check target_emails from signature_deployments as fallback
     const uniqueDeployedEmails = new Set<string>();
     const emailToDeployment = new Map<string, { templateName: string; deployedAt: string }>();
-    let estimatedUsersWithoutEmails = 0;
     
-    // Get ALL deployments for signature status (not just current period)
     const { data: allDeployments } = await supabase
       .from('signature_deployments')
       .select('target_emails, successful_count, status, created_at, template:signature_templates(name)')
@@ -121,31 +140,31 @@ export default function AnalyticsPage() {
             });
           }
         });
-      } else {
-        estimatedUsersWithoutEmails += d.successful_count || 0;
       }
     });
-    
-    const usersWithSignatures = Math.min(
-      uniqueDeployedEmails.size + estimatedUsersWithoutEmails,
-      userCount || 0
-    );
-    const adoptionRate = userCount ? Math.round((usersWithSignatures / userCount) * 100) : 0;
 
-    // Build employee signature status
+    // Build employee signature status - use user_deployment_history first, then fallback to target_emails
     const employeeStatuses: EmployeeSignatureStatus[] = (users || []).map(u => {
       const email = u.email.toLowerCase();
-      const deployInfo = emailToDeployment.get(email);
+      const historyInfo = userIdToDeployment.get(u.id);
+      const emailInfo = emailToDeployment.get(email);
+      const hasSignature = !!historyInfo || uniqueDeployedEmails.has(email);
+      const deployInfo = historyInfo || emailInfo;
+      
       return {
         email: u.email,
         name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email.split('@')[0],
         department: u.department || 'Unassigned',
-        hasSignature: uniqueDeployedEmails.has(email),
+        hasSignature,
         templateName: deployInfo?.templateName || null,
         lastDeployedAt: deployInfo?.deployedAt || null,
       };
     });
     setEmployeeData(employeeStatuses);
+
+    // Calculate users with signatures
+    const usersWithSignatures = employeeStatuses.filter(e => e.hasSignature).length;
+    const adoptionRate = userCount ? Math.round((usersWithSignatures / userCount) * 100) : 0;
 
     // Calculate previous period adoption
     const previousUniqueEmails = new Set<string>();
@@ -486,26 +505,34 @@ export default function AnalyticsPage() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto gap-1 p-1">
+        <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1">
           <TabsTrigger value="overview" className="flex items-center gap-2 py-2">
             <LayoutDashboard className="h-4 w-4" />
             <span className="hidden sm:inline">Overview</span>
+          </TabsTrigger>
+          <TabsTrigger value="marketing" className="flex items-center gap-2 py-2">
+            <Megaphone className="h-4 w-4" />
+            <span className="hidden sm:inline">Marketing</span>
+          </TabsTrigger>
+          <TabsTrigger value="sales" className="flex items-center gap-2 py-2">
+            <TrendingUp className="h-4 w-4" />
+            <span className="hidden sm:inline">Sales</span>
+          </TabsTrigger>
+          <TabsTrigger value="hr" className="flex items-center gap-2 py-2">
+            <UserCheck className="h-4 w-4" />
+            <span className="hidden sm:inline">HR</span>
+          </TabsTrigger>
+          <TabsTrigger value="it" className="flex items-center gap-2 py-2">
+            <Monitor className="h-4 w-4" />
+            <span className="hidden sm:inline">IT</span>
           </TabsTrigger>
           <TabsTrigger value="deployments" className="flex items-center gap-2 py-2">
             <Rocket className="h-4 w-4" />
             <span className="hidden sm:inline">Deployments</span>
           </TabsTrigger>
-          <TabsTrigger value="team" className="flex items-center gap-2 py-2">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Team</span>
-          </TabsTrigger>
           <TabsTrigger value="templates" className="flex items-center gap-2 py-2">
             <FileSignature className="h-4 w-4" />
             <span className="hidden sm:inline">Templates</span>
-          </TabsTrigger>
-          <TabsTrigger value="operations" className="flex items-center gap-2 py-2">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Operations</span>
           </TabsTrigger>
         </TabsList>
 
@@ -513,20 +540,28 @@ export default function AnalyticsPage() {
           <OverviewTab data={data} />
         </TabsContent>
 
+        <TabsContent value="marketing">
+          <MarketingTab data={data} employeeData={employeeData} />
+        </TabsContent>
+
+        <TabsContent value="sales">
+          <SalesTab data={data} employeeData={employeeData} />
+        </TabsContent>
+
+        <TabsContent value="hr">
+          <HRTab data={data} employeeData={employeeData} timeRange={timeRange} />
+        </TabsContent>
+
+        <TabsContent value="it">
+          <ITTab data={data} timeRange={timeRange} />
+        </TabsContent>
+
         <TabsContent value="deployments">
           <DeploymentsTab data={data} />
         </TabsContent>
 
-        <TabsContent value="team">
-          <TeamTab data={data} employeeData={employeeData} />
-        </TabsContent>
-
         <TabsContent value="templates">
           <TemplatesTab data={data} />
-        </TabsContent>
-
-        <TabsContent value="operations">
-          <OperationsTab data={data} timeRange={timeRange} />
         </TabsContent>
       </Tabs>
     </div>
