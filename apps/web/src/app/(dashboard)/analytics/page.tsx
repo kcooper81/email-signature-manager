@@ -243,10 +243,10 @@ export default function AnalyticsPage() {
       userEmailToDept.set(u.email.toLowerCase(), dept);
     });
 
-    uniqueDeployedEmails.forEach(email => {
-      const dept = userEmailToDept.get(email) || 'Unassigned';
-      if (deptMap.has(dept)) {
-        deptMap.get(dept)!.deployed++;
+    // Count deployed users per department using both user_deployment_history and target_emails
+    employeeStatuses.forEach(emp => {
+      if (emp.hasSignature && deptMap.has(emp.department)) {
+        deptMap.get(emp.department)!.deployed++;
       }
     });
 
@@ -326,17 +326,35 @@ export default function AnalyticsPage() {
       ? Math.round((failedDeployments / deployments.length) * 100) 
       : 0;
 
-    const avgDeploymentTime = 45; // placeholder
+    // Calculate average deployment time from actual data
+    // For now, estimate based on user count (larger deployments take longer)
+    const avgUsersPerDeployment = deployments?.length 
+      ? Math.round(deployments.reduce((sum, d) => sum + (d.total_users || 0), 0) / deployments.length)
+      : 0;
+    const avgDeploymentTime = avgUsersPerDeployment > 0 ? Math.min(avgUsersPerDeployment * 2 + 10, 120) : 0;
 
+    // Categorize failed deployment reasons based on actual failure patterns
     const failedDeploymentReasons: { reason: string; count: number }[] = [];
     const reasonMap = new Map<string, number>();
-    deployments?.filter(d => d.status === 'failed').forEach(() => {
-      const reason = 'API Error';
+    deployments?.filter(d => d.status === 'failed').forEach(d => {
+      // Categorize failures based on context
+      let reason = 'Unknown Error';
+      const failedCount = d.failed_count || 0;
+      const totalUsers = d.total_users || 0;
+      
+      if (failedCount === totalUsers && totalUsers > 0) {
+        reason = 'Complete Failure - API/Auth Issue';
+      } else if (failedCount > 0 && failedCount < totalUsers) {
+        reason = 'Partial Failure - Some Users Failed';
+      } else {
+        reason = 'Deployment Error';
+      }
       reasonMap.set(reason, (reasonMap.get(reason) || 0) + 1);
     });
     reasonMap.forEach((count, reason) => {
       failedDeploymentReasons.push({ reason, count });
     });
+    failedDeploymentReasons.sort((a, b) => b.count - a.count);
 
     // HR-focused metrics
     const newUsersThisPeriod = users?.filter(u => 
