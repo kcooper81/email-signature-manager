@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Shield, Users, Settings, CheckCircle, Lock, RefreshCw, FileText, Zap } from 'lucide-react';
+import { Shield, Users, Settings, CheckCircle, Lock, RefreshCw, FileText, Zap, UserPlus, ClipboardList } from 'lucide-react';
 import {
   MarketingHero,
   MarketingStatsBar,
@@ -58,19 +58,29 @@ const features = [
     description: 'Automatically import users from your directory. New hires get signatures on day one.',
   },
   {
+    icon: UserPlus,
+    title: 'Bulk Invite',
+    description: 'Invite multiple employees at once to self-manage their profiles. Reduce admin workload.',
+  },
+  {
     icon: FileText,
-    title: 'Compliance Templates',
-    description: 'Pre-built legal disclaimer blocks for GDPR, HIPAA, and industry-specific requirements.',
+    title: 'Disclaimers Library',
+    description: '15+ pre-built legal disclaimers for GDPR, HIPAA, confidentiality, and industry-specific requirements.',
+  },
+  {
+    icon: ClipboardList,
+    title: 'Audit Logs',
+    description: 'Complete action history with before/after values. Essential for SOC 2 and compliance audits.',
+  },
+  {
+    icon: Shield,
+    title: 'Role-Based Access',
+    description: 'Assign Owner, Admin, Editor, or Viewer roles. Control who can change what.',
   },
   {
     icon: RefreshCw,
     title: 'Automatic Updates',
     description: 'When job titles or departments change, signatures update automatically.',
-  },
-  {
-    icon: Shield,
-    title: 'Audit Trail',
-    description: 'Full history of every signature change for compliance and security reviews.',
   },
   {
     icon: Zap,
