@@ -101,7 +101,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine target users based on deployment target
-    let targetUsers: { id?: string; email: string; name: string; firstName?: string; lastName?: string }[] = [];
+    let targetUsers: { 
+      id?: string; 
+      email: string; 
+      name: string; 
+      firstName?: string; 
+      lastName?: string;
+      calendlyUrl?: string;
+      linkedinUrl?: string;
+      twitterUrl?: string;
+      githubUrl?: string;
+      personalWebsite?: string;
+      instagramUrl?: string;
+      facebookUrl?: string;
+      youtubeUrl?: string;
+    }[] = [];
 
     if (target === 'me') {
       // Deploy to current user only - get their user ID from the users table
@@ -122,7 +136,7 @@ export async function POST(request: NextRequest) {
       // Deploy to selected users
       const { data: selectedUsers } = await supabase
         .from('users')
-        .select('id, email, first_name, last_name')
+        .select('id, email, first_name, last_name, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url')
         .eq('organization_id', organizationId)
         .in('id', userIds);
 
@@ -133,13 +147,21 @@ export async function POST(request: NextRequest) {
           name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
           firstName: u.first_name || undefined,
           lastName: u.last_name || undefined,
+          calendlyUrl: u.calendly_url || undefined,
+          linkedinUrl: u.linkedin_url || undefined,
+          twitterUrl: u.twitter_url || undefined,
+          githubUrl: u.github_url || undefined,
+          personalWebsite: u.personal_website || undefined,
+          instagramUrl: u.instagram_url || undefined,
+          facebookUrl: u.facebook_url || undefined,
+          youtubeUrl: u.youtube_url || undefined,
         }));
       }
     } else if (target === 'all') {
       // Deploy to all users in organization
       const { data: allUsers } = await supabase
         .from('users')
-        .select('id, email, first_name, last_name')
+        .select('id, email, first_name, last_name, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url')
         .eq('organization_id', organizationId);
 
       if (allUsers) {
@@ -149,6 +171,14 @@ export async function POST(request: NextRequest) {
           name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
           firstName: u.first_name || undefined,
           lastName: u.last_name || undefined,
+          calendlyUrl: u.calendly_url || undefined,
+          linkedinUrl: u.linkedin_url || undefined,
+          twitterUrl: u.twitter_url || undefined,
+          githubUrl: u.github_url || undefined,
+          personalWebsite: u.personal_website || undefined,
+          instagramUrl: u.instagram_url || undefined,
+          facebookUrl: u.facebook_url || undefined,
+          youtubeUrl: u.youtube_url || undefined,
         }));
       }
     }
@@ -198,6 +228,14 @@ export async function POST(request: NextRequest) {
             firstName: targetUser.firstName || targetUser.name?.split(' ')[0] || '',
             lastName: targetUser.lastName || targetUser.name?.split(' ').slice(1).join(' ') || '',
             email: targetUser.email || '',
+            calendlyUrl: targetUser.calendlyUrl || '',
+            linkedinUrl: targetUser.linkedinUrl || '',
+            twitterUrl: targetUser.twitterUrl || '',
+            githubUrl: targetUser.githubUrl || '',
+            personalWebsite: targetUser.personalWebsite || '',
+            instagramUrl: targetUser.instagramUrl || '',
+            facebookUrl: targetUser.facebookUrl || '',
+            youtubeUrl: targetUser.youtubeUrl || '',
           },
           organization: {
             name: '', // Can be populated from org settings later

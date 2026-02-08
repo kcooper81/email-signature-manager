@@ -203,6 +203,19 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
                   <div className="text-xs text-gray-500">Sync contact data</div>
                 </div>
               </Link>
+              <Link href="/integrations/calendly" className="flex items-start gap-3 px-3 py-3 rounded-lg hover:bg-gray-50 group/item transition-colors">
+                <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#006BFF">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+                    <path d="M12 6c-3.309 0-6 2.691-6 6s2.691 6 6 6 6-2.691 6-6-2.691-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"/>
+                    <circle cx="12" cy="12" r="2"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-gray-900 mb-0.5">Calendly</div>
+                  <div className="text-xs text-gray-500">Meeting scheduling links</div>
+                </div>
+              </Link>
             </div>
           </div>
 
@@ -345,6 +358,16 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
                     </svg>
                   </div>
                   HubSpot CRM
+                </Link>
+                <Link href="/integrations/calendly" className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+                  <div className="h-6 w-6 rounded bg-blue-50 flex items-center justify-center">
+                    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="#006BFF">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+                      <path d="M12 6c-3.309 0-6 2.691-6 6s2.691 6 6 6 6-2.691 6-6-2.691-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"/>
+                      <circle cx="12" cy="12" r="2"/>
+                    </svg>
+                  </div>
+                  Calendly
                 </Link>
               </div>
             </div>
