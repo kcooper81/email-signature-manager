@@ -4,6 +4,7 @@ import { setGmailSignature } from '@/lib/google/gmail';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { logException } from '@/lib/error-logging';
 import { getTemplateForUserWithFallback } from '@/lib/signature-rules';
+import { logDeployment } from '@/lib/audit/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -317,6 +318,22 @@ export async function POST(request: NextRequest) {
         completed_at: new Date().toISOString(),
       })
       .eq('id', deployment.id);
+
+    // Log deployment to audit trail
+    await logDeployment(
+      organizationId,
+      user.id,
+      templateId,
+      template.name,
+      {
+        deploymentId: deployment.id,
+        target,
+        totalUsers: targetUsers.length,
+        successCount,
+        failCount,
+        useRules,
+      }
+    );
 
     return NextResponse.json({
       success: true,
