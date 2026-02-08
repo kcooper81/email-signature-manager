@@ -28,6 +28,14 @@ interface UserProfile {
   email: string;
   first_name: string | null;
   last_name: string | null;
+  calendly_url: string | null;
+  linkedin_url: string | null;
+  twitter_url: string | null;
+  github_url: string | null;
+  personal_website: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  youtube_url: string | null;
 }
 
 interface Organization {
@@ -48,6 +56,16 @@ export default function SettingsPage() {
   // Form states
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  
+  // Personal links
+  const [calendlyUrl, setCalendlyUrl] = useState('');
+  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [twitterUrl, setTwitterUrl] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
+  const [personalWebsite, setPersonalWebsite] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [orgName, setOrgName] = useState('');
   const [orgDomain, setOrgDomain] = useState('');
   const [domainSource, setDomainSource] = useState<'manual' | 'google_workspace' | 'microsoft_365' | 'hubspot' | null>(null);
@@ -90,7 +108,7 @@ export default function SettingsPage() {
     // Load user profile
     const { data: userData } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, organization_id, email_notifications, deployment_alerts, weekly_digest, theme')
+      .select('id, email, first_name, last_name, organization_id, email_notifications, deployment_alerts, weekly_digest, theme, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url')
       .eq('auth_id', user.id)
       .single();
 
@@ -98,6 +116,14 @@ export default function SettingsPage() {
       setProfile(userData as any);
       setFirstName(userData.first_name || '');
       setLastName(userData.last_name || '');
+      setCalendlyUrl(userData.calendly_url || '');
+      setLinkedinUrl(userData.linkedin_url || '');
+      setTwitterUrl(userData.twitter_url || '');
+      setGithubUrl(userData.github_url || '');
+      setPersonalWebsite(userData.personal_website || '');
+      setInstagramUrl(userData.instagram_url || '');
+      setFacebookUrl(userData.facebook_url || '');
+      setYoutubeUrl(userData.youtube_url || '');
       setEmailNotifications(userData.email_notifications ?? true);
       setDeploymentAlerts(userData.deployment_alerts ?? true);
       setWeeklyDigest(userData.weekly_digest ?? false);
@@ -158,6 +184,14 @@ export default function SettingsPage() {
       .update({
         first_name: firstName,
         last_name: lastName,
+        calendly_url: calendlyUrl || null,
+        linkedin_url: linkedinUrl || null,
+        twitter_url: twitterUrl || null,
+        github_url: githubUrl || null,
+        personal_website: personalWebsite || null,
+        instagram_url: instagramUrl || null,
+        facebook_url: facebookUrl || null,
+        youtube_url: youtubeUrl || null,
       })
       .eq('id', profile.id);
 
@@ -556,6 +590,98 @@ export default function SettingsPage() {
                   <p className="text-xs text-muted-foreground mt-1">
                     Email cannot be changed
                   </p>
+                </div>
+
+                {/* Personal Links Section */}
+                <div className="space-y-4 pt-4 border-t">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900">Personal Links (Optional)</h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Add your personal URLs to use in signature templates with placeholders like {'{'}{'{'} calendly_url {'}'}{'}'}
+                    </p>
+                  </div>
+                  
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">📅 Calendly URL</label>
+                      <Input
+                        type="url"
+                        value={calendlyUrl}
+                        onChange={(e) => setCalendlyUrl(e.target.value)}
+                        placeholder="https://calendly.com/yourname"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">💼 LinkedIn Profile</label>
+                      <Input
+                        type="url"
+                        value={linkedinUrl}
+                        onChange={(e) => setLinkedinUrl(e.target.value)}
+                        placeholder="https://linkedin.com/in/yourname"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">🐦 Twitter/X Profile</label>
+                      <Input
+                        type="url"
+                        value={twitterUrl}
+                        onChange={(e) => setTwitterUrl(e.target.value)}
+                        placeholder="https://twitter.com/yourname"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">💻 GitHub Profile</label>
+                      <Input
+                        type="url"
+                        value={githubUrl}
+                        onChange={(e) => setGithubUrl(e.target.value)}
+                        placeholder="https://github.com/yourname"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">🌐 Personal Website</label>
+                      <Input
+                        type="url"
+                        value={personalWebsite}
+                        onChange={(e) => setPersonalWebsite(e.target.value)}
+                        placeholder="https://yourwebsite.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">📸 Instagram</label>
+                      <Input
+                        type="url"
+                        value={instagramUrl}
+                        onChange={(e) => setInstagramUrl(e.target.value)}
+                        placeholder="https://instagram.com/yourname"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">📘 Facebook</label>
+                      <Input
+                        type="url"
+                        value={facebookUrl}
+                        onChange={(e) => setFacebookUrl(e.target.value)}
+                        placeholder="https://facebook.com/yourname"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">🎥 YouTube Channel</label>
+                      <Input
+                        type="url"
+                        value={youtubeUrl}
+                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                        placeholder="https://youtube.com/@yourname"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <Button onClick={saveProfile} disabled={saving}>
