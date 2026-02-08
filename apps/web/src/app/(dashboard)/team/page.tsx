@@ -137,6 +137,9 @@ export default function TeamMembersPage() {
   });
   const [updating, setUpdating] = useState(false);
   
+  // Invite state
+  const [inviting, setInviting] = useState(false);
+  
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -462,6 +465,41 @@ export default function TeamMembersPage() {
     }
   };
 
+  const inviteMembers = async () => {
+    if (selectedMembers.size === 0) {
+      setErrorMessage('Please select team members to invite');
+      return;
+    }
+
+    setInviting(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch('/api/team/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userIds: Array.from(selectedMembers),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send invites');
+      }
+
+      setSuccessMessage(`Successfully sent ${data.invitedCount} invite${data.invitedCount !== 1 ? 's' : ''}`);
+      setSelectedMembers(new Set());
+      
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to send invites');
+    } finally {
+      setInviting(false);
+    }
+  };
+
   const googleConnected = connections.some(c => c.provider === 'google' && c.is_active);
 
   // Get unique departments for filter
@@ -670,10 +708,25 @@ export default function TeamMembersPage() {
               </CardDescription>
             </div>
             {selectedMembers.size > 0 && (
-              <Button onClick={() => setShowShareModal(true)} variant="default">
-                <FileSignature className="mr-2 h-4 w-4" />
-                Share Signatures ({selectedMembers.size})
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={inviteMembers} variant="outline" disabled={inviting}>
+                  {inviting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Invite to Self-Manage ({selectedMembers.size})
+                    </>
+                  )}
+                </Button>
+                <Button onClick={() => setShowShareModal(true)} variant="default">
+                  <FileSignature className="mr-2 h-4 w-4" />
+                  Share Signatures ({selectedMembers.size})
+                </Button>
+              </div>
             )}
           </div>
 
