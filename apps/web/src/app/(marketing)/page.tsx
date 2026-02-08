@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Check, Mail, Users, Zap, Shield, Building2, Globe, Clock, Sparkles, BarChart3, Palette, RefreshCw, Lock, X, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Check, Mail, Users, Zap, Shield, Building2, Globe, Clock, Sparkles, BarChart3, Palette, RefreshCw, Lock, X, AlertTriangle, Link2, GitBranch, FileText, ClipboardList } from 'lucide-react';
 import { DemoButton } from '@/components/marketing/demo-button';
 
 export default function HomePage() {
@@ -583,7 +583,17 @@ export default function HomePage() {
             <FeatureCard
               icon={<Clock className="h-5 w-5" />}
               title="Campaign Banners"
-              description="Add promotional banners that rotate automatically. Perfect for product launches and events."
+              description="Add promotional banners with click tracking. Schedule campaigns with start and end dates."
+            />
+            <FeatureCard
+              icon={<GitBranch className="h-5 w-5" />}
+              title="Signature Rules"
+              description="Show different signatures based on recipient type, department, or campaign dates."
+            />
+            <FeatureCard
+              icon={<Link2 className="h-5 w-5" />}
+              title="Personal Links"
+              description="Let employees add their own Calendly, LinkedIn, and social links to signatures."
             />
             <FeatureCard
               icon={<Shield className="h-5 w-5" />}
@@ -603,7 +613,17 @@ export default function HomePage() {
             <FeatureCard
               icon={<BarChart3 className="h-5 w-5" />}
               title="Analytics Dashboard"
-              description="Track signature impressions, link clicks, and engagement. Measure your email marketing ROI."
+              description="Track link clicks and banner engagement. Measure your email signature marketing ROI."
+            />
+            <FeatureCard
+              icon={<ClipboardList className="h-5 w-5" />}
+              title="Audit Logs"
+              description="Complete action history for compliance. Track who changed what and when."
+            />
+            <FeatureCard
+              icon={<FileText className="h-5 w-5" />}
+              title="Disclaimers Library"
+              description="15+ pre-written legal disclaimers including GDPR, HIPAA, and confidentiality notices."
             />
           </div>
         </div>

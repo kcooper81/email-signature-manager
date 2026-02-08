@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Mail, ArrowRight, Check, Users, Palette, Rocket, Shield, BarChart3, Zap, Globe, Clock, Building2, RefreshCw, Lock } from 'lucide-react';
+import { Mail, ArrowRight, Check, Users, Palette, Rocket, Shield, BarChart3, Zap, Globe, Clock, Building2, RefreshCw, Lock, Link2, UserPlus, GitBranch, Image, FileText, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { IntegrationsSection } from '@/components/marketing/integrations-section';
 import { MarketingCTA } from '@/components/marketing/cta';
@@ -32,25 +32,67 @@ const features = [
     color: 'cyan',
   },
   {
+    icon: Link2,
+    title: 'Personal Links',
+    description: 'Let employees add their own scheduling and social links like Calendly and LinkedIn.',
+    benefits: ['Self-service profile updates', 'Calendly integration', 'LinkedIn profiles', 'Custom URLs'],
+    color: 'indigo',
+  },
+  {
+    icon: UserPlus,
+    title: 'Bulk Invite',
+    description: 'Invite multiple employees at once to create accounts and manage their own profiles.',
+    benefits: ['Mass employee onboarding', 'Self-service accounts', 'Reduced admin workload', 'Email invitations'],
+    color: 'emerald',
+  },
+  {
+    icon: GitBranch,
+    title: 'Signature Rules',
+    description: 'Create conditional logic to show different signatures based on recipient, department, or date.',
+    benefits: ['Internal vs external', 'Department-specific', 'Date-based campaigns', 'Priority ordering'],
+    color: 'orange',
+  },
+  {
+    icon: Image,
+    title: 'Campaign Banners',
+    description: 'Add promotional banners with built-in click tracking. Schedule campaigns with start/end dates.',
+    benefits: ['Click tracking', 'Scheduled campaigns', 'A/B testing ready', 'ROI measurement'],
+    color: 'pink',
+  },
+  {
+    icon: BarChart3,
+    title: 'Analytics Dashboard',
+    description: 'Track clicks on links and banners. Measure engagement and signature marketing ROI.',
+    benefits: ['Click-through rates', 'Link performance', 'Campaign metrics', 'Export reports'],
+    color: 'amber',
+  },
+  {
+    icon: Shield,
+    title: 'Role-Based Access (RBAC)',
+    description: 'Control who can do what with granular permissions. Owner, Admin, Editor, and Viewer roles.',
+    benefits: ['Granular permissions', 'Secure delegation', 'Compliance ready', 'Team hierarchy'],
+    color: 'red',
+  },
+  {
+    icon: ClipboardList,
+    title: 'Audit Logs',
+    description: 'Complete record of all actions for compliance. Track who changed what and when.',
+    benefits: ['Full action history', 'Before/after values', 'SOC 2 ready', 'HIPAA compliant'],
+    color: 'slate',
+  },
+  {
+    icon: FileText,
+    title: 'Disclaimers Library',
+    description: 'Browse and insert 15+ pre-written legal disclaimers including GDPR, HIPAA, and confidentiality.',
+    benefits: ['GDPR compliance', 'HIPAA notices', 'Legal disclaimers', 'Industry-specific'],
+    color: 'teal',
+  },
+  {
     icon: RefreshCw,
     title: 'Dynamic Fields',
     description: 'Use placeholders that automatically populate with each user\'s information.',
     benefits: ['Name, title, department', 'Contact information', 'Custom fields', 'Conditional content'],
     color: 'green',
-  },
-  {
-    icon: BarChart3,
-    title: 'Analytics & Insights',
-    description: 'Track deployment success rates and monitor signature performance across your organization.',
-    benefits: ['Deployment metrics', 'Success/failure tracking', 'Usage reports', 'Export data'],
-    color: 'amber',
-  },
-  {
-    icon: Shield,
-    title: 'Enterprise Security',
-    description: 'Your data is protected with industry-leading security practices and compliance.',
-    benefits: ['OAuth 2.0 authentication', 'Encrypted data', 'Audit logs', 'GDPR compliant'],
-    color: 'red',
   },
 ];
 
