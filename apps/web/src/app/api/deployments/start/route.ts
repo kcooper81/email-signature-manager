@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { setGmailSignature } from '@/lib/google/gmail';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { logException } from '@/lib/error-logging';
+import { getTemplateForUserWithFallback } from '@/lib/signature-rules';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
   try {
     requestBody = await request.json();
     console.log('Request body:', requestBody);
-    const { templateId, target = 'me', userIds } = requestBody;
+    const { templateId, target = 'me', userIds, useRules = false, emailType = 'new', recipients = [] } = requestBody;
     
     const supabase = createClient();
 
@@ -220,8 +221,38 @@ export async function POST(request: NextRequest) {
     for (const targetUser of targetUsers) {
       let deploymentStatus = 'success';
       let errorMessage: string | null = null;
+      let actualTemplateId = templateId;
+      let actualTemplate = template;
       
       try {
+        // If useRules is enabled, evaluate rules to get the correct template for this user
+        if (useRules && targetUser.id) {
+          const ruleBasedTemplateId = await getTemplateForUserWithFallback(
+            targetUser.id,
+            organizationId,
+            {
+              emailType: emailType as 'new' | 'reply',
+              recipients: recipients,
+            }
+          );
+          
+          if (ruleBasedTemplateId && ruleBasedTemplateId !== templateId) {
+            // Fetch the rule-matched template
+            const { data: ruleTemplate } = await supabase
+              .from('signature_templates')
+              .select('*')
+              .eq('id', ruleBasedTemplateId)
+              .eq('organization_id', organizationId)
+              .single();
+            
+            if (ruleTemplate) {
+              actualTemplateId = ruleBasedTemplateId;
+              actualTemplate = ruleTemplate;
+              console.log(`Rule matched: Using template "${ruleTemplate.name}" for user ${targetUser.email}`);
+            }
+          }
+        }
+
         // Render signature with user data in RenderContext format
         const renderContext = {
           user: {
@@ -242,7 +273,7 @@ export async function POST(request: NextRequest) {
           },
         };
 
-        const signatureResult = await renderSignatureToHtml(template.blocks, renderContext);
+        const signatureResult = await renderSignatureToHtml(actualTemplate.blocks, renderContext);
 
         // Deploy to Gmail
         await setGmailSignature(
@@ -268,7 +299,7 @@ export async function POST(request: NextRequest) {
             organization_id: organizationId,
             user_id: targetUser.id,
             deployment_id: deployment.id,
-            template_id: templateId,
+            template_id: actualTemplateId, // Use the actual template (rule-based or original)
             status: deploymentStatus,
             error_message: errorMessage,
             deployed_at: new Date().toISOString(),

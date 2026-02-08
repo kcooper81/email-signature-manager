@@ -45,6 +45,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
     is_active: true,
     sender_condition: 'all',
     sender_departments: [] as string[],
+    sender_user_ids: [] as string[],
     email_type: 'all',
     recipient_condition: 'all',
     start_date: '',
@@ -54,10 +55,12 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
   });
 
   const [departments, setDepartments] = useState<string[]>([]);
+  const [employees, setEmployees] = useState<{id: string; name: string; email: string}[]>([]);
 
   useEffect(() => {
     loadRules();
     loadDepartments();
+    loadEmployees();
   }, [templateId]);
 
   const loadRules = async () => {
@@ -96,6 +99,27 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
     }
   };
 
+  const loadEmployees = async () => {
+    try {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('users')
+        .select('id, first_name, last_name, email')
+        .eq('organization_id', organizationId)
+        .order('first_name', { ascending: true });
+
+      if (data) {
+        setEmployees(data.map(u => ({
+          id: u.id,
+          name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
+          email: u.email
+        })));
+      }
+    } catch (err) {
+      console.error('Failed to load employees:', err);
+    }
+  };
+
   const openCreateModal = () => {
     setEditingRule(null);
     setFormData({
@@ -105,6 +129,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
       is_active: true,
       sender_condition: 'all',
       sender_departments: [],
+      sender_user_ids: [],
       email_type: 'all',
       recipient_condition: 'all',
       start_date: '',
@@ -124,6 +149,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
       is_active: rule.is_active,
       sender_condition: rule.sender_condition,
       sender_departments: rule.sender_departments || [],
+      sender_user_ids: rule.sender_user_ids || [],
       email_type: rule.email_type,
       recipient_condition: rule.recipient_condition,
       start_date: rule.start_date ? rule.start_date.split('T')[0] : '',
@@ -155,6 +181,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
         is_active: formData.is_active,
         sender_condition: formData.sender_condition,
         sender_departments: formData.sender_departments.length > 0 ? formData.sender_departments : null,
+        sender_user_ids: formData.sender_user_ids.length > 0 ? formData.sender_user_ids : null,
         email_type: formData.email_type,
         recipient_condition: formData.recipient_condition,
         start_date: formData.start_date ? new Date(formData.start_date).toISOString() : null,
@@ -334,9 +361,12 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
                       <Users className="h-3 w-3" />
                       <span className="font-medium">Sender</span>
                     </div>
-                    <p className="capitalize">{rule.sender_condition.replace('_', ' ')}</p>
+                    <p className="capitalize">{rule.sender_condition.replace(/_/g, ' ')}</p>
                     {rule.sender_departments && rule.sender_departments.length > 0 && (
                       <p className="text-xs text-muted-foreground">{rule.sender_departments.join(', ')}</p>
+                    )}
+                    {rule.sender_user_ids && rule.sender_user_ids.length > 0 && (
+                      <p className="text-xs text-muted-foreground">{rule.sender_user_ids.length} employee(s) selected</p>
                     )}
                   </div>
                   <div>
@@ -438,34 +468,81 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
             >
               <option value="all">All employees</option>
               <option value="specific_departments">Specific departments</option>
+              <option value="specific_users">Specific employees</option>
             </select>
 
             {formData.sender_condition === 'specific_departments' && (
-              <div className="space-y-2">
+              <div className="space-y-2 mt-3">
                 <Label>Select Departments</Label>
-                {departments.map((dept) => (
-                  <label key={dept} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={formData.sender_departments.includes(dept)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setFormData({
-                            ...formData,
-                            sender_departments: [...formData.sender_departments, dept],
-                          });
-                        } else {
-                          setFormData({
-                            ...formData,
-                            sender_departments: formData.sender_departments.filter(d => d !== dept),
-                          });
-                        }
-                      }}
-                      className="h-4 w-4 rounded border-gray-300"
-                    />
-                    <span className="text-sm">{dept}</span>
-                  </label>
-                ))}
+                {departments.length === 0 ? (
+                  <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
+                    No departments found. Add departments to team members on the Team page first.
+                  </p>
+                ) : (
+                  <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
+                    {departments.map((dept) => (
+                      <label key={dept} className="flex items-center gap-2 p-1 hover:bg-muted rounded">
+                        <input
+                          type="checkbox"
+                          checked={formData.sender_departments.includes(dept)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({
+                                ...formData,
+                                sender_departments: [...formData.sender_departments, dept],
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                sender_departments: formData.sender_departments.filter(d => d !== dept),
+                              });
+                            }
+                          }}
+                          className="h-4 w-4 rounded border-gray-300"
+                        />
+                        <span className="text-sm">{dept}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {formData.sender_condition === 'specific_users' && (
+              <div className="space-y-2 mt-3">
+                <Label>Select Employees</Label>
+                {employees.length === 0 ? (
+                  <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg">
+                    No employees found.
+                  </p>
+                ) : (
+                  <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
+                    {employees.map((emp) => (
+                      <label key={emp.id} className="flex items-center gap-2 p-1 hover:bg-muted rounded">
+                        <input
+                          type="checkbox"
+                          checked={formData.sender_user_ids.includes(emp.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({
+                                ...formData,
+                                sender_user_ids: [...formData.sender_user_ids, emp.id],
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                sender_user_ids: formData.sender_user_ids.filter(id => id !== emp.id),
+                              });
+                            }
+                          }}
+                          className="h-4 w-4 rounded border-gray-300"
+                        />
+                        <span className="text-sm">{emp.name}</span>
+                        <span className="text-xs text-muted-foreground">({emp.email})</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

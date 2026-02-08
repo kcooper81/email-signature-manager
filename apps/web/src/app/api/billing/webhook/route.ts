@@ -13,22 +13,55 @@ function getSupabaseAdmin() {
 }
 
 export async function POST(request: NextRequest) {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+  // Validate required environment variables
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!webhookSecret) {
+    console.error('[Webhook] STRIPE_WEBHOOK_SECRET is not configured');
+    return NextResponse.json(
+      { error: 'Webhook not configured: missing STRIPE_WEBHOOK_SECRET' },
+      { status: 500 }
+    );
+  }
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error('[Webhook] Supabase credentials not configured');
+    return NextResponse.json(
+      { error: 'Webhook not configured: missing Supabase credentials' },
+      { status: 500 }
+    );
+  }
+
   const body = await request.text();
-  const signature = headers().get('stripe-signature') || '';
+  const headersList = await headers();
+  const signature = headersList.get('stripe-signature');
+
+  if (!signature) {
+    console.error('[Webhook] Missing stripe-signature header');
+    return NextResponse.json(
+      { error: 'Missing stripe-signature header' },
+      { status: 400 }
+    );
+  }
 
   let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
-    console.error('Webhook signature verification failed:', err.message);
+    console.error('[Webhook] Signature verification failed:', err.message);
     
     await logException(err, {
       route: '/api/billing/webhook',
       method: 'POST',
       errorType: 'billing_error',
-      metadata: { reason: 'signature_verification_failed' },
+      metadata: { 
+        reason: 'signature_verification_failed',
+        hasSignature: !!signature,
+        signatureLength: signature?.length,
+      },
     });
 
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
