@@ -63,6 +63,9 @@ export default function IntegrationsPage() {
   const [showGoogleOAuthSetup, setShowGoogleOAuthSetup] = useState(false);
   const [showMicrosoftSetup, setShowMicrosoftSetup] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [calendlyEventTypes, setCalendlyEventTypes] = useState<any[]>([]);
+  const [loadingCalendlyEvents, setLoadingCalendlyEvents] = useState(false);
+  const [refreshingCalendly, setRefreshingCalendly] = useState(false);
   
   const copyToClipboard = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text);
@@ -129,6 +132,70 @@ export default function IntegrationsPage() {
   const connectHubSpot = () => {
     setConnecting('hubspot');
     window.location.href = '/api/integrations/hubspot/connect';
+  };
+
+  const connectCalendly = () => {
+    setConnecting('calendly');
+    window.location.href = '/api/integrations/calendly/connect';
+  };
+
+  const loadCalendlyEventTypes = async () => {
+    setLoadingCalendlyEvents(true);
+    try {
+      const response = await fetch('/api/integrations/calendly/event-types');
+      if (response.ok) {
+        const data = await response.json();
+        setCalendlyEventTypes(data.event_types || []);
+      }
+    } catch (err) {
+      console.error('Failed to load Calendly event types:', err);
+    } finally {
+      setLoadingCalendlyEvents(false);
+    }
+  };
+
+  const refreshCalendlyMetadata = async () => {
+    setRefreshingCalendly(true);
+    setSyncError(null);
+    setSyncSuccess(null);
+    
+    try {
+      const response = await fetch('/api/integrations/calendly/refresh-metadata', {
+        method: 'POST',
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to refresh Calendly data');
+      }
+      
+      setSyncSuccess('Calendly event types refreshed successfully');
+      await loadConnections();
+    } catch (err: any) {
+      setSyncError(err.message || 'Failed to refresh Calendly data');
+      console.error('Calendly refresh error:', err);
+    } finally {
+      setRefreshingCalendly(false);
+    }
+  };
+
+  const disconnectCalendly = async () => {
+    setShowDisconnectConfirm(null);
+    
+    try {
+      const response = await fetch('/api/integrations/calendly/disconnect', {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        await loadConnections();
+        setSyncSuccess('Calendly disconnected successfully');
+      }
+    } catch (err) {
+      console.error('Failed to disconnect Calendly:', err);
+      setSyncError('Failed to disconnect Calendly');
+    }
   };
 
   const verifyMarketplaceInstall = async () => {
@@ -301,6 +368,12 @@ export default function IntegrationsPage() {
   const disconnectProvider = async (provider: string) => {
     setShowDisconnectConfirm(null);
 
+    // Use custom disconnect handler for Calendly
+    if (provider === 'calendly') {
+      await disconnectCalendly();
+      return;
+    }
+
     const supabase = createClient();
     
     // Get current user's organization for security
@@ -330,6 +403,7 @@ export default function IntegrationsPage() {
   const googleConnection = connections.find((c) => c.provider === 'google');
   const microsoftConnection = connections.find((c) => c.provider === 'microsoft');
   const hubspotConnection = connections.find((c) => c.provider === 'hubspot');
+  const calendlyConnection = connections.find((c) => c.provider === 'calendly');
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -359,6 +433,13 @@ export default function IntegrationsPage() {
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-green-600" />
           <p className="text-green-800">HubSpot CRM connected successfully!</p>
+        </div>
+      )}
+
+      {success === 'calendly_connected' && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-green-600" />
+          <p className="text-green-800">Calendly connected successfully!</p>
         </div>
       )}
 
@@ -738,6 +819,142 @@ export default function IntegrationsPage() {
                     size="sm" 
                     className="text-destructive"
                     onClick={() => handleDisconnectClick('hubspot')}
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Calendly */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-background border rounded-lg flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-6 h-6">
+                    <path fill="#006BFF" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+                    <path fill="#006BFF" d="M12 6c-3.309 0-6 2.691-6 6s2.691 6 6 6 6-2.691 6-6-2.691-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"/>
+                    <circle fill="#006BFF" cx="12" cy="12" r="2"/>
+                  </svg>
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Calendly</CardTitle>
+                  <CardDescription>Meeting scheduling links</CardDescription>
+                </div>
+              </div>
+              {calendlyConnection?.is_active && (
+                <span className="flex items-center gap-1 text-sm text-green-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Connected
+                </span>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Add your Calendly scheduling links to email signatures, making it easy for recipients to book meetings with you.
+            </p>
+
+            {!calendlyConnection?.is_active ? (
+              <>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm font-medium text-blue-900 mb-2">How it works:</p>
+                  <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                    <li>Connect your Calendly account</li>
+                    <li>We&apos;ll fetch your event types (30 min call, discovery call, etc.)</li>
+                    <li>Add Calendly links to your signature templates</li>
+                    <li>Recipients can book time with one click</li>
+                  </ol>
+                </div>
+                <Button onClick={connectCalendly} disabled={connecting === 'calendly'}>
+                  {connecting === 'calendly' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      Connect Calendly
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </>
+            ) : (
+              <div className="space-y-3">
+                <div className="text-xs text-muted-foreground">
+                  Connected on {new Date(calendlyConnection.created_at).toLocaleDateString()}
+                </div>
+
+                {calendlyEventTypes.length === 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={loadCalendlyEventTypes}
+                    disabled={loadingCalendlyEvents}
+                  >
+                    {loadingCalendlyEvents ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading Event Types...
+                      </>
+                    ) : (
+                      'View Event Types'
+                    )}
+                  </Button>
+                )}
+
+                {calendlyEventTypes.length > 0 && (
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                    <p className="text-xs font-medium text-slate-700 mb-2">Available Event Types:</p>
+                    <div className="space-y-1">
+                      {calendlyEventTypes.slice(0, 5).map((eventType: any) => (
+                        <div key={eventType.uri} className="text-xs text-slate-600 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                          <span className="font-medium">{eventType.name}</span>
+                          <span className="text-muted-foreground">({eventType.duration} min)</span>
+                        </div>
+                      ))}
+                      {calendlyEventTypes.length > 5 && (
+                        <p className="text-xs text-muted-foreground italic">
+                          +{calendlyEventTypes.length - 5} more event types
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-blue-50 border border-blue-100 rounded p-2 text-xs text-blue-700">
+                  <strong>Usage:</strong> Use <code className="bg-blue-100 px-1 rounded">{'{{calendly_link}}'}</code> in your signature templates to insert your scheduling link.
+                </div>
+
+                <div className="flex gap-2">
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={refreshCalendlyMetadata}
+                    disabled={refreshingCalendly}
+                  >
+                    {refreshingCalendly ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Refreshing...
+                      </>
+                    ) : (
+                      'Refresh Event Types'
+                    )}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={connectCalendly}>
+                    Reconnect
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-destructive"
+                    onClick={() => handleDisconnectClick('calendly')}
                   >
                     Disconnect
                   </Button>
