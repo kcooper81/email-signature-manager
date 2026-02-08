@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Upload, Plus, Trash2, Link as LinkIcon } from 'lucide-react';
+import { Modal, ModalHeader, ModalTitle, ModalDescription } from '@/components/ui';
+import { Upload, Plus, Trash2, Link as LinkIcon, Library } from 'lucide-react';
 import type {
   SignatureBlock,
   TextBlockContent,
@@ -977,6 +978,37 @@ function DisclaimerEditor({
   content: DisclaimerBlockContent;
   onChange: (content: DisclaimerBlockContent) => void;
 }) {
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [libraryDisclaimers, setLibraryDisclaimers] = useState<{id: string; name: string; content: string; category: string}[]>([]);
+  const [loadingLibrary, setLoadingLibrary] = useState(false);
+
+  const loadLibraryDisclaimers = async () => {
+    setLoadingLibrary(true);
+    try {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('disclaimer_templates')
+        .select('id, name, content, category')
+        .eq('is_system', true)
+        .order('category', { ascending: true });
+      setLibraryDisclaimers(data || []);
+    } catch (err) {
+      console.error('Failed to load disclaimers:', err);
+    } finally {
+      setLoadingLibrary(false);
+    }
+  };
+
+  const handleOpenLibrary = () => {
+    setShowLibrary(true);
+    loadLibraryDisclaimers();
+  };
+
+  const handleSelectFromLibrary = (disclaimerContent: string) => {
+    onChange({ ...content, text: disclaimerContent, template: 'custom' });
+    setShowLibrary(false);
+  };
+
   const handleTemplateChange = (template: DisclaimerBlockContent['template']) => {
     const text = template === 'custom' ? content.text : DISCLAIMER_TEMPLATES[template];
     onChange({ ...content, template, text });
@@ -984,8 +1016,19 @@ function DisclaimerEditor({
 
   return (
     <div className="space-y-4">
+      {/* Browse Library Button */}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleOpenLibrary}
+        className="w-full"
+      >
+        <Library className="mr-2 h-4 w-4" />
+        Browse Disclaimer Library (15+ templates)
+      </Button>
+
       <div className="space-y-2">
-        <Label>Disclaimer Template</Label>
+        <Label>Quick Templates</Label>
         <select
           value={content.template}
           onChange={(e) => handleTemplateChange(e.target.value as DisclaimerBlockContent['template'])}
@@ -1008,6 +1051,39 @@ function DisclaimerEditor({
           placeholder="Enter your legal disclaimer..."
         />
       </div>
+
+      {/* Library Modal */}
+      <Modal open={showLibrary} onClose={() => setShowLibrary(false)}>
+        <ModalHeader>
+          <ModalTitle>Disclaimer Library</ModalTitle>
+          <ModalDescription>
+            Choose from 15+ pre-written legal disclaimers
+          </ModalDescription>
+        </ModalHeader>
+        <div className="max-h-[400px] overflow-y-auto space-y-2 py-4">
+          {loadingLibrary ? (
+            <p className="text-center text-muted-foreground py-4">Loading...</p>
+          ) : libraryDisclaimers.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4">
+              No disclaimers found. Run the database migration first.
+            </p>
+          ) : (
+            libraryDisclaimers.map((d) => (
+              <div
+                key={d.id}
+                className="p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                onClick={() => handleSelectFromLibrary(d.content)}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-sm">{d.name}</span>
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded capitalize">{d.category}</span>
+                </div>
+                <p className="text-xs text-muted-foreground line-clamp-2">{d.content}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </Modal>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

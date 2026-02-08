@@ -39,8 +39,12 @@ export async function POST(request: NextRequest) {
 
     let customerId = subscription?.stripe_customer_id;
 
-    // Create Stripe customer if needed
-    if (!customerId) {
+    // Create Stripe customer if needed (or if existing ID is invalid/placeholder)
+    const needsNewCustomer = !customerId || 
+      !customerId.startsWith('cus_') || 
+      customerId.startsWith('pending_');
+    
+    if (needsNewCustomer) {
       const { data: org } = await supabase
         .from('organizations')
         .select('name')
