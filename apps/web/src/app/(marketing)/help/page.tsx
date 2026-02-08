@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Mail, MessageCircle, FileText, Zap, Users } from 'lucide-react';
+import { BookOpen, Mail, MessageCircle, FileText, Zap, Users, Link2, GitBranch, Image, Shield, BarChart3, ClipboardList, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { DynamicFAQs } from '@/components/help/dynamic-faqs';
@@ -23,23 +23,53 @@ const quickLinks = [
     ],
   },
   {
-    icon: BookOpen,
-    title: 'Documentation',
-    description: 'Comprehensive guides and tutorials',
+    icon: Users,
+    title: 'Team Management',
+    description: 'Manage users, invites, and permissions',
     links: [
-      { text: 'Template Builder Guide', href: '/features' },
-      { text: 'Integration Setup', href: '/google-workspace' },
-      { text: 'Department Templates', href: '/features' },
+      { text: 'Bulk Invite Employees', href: '/features' },
+      { text: 'Role-Based Access (RBAC)', href: '/features' },
+      { text: 'Personal Links Setup', href: '/features' },
     ],
   },
   {
-    icon: Users,
-    title: 'Team Management',
-    description: 'Manage users and permissions',
+    icon: GitBranch,
+    title: 'Signature Rules',
+    description: 'Conditional logic for smart signatures',
     links: [
-      { text: 'Add Team Members', href: '/features' },
-      { text: 'Assign Templates', href: '/features' },
-      { text: 'Bulk Operations', href: '/features' },
+      { text: 'Internal vs External Rules', href: '/features' },
+      { text: 'Department-Based Signatures', href: '/features' },
+      { text: 'Campaign Date Scheduling', href: '/features' },
+    ],
+  },
+  {
+    icon: Image,
+    title: 'Campaign Banners',
+    description: 'Promotional banners with tracking',
+    links: [
+      { text: 'Add Banner to Signature', href: '/features' },
+      { text: 'Schedule Campaign Dates', href: '/features' },
+      { text: 'Track Banner Clicks', href: '/features' },
+    ],
+  },
+  {
+    icon: BarChart3,
+    title: 'Analytics',
+    description: 'Track clicks and measure ROI',
+    links: [
+      { text: 'View Click Analytics', href: '/features' },
+      { text: 'Link Performance', href: '/features' },
+      { text: 'Export Reports', href: '/features' },
+    ],
+  },
+  {
+    icon: Shield,
+    title: 'Compliance & Security',
+    description: 'Disclaimers, audit logs, and more',
+    links: [
+      { text: 'Disclaimers Library', href: '/features' },
+      { text: 'Audit Logs', href: '/features' },
+      { text: 'GDPR & HIPAA Compliance', href: '/security' },
     ],
   },
 ];
@@ -58,6 +88,15 @@ export default function HelpPage() {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Find answers, browse documentation, or get in touch with our support team.
           </p>
+          {/* What's New Banner */}
+          <Link 
+            href="/help/releases"
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
+          >
+            <Sparkles className="h-5 w-5" />
+            <span className="font-medium">What's New: February 2026 Release</span>
+            <span className="text-violet-200">→</span>
+          </Link>
         </div>
       </section>
 
@@ -65,7 +104,7 @@ export default function HelpPage() {
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Quick Start Guides</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quickLinks.map((section) => (
               <div key={section.title} className="bg-white border border-gray-200 rounded-xl p-6">
                 <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
@@ -154,12 +193,20 @@ export default function HelpPage() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Additional Resources</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Link href="/help/releases" className="bg-white border border-gray-200 rounded-xl p-6 hover:border-violet-300 transition-colors">
+              <Sparkles className="h-8 w-8 text-violet-600 mb-3" />
+              <h3 className="font-semibold mb-2">What's New</h3>
+              <p className="text-sm text-gray-600">
+                Latest features and product updates
+              </p>
+            </Link>
+
             <Link href="/blog" className="bg-white border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-colors">
               <FileText className="h-8 w-8 text-blue-600 mb-3" />
               <h3 className="font-semibold mb-2">Blog & Guides</h3>
               <p className="text-sm text-gray-600">
-                Best practices, tips, and industry insights
+                Best practices, tips, and insights
               </p>
             </Link>
 
@@ -167,15 +214,15 @@ export default function HelpPage() {
               <Users className="h-8 w-8 text-blue-600 mb-3" />
               <h3 className="font-semibold mb-2">Use Cases</h3>
               <p className="text-sm text-gray-600">
-                See how teams use Siggly for their needs
+                See how teams use Siggly
               </p>
             </Link>
 
             <Link href="/security" className="bg-white border border-gray-200 rounded-xl p-6 hover:border-blue-300 transition-colors">
-              <FileText className="h-8 w-8 text-blue-600 mb-3" />
-              <h3 className="font-semibold mb-2">Security & Compliance</h3>
+              <Shield className="h-8 w-8 text-blue-600 mb-3" />
+              <h3 className="font-semibold mb-2">Security</h3>
               <p className="text-sm text-gray-600">
-                Learn about our security practices
+                Our security practices
               </p>
             </Link>
           </div>
