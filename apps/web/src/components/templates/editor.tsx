@@ -202,16 +202,16 @@ export function TemplateEditor({
                 </div>
                 
                 {/* Block Type Buttons */}
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2">
                   {BLOCK_TYPES.map((blockType) => (
                     <Button
                       key={blockType.type}
                       variant="outline"
                       size="sm"
-                      className="justify-start h-auto py-2 px-2 min-w-[70px] flex-shrink-0"
+                      className="justify-start h-auto py-2 px-2 w-full"
                       onClick={() => addBlock(blockType.type)}
                     >
-                      <span className="mr-1.5">{blockType.icon}</span>
+                      <span className="mr-1.5 flex-shrink-0">{blockType.icon}</span>
                       <span className="text-xs truncate">{blockType.label}</span>
                     </Button>
                   ))}
@@ -395,6 +395,13 @@ function getDefaultContent(type: SignatureBlockType, industry: IndustryType): an
         src: '',
         alt: 'Banner',
         width: 600,
+        trackClicks: true,
+        campaignName: '',
+        startDate: '',
+        endDate: '',
+        utmSource: 'email',
+        utmMedium: 'signature',
+        utmCampaign: '',
       };
     case 'disclaimer':
       return {

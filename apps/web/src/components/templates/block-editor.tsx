@@ -19,6 +19,7 @@ import type {
   HtmlBlockContent,
   DisclaimerBlockContent,
   ComplianceBlockContent,
+  BannerBlockContent,
 } from './types';
 import { DYNAMIC_FIELDS, DISCLAIMER_TEMPLATES } from './types';
 import { ComplianceBlockEditor } from './compliance-block';
@@ -50,6 +51,8 @@ export function BlockEditor({ block, onChange }: BlockEditorProps) {
       return <DisclaimerEditor content={block.content as DisclaimerBlockContent} onChange={onChange} />;
     case 'compliance':
       return <ComplianceBlockEditor content={block.content as ComplianceBlockContent} onChange={onChange} />;
+    case 'banner':
+      return <BannerEditor content={block.content as BannerBlockContent} onChange={onChange} />;
     default:
       return <div className="text-muted-foreground">No editor for this block type</div>;
   }
@@ -971,6 +974,207 @@ function HtmlEditor({
   );
 }
 
+function BannerEditor({
+  content,
+  onChange,
+}: {
+  content: BannerBlockContent;
+  onChange: (content: BannerBlockContent) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `banner-${Date.now()}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from('signature-assets')
+        .upload(fileName, file, { upsert: true });
+
+      if (error) throw error;
+
+      const { data: urlData } = supabase.storage
+        .from('signature-assets')
+        .getPublicUrl(fileName);
+
+      onChange({ ...content, src: urlData.publicUrl });
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Banner Image */}
+      <div className="space-y-2">
+        <Label>Banner Image</Label>
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            value={content.src}
+            onChange={(e) => onChange({ ...content, src: e.target.value })}
+            placeholder="https://example.com/banner.png"
+            className="flex-1"
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading...' : <Upload className="h-4 w-4" />}
+          </Button>
+        </div>
+        {content.src && (
+          <div className="border rounded-lg p-2 bg-muted">
+            <img src={content.src} alt={content.alt || 'Banner preview'} className="max-h-32 mx-auto" />
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Alt Text</Label>
+          <Input
+            type="text"
+            value={content.alt}
+            onChange={(e) => onChange({ ...content, alt: e.target.value })}
+            placeholder="Banner description"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Width (px)</Label>
+          <Input
+            type="number"
+            value={content.width}
+            onChange={(e) => onChange({ ...content, width: parseInt(e.target.value) || 600 })}
+            min={100}
+            max={800}
+          />
+        </div>
+      </div>
+
+      {/* Link & Click Tracking */}
+      <div className="space-y-2">
+        <Label>Click-through URL</Label>
+        <Input
+          type="url"
+          value={content.link || ''}
+          onChange={(e) => onChange({ ...content, link: e.target.value })}
+          placeholder="https://example.com/landing-page"
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="trackClicks"
+          checked={content.trackClicks ?? true}
+          onChange={(e) => onChange({ ...content, trackClicks: e.target.checked })}
+          className="h-4 w-4 rounded border-gray-300"
+        />
+        <Label htmlFor="trackClicks" className="font-normal">Enable click tracking</Label>
+      </div>
+
+      {/* Campaign Scheduling */}
+      <div className="border-t pt-4 mt-4">
+        <h4 className="font-medium text-sm mb-3">Campaign Scheduling (Optional)</h4>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <Label>Campaign Name</Label>
+            <Input
+              type="text"
+              value={content.campaignName || ''}
+              onChange={(e) => onChange({ ...content, campaignName: e.target.value })}
+              placeholder="e.g., Q1 Promo, Holiday Sale"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Start Date</Label>
+              <Input
+                type="date"
+                value={content.startDate || ''}
+                onChange={(e) => onChange({ ...content, startDate: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>End Date</Label>
+              <Input
+                type="date"
+                value={content.endDate || ''}
+                onChange={(e) => onChange({ ...content, endDate: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* UTM Parameters */}
+      {content.trackClicks && (
+        <div className="border-t pt-4 mt-4">
+          <h4 className="font-medium text-sm mb-3">UTM Parameters (Optional)</h4>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <Label className="text-xs">Source</Label>
+              <Input
+                type="text"
+                value={content.utmSource || ''}
+                onChange={(e) => onChange({ ...content, utmSource: e.target.value })}
+                placeholder="email"
+                className="text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Medium</Label>
+              <Input
+                type="text"
+                value={content.utmMedium || ''}
+                onChange={(e) => onChange({ ...content, utmMedium: e.target.value })}
+                placeholder="signature"
+                className="text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs">Campaign</Label>
+              <Input
+                type="text"
+                value={content.utmCampaign || ''}
+                onChange={(e) => onChange({ ...content, utmCampaign: e.target.value })}
+                placeholder="q1-promo"
+                className="text-sm"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <p className="text-xs text-blue-800">
+          <strong>Tip:</strong> Banners with scheduled dates will only appear during the campaign period. 
+          Click tracking helps measure ROI.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function DisclaimerEditor({
   content,
   onChange,
@@ -981,6 +1185,8 @@ function DisclaimerEditor({
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryDisclaimers, setLibraryDisclaimers] = useState<{id: string; name: string; content: string; category: string}[]>([]);
   const [loadingLibrary, setLoadingLibrary] = useState(false);
+  const [disclaimerSearch, setDisclaimerSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const loadLibraryDisclaimers = async () => {
     setLoadingLibrary(true);
@@ -1053,35 +1259,70 @@ function DisclaimerEditor({
       </div>
 
       {/* Library Modal */}
-      <Modal open={showLibrary} onClose={() => setShowLibrary(false)}>
+      <Modal open={showLibrary} onClose={() => { setShowLibrary(false); setDisclaimerSearch(''); setSelectedCategory('all'); }}>
         <ModalHeader>
           <ModalTitle>Disclaimer Library</ModalTitle>
           <ModalDescription>
             Choose from 15+ pre-written legal disclaimers
           </ModalDescription>
         </ModalHeader>
-        <div className="max-h-[400px] overflow-y-auto space-y-2 py-4">
-          {loadingLibrary ? (
-            <p className="text-center text-muted-foreground py-4">Loading...</p>
-          ) : libraryDisclaimers.length === 0 ? (
-            <p className="text-center text-muted-foreground py-4">
-              No disclaimers found. Run the database migration first.
-            </p>
-          ) : (
-            libraryDisclaimers.map((d) => (
-              <div
-                key={d.id}
-                className="p-3 border rounded-lg hover:bg-muted cursor-pointer"
-                onClick={() => handleSelectFromLibrary(d.content)}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-sm">{d.name}</span>
-                  <span className="text-xs bg-muted px-2 py-0.5 rounded capitalize">{d.category}</span>
-                </div>
-                <p className="text-xs text-muted-foreground line-clamp-2">{d.content}</p>
-              </div>
-            ))
-          )}
+        <div className="py-4 space-y-3">
+          {/* Search and Filter */}
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Search disclaimers..."
+              value={disclaimerSearch}
+              onChange={(e) => setDisclaimerSearch(e.target.value)}
+              className="flex-1"
+            />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 border rounded-md text-sm bg-background"
+            >
+              <option value="all">All Categories</option>
+              <option value="legal">Legal</option>
+              <option value="gdpr">GDPR</option>
+              <option value="hipaa">HIPAA</option>
+              <option value="confidentiality">Confidentiality</option>
+              <option value="finance">Finance</option>
+              <option value="real_estate">Real Estate</option>
+            </select>
+          </div>
+
+          {/* Disclaimer List */}
+          <div className="max-h-[350px] overflow-y-auto space-y-2">
+            {loadingLibrary ? (
+              <p className="text-center text-muted-foreground py-4">Loading...</p>
+            ) : libraryDisclaimers.length === 0 ? (
+              <p className="text-center text-muted-foreground py-4">
+                No disclaimers found. Run the database migration first.
+              </p>
+            ) : (
+              libraryDisclaimers
+                .filter((d) => {
+                  const matchesSearch = !disclaimerSearch || 
+                    d.name.toLowerCase().includes(disclaimerSearch.toLowerCase()) ||
+                    d.content.toLowerCase().includes(disclaimerSearch.toLowerCase());
+                  const matchesCategory = selectedCategory === 'all' || d.category === selectedCategory;
+                  return matchesSearch && matchesCategory;
+                })
+                .map((d) => (
+                  <div
+                    key={d.id}
+                    className="p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                    onClick={() => handleSelectFromLibrary(d.content)}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-sm">{d.name}</span>
+                      <span className="text-xs bg-muted px-2 py-0.5 rounded capitalize">{d.category}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{d.content}</p>
+                  </div>
+                ))
+            )}
+          </div>
         </div>
       </Modal>
 
