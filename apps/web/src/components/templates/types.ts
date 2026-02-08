@@ -78,6 +78,15 @@ export interface BannerBlockContent {
   alt: string;
   link?: string;
   width: number;
+  // Campaign scheduling
+  campaignName?: string;
+  startDate?: string;
+  endDate?: string;
+  // Click tracking
+  trackClicks?: boolean;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
 }
 
 export interface HtmlBlockContent {

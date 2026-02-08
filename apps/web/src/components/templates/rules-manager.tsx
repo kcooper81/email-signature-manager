@@ -56,6 +56,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
 
   const [departments, setDepartments] = useState<string[]>([]);
   const [employees, setEmployees] = useState<{id: string; name: string; email: string}[]>([]);
+  const [employeeSearch, setEmployeeSearch] = useState('');
 
   useEffect(() => {
     loadRules();
@@ -516,32 +517,54 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
                     No employees found.
                   </p>
                 ) : (
-                  <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
-                    {employees.map((emp) => (
-                      <label key={emp.id} className="flex items-center gap-2 p-1 hover:bg-muted rounded">
-                        <input
-                          type="checkbox"
-                          checked={formData.sender_user_ids.includes(emp.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFormData({
-                                ...formData,
-                                sender_user_ids: [...formData.sender_user_ids, emp.id],
-                              });
-                            } else {
-                              setFormData({
-                                ...formData,
-                                sender_user_ids: formData.sender_user_ids.filter(id => id !== emp.id),
-                              });
-                            }
-                          }}
-                          className="h-4 w-4 rounded border-gray-300"
-                        />
-                        <span className="text-sm">{emp.name}</span>
-                        <span className="text-xs text-muted-foreground">({emp.email})</span>
-                      </label>
-                    ))}
-                  </div>
+                  <>
+                    {/* Search input */}
+                    <Input
+                      type="text"
+                      placeholder="Search by name or email..."
+                      value={employeeSearch}
+                      onChange={(e) => setEmployeeSearch(e.target.value)}
+                      className="mb-2"
+                    />
+                    {formData.sender_user_ids.length > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        {formData.sender_user_ids.length} employee(s) selected
+                      </p>
+                    )}
+                    <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-1">
+                      {employees
+                        .filter(emp => {
+                          if (!employeeSearch) return true;
+                          const search = employeeSearch.toLowerCase();
+                          return emp.name.toLowerCase().includes(search) || 
+                                 emp.email.toLowerCase().includes(search);
+                        })
+                        .map((emp) => (
+                          <label key={emp.id} className="flex items-center gap-2 p-1 hover:bg-muted rounded">
+                            <input
+                              type="checkbox"
+                              checked={formData.sender_user_ids.includes(emp.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFormData({
+                                    ...formData,
+                                    sender_user_ids: [...formData.sender_user_ids, emp.id],
+                                  });
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    sender_user_ids: formData.sender_user_ids.filter(id => id !== emp.id),
+                                  });
+                                }
+                              }}
+                              className="h-4 w-4 rounded border-gray-300"
+                            />
+                            <span className="text-sm">{emp.name}</span>
+                            <span className="text-xs text-muted-foreground">({emp.email})</span>
+                          </label>
+                        ))}
+                    </div>
+                  </>
                 )}
               </div>
             )}

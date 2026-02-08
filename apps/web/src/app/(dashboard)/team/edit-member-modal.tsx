@@ -1,11 +1,15 @@
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label, Input, Button } from '@/components/ui';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, Trash2, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
 
 interface EditMemberModalProps {
   open: boolean;
   onClose: () => void;
   memberName: string;
+  memberEmail: string;
+  canEditEmail: boolean;
   editForm: {
+    email: string;
     first_name: string;
     last_name: string;
     title: string;
@@ -21,20 +25,33 @@ interface EditMemberModalProps {
   };
   setEditForm: (form: any) => void;
   onSave: () => void;
+  onDelete: () => void;
   updating: boolean;
+  deleting: boolean;
 }
 
 export function EditMemberModal({
   open,
   onClose,
   memberName,
+  memberEmail,
+  canEditEmail,
   editForm,
   setEditForm,
   onSave,
+  onDelete,
   updating,
+  deleting,
 }: EditMemberModalProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleClose = () => {
+    setShowDeleteConfirm(false);
+    onClose();
+  };
+
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleClose}>
       <ModalHeader>
         <ModalTitle>Edit Team Member</ModalTitle>
         <ModalDescription>
@@ -42,9 +59,70 @@ export function EditMemberModal({
         </ModalDescription>
       </ModalHeader>
       <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto">
+        {/* Delete Confirmation */}
+        {showDeleteConfirm && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-red-800">Delete this team member?</p>
+                <p className="text-sm text-red-600 mt-1">
+                  This will permanently remove {memberName || memberEmail} from your team. This action cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" size="sm" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={() => {
+                  onDelete();
+                  setShowDeleteConfirm(false);
+                }}
+                disabled={deleting}
+              >
+                {deleting ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Deleting...</>
+                ) : (
+                  <><Trash2 className="mr-2 h-4 w-4" />Delete</>  
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Basic Information */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-gray-900">Basic Information</h3>
+          
+          {/* Email - only editable for manually added users */}
+          <div className="space-y-2">
+            <Label htmlFor="edit_email">Email Address</Label>
+            {canEditEmail ? (
+              <Input
+                id="edit_email"
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                placeholder="email@example.com"
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Input
+                  id="edit_email"
+                  type="email"
+                  value={memberEmail}
+                  disabled
+                  className="bg-gray-50"
+                />
+                <span className="text-xs text-muted-foreground whitespace-nowrap">Synced user</span>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="edit_first_name">First Name</Label>
@@ -183,23 +261,34 @@ export function EditMemberModal({
           </div>
         </div>
       </div>
-      <ModalFooter>
-        <Button variant="outline" onClick={onClose}>
-          Cancel
+      <ModalFooter className="flex justify-between">
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowDeleteConfirm(true)}
+          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          disabled={updating || deleting}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
         </Button>
-        <Button onClick={onSave} disabled={updating}>
-          {updating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button onClick={onSave} disabled={updating}>
+            {updating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </div>
       </ModalFooter>
     </Modal>
   );
