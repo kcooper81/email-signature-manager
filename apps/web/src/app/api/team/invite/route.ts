@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sendTeamInviteEmail } from '@/lib/email/resend';
 
 export async function POST(request: NextRequest) {
   try {
@@ -104,14 +105,20 @@ export async function POST(request: NextRequest) {
       const inviterName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Your admin';
       const orgName = organization?.name || 'your organization';
 
-      // TODO: Send actual email via email service (Resend, SendGrid, etc.)
-      // For now, we'll just log it
-      console.log(`
-        Invite email for ${inviteUser.email}:
-        From: ${inviterName} at ${orgName}
-        Link: ${inviteUrl}
-        Expires: ${expiresAt.toISOString()}
-      `);
+      try {
+        await sendTeamInviteEmail({
+          to: inviteUser.email,
+          inviterName,
+          organizationName: orgName,
+          inviteUrl,
+          expiresAt: expiresAt.toISOString(),
+        });
+        
+        console.log(`Invite email sent to ${inviteUser.email}`);
+      } catch (emailError) {
+        console.error(`Failed to send invite email to ${inviteUser.email}:`, emailError);
+        // Continue with other invites even if one fails
+      }
 
       invites.push({
         email: inviteUser.email,
