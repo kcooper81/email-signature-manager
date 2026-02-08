@@ -3,3 +3,7 @@ export { DeploymentsTab } from './deployments-tab';
 export { TeamTab } from './team-tab';
 export { TemplatesTab } from './templates-tab';
 export { OperationsTab } from './operations-tab';
+export { MarketingTab } from './marketing-tab';
+export { SalesTab } from './sales-tab';
+export { HRTab } from './hr-tab';
+export { ITTab } from './it-tab';
