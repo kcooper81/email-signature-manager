@@ -18,6 +18,15 @@ interface RenderContext {
   organization: {
     name?: string;
   };
+  calendly?: {
+    scheduling_url?: string;
+    event_types?: Array<{
+      slug: string;
+      scheduling_url: string;
+      name: string;
+    }>;
+    default_event_type_uri?: string;
+  };
 }
 
 /**
@@ -73,9 +82,9 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
     case 'contact-info':
       return renderContactInfoBlock(content, context);
     case 'button':
-      return renderButtonBlock(content);
+      return renderButtonBlock(content, context);
     case 'banner':
-      return renderBannerBlock(content);
+      return renderBannerBlock(content, context);
     case 'html':
       return renderHtmlBlock(content);
     default:
@@ -84,7 +93,7 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
 }
 
 function replacePlaceholders(text: string, context: RenderContext): string {
-  const { user, organization } = context;
+  const { user, organization, calendly } = context;
   
   let result = text
     .replace(/\{\{first_name\}\}/gi, user.firstName || '')
@@ -95,9 +104,37 @@ function replacePlaceholders(text: string, context: RenderContext): string {
     .replace(/\{\{mobile\}\}/gi, user.mobile || '')
     .replace(/\{\{job_title\}\}/gi, user.title || '')
     .replace(/\{\{department\}\}/gi, user.department || '')
-    .replace(/\{\{company\}\}/gi, organization.name || '')
-    // Remove any remaining unresolved placeholders
-    .replace(/\{\{[^}]+\}\}/gi, '');
+    .replace(/\{\{company\}\}/gi, organization.name || '');
+  
+  // Calendly link replacements
+  if (calendly) {
+    // Replace main Calendly link
+    result = result.replace(/\{\{calendly_link\}\}/gi, calendly.scheduling_url || '');
+    
+    // Replace default event type link
+    if (calendly.default_event_type_uri && calendly.event_types) {
+      const defaultEvent = calendly.event_types.find(
+        et => et.scheduling_url
+      );
+      result = result.replace(
+        /\{\{calendly_default\}\}/gi, 
+        defaultEvent?.scheduling_url || calendly.scheduling_url || ''
+      );
+    } else {
+      result = result.replace(/\{\{calendly_default\}\}/gi, calendly.scheduling_url || '');
+    }
+    
+    // Replace specific event type links: {{calendly_event:slug}}
+    const eventTypePattern = /\{\{calendly_event:([a-zA-Z0-9_-]+)\}\}/gi;
+    result = result.replace(eventTypePattern, (match, slug) => {
+      if (!calendly.event_types) return '';
+      const eventType = calendly.event_types.find(et => et.slug === slug);
+      return eventType?.scheduling_url || '';
+    });
+  }
+  
+  // Remove any remaining unresolved placeholders
+  result = result.replace(/\{\{[^}]+\}\}/gi, '');
   
   return result.trim();
 }
@@ -257,9 +294,9 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
   `;
 }
 
-function renderButtonBlock(content: any): string {
+function renderButtonBlock(content: any, context: RenderContext): string {
   const text = content.text || 'Click Here';
-  const url = content.url || '#';
+  const url = replacePlaceholders(content.url || '#', context);
   const bgColor = content.backgroundColor || '#0066cc';
   const textColor = content.textColor || '#ffffff';
   const borderRadius = content.borderRadius || 4;
@@ -275,10 +312,10 @@ function renderButtonBlock(content: any): string {
   `;
 }
 
-function renderBannerBlock(content: any): string {
+function renderBannerBlock(content: any, context: RenderContext): string {
   const src = content.src || '';
   const alt = content.alt || 'Banner';
-  const link = content.link;
+  const link = content.link ? replacePlaceholders(content.link, context) : '';
   const width = content.width ? `width="${content.width}"` : '';
 
   if (!src) return '';
