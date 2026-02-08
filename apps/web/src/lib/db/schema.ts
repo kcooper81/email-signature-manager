@@ -95,7 +95,7 @@ export const signatureTemplates = pgTable('signature_templates', {
   blocks: jsonb('blocks').notNull().$type<unknown[]>(),
   industry: industryTypeEnum('industry').default('general'),
   complianceFields: jsonb('compliance_fields'),
-  isDefault: boolean('is_default').default(false).notNull(),
+  isDefault: boolean('is_default').default(false).notNull(), // Fallback when no rules match
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
@@ -273,6 +273,53 @@ export const subscriptions = pgTable('subscriptions', {
 export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   organization: one(organizations, {
     fields: [subscriptions.organizationId],
+    references: [organizations.id],
+  }),
+}));
+
+// ============================================
+// Signature Rules (Conditional Logic)
+// ============================================
+
+export const signatureRules = pgTable('signature_rules', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  templateId: uuid('template_id').references(() => signatureTemplates.id, { onDelete: 'cascade' }).notNull(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  priority: integer('priority').default(0).notNull(), // Higher priority evaluated first
+  isActive: boolean('is_active').default(true).notNull(),
+  
+  // Sender conditions
+  senderCondition: text('sender_condition').default('all').notNull(), // 'all', 'specific_users', 'specific_departments'
+  senderUserIds: uuid('sender_user_ids').array(),
+  senderDepartments: text('sender_departments').array(),
+  
+  // Email type conditions
+  emailType: text('email_type').default('all').notNull(), // 'all', 'new', 'reply'
+  
+  // Recipient conditions
+  recipientCondition: text('recipient_condition').default('all').notNull(), // 'all', 'all_internal', 'all_external', 'at_least_one_internal', 'at_least_one_external'
+  
+  // Date/Time conditions (for campaigns)
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
+  
+  // Advanced conditions
+  subjectContains: text('subject_contains'),
+  subjectNotContains: text('subject_not_contains'),
+  
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const signatureRulesRelations = relations(signatureRules, ({ one }) => ({
+  template: one(signatureTemplates, {
+    fields: [signatureRules.templateId],
+    references: [signatureTemplates.id],
+  }),
+  organization: one(organizations, {
+    fields: [signatureRules.organizationId],
     references: [organizations.id],
   }),
 }));
