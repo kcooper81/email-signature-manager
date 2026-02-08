@@ -102,6 +102,91 @@ export async function sendContactFormEmail(data: ContactFormEmailData) {
   }
 }
 
+export interface TeamInviteEmailData {
+  to: string;
+  inviterName: string;
+  organizationName: string;
+  inviteUrl: string;
+  expiresAt: string;
+}
+
+export async function sendTeamInviteEmail(data: TeamInviteEmailData) {
+  const { to, inviterName, organizationName, inviteUrl, expiresAt } = data;
+
+  try {
+    const client = getResendClient();
+    const { data: emailData, error } = await client.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'Siggly <onboarding@resend.dev>',
+      to: [to],
+      subject: `You've been invited to join ${organizationName} on Siggly`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">You're Invited!</h1>
+            </div>
+            
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi there,</p>
+              
+              <p style="font-size: 16px; color: #374151;">
+                <strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Siggly to manage your email signature.
+              </p>
+              
+              <p style="font-size: 16px; color: #374151;">
+                Click the button below to set up your account and start managing your professional email signature:
+              </p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  Accept Invitation
+                </a>
+              </div>
+              
+              <p style="font-size: 14px; color: #6b7280;">
+                Or copy and paste this link into your browser:<br>
+                <a href="${inviteUrl}" style="color: #7c3aed; word-break: break-all;">${inviteUrl}</a>
+              </p>
+              
+              <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px;">
+                <p style="margin: 0; font-size: 14px; color: #92400e;">
+                  <strong>Note:</strong> This invitation expires on ${new Date(expiresAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.
+                </p>
+              </div>
+              
+              <p style="font-size: 14px; color: #6b7280; margin-top: 20px; margin-bottom: 0;">
+                If you didn't expect this invitation, you can safely ignore this email.
+              </p>
+            </div>
+            
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+              <p style="margin: 5px 0;">
+                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> | 
+                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending team invite email:', error);
+    throw error;
+  }
+}
+
 export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
   const { to, ticketId, ticketType, originalMessage, responseMessage, adminEmail } = data;
 
