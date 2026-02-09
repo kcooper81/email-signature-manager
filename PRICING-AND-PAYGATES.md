@@ -3,6 +3,33 @@
 ## Overview
 This document outlines all pricing tiers, feature limits, and pay gate implementations across the Siggly application.
 
+## Admin Management
+
+**Admins are FREE** - You can have unlimited admins on any plan. Admins are not counted toward your user limit.
+
+### User Roles
+| Role | Description | Permissions |
+|------|-------------|-------------|
+| **Owner** | Account creator | Full access, can manage all admins |
+| **Admin** | Organization administrator | Create templates, deploy signatures, manage integrations, invite users, promote members to admin |
+| **Member** | Regular user (signature recipient) | Can self-manage their own profile/links if invited |
+
+### How to Add Admins
+1. **Invite New Admin**: Team page → "Invite Admin" button → Enter email → They receive an invite to create an account with admin privileges
+2. **Promote Existing User**: Team page → Find user → Click role dropdown → Change from "member" to "admin"
+
+### Permissions Matrix
+| Action | Owner | Admin | Member |
+|--------|-------|-------|--------|
+| Create/edit templates | ✅ | ✅ | ❌ |
+| Deploy signatures | ✅ | ✅ | ❌ |
+| Manage integrations | ✅ | ✅ | ❌ |
+| Add/remove users | ✅ | ✅ | ❌ |
+| Promote to admin | ✅ | ✅ | ❌ |
+| Demote admin | ✅ | ❌ | ❌ |
+| Manage billing | ✅ | ❌ | ❌ |
+| Edit own profile | ✅ | ✅ | ✅ |
+
 ---
 
 ## Pricing Tiers
@@ -27,7 +54,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **HubSpot CRM:** ❌ No
 
 **Features Included:**
-- ✅ Up to 5 team members
+- ✅ Up to 5 users
 - ✅ 1 signature template
 - ✅ Visual drag-and-drop editor
 - ✅ Google Workspace integration
@@ -61,7 +88,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **HubSpot CRM:** ❌ No
 
 **Additional Features:**
-- ✅ Unlimited team members
+- ✅ Unlimited users ($0.50/user/month)
 - ✅ 5 signature templates
 - ✅ Analytics dashboard
 - ✅ Microsoft 365 integration
@@ -71,7 +98,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 ---
 
 ### Professional Plan
-**Price:** $29/month + $1/user/month  
+**Price:** $29/month (includes 10 users) + $1/user/month for additional users  
 **Target:** Professional teams with advanced needs
 
 **Limits:**
@@ -91,7 +118,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **Scheduled Deployments:** ✅ Yes
 
 **Additional Features:**
-- ✅ Unlimited team members
+- ✅ First 10 users included, then $1/user/month
 - ✅ Unlimited templates
 - ✅ HubSpot CRM integration
 - ✅ Advanced analytics
@@ -123,7 +150,7 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **Scheduled Deployments:** ✅ Yes
 
 **Additional Features:**
-- ✅ Unlimited team members
+- ✅ Unlimited users (custom pricing)
 - ✅ Unlimited templates
 - ✅ SSO (Single Sign-On)
 - ✅ White label

@@ -20,12 +20,17 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  // Check if user is a super admin (platform-level access to /admin panel)
+  // Check user role and super admin status
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('is_super_admin, email')
-    .eq('email', user.email)
+    .select('is_super_admin, email, role')
+    .eq('auth_id', user.id)
     .single();
+
+  // If user is a member (not owner/admin), redirect to employee portal
+  if (userData?.role === 'member') {
+    redirect('/my-profile');
+  }
 
   const isSuperAdmin = userData?.is_super_admin === true;
 

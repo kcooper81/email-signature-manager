@@ -94,8 +94,8 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         .update({ accepted_at: new Date().toISOString() })
         .eq('token', params.token);
 
-      // Redirect to settings to complete profile
-      router.push('/settings?welcome=true');
+      // Redirect to employee profile portal
+      router.push('/my-profile?welcome=true');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
       setCreating(false);
