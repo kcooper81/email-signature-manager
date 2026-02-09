@@ -9,9 +9,11 @@ import { cn } from '@/lib/utils';
 
 interface MarketingHeaderProps {
   transparent?: boolean;
+  variant?: 'default' | 'homepage';
 }
 
-export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
+export function MarketingHeader({ transparent = true, variant = 'default' }: MarketingHeaderProps) {
+  const isHomepage = variant === 'homepage';
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -40,26 +42,42 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <Image 
-            src="/siggly-logo.png" 
+            src="/siggly-logo.png"
             alt="Siggly Logo" 
             width={48} 
             height={48}
-            className="h-8 sm:h-10 w-auto"
+            className={cn(
+              "h-8 sm:h-10 w-auto transition-all",
+              isHomepage && !scrolled && "brightness-0 invert"
+            )}
           />
-          <span className="font-bold text-lg sm:text-xl tracking-tight text-gray-900">Siggly</span>
+          <span className={cn(
+            "font-bold text-lg sm:text-xl tracking-tight transition-colors",
+            isHomepage && !scrolled ? "text-white" : "text-gray-900"
+          )}>Siggly</span>
         </Link>
         
         <nav className="hidden lg:flex items-center gap-1">
           <Link 
             href="/features" 
-            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium rounded-lg hover:bg-gray-50"
+            className={cn(
+              "px-4 py-2 text-sm transition-colors font-medium rounded-lg",
+              isHomepage && !scrolled 
+                ? "text-white/90 hover:text-white hover:bg-white/10" 
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            )}
           >
             Features
           </Link>
           
           {/* Solutions Mega Menu */}
           <div className="relative group">
-            <button className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium flex items-center gap-1 rounded-lg hover:bg-gray-50">
+            <button className={cn(
+              "px-4 py-2 text-sm transition-colors font-medium flex items-center gap-1 rounded-lg",
+              isHomepage && !scrolled 
+                ? "text-white/90 hover:text-white hover:bg-white/10" 
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            )}>
               Solutions
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
@@ -162,7 +180,12 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
 
           {/* Integrations Dropdown */}
           <div className="relative group">
-            <button className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium flex items-center gap-1 rounded-lg hover:bg-gray-50">
+            <button className={cn(
+              "px-4 py-2 text-sm transition-colors font-medium flex items-center gap-1 rounded-lg",
+              isHomepage && !scrolled 
+                ? "text-white/90 hover:text-white hover:bg-white/10" 
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            )}>
               Integrations
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
@@ -221,7 +244,12 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
 
           {/* Resources Dropdown */}
           <div className="relative group">
-            <button className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium flex items-center gap-1 rounded-lg hover:bg-gray-50">
+            <button className={cn(
+              "px-4 py-2 text-sm transition-colors font-medium flex items-center gap-1 rounded-lg",
+              isHomepage && !scrolled 
+                ? "text-white/90 hover:text-white hover:bg-white/10" 
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            )}>
               Resources
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
@@ -252,7 +280,12 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
           
           <Link 
             href="/pricing" 
-            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium rounded-lg hover:bg-gray-50"
+            className={cn(
+              "px-4 py-2 text-sm transition-colors font-medium rounded-lg",
+              isHomepage && !scrolled 
+                ? "text-white/90 hover:text-white hover:bg-white/10" 
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            )}
           >
             Pricing
           </Link>
@@ -261,7 +294,10 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 text-gray-700 hover:text-gray-900"
+          className={cn(
+            "lg:hidden p-2 transition-colors",
+            isHomepage && !scrolled ? "text-white hover:text-white/80" : "text-gray-700 hover:text-gray-900"
+          )}
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -269,12 +305,25 @@ export function MarketingHeader({ transparent = true }: MarketingHeaderProps) {
         {/* Desktop buttons */}
         <div className="hidden lg:flex items-center gap-3">
           <Link href="/login">
-            <Button variant="ghost" className="text-gray-700 hover:text-gray-900">
+            <Button 
+              variant="ghost" 
+              className={cn(
+                isHomepage && !scrolled 
+                  ? "text-white hover:text-white hover:bg-white/10" 
+                  : "text-gray-700 hover:text-gray-900"
+              )}
+            >
               Sign in
             </Button>
           </Link>
           <Link href="/signup">
-            <Button className="bg-gradient-to-r from-violet-600 to-blue-600 hover:opacity-90">
+            <Button 
+              className={cn(
+                isHomepage && !scrolled
+                  ? "bg-white text-violet-600 hover:bg-white/90"
+                  : "bg-gradient-to-r from-violet-600 to-blue-600 hover:opacity-90"
+              )}
+            >
               Get Started
             </Button>
           </Link>
