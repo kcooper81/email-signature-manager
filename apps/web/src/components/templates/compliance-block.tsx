@@ -13,7 +13,15 @@ import {
   RealEstateComplianceFields,
   INDUSTRY_DISCLAIMERS,
 } from './types';
-import { Shield, AlertCircle } from 'lucide-react';
+import { Shield, AlertCircle, Building2 } from 'lucide-react';
+
+const INDUSTRY_OPTIONS: { value: IndustryType; label: string; description: string }[] = [
+  { value: 'general', label: 'General Business', description: 'Standard business signature' },
+  { value: 'legal', label: 'Legal', description: 'Law firms & attorneys' },
+  { value: 'healthcare', label: 'Healthcare', description: 'Medical & HIPAA compliance' },
+  { value: 'finance', label: 'Finance', description: 'Financial services & SEC/FINRA' },
+  { value: 'real_estate', label: 'Real Estate', description: 'Agents & brokers' },
+];
 
 interface ComplianceBlockEditorProps {
   content: ComplianceBlockContent;
@@ -313,16 +321,60 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
         <span>Compliance fields ensure your signatures meet industry regulations</span>
       </div>
 
+      {/* Industry selector for non-general industries - allows changing */}
+      {content.industryType !== 'general' && (
+        <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-violet-600" />
+            <span className="text-sm font-medium">
+              {INDUSTRY_OPTIONS.find(o => o.value === content.industryType)?.label}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange({
+              ...content,
+              industryType: 'general',
+              fields: {},
+            })}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Change industry
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         {content.industryType === 'legal' && renderLegalFields(content.fields as LegalComplianceFields)}
         {content.industryType === 'healthcare' && renderHealthcareFields(content.fields as HealthcareComplianceFields)}
         {content.industryType === 'finance' && renderFinanceFields(content.fields as FinanceComplianceFields)}
         {content.industryType === 'real_estate' && renderRealEstateFields(content.fields as RealEstateComplianceFields)}
         {content.industryType === 'general' && (
-          <div className="col-span-2 text-center py-4 text-muted-foreground">
-            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-amber-500" />
-            <p className="text-sm">Select a specific industry from the template settings to enable compliance fields.</p>
-            <p className="text-xs mt-1">Compliance blocks require Legal, Healthcare, Finance, or Real Estate industry.</p>
+          <div className="col-span-2 space-y-4">
+            <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <AlertCircle className="h-4 w-4" />
+              <span>Select an industry below to configure compliance fields</span>
+            </div>
+            <div className="space-y-2">
+              <Label>Select Industry for Compliance</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {INDUSTRY_OPTIONS.filter(opt => opt.value !== 'general').map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => onChange({
+                      ...content,
+                      industryType: option.value,
+                      fields: {},
+                    })}
+                    className="flex flex-col items-start p-3 border rounded-lg hover:border-violet-500 hover:bg-violet-50 transition-colors text-left"
+                  >
+                    <span className="font-medium text-sm">{option.label}</span>
+                    <span className="text-xs text-muted-foreground">{option.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -86,6 +86,10 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
       return renderBannerBlock(content, context);
     case 'html':
       return renderHtmlBlock(content);
+    case 'disclaimer':
+      return renderDisclaimerBlock(content);
+    case 'compliance':
+      return renderComplianceBlock(content);
     default:
       return '';
   }
@@ -334,6 +338,122 @@ function renderHtmlBlock(content: any): string {
         ${sanitized}
       </td>
     </tr>
+  `;
+}
+
+function renderDisclaimerBlock(content: any): string {
+  const text = content.text || '';
+  if (!text.trim()) return '';
+
+  const fontSize = content.fontSize || 11;
+  const color = content.color || '#666666';
+  const backgroundColor = content.backgroundColor || 'transparent';
+  const padding = content.padding || 8;
+
+  // Adapt color for dark mode
+  const darkModeColor = (color === '#666666' || color === '#333333') ? '#a0a0a0' : color;
+
+  return `
+    <tr>
+      <td class="disclaimer-block" style="padding: ${padding}px; font-size: ${fontSize}px; color: ${color}; background-color: ${backgroundColor}; font-style: italic; line-height: 1.3;">
+        ${text}
+      </td>
+    </tr>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .disclaimer-block { color: ${darkModeColor} !important; }
+      }
+    </style>
+  `;
+}
+
+function renderComplianceBlock(content: any): string {
+  const fields = content.fields || {};
+  const industryType = content.industryType || 'general';
+  const fontSize = content.fontSize || 11;
+  const color = content.color || '#666666';
+
+  // Skip rendering for general industry with no specific compliance
+  if (industryType === 'general') return '';
+
+  // Adapt color for dark mode
+  const darkModeColor = (color === '#666666' || color === '#333333') ? '#a0a0a0' : color;
+
+  let complianceHtml = '';
+
+  switch (industryType) {
+    case 'legal':
+      if (fields.credentials) complianceHtml += `<div style="font-weight: bold;">${fields.credentials}</div>`;
+      if (fields.barNumber) complianceHtml += `<div>Bar Number: ${fields.barNumber}</div>`;
+      if (fields.barState) complianceHtml += `<div>Licensed in ${fields.barState}</div>`;
+      if (fields.firmName) complianceHtml += `<div>${fields.firmName}</div>`;
+      if (fields.disclaimer) {
+        complianceHtml += `<div style="margin-top: 8px; padding: 8px; background-color: #f9fafb; border-left: 3px solid #6b7280; font-size: ${fontSize - 2}px;">${fields.disclaimer}</div>`;
+      }
+      break;
+
+    case 'healthcare':
+      if (fields.credentials) complianceHtml += `<div style="font-weight: bold;">${fields.credentials}</div>`;
+      if (fields.practiceName) complianceHtml += `<div>${fields.practiceName}</div>`;
+      if (fields.npiNumber) complianceHtml += `<div>NPI: ${fields.npiNumber}</div>`;
+      if (fields.licenseNumber) {
+        complianceHtml += `<div>License: ${fields.licenseNumber}${fields.licenseState ? ` (${fields.licenseState})` : ''}</div>`;
+      }
+      if (fields.hipaaDisclaimer) {
+        complianceHtml += `<div style="margin-top: 8px; padding: 8px; background-color: #eff6ff; border-left: 3px solid #3b82f6; font-size: ${fontSize - 2}px;">${fields.hipaaDisclaimer}</div>`;
+      }
+      break;
+
+    case 'finance':
+      if (fields.credentials) complianceHtml += `<div style="font-weight: bold;">${fields.credentials}</div>`;
+      if (fields.firmName) complianceHtml += `<div>${fields.firmName}</div>`;
+      if (fields.brokerDealerName) complianceHtml += `<div>Securities offered through ${fields.brokerDealerName}</div>`;
+      if (fields.riaName) complianceHtml += `<div>Investment advisory services through ${fields.riaName}</div>`;
+      if (fields.memberFINRASIPC) complianceHtml += `<div style="font-style: italic;">Member FINRA/SIPC</div>`;
+      if (fields.crdNumber) complianceHtml += `<div>CRD: ${fields.crdNumber}</div>`;
+      if (fields.secNumber) complianceHtml += `<div>SEC: ${fields.secNumber}</div>`;
+      if (fields.licenseNumber) complianceHtml += `<div>License: ${fields.licenseNumber}</div>`;
+      if (fields.disclaimer) {
+        complianceHtml += `<div style="margin-top: 8px; padding: 8px; background-color: #f0fdf4; border-left: 3px solid #10b981; font-size: ${fontSize - 2}px;">${fields.disclaimer}</div>`;
+      }
+      break;
+
+    case 'real_estate':
+      if (fields.designations) complianceHtml += `<div style="font-weight: bold;">${fields.designations}</div>`;
+      if (fields.brokerageName) complianceHtml += `<div>${fields.brokerageName}</div>`;
+      if (fields.licenseNumber) {
+        complianceHtml += `<div>License: ${fields.licenseNumber}${fields.licenseState ? ` (${fields.licenseState})` : ''}</div>`;
+      }
+      if (fields.dreNumber) complianceHtml += `<div>DRE: ${fields.dreNumber}</div>`;
+      if (fields.mlsNumber) complianceHtml += `<div>MLS: ${fields.mlsNumber}</div>`;
+      if (fields.equalHousingLogo) {
+        complianceHtml += `
+          <div style="margin-top: 8px;">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="width: 24px; height: 24px; background-color: #3b82f6; text-align: center; vertical-align: middle; color: white; font-weight: bold; font-size: 12px;">=</td>
+                <td style="padding-left: 8px; font-size: ${fontSize - 2}px;">Equal Housing Opportunity</td>
+              </tr>
+            </table>
+          </div>
+        `;
+      }
+      break;
+  }
+
+  if (!complianceHtml) return '';
+
+  return `
+    <tr>
+      <td class="compliance-block" style="padding: 8px 0; font-size: ${fontSize}px; color: ${color};">
+        ${complianceHtml}
+      </td>
+    </tr>
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .compliance-block { color: ${darkModeColor} !important; }
+      }
+    </style>
   `;
 }
 

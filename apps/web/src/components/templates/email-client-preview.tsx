@@ -540,26 +540,128 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
       );
 
     case 'compliance':
-      // Render compliance fields based on what's filled in
-      const complianceItems: string[] = [];
+      // Render compliance fields based on industry type and filled fields
+      const fields = content.fields || {};
+      const industryType = content.industryType || 'general';
+      const complianceFontSize = content.fontSize || 11;
+      const complianceColor = adaptColor(content.color || '#666666');
       
-      // Add all non-empty compliance fields
-      Object.entries(content).forEach(([key, value]) => {
-        if (value && typeof value === 'string' && key !== 'industry') {
-          complianceItems.push(value);
+      // For general industry with no fields, show nothing
+      if (industryType === 'general') {
+        return (
+          <tr>
+            <td style={{ padding: '8px 0', fontSize: '11px', color: adaptColor('#999999'), fontStyle: 'italic' }}>
+              Select an industry to display compliance information
+            </td>
+          </tr>
+        );
+      }
+      
+      // Build compliance display based on industry
+      const renderComplianceContent = () => {
+        switch (industryType) {
+          case 'legal':
+            return (
+              <div style={{ fontSize: complianceFontSize, color: complianceColor }}>
+                {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
+                {fields.barNumber && <div>Bar Number: {fields.barNumber}</div>}
+                {fields.barState && <div>Licensed in {fields.barState}</div>}
+                {fields.firmName && <div>{fields.firmName}</div>}
+                {fields.disclaimer && (
+                  <div style={{ 
+                    marginTop: '8px', 
+                    padding: '8px', 
+                    backgroundColor: colorMode === 'dark' ? '#2a2a2a' : '#f9fafb', 
+                    borderLeft: '3px solid #6b7280',
+                    fontSize: complianceFontSize - 2 
+                  }}>
+                    {fields.disclaimer}
+                  </div>
+                )}
+              </div>
+            );
+          case 'healthcare':
+            return (
+              <div style={{ fontSize: complianceFontSize, color: complianceColor }}>
+                {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
+                {fields.practiceName && <div>{fields.practiceName}</div>}
+                {fields.npiNumber && <div>NPI: {fields.npiNumber}</div>}
+                {fields.licenseNumber && <div>License: {fields.licenseNumber}{fields.licenseState ? ` (${fields.licenseState})` : ''}</div>}
+                {fields.hipaaDisclaimer && (
+                  <div style={{ 
+                    marginTop: '8px', 
+                    padding: '8px', 
+                    backgroundColor: colorMode === 'dark' ? '#1e3a5f' : '#eff6ff', 
+                    borderLeft: '3px solid #3b82f6',
+                    fontSize: complianceFontSize - 2 
+                  }}>
+                    {fields.hipaaDisclaimer}
+                  </div>
+                )}
+              </div>
+            );
+          case 'finance':
+            return (
+              <div style={{ fontSize: complianceFontSize, color: complianceColor }}>
+                {fields.credentials && <div style={{ fontWeight: 'bold' }}>{fields.credentials}</div>}
+                {fields.firmName && <div>{fields.firmName}</div>}
+                {fields.brokerDealerName && <div>Securities offered through {fields.brokerDealerName}</div>}
+                {fields.riaName && <div>Investment advisory services through {fields.riaName}</div>}
+                {fields.memberFINRASIPC && <div style={{ fontStyle: 'italic' }}>Member FINRA/SIPC</div>}
+                {fields.crdNumber && <div>CRD: {fields.crdNumber}</div>}
+                {fields.secNumber && <div>SEC: {fields.secNumber}</div>}
+                {fields.licenseNumber && <div>License: {fields.licenseNumber}</div>}
+                {fields.disclaimer && (
+                  <div style={{ 
+                    marginTop: '8px', 
+                    padding: '8px', 
+                    backgroundColor: colorMode === 'dark' ? '#1a3a2a' : '#f0fdf4', 
+                    borderLeft: '3px solid #10b981',
+                    fontSize: complianceFontSize - 2 
+                  }}>
+                    {fields.disclaimer}
+                  </div>
+                )}
+              </div>
+            );
+          case 'real_estate':
+            return (
+              <div style={{ fontSize: complianceFontSize, color: complianceColor }}>
+                {fields.designations && <div style={{ fontWeight: 'bold' }}>{fields.designations}</div>}
+                {fields.brokerageName && <div>{fields.brokerageName}</div>}
+                {fields.licenseNumber && <div>License: {fields.licenseNumber}{fields.licenseState ? ` (${fields.licenseState})` : ''}</div>}
+                {fields.dreNumber && <div>DRE: {fields.dreNumber}</div>}
+                {fields.mlsNumber && <div>MLS: {fields.mlsNumber}</div>}
+                {fields.equalHousingLogo && (
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ 
+                      width: '24px', 
+                      height: '24px', 
+                      backgroundColor: '#3b82f6',
+                      borderRadius: isOutlook ? '0' : '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      fontSize: '12px'
+                    }}>
+                      =
+                    </div>
+                    <span style={{ fontSize: complianceFontSize - 2 }}>Equal Housing Opportunity</span>
+                  </div>
+                )}
+              </div>
+            );
+          default:
+            return null;
         }
-      });
-      
-      if (complianceItems.length === 0) return null;
+      };
       
       return (
         <tr>
-          <td style={{ padding: '8px 0', fontSize: '11px', color: adaptColor('#666666') }}>
-            {complianceItems.map((item, i) => (
-              <div key={i} style={{ marginBottom: i < complianceItems.length - 1 ? '4px' : 0 }}>
-                {item}
-              </div>
-            ))}
+          <td style={{ padding: '8px 0' }}>
+            {renderComplianceContent()}
           </td>
         </tr>
       );
