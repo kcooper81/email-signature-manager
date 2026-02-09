@@ -575,7 +575,16 @@ export default function TeamMembersPage() {
         throw new Error(data.error || 'Failed to send invites');
       }
 
-      setSuccessMessage(`Successfully sent ${data.invitedCount} invite${data.invitedCount !== 1 ? 's' : ''}`);
+      // Show appropriate message based on email send results
+      if (data.emailsFailed > 0) {
+        const errorDetails = data.errors?.join('; ') || 'Check server logs for details';
+        setErrorMessage(`${data.emailsFailed} email${data.emailsFailed !== 1 ? 's' : ''} failed to send. ${errorDetails}`);
+        if (data.emailsSent > 0) {
+          setSuccessMessage(`${data.emailsSent} invite${data.emailsSent !== 1 ? 's' : ''} sent successfully`);
+        }
+      } else {
+        setSuccessMessage(`Successfully sent ${data.invitedCount} invite${data.invitedCount !== 1 ? 's' : ''}`);
+      }
       setSelectedMembers(new Set());
       
       setTimeout(() => setSuccessMessage(null), 5000);

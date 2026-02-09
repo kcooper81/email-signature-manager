@@ -13,6 +13,13 @@ function getResendClient(): Resend {
   return resend;
 }
 
+// Email sender addresses - use specific addresses for different email types
+const EMAIL_FROM = {
+  support: process.env.RESEND_FROM_SUPPORT || 'Siggly Support <support@siggly.io>',
+  noreply: process.env.RESEND_FROM_NOREPLY || 'Siggly <noreply@siggly.io>',
+  sales: process.env.RESEND_FROM_SALES || 'Siggly <sales@siggly.io>',
+};
+
 export interface TicketResponseEmailData {
   to: string;
   ticketId: string;
@@ -36,7 +43,7 @@ export async function sendContactFormEmail(data: ContactFormEmailData) {
   try {
     const client = getResendClient();
     const { data: emailData, error } = await client.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Siggly Contact Form <onboarding@resend.dev>',
+      from: EMAIL_FROM.sales,
       to: ['sales@siggly.io'],
       subject: `[Contact Form] ${subject}`,
       replyTo: email,
@@ -116,7 +123,7 @@ export async function sendTeamInviteEmail(data: TeamInviteEmailData) {
   try {
     const client = getResendClient();
     const { data: emailData, error } = await client.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Siggly <onboarding@resend.dev>',
+      from: EMAIL_FROM.noreply,
       to: [to],
       subject: `You've been invited to join ${organizationName} on Siggly`,
       html: `
@@ -193,7 +200,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
   try {
     const client = getResendClient();
     const { data: emailData, error } = await client.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Siggly Support <onboarding@resend.dev>',
+      from: EMAIL_FROM.support,
       to: [to],
       subject: `Re: Your ${ticketType} submission`,
       html: `
