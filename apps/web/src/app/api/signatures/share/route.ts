@@ -32,9 +32,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the signature template - FILTERED BY ORGANIZATION
+    // Note: blocks are stored as JSONB in the template, not as a separate table
     const { data: template, error: templateError } = await supabase
       .from('signature_templates')
-      .select('*, signature_blocks(*)')
+      .select('*')
       .eq('id', signatureId)
       .eq('organization_id', currentUser.organization_id)
       .single();
@@ -47,25 +48,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate shareable link or send email with signature HTML
-    // For now, we'll return the signature HTML that can be shared
-    const signatureHtml = generateSignatureHtml(template.signature_blocks);
-
-    // Create share records in database
-    const shareRecords = userIds.map((userId: string) => ({
-      signature_id: signatureId,
-      shared_by: user.id,
-      shared_with: userId,
-      signature_html: signatureHtml,
-      created_at: new Date().toISOString(),
-    }));
-
-    const { error: shareError } = await supabase
-      .from('signature_shares')
-      .insert(shareRecords);
-
-    if (shareError) {
-      console.error('Failed to create share records:', shareError);
-    }
+    // Blocks are stored in the 'blocks' JSONB column
+    const signatureHtml = generateSignatureHtml(template.blocks || []);
 
     return NextResponse.json({
       success: true,
