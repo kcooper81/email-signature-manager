@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Siggly Profile Images</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1f2937;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    
+    h2 {
+      color: white;
+      font-size: 14px;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+    
+    .profile-container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .profile-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .profile-label {
+      color: white;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+    
+    /* Base profile styles */
+    .profile {
+      background: linear-gradient(135deg, #581c87 0%, #7c3aed 25%, #2563eb 60%, #0891b2 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Background blobs */
+    .profile::before,
+    .profile::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(30px);
+    }
+    
+    .profile::before {
+      width: 60%;
+      height: 60%;
+      top: -20%;
+      left: -20%;
+      background: rgba(139, 92, 246, 0.4);
+    }
+    
+    .profile::after {
+      width: 50%;
+      height: 50%;
+      bottom: -15%;
+      right: -15%;
+      background: rgba(6, 182, 212, 0.3);
+    }
+    
+    .profile img {
+      position: relative;
+      z-index: 10;
+      filter: brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    }
+    
+    /* YouTube Profile - 800x800 */
+    .profile-youtube {
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+    }
+    
+    .profile-youtube img {
+      width: 480px;
+      height: auto;
+    }
+    
+    /* Google Marketplace - 512x512 */
+    .profile-google {
+      width: 512px;
+      height: 512px;
+      border-radius: 96px;
+    }
+    
+    .profile-google img {
+      width: 320px;
+      height: auto;
+    }
+    
+    /* X.com Profile - 400x400 */
+    .profile-x {
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+    }
+    
+    .profile-x img {
+      width: 240px;
+      height: auto;
+    }
+    
+    /* Facebook Profile - 180x180 */
+    .profile-facebook {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+    }
+    
+    .profile-facebook img {
+      width: 108px;
+      height: auto;
+    }
+    
+    /* LinkedIn Profile - 300x300 */
+    .profile-linkedin {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+    }
+    
+    .profile-linkedin img {
+      width: 180px;
+      height: auto;
+    }
+    
+    /* Instagram Profile - 320x320 */
+    .profile-instagram {
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+    }
+    
+    .profile-instagram img {
+      width: 192px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h2>PROFILE IMAGES</h2>
+    <div class="profile-container">
+      <div class="profile-wrapper">
+        <div class="profile profile-youtube" id="youtube-profile">
+          <img src="siggly-logo.png" alt="Siggly Logo">
+        </div>
+        <span class="profile-label">YouTube (800×800)</span>
+      </div>
+      
+      <div class="profile-wrapper">
+        <div class="profile profile-google" id="google-profile">
+          <img src="siggly-logo.png" alt="Siggly Logo">
+        </div>
+        <span class="profile-label">Google Marketplace (512×512)</span>
+      </div>
+      
+      <div class="profile-wrapper">
+        <div class="profile profile-x" id="x-profile">
+          <img src="siggly-logo.png" alt="Siggly Logo">
+        </div>
+        <span class="profile-label">X.com (400×400)</span>
+      </div>
+      
+      <div class="profile-wrapper">
+        <div class="profile profile-facebook" id="facebook-profile">
+          <img src="siggly-logo.png" alt="Siggly Logo">
+        </div>
+        <span class="profile-label">Facebook (180×180)</span>
+      </div>
+      
+      <div class="profile-wrapper">
+        <div class="profile profile-linkedin" id="linkedin-profile">
+          <img src="siggly-logo.png" alt="Siggly Logo">
+        </div>
+        <span class="profile-label">LinkedIn (300×300)</span>
+      </div>
+      
+      <div class="profile-wrapper">
+        <div class="profile profile-instagram" id="instagram-profile">
+          <img src="siggly-logo.png" alt="Siggly Logo">
+        </div>
+        <span class="profile-label">Instagram (320×320)</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
