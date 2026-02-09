@@ -26,11 +26,9 @@ export function ITTab({ data, timeRange }: ITTabProps) {
     ? Math.round((data.successfulDeployments / data.totalDeployments) * 100) 
     : 100;
 
-  // Check for stale syncs
-  const isGoogleStale = data.syncStatus.google.connected && data.syncStatus.google.lastSync && 
-    new Date(data.syncStatus.google.lastSync) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const isMicrosoftStale = data.syncStatus.microsoft.connected && data.syncStatus.microsoft.lastSync &&
-    new Date(data.syncStatus.microsoft.lastSync) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  // Stale sync detection not available without last_sync_at column
+  const isGoogleStale = false;
+  const isMicrosoftStale = false;
 
   return (
     <div className="space-y-6">
@@ -123,17 +121,14 @@ export function ITTab({ data, timeRange }: ITTabProps) {
                   <span className="font-medium">{data.syncStatus.google.userCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Last Sync</span>
-                  <span className={`font-medium ${isGoogleStale ? 'text-amber-600' : ''}`}>
-                    {data.syncStatus.google.lastSync 
-                      ? new Date(data.syncStatus.google.lastSync).toLocaleDateString('en-US', {
+                  <span className="text-muted-foreground">Connected</span>
+                  <span className="font-medium">
+                    {data.syncStatus.google.connectedAt 
+                      ? new Date(data.syncStatus.google.connectedAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit',
                         })
                       : 'Never'}
-                    {isGoogleStale && ' (Stale)'}
                   </span>
                 </div>
               </div>
@@ -164,17 +159,14 @@ export function ITTab({ data, timeRange }: ITTabProps) {
                   <span className="font-medium">{data.syncStatus.microsoft.userCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Last Sync</span>
-                  <span className={`font-medium ${isMicrosoftStale ? 'text-amber-600' : ''}`}>
-                    {data.syncStatus.microsoft.lastSync 
-                      ? new Date(data.syncStatus.microsoft.lastSync).toLocaleDateString('en-US', {
+                  <span className="text-muted-foreground">Connected</span>
+                  <span className="font-medium">
+                    {data.syncStatus.microsoft.connectedAt 
+                      ? new Date(data.syncStatus.microsoft.connectedAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
-                          hour: 'numeric',
-                          minute: '2-digit',
                         })
                       : 'Never'}
-                    {isMicrosoftStale && ' (Stale)'}
                   </span>
                 </div>
               </div>
