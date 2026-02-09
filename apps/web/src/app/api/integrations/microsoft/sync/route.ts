@@ -102,10 +102,24 @@ export async function POST(request: NextRequest) {
       usersToSync = microsoftUsers.slice(0, availableSlots);
     }
 
-    const usersToUpsert = usersToSync
-      .filter(u => u.mail || u.userPrincipalName)
-      .map((msUser) => ({
-        email: msUser.mail || msUser.userPrincipalName,
+    // Get existing users to preserve their roles and auth_ids
+    const filteredUsers = usersToSync.filter(u => u.mail || u.userPrincipalName);
+    const existingEmails = filteredUsers.map(u => u.mail || u.userPrincipalName);
+    const { data: existingUsers } = await supabase
+      .from('users')
+      .select('email, role, is_admin, auth_id')
+      .eq('organization_id', userData.organization_id)
+      .in('email', existingEmails);
+
+    const existingUserMap = new Map(
+      (existingUsers || []).map(u => [u.email, u])
+    );
+
+    const usersToUpsert = filteredUsers.map((msUser) => {
+      const email = msUser.mail || msUser.userPrincipalName;
+      const existing = existingUserMap.get(email);
+      return {
+        email,
         first_name: msUser.givenName || null,
         last_name: msUser.surname || null,
         title: msUser.jobTitle || null,
@@ -115,9 +129,12 @@ export async function POST(request: NextRequest) {
         phone: msUser.businessPhones?.[0] || msUser.mobilePhone || null,
         mobile: msUser.mobilePhone || null,
         organization_id: userData.organization_id,
-        role: 'member' as const,
+        // Preserve existing role/is_admin if user exists, otherwise default to member
+        role: existing?.role || 'member' as const,
+        is_admin: existing?.is_admin || false,
         source: 'microsoft' as const,
-      }));
+      };
+    });
 
     const { data: upsertedUsers, error: upsertError } = await supabase
       .from('users')

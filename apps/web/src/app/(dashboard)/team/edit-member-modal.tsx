@@ -8,6 +8,7 @@ interface EditMemberModalProps {
   memberName: string;
   memberEmail: string;
   canEditEmail: boolean;
+  isSyncedUser: boolean;
   editForm: {
     email: string;
     first_name: string;
@@ -36,6 +37,7 @@ export function EditMemberModal({
   memberName,
   memberEmail,
   canEditEmail,
+  isSyncedUser,
   editForm,
   setEditForm,
   onSave,
@@ -96,7 +98,14 @@ export function EditMemberModal({
 
         {/* Basic Information */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-gray-900">Basic Information</h3>
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900">Basic Information</h3>
+            {isSyncedUser && (
+              <p className="text-xs text-amber-600 mt-1">
+                Name, title, and department are managed by your identity provider and will sync automatically.
+              </p>
+            )}
+          </div>
           
           {/* Email - only editable for manually added users */}
           <div className="space-y-2">
@@ -131,6 +140,8 @@ export function EditMemberModal({
                 value={editForm.first_name}
                 onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
                 placeholder="John"
+                disabled={isSyncedUser}
+                className={isSyncedUser ? 'bg-gray-50' : ''}
               />
             </div>
             <div className="space-y-2">
@@ -140,6 +151,8 @@ export function EditMemberModal({
                 value={editForm.last_name}
                 onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
                 placeholder="Doe"
+                disabled={isSyncedUser}
+                className={isSyncedUser ? 'bg-gray-50' : ''}
               />
             </div>
           </div>
@@ -150,6 +163,8 @@ export function EditMemberModal({
               value={editForm.title}
               onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
               placeholder="Software Engineer"
+              disabled={isSyncedUser}
+              className={isSyncedUser ? 'bg-gray-50' : ''}
             />
           </div>
           <div className="space-y-2">
@@ -159,6 +174,8 @@ export function EditMemberModal({
               value={editForm.department}
               onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
               placeholder="Engineering"
+              disabled={isSyncedUser}
+              className={isSyncedUser ? 'bg-gray-50' : ''}
             />
           </div>
         </div>

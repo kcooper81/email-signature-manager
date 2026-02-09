@@ -130,16 +130,33 @@ export async function POST(request: NextRequest) {
       usersToSync = workspaceUsers.slice(0, availableSlots);
     }
 
-    const usersToUpsert = usersToSync.map((workspaceUser) => ({
-      email: workspaceUser.email,
-      first_name: workspaceUser.name.split(' ')[0] || workspaceUser.name,
-      last_name: workspaceUser.name.split(' ').slice(1).join(' ') || undefined,
-      title: workspaceUser.title,
-      department: workspaceUser.department,
-      organization_id: userData.organization_id,
-      role: 'member' as const,
-      source: 'google' as const,
-    }));
+    // Get existing users to preserve their roles and auth_ids
+    const existingEmails = usersToSync.map(u => u.email);
+    const { data: existingUsers } = await supabase
+      .from('users')
+      .select('email, role, is_admin, auth_id')
+      .eq('organization_id', userData.organization_id)
+      .in('email', existingEmails);
+
+    const existingUserMap = new Map(
+      (existingUsers || []).map(u => [u.email, u])
+    );
+
+    const usersToUpsert = usersToSync.map((workspaceUser) => {
+      const existing = existingUserMap.get(workspaceUser.email);
+      return {
+        email: workspaceUser.email,
+        first_name: workspaceUser.name.split(' ')[0] || workspaceUser.name,
+        last_name: workspaceUser.name.split(' ').slice(1).join(' ') || undefined,
+        title: workspaceUser.title,
+        department: workspaceUser.department,
+        organization_id: userData.organization_id,
+        // Preserve existing role/is_admin if user exists, otherwise default to member
+        role: existing?.role || 'member' as const,
+        is_admin: existing?.is_admin || false,
+        source: 'google' as const,
+      };
+    });
 
     const { data: upsertedUsers, error: upsertError } = await supabase
       .from('users')
