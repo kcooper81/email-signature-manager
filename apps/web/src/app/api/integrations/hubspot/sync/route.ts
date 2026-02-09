@@ -109,18 +109,35 @@ export async function POST(request: NextRequest) {
       contactsToSync = contacts.slice(0, availableSlots);
     }
 
-    const usersToUpsert = contactsToSync.map((contact) => ({
-      email: contact.email,
-      first_name: contact.firstName,
-      last_name: contact.lastName,
-      title: contact.jobTitle,
-      department: contact.department,
-      phone: contact.phone,
-      mobile: contact.mobilePhone,
-      organization_id: userData.organization_id,
-      role: 'member' as const,
-      source: 'hubspot' as const,
-    }));
+    // Get existing users to preserve their roles and auth_ids
+    const existingEmails = contactsToSync.map(c => c.email);
+    const { data: existingUsers } = await supabase
+      .from('users')
+      .select('email, role, is_admin, auth_id')
+      .eq('organization_id', userData.organization_id)
+      .in('email', existingEmails);
+
+    const existingUserMap = new Map(
+      (existingUsers || []).map(u => [u.email, u])
+    );
+
+    const usersToUpsert = contactsToSync.map((contact) => {
+      const existing = existingUserMap.get(contact.email);
+      return {
+        email: contact.email,
+        first_name: contact.firstName,
+        last_name: contact.lastName,
+        title: contact.jobTitle,
+        department: contact.department,
+        phone: contact.phone,
+        mobile: contact.mobilePhone,
+        organization_id: userData.organization_id,
+        // Preserve existing role/is_admin if user exists, otherwise default to member
+        role: existing?.role || 'member' as const,
+        is_admin: existing?.is_admin || false,
+        source: 'hubspot' as const,
+      };
+    });
 
     const { data: upsertedUsers, error: upsertError } = await supabase
       .from('users')
