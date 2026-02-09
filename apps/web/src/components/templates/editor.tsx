@@ -190,7 +190,7 @@ export function TemplateEditor({
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left + Center Area */}
-          <div className="lg:col-span-7 space-y-4 lg:space-y-6">
+          <div className="lg:col-span-5 space-y-4 lg:space-y-6">
             {/* Add Block - Horizontal across Blocks and Block Settings */}
             <Card>
               <CardHeader>
@@ -202,18 +202,18 @@ export function TemplateEditor({
                   <IndustrySelector value={industry} onChange={setIndustry} />
                 </div>
                 
-                {/* Block Type Buttons - Horizontal layout */}
-                <div className="flex flex-wrap gap-2">
+                {/* Block Type Buttons - Grid layout */}
+                <div className="grid grid-cols-4 gap-2">
                   {BLOCK_TYPES.map((blockType) => (
                     <Button
                       key={blockType.type}
                       variant="outline"
                       size="sm"
-                      className="justify-start h-auto py-2 px-3"
+                      className="justify-center h-auto py-2 px-2 w-full"
                       onClick={() => addBlock(blockType.type)}
                     >
-                      <span className="mr-1.5 flex-shrink-0">{blockType.icon}</span>
-                      <span className="text-xs">{blockType.label}</span>
+                      <span className="mr-1 flex-shrink-0">{blockType.icon}</span>
+                      <span className="text-xs truncate">{blockType.label}</span>
                     </Button>
                   ))}
                 </div>
@@ -283,7 +283,7 @@ export function TemplateEditor({
           </div>
 
           {/* Right Column - Email Client Preview */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-7">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Email Client Preview</CardTitle>
