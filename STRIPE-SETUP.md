@@ -46,12 +46,14 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # or your production URL
 
 **Professional Plan (requires 2 prices):**
 - Product: "Professional Plan - Base"
-  - Price: $29/month (recurring, flat fee)
+  - Price: $29/month (recurring, flat fee) - **includes first 10 users**
   - Copy the Price ID → `STRIPE_PROFESSIONAL_BASE_PRICE_ID`
   
 - Product: "Professional Plan - Per User"
-  - Price: $1/user/month (recurring, per-seat)
+  - Price: $1/user/month (recurring, per-seat) - **only charged for users beyond 10**
   - Copy the Price ID → `STRIPE_PROFESSIONAL_PER_USER_PRICE_ID`
+
+> **Note:** The code automatically calculates billable users as `max(0, totalUsers - 10)`. For teams of 10 or fewer, only the $29 base fee is charged.
 
 ### 2. Configure Webhook
 

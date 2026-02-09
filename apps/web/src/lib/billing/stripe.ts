@@ -50,15 +50,21 @@ export async function createCheckoutSession({
       quantity,
     });
   } else if (planId === 'professional') {
-    // Professional: $29/month base + $1/member/month
+    // Professional: $29/month base (includes first 10 users) + $1/user/month for users beyond 10
     lineItems.push({
       price: STRIPE_PRICE_IDS.professional_base,
       quantity: 1, // Base fee is always 1
     });
-    lineItems.push({
-      price: STRIPE_PRICE_IDS.professional_per_user,
-      quantity,
-    });
+    
+    // Only charge per-user fee for users beyond the first 10
+    const PROFESSIONAL_INCLUDED_USERS = 10;
+    const billableUsers = Math.max(0, quantity - PROFESSIONAL_INCLUDED_USERS);
+    if (billableUsers > 0) {
+      lineItems.push({
+        price: STRIPE_PRICE_IDS.professional_per_user,
+        quantity: billableUsers,
+      });
+    }
   }
 
   return stripe.checkout.sessions.create({
@@ -87,21 +93,65 @@ export async function getSubscription(subscriptionId: string) {
   return stripe.subscriptions.retrieve(subscriptionId);
 }
 
+export const PROFESSIONAL_INCLUDED_USERS = 10;
+
 export async function updateSubscriptionQuantity(subscriptionId: string, quantity: number) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  const itemId = subscription.items.data[0]?.id;
   
-  if (!itemId) {
-    throw new Error('No subscription item found');
+  // Find the per-user item (for both Starter and Professional)
+  const starterItem = subscription.items.data.find(
+    item => item.price.id === STRIPE_PRICE_IDS.starter
+  );
+  const professionalPerUserItem = subscription.items.data.find(
+    item => item.price.id === STRIPE_PRICE_IDS.professional_per_user
+  );
+  const professionalBaseItem = subscription.items.data.find(
+    item => item.price.id === STRIPE_PRICE_IDS.professional_base
+  );
+
+  const itemsToUpdate: any[] = [];
+
+  if (starterItem) {
+    // Starter plan: charge for all users
+    itemsToUpdate.push({
+      id: starterItem.id,
+      quantity,
+    });
+  } else if (professionalBaseItem) {
+    // Professional plan: first 10 users included in base, then $1/user
+    const billableUsers = Math.max(0, quantity - PROFESSIONAL_INCLUDED_USERS);
+    
+    if (professionalPerUserItem) {
+      if (billableUsers > 0) {
+        // Update existing per-user item
+        itemsToUpdate.push({
+          id: professionalPerUserItem.id,
+          quantity: billableUsers,
+        });
+      } else {
+        // Remove per-user item if no billable users
+        itemsToUpdate.push({
+          id: professionalPerUserItem.id,
+          deleted: true,
+        });
+      }
+    } else if (billableUsers > 0) {
+      // Add per-user item if needed
+      itemsToUpdate.push({
+        price: STRIPE_PRICE_IDS.professional_per_user,
+        quantity: billableUsers,
+      });
+    }
+  } else {
+    throw new Error('No recognized subscription item found');
+  }
+
+  if (itemsToUpdate.length === 0) {
+    return subscription; // No changes needed
   }
 
   return stripe.subscriptions.update(subscriptionId, {
-    items: [
-      {
-        id: itemId,
-        quantity,
-      },
-    ],
+    items: itemsToUpdate,
     proration_behavior: 'create_prorations',
   });
 }

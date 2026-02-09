@@ -23,6 +23,8 @@ import {
   Copy,
   Download,
   X,
+  Shield,
+  UserPlus,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 
@@ -143,6 +145,17 @@ export default function TeamMembersPage() {
   // Invite state
   const [inviting, setInviting] = useState(false);
   
+  // Admin invite modal state
+  const [showAdminInviteModal, setShowAdminInviteModal] = useState(false);
+  const [adminInviteForm, setAdminInviteForm] = useState({ email: '', first_name: '', last_name: '' });
+  const [invitingAdmin, setInvitingAdmin] = useState(false);
+  
+  // Role change state
+  const [changingRole, setChangingRole] = useState<string | null>(null);
+  
+  // Current user role (to check permissions)
+  const [currentUserRole, setCurrentUserRole] = useState<string>('member');
+  
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -181,6 +194,11 @@ export default function TeamMembersPage() {
     
     if (membersData) {
       setMembers(membersData);
+      // Find current user's role
+      const currentUserData = membersData.find(m => m.auth_id === user.id);
+      if (currentUserData) {
+        setCurrentUserRole(currentUserData.role);
+      }
     }
 
     // Load connections - ONLY for current organization
@@ -595,6 +613,79 @@ export default function TeamMembersPage() {
     }
   };
 
+  const inviteAdmin = async () => {
+    if (!adminInviteForm.email) {
+      setErrorMessage('Email is required');
+      return;
+    }
+
+    setInvitingAdmin(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch('/api/team/invite-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminInviteForm),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to invite admin');
+      }
+
+      setSuccessMessage(data.message);
+      setShowAdminInviteModal(false);
+      setAdminInviteForm({ email: '', first_name: '', last_name: '' });
+      await loadData();
+      
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to invite admin');
+    } finally {
+      setInvitingAdmin(false);
+    }
+  };
+
+  const changeUserRole = async (userId: string, newRole: 'admin' | 'member') => {
+    setChangingRole(userId);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch('/api/team/role', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, role: newRole }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to change role');
+      }
+
+      setSuccessMessage(data.message);
+      await loadData();
+      
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to change role');
+    } finally {
+      setChangingRole(null);
+    }
+  };
+
+  const canChangeRole = (member: TeamMember) => {
+    // Only owners and admins can change roles
+    if (currentUserRole !== 'owner' && currentUserRole !== 'admin') return false;
+    // Cannot change owner's role
+    if (member.role === 'owner') return false;
+    // Admins can only promote members, not demote other admins
+    if (currentUserRole === 'admin' && member.role === 'admin') return false;
+    return true;
+  };
+
   const googleConnected = connections.some(c => c.provider === 'google' && c.is_active);
 
   // Get unique departments for filter
@@ -705,8 +796,16 @@ export default function TeamMembersPage() {
   const canAdd = canAddTeamMember();
   const memberLimitReached = !canAdd;
 
+  const canInviteAdmin = currentUserRole === 'owner' || currentUserRole === 'admin';
+
   const actionButtons = (
     <div className="flex items-center gap-2">
+      {canInviteAdmin && (
+        <Button variant="outline" onClick={() => setShowAdminInviteModal(true)}>
+          <Shield className="mr-2 h-4 w-4" />
+          Invite Admin
+        </Button>
+      )}
       {memberLimitReached ? (
         <Button variant="outline" className="border-violet-300 text-violet-700 hover:bg-violet-50" asChild>
           <a href="/settings/billing">
@@ -815,28 +914,45 @@ export default function TeamMembersPage() {
                 {filteredMembers.length} of {members.length} member{members.length !== 1 ? 's' : ''}
               </CardDescription>
             </div>
-            {selectedMembers.size > 0 && (
-              <div className="flex gap-2">
-                <Button onClick={inviteMembers} variant="outline" disabled={inviting}>
-                  {inviting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Mail className="mr-2 h-4 w-4" />
-                      Invite to Self-Manage ({selectedMembers.size})
-                    </>
-                  )}
-                </Button>
-                <Button onClick={() => setShowShareModal(true)} variant="default">
-                  <FileSignature className="mr-2 h-4 w-4" />
-                  Share Signatures ({selectedMembers.size})
-                </Button>
-              </div>
-            )}
           </div>
+
+          {/* Sticky selection action bar */}
+          {selectedMembers.size > 0 && (
+            <div className="sticky top-0 z-10 bg-violet-50 border border-violet-200 rounded-lg p-3 -mx-2 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-sm font-medium text-violet-800">
+                  {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
+                </span>
+                <div className="flex gap-2">
+                  <Button onClick={inviteMembers} variant="outline" size="sm" disabled={inviting}>
+                    {inviting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Invite to Self-Manage
+                      </>
+                    )}
+                  </Button>
+                  <Button onClick={() => setShowShareModal(true)} size="sm">
+                    <FileSignature className="mr-2 h-4 w-4" />
+                    Share Signatures
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedMembers(new Set())}
+                    className="text-violet-600 hover:text-violet-800"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Bulk actions */}
           {members.length > 0 && (
@@ -1137,15 +1253,36 @@ export default function TeamMembersPage() {
                         </Badge>
                       </td>
                       <td className="p-3">
-                        <Badge variant={
-                          emp.role === 'owner' 
-                            ? 'default'
-                            : emp.role === 'admin'
-                            ? 'info'
-                            : 'secondary'
-                        } className="text-xs">
-                          {emp.role}
-                        </Badge>
+                        {canChangeRole(emp) ? (
+                          <div className="relative group">
+                            <select
+                              value={emp.role}
+                              onChange={(e) => changeUserRole(emp.id, e.target.value as 'admin' | 'member')}
+                              disabled={changingRole === emp.id}
+                              className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer appearance-none pr-6 ${
+                                emp.role === 'admin' 
+                                  ? 'bg-blue-100 text-blue-800' 
+                                  : 'bg-gray-100 text-gray-800'
+                              } ${changingRole === emp.id ? 'opacity-50' : 'hover:ring-2 hover:ring-violet-300'}`}
+                            >
+                              <option value="member">member</option>
+                              <option value="admin">admin</option>
+                            </select>
+                            {changingRole === emp.id && (
+                              <Loader2 className="absolute right-1 top-1/2 -translate-y-1/2 h-3 w-3 animate-spin" />
+                            )}
+                          </div>
+                        ) : (
+                          <Badge variant={
+                            emp.role === 'owner' 
+                              ? 'default'
+                              : emp.role === 'admin'
+                              ? 'info'
+                              : 'secondary'
+                          } className="text-xs">
+                            {emp.role}
+                          </Badge>
+                        )}
                       </td>
                       <td className="p-3">
                         <Button
@@ -1441,6 +1578,75 @@ export default function TeamMembersPage() {
               )}
             </Button>
           )}
+        </ModalFooter>
+      </Modal>
+
+      {/* Invite Admin Modal */}
+      <Modal open={showAdminInviteModal} onClose={() => setShowAdminInviteModal(false)}>
+        <ModalHeader>
+          <ModalTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-violet-600" />
+            Invite Admin
+          </ModalTitle>
+          <ModalDescription>
+            Invite someone to help manage your organization's email signatures. They'll have full admin access.
+          </ModalDescription>
+        </ModalHeader>
+        <div className="space-y-4 py-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-sm text-blue-800">
+              <strong>Admins can:</strong> Create templates, deploy signatures, manage integrations, and invite team members.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="admin_first_name">First Name</Label>
+              <Input
+                id="admin_first_name"
+                value={adminInviteForm.first_name}
+                onChange={(e) => setAdminInviteForm({ ...adminInviteForm, first_name: e.target.value })}
+                placeholder="Jane"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="admin_last_name">Last Name</Label>
+              <Input
+                id="admin_last_name"
+                value={adminInviteForm.last_name}
+                onChange={(e) => setAdminInviteForm({ ...adminInviteForm, last_name: e.target.value })}
+                placeholder="Smith"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="admin_email">Email *</Label>
+            <Input
+              id="admin_email"
+              type="email"
+              value={adminInviteForm.email}
+              onChange={(e) => setAdminInviteForm({ ...adminInviteForm, email: e.target.value })}
+              placeholder="jane@company.com"
+              required
+            />
+          </div>
+        </div>
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setShowAdminInviteModal(false)}>
+            Cancel
+          </Button>
+          <Button onClick={inviteAdmin} disabled={invitingAdmin || !adminInviteForm.email}>
+            {invitingAdmin ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending Invite...
+              </>
+            ) : (
+              <>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Send Admin Invite
+              </>
+            )}
+          </Button>
         </ModalFooter>
       </Modal>
     </div>

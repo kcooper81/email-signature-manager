@@ -40,6 +40,8 @@ import {
   FileText,
   Shield,
   AlertCircle,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import type { SignatureBlock, SignatureBlockType, IndustryType } from './types';
 import { BlockEditor } from './block-editor';
@@ -84,6 +86,7 @@ export function TemplateEditor({
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [addBlockExpanded, setAddBlockExpanded] = useState(true);
 
   useEffect(() => {
     if (blocks.length > 0 && !selectedBlockId) {
@@ -191,39 +194,51 @@ export function TemplateEditor({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left + Center Area */}
           <div className="lg:col-span-5 space-y-4 lg:space-y-6">
-            {/* Add Block - Horizontal across Blocks and Block Settings */}
+            {/* Add Block - Collapsible */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Add Block</CardTitle>
+              <CardHeader 
+                className="cursor-pointer select-none pb-2"
+                onClick={() => setAddBlockExpanded(!addBlockExpanded)}
+              >
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm">Add Block</CardTitle>
+                  {addBlockExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Industry Selector */}
-                <div className="pb-4 border-b">
-                  <IndustrySelector value={industry} onChange={setIndustry} />
-                </div>
-                
-                {/* Block Type Buttons - Grid layout */}
-                <div className="grid grid-cols-4 gap-2">
-                  {BLOCK_TYPES.map((blockType) => (
-                    <Button
-                      key={blockType.type}
-                      variant="outline"
-                      size="sm"
-                      className="justify-center h-auto py-2 px-2 w-full"
-                      onClick={() => addBlock(blockType.type)}
-                    >
-                      <span className="mr-1 flex-shrink-0">{blockType.icon}</span>
-                      <span className="text-xs truncate">{blockType.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
+              {addBlockExpanded && (
+                <CardContent className="space-y-4">
+                  {/* Industry Selector */}
+                  <div className="pb-4 border-b">
+                    <IndustrySelector value={industry} onChange={setIndustry} />
+                  </div>
+                  
+                  {/* Block Type Buttons - Grid layout */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {BLOCK_TYPES.map((blockType) => (
+                      <Button
+                        key={blockType.type}
+                        variant="outline"
+                        size="sm"
+                        className="justify-center h-auto py-2 px-2 w-full"
+                        onClick={() => addBlock(blockType.type)}
+                      >
+                        <span className="mr-1 flex-shrink-0">{blockType.icon}</span>
+                        <span className="text-xs truncate">{blockType.label}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              )}
             </Card>
 
-            {/* Blocks and Block Settings - Side by side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+            {/* Blocks and Block Settings - Side by side, Settings wider */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 lg:gap-6">
               {/* Blocks Panel */}
-              <Card>
+              <Card className="md:col-span-2">
                 <CardHeader>
                   <CardTitle className="text-sm">Blocks</CardTitle>
                 </CardHeader>
@@ -260,7 +275,7 @@ export function TemplateEditor({
               </Card>
 
               {/* Block Settings Panel */}
-              <Card>
+              <Card className="md:col-span-3">
                 <CardHeader>
                   <CardTitle className="text-sm capitalize">
                     {selectedBlock ? selectedBlock.type.replace('-', ' ') : 'Block Settings'}
