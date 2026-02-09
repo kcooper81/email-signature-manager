@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
     let failCount = 0;
 
     for (const targetUser of targetUsers) {
-      let deploymentStatus = 'success';
+      let deploymentStatus = 'completed';
       let errorMessage: string | null = null;
       let actualTemplateId = templateId;
       let actualTemplate = template;

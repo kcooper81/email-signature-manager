@@ -77,7 +77,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate invite tokens and send emails
-    const invites = [];
+    const invites: { email: string; token: string; inviteUrl: string; emailSent: boolean }[] = [];
+    const emailErrors: string[] = [];
+    
+    console.log(`Processing ${usersWithoutAccounts.length} users for invite`);
+    console.log('RESEND_API_KEY configured:', !!process.env.RESEND_API_KEY);
+    console.log('RESEND_FROM_EMAIL:', process.env.RESEND_FROM_EMAIL || 'not set (using default)');
+    console.log('NEXT_PUBLIC_APP_URL:', process.env.NEXT_PUBLIC_APP_URL);
+    
     for (const inviteUser of usersWithoutAccounts) {
       // Generate a secure invite token
       const token = crypto.randomUUID();
@@ -96,7 +103,8 @@ export async function POST(request: NextRequest) {
         });
 
       if (insertError) {
-        console.error('Failed to create invite:', insertError);
+        console.error('Failed to create invite in database:', insertError);
+        emailErrors.push(`Database error for ${inviteUser.email}: ${insertError.message}`);
         continue;
       }
 
@@ -105,8 +113,10 @@ export async function POST(request: NextRequest) {
       const inviterName = `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Your admin';
       const orgName = organization?.name || 'your organization';
 
+      let emailSent = false;
       try {
-        await sendTeamInviteEmail({
+        console.log(`Attempting to send invite email to ${inviteUser.email}...`);
+        const result = await sendTeamInviteEmail({
           to: inviteUser.email,
           inviterName,
           organizationName: orgName,
@@ -114,24 +124,40 @@ export async function POST(request: NextRequest) {
           expiresAt: expiresAt.toISOString(),
         });
         
-        console.log(`Invite email sent to ${inviteUser.email}`);
-      } catch (emailError) {
-        console.error(`Failed to send invite email to ${inviteUser.email}:`, emailError);
-        // Continue with other invites even if one fails
+        console.log(`Invite email sent successfully to ${inviteUser.email}:`, result);
+        emailSent = true;
+      } catch (emailError: any) {
+        const errorMsg = emailError?.message || String(emailError);
+        console.error(`Failed to send invite email to ${inviteUser.email}:`, errorMsg);
+        emailErrors.push(`Email failed for ${inviteUser.email}: ${errorMsg}`);
       }
 
       invites.push({
         email: inviteUser.email,
         token,
         inviteUrl,
+        emailSent,
       });
+    }
+
+    const emailsSent = invites.filter(i => i.emailSent).length;
+    const emailsFailed = invites.filter(i => !i.emailSent).length;
+    
+    console.log(`Invite summary: ${emailsSent} emails sent, ${emailsFailed} failed`);
+    if (emailErrors.length > 0) {
+      console.log('Email errors:', emailErrors);
     }
 
     return NextResponse.json({
       success: true,
       invitedCount: invites.length,
-      invites: invites.map(i => ({ email: i.email, inviteUrl: i.inviteUrl })),
-      message: `Sent ${invites.length} invite${invites.length !== 1 ? 's' : ''}. Users will receive an email to set up their account.`,
+      emailsSent,
+      emailsFailed,
+      invites: invites.map(i => ({ email: i.email, inviteUrl: i.inviteUrl, emailSent: i.emailSent })),
+      message: emailsFailed > 0 
+        ? `Created ${invites.length} invite${invites.length !== 1 ? 's' : ''}. ${emailsSent} email${emailsSent !== 1 ? 's' : ''} sent successfully, ${emailsFailed} failed.`
+        : `Sent ${invites.length} invite${invites.length !== 1 ? 's' : ''}. Users will receive an email to set up their account.`,
+      errors: emailErrors.length > 0 ? emailErrors : undefined,
     });
 
   } catch (error: any) {
