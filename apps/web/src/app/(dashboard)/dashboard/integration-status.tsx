@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import {
   CheckCircle2,
   XCircle,
-  Clock,
   Link2,
   ArrowRight,
   Mail,
@@ -17,7 +16,7 @@ import { LucideIcon } from 'lucide-react';
 
 interface IntegrationInfo {
   connected: boolean;
-  lastSync: string | null;
+  connectedAt: string | null;
 }
 
 interface IntegrationStatusWidgetProps {
@@ -32,29 +31,9 @@ const integrations: { key: 'google' | 'microsoft' | 'hubspot'; name: string; ico
   { key: 'hubspot', name: 'HubSpot', icon: Users, color: 'text-orange-500' },
 ];
 
-function formatLastSync(lastSync: string | null): string {
-  if (!lastSync) return 'Never synced';
-  
-  const syncDate = new Date(lastSync);
-  const now = new Date();
-  const diffMs = now.getTime() - syncDate.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-  
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return syncDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function isStale(lastSync: string | null): boolean {
-  if (!lastSync) return false;
-  const syncDate = new Date(lastSync);
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  return syncDate < sevenDaysAgo;
+function formatConnectedDate(connectedAt: string | null): string {
+  if (!connectedAt) return '';
+  return new Date(connectedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 export function IntegrationStatusWidget({
@@ -81,7 +60,6 @@ export function IntegrationStatusWidget({
       <CardContent className="space-y-3">
         {integrations.map((integration) => {
           const status = statusMap[integration.key];
-          const stale = status.connected && isStale(status.lastSync);
           
           return (
             <div
@@ -94,10 +72,9 @@ export function IntegrationStatusWidget({
                 </div>
                 <div>
                   <p className="text-sm font-medium">{integration.name}</p>
-                  {status.connected && (
-                    <p className={`text-xs ${stale ? 'text-amber-600' : 'text-muted-foreground'}`}>
-                      {stale && <Clock className="h-3 w-3 inline mr-1" />}
-                      {formatLastSync(status.lastSync)}
+                  {status.connected && status.connectedAt && (
+                    <p className="text-xs text-muted-foreground">
+                      Connected {formatConnectedDate(status.connectedAt)}
                     </p>
                   )}
                 </div>

@@ -53,22 +53,22 @@ export default async function DashboardPage() {
   // Fetch integration status for all providers
   const { data: allConnections } = await supabase
     .from('provider_connections')
-    .select('provider, is_active, last_sync_at, created_at')
+    .select('provider, is_active, created_at')
     .eq('organization_id', organizationId);
 
   // Build integration status map from provider_connections only
   const integrationStatus = {
     google: {
       connected: allConnections?.some(c => c.provider === 'google' && c.is_active) || false,
-      lastSync: allConnections?.find(c => c.provider === 'google' && c.is_active)?.last_sync_at || null,
+      connectedAt: allConnections?.find(c => c.provider === 'google' && c.is_active)?.created_at || null,
     },
     microsoft: {
       connected: allConnections?.some(c => c.provider === 'microsoft' && c.is_active) || false,
-      lastSync: allConnections?.find(c => c.provider === 'microsoft' && c.is_active)?.last_sync_at || null,
+      connectedAt: allConnections?.find(c => c.provider === 'microsoft' && c.is_active)?.created_at || null,
     },
     hubspot: {
       connected: allConnections?.some(c => c.provider === 'hubspot' && c.is_active) || false,
-      lastSync: allConnections?.find(c => c.provider === 'hubspot' && c.is_active)?.last_sync_at || null,
+      connectedAt: allConnections?.find(c => c.provider === 'hubspot' && c.is_active)?.created_at || null,
     },
   };
 
@@ -134,23 +134,13 @@ export default async function DashboardPage() {
   const usersWithoutSignatures = (teamMemberCount || 0) - usersWithSignatures;
   const failedDeploymentsCount = deployments?.filter(d => d.status === 'failed').length || 0;
   
-  // Check for stale syncs (no sync in 7 days)
+  // Stale syncs tracking - currently not implemented as last_sync_at column doesn't exist
+  const staleSyncs: string[] = [];
+
+  // Get new users added in last 7 days without signatures
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   
-  const staleSyncs: string[] = [];
-  if (integrationStatus.google.connected && integrationStatus.google.lastSync) {
-    if (new Date(integrationStatus.google.lastSync) < sevenDaysAgo) {
-      staleSyncs.push('Google Workspace');
-    }
-  }
-  if (integrationStatus.microsoft.connected && integrationStatus.microsoft.lastSync) {
-    if (new Date(integrationStatus.microsoft.lastSync) < sevenDaysAgo) {
-      staleSyncs.push('Microsoft 365');
-    }
-  }
-
-  // Get new users added in last 7 days without signatures
   const { data: recentUsers } = await supabase
     .from('users')
     .select('id, email, created_at')
