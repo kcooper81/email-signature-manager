@@ -186,11 +186,12 @@ export function TemplateEditor({
         </div>
       </div>
 
-      {/* Main Content - 3 Column Grid */}
+      {/* Main Content */}
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-          {/* Left Column - Add Block */}
-          <div className="lg:col-span-3 space-y-4 lg:space-y-6">
+          {/* Left + Center Area */}
+          <div className="lg:col-span-7 space-y-4 lg:space-y-6">
+            {/* Add Block - Horizontal across Blocks and Block Settings */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Add Block</CardTitle>
@@ -201,82 +202,84 @@ export function TemplateEditor({
                   <IndustrySelector value={industry} onChange={setIndustry} />
                 </div>
                 
-                {/* Block Type Buttons */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+                {/* Block Type Buttons - Horizontal layout */}
+                <div className="flex flex-wrap gap-2">
                   {BLOCK_TYPES.map((blockType) => (
                     <Button
                       key={blockType.type}
                       variant="outline"
                       size="sm"
-                      className="justify-start h-auto py-2 px-2 w-full"
+                      className="justify-start h-auto py-2 px-3"
                       onClick={() => addBlock(blockType.type)}
                     >
                       <span className="mr-1.5 flex-shrink-0">{blockType.icon}</span>
-                      <span className="text-xs truncate">{blockType.label}</span>
+                      <span className="text-xs">{blockType.label}</span>
                     </Button>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Blocks</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {blocks.length === 0 ? (
-                  <div className="text-center py-6 text-muted-foreground text-sm">
-                    <p>No blocks yet</p>
-                  </div>
-                ) : (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={blocks.map((b) => b.id)}
-                      strategy={verticalListSortingStrategy}
+            {/* Blocks and Block Settings - Side by side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+              {/* Blocks Panel */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Blocks</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {blocks.length === 0 ? (
+                    <div className="text-center py-6 text-muted-foreground text-sm">
+                      <p>No blocks yet</p>
+                    </div>
+                  ) : (
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
                     >
-                      <div className="space-y-2">
-                        {blocks.map((block) => (
-                          <SortableBlock
-                            key={block.id}
-                            block={block}
-                            isSelected={selectedBlockId === block.id}
-                            onSelect={() => setSelectedBlockId(block.id)}
-                            onDelete={() => deleteBlock(block.id)}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                      <SortableContext
+                        items={blocks.map((b) => b.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="space-y-2">
+                          {blocks.map((block) => (
+                            <SortableBlock
+                              key={block.id}
+                              block={block}
+                              isSelected={selectedBlockId === block.id}
+                              onSelect={() => setSelectedBlockId(block.id)}
+                              onDelete={() => deleteBlock(block.id)}
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  )}
+                </CardContent>
+              </Card>
 
-          {/* Center Column - Block Settings */}
-          <div className="lg:col-span-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm capitalize">
-                  {selectedBlock ? selectedBlock.type.replace('-', ' ') : 'Block Settings'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {selectedBlock ? (
-                  <BlockEditor
-                    block={selectedBlock}
-                    onChange={(content) => updateBlock(selectedBlock.id, content)}
-                  />
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground text-sm">
-                    <p>Select a block to edit</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              {/* Block Settings Panel */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm capitalize">
+                    {selectedBlock ? selectedBlock.type.replace('-', ' ') : 'Block Settings'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedBlock ? (
+                    <BlockEditor
+                      block={selectedBlock}
+                      onChange={(content) => updateBlock(selectedBlock.id, content)}
+                    />
+                  ) : (
+                    <div className="text-center py-12 text-muted-foreground text-sm">
+                      <p>Select a block to edit</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Right Column - Email Client Preview */}

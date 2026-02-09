@@ -291,33 +291,27 @@ export default function AnalyticsPage() {
     const healthScore = Math.round((adoptionRate * 0.4) + (successRate * 0.4) + ((100 - Math.min(failedDeployments * 10, 100)) * 0.2));
     const complianceIssues = failedDeployments + (userCount ? userCount - usersWithSignatures : 0);
 
-    // IT-focused metrics
-    const { data: googleIntegration } = await supabase
-      .from('integrations')
-      .select('last_sync_at, status')
-      .eq('organization_id', organizationId)
-      .eq('provider', 'google')
-      .single();
-    
-    const { data: microsoftIntegration } = await supabase
-      .from('integrations')
-      .select('last_sync_at, status')
-      .eq('organization_id', organizationId)
-      .eq('provider', 'microsoft')
-      .single();
+    // IT-focused metrics - use provider_connections table
+    const { data: providerConnections } = await supabase
+      .from('provider_connections')
+      .select('provider, is_active, last_sync_at')
+      .eq('organization_id', organizationId);
+
+    const googleConnection = providerConnections?.find(c => c.provider === 'google' && c.is_active);
+    const microsoftConnection = providerConnections?.find(c => c.provider === 'microsoft' && c.is_active);
 
     const googleUsers = users?.filter(u => u.source === 'google').length || 0;
     const microsoftUsers = users?.filter(u => u.source === 'microsoft').length || 0;
 
     const syncStatus = {
       google: {
-        connected: googleIntegration?.status === 'active',
-        lastSync: googleIntegration?.last_sync_at || null,
+        connected: !!googleConnection,
+        lastSync: googleConnection?.last_sync_at || null,
         userCount: googleUsers,
       },
       microsoft: {
-        connected: microsoftIntegration?.status === 'active',
-        lastSync: microsoftIntegration?.last_sync_at || null,
+        connected: !!microsoftConnection,
+        lastSync: microsoftConnection?.last_sync_at || null,
         userCount: microsoftUsers,
       },
     };

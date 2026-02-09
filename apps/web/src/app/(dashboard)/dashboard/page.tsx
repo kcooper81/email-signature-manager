@@ -56,30 +56,19 @@ export default async function DashboardPage() {
     .select('provider, is_active, last_sync_at, created_at')
     .eq('organization_id', organizationId);
 
-  const { data: integrations } = await supabase
-    .from('integrations')
-    .select('provider, status, last_sync_at')
-    .eq('organization_id', organizationId);
-
-  // Build integration status map
+  // Build integration status map from provider_connections only
   const integrationStatus = {
     google: {
-      connected: allConnections?.some(c => c.provider === 'google' && c.is_active) || 
-                 integrations?.some(i => i.provider === 'google' && i.status === 'active') || false,
-      lastSync: allConnections?.find(c => c.provider === 'google')?.last_sync_at ||
-                integrations?.find(i => i.provider === 'google')?.last_sync_at || null,
+      connected: allConnections?.some(c => c.provider === 'google' && c.is_active) || false,
+      lastSync: allConnections?.find(c => c.provider === 'google' && c.is_active)?.last_sync_at || null,
     },
     microsoft: {
-      connected: allConnections?.some(c => c.provider === 'microsoft' && c.is_active) ||
-                 integrations?.some(i => i.provider === 'microsoft' && i.status === 'active') || false,
-      lastSync: allConnections?.find(c => c.provider === 'microsoft')?.last_sync_at ||
-                integrations?.find(i => i.provider === 'microsoft')?.last_sync_at || null,
+      connected: allConnections?.some(c => c.provider === 'microsoft' && c.is_active) || false,
+      lastSync: allConnections?.find(c => c.provider === 'microsoft' && c.is_active)?.last_sync_at || null,
     },
     hubspot: {
-      connected: allConnections?.some(c => c.provider === 'hubspot' && c.is_active) ||
-                 integrations?.some(i => i.provider === 'hubspot' && i.status === 'active') || false,
-      lastSync: allConnections?.find(c => c.provider === 'hubspot')?.last_sync_at ||
-                integrations?.find(i => i.provider === 'hubspot')?.last_sync_at || null,
+      connected: allConnections?.some(c => c.provider === 'hubspot' && c.is_active) || false,
+      lastSync: allConnections?.find(c => c.provider === 'hubspot' && c.is_active)?.last_sync_at || null,
     },
   };
 
@@ -103,7 +92,16 @@ export default async function DashboardPage() {
     ? Math.round((successfulDeployments / totalDeployments) * 100) 
     : 0;
 
-  // Get users with signatures (from successful deployments) - FILTERED BY ORGANIZATION
+  // Get users with signatures - use user_deployment_history for accuracy, fallback to target_emails
+  const { data: userDeploymentHistory } = await supabase
+    .from('user_deployment_history')
+    .select('user_id')
+    .eq('organization_id', organizationId)
+    .eq('status', 'completed');
+
+  const usersWithHistoryDeployment = new Set(userDeploymentHistory?.map(h => h.user_id) || []);
+
+  // Also check target_emails from signature_deployments as fallback
   const { data: allDeployments } = await supabase
     .from('signature_deployments')
     .select('target_emails, successful_count, status')
@@ -111,18 +109,25 @@ export default async function DashboardPage() {
     .eq('status', 'completed');
   
   const uniqueUsersWithSignatures = new Set<string>();
-  let estimatedUsers = 0;
   allDeployments?.forEach(d => {
     if (d.target_emails && (d.target_emails as string[]).length > 0) {
       (d.target_emails as string[]).forEach(email => uniqueUsersWithSignatures.add(email.toLowerCase()));
-    } else {
-      estimatedUsers += d.successful_count || 0;
     }
   });
-  const usersWithSignatures = Math.min(
-    uniqueUsersWithSignatures.size + estimatedUsers,
-    teamMemberCount || 0
-  );
+
+  // Get all users to map emails to user IDs
+  const { data: allUsers } = await supabase
+    .from('users')
+    .select('id, email')
+    .eq('organization_id', organizationId);
+
+  // Count users with signatures from either source
+  let usersWithSignatures = 0;
+  allUsers?.forEach(u => {
+    if (usersWithHistoryDeployment.has(u.id) || uniqueUsersWithSignatures.has(u.email.toLowerCase())) {
+      usersWithSignatures++;
+    }
+  });
 
   // Calculate pending actions
   const usersWithoutSignatures = (teamMemberCount || 0) - usersWithSignatures;
@@ -147,12 +152,12 @@ export default async function DashboardPage() {
   // Get new users added in last 7 days without signatures
   const { data: recentUsers } = await supabase
     .from('users')
-    .select('email, created_at')
+    .select('id, email, created_at')
     .eq('organization_id', organizationId)
     .gte('created_at', sevenDaysAgo.toISOString());
   
   const newUsersWithoutSignatures = recentUsers?.filter(
-    u => !uniqueUsersWithSignatures.has(u.email.toLowerCase())
+    u => !usersWithHistoryDeployment.has(u.id) && !uniqueUsersWithSignatures.has(u.email.toLowerCase())
   ).length || 0;
 
   const hasTemplates = (templateCount || 0) > 0;
