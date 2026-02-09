@@ -8,31 +8,34 @@ export default function HomePage() {
     <div className="text-gray-900">
 
       {/* Hero Section */}
-      <section className="relative pt-20 md:pt-32 pb-12 md:pb-16 overflow-hidden">
-        {/* Background with multi-color gradient like Circle */}
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-blue-50 to-cyan-50" />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-violet-200/30 via-blue-200/30 to-cyan-200/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-pink-200/20 via-orange-200/20 to-yellow-200/20 rounded-full blur-3xl" />
+      <section className="relative pt-28 md:pt-40 pb-16 md:pb-24 overflow-hidden">
+        {/* Background with vibrant gradient matching header */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-600" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-violet-500/30 via-blue-500/30 to-cyan-500/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-pink-500/20 via-orange-500/20 to-yellow-500/20 rounded-full blur-3xl" />
         
         <div className="relative max-w-7xl mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 backdrop-blur px-3 md:px-4 py-1.5 text-xs md:text-sm mb-6 md:mb-8 shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-gradient-to-r from-violet-500 to-blue-500 animate-pulse" />
-              <span className="text-gray-700 font-medium">Google Workspace & Microsoft 365</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-3 md:px-4 py-1.5 text-xs md:text-sm mb-6 md:mb-8">
+              <span className="flex h-2 w-2 rounded-full bg-white animate-pulse" />
+              <span className="text-white/90 font-medium">Google Workspace & Microsoft 365</span>
             </div>
             
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 md:mb-6 leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 md:mb-6 leading-[1.1] text-white">
               Email signatures
               <br />
-              <span className="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                without the chaos
+              <span className="text-cyan-300">
+                without
+              </span>{' '}
+              <span className="text-amber-300">
+                the chaos
               </span>
             </h1>
             
             {/* Subheadline */}
-            <p className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed px-2">
+            <p className="text-lg md:text-xl lg:text-2xl text-white/80 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed px-2">
               Deploy consistent, on-brand signatures to your entire team in seconds. 
               No more manual updates. No more rogue signatures.
             </p>
@@ -41,26 +44,26 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 md:mb-16">
               <Link
                 href="/signup"
-                className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 px-6 md:px-8 py-3.5 md:py-4 text-base font-semibold text-white shadow-lg shadow-violet-600/25 hover:shadow-violet-500/40 transition-all active:scale-[0.98]"
+                className="group inline-flex items-center justify-center rounded-full bg-white px-6 md:px-8 py-3.5 md:py-4 text-base font-semibold text-violet-600 shadow-lg shadow-black/10 hover:bg-white/90 transition-all active:scale-[0.98]"
               >
                 Get started free
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <DemoButton />
+              <DemoButton variant="light" />
             </div>
             
             {/* Trust indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 gap-y-3 text-xs md:text-sm text-gray-500 mb-10 md:mb-16 px-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 md:gap-x-8 gap-y-3 text-xs md:text-sm text-white/70 mb-10 md:mb-16 px-4">
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-violet-600" />
+                <Check className="h-4 w-4 text-white" />
                 <span>Free plan available</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-blue-600" />
+                <Check className="h-4 w-4 text-white" />
                 <span>No credit card required</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-cyan-600" />
+                <Check className="h-4 w-4 text-white" />
                 <span>Setup in 60 seconds</span>
               </div>
             </div>
