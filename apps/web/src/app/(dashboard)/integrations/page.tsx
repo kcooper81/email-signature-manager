@@ -400,10 +400,10 @@ export default function IntegrationsPage() {
     }
   };
 
-  const googleConnection = connections.find((c) => c.provider === 'google');
-  const microsoftConnection = connections.find((c) => c.provider === 'microsoft');
-  const hubspotConnection = connections.find((c) => c.provider === 'hubspot');
-  const calendlyConnection = connections.find((c) => c.provider === 'calendly');
+  const googleConnection = connections.find((c) => c.provider === 'google' && c.is_active);
+  const microsoftConnection = connections.find((c) => c.provider === 'microsoft' && c.is_active);
+  const hubspotConnection = connections.find((c) => c.provider === 'hubspot' && c.is_active);
+  const calendlyConnection = connections.find((c) => c.provider === 'calendly' && c.is_active);
 
   return (
     <div className="space-y-4 sm:space-y-6">
