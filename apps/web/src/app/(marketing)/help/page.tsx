@@ -17,9 +17,9 @@ const quickLinks = [
     title: 'Getting Started',
     description: 'Set up your first email signature in minutes',
     links: [
-      { text: 'Connect Google Workspace', href: '/google-workspace' },
-      { text: 'Create Your First Template', href: '/features' },
-      { text: 'Deploy to Your Team', href: '/features' },
+      { text: 'Connect Google Workspace', href: '/help/google-workspace-setup' },
+      { text: 'Create Your First Template', href: '/help/create-first-template' },
+      { text: 'Deploy to Your Team', href: '/help/deploy-signatures' },
     ],
   },
   {
@@ -27,9 +27,9 @@ const quickLinks = [
     title: 'Team Management',
     description: 'Manage users, invites, and permissions',
     links: [
-      { text: 'Bulk Invite Employees', href: '/features' },
-      { text: 'Role-Based Access (RBAC)', href: '/features' },
-      { text: 'Personal Links Setup', href: '/features' },
+      { text: 'Bulk Invite Employees', href: '/help/bulk-invite-employees' },
+      { text: 'Role-Based Access (RBAC)', href: '/help/rbac-permissions' },
+      { text: 'Personal Links Setup', href: '/help/personal-links-setup' },
     ],
   },
   {
@@ -37,9 +37,9 @@ const quickLinks = [
     title: 'Signature Rules',
     description: 'Conditional logic for smart signatures',
     links: [
-      { text: 'Internal vs External Rules', href: '/features' },
-      { text: 'Department-Based Signatures', href: '/features' },
-      { text: 'Campaign Date Scheduling', href: '/features' },
+      { text: 'Internal vs External Rules', href: '/help/signature-rules-internal-external' },
+      { text: 'Department-Based Signatures', href: '/help/department-signatures' },
+      { text: 'Campaign Date Scheduling', href: '/help/campaign-scheduling' },
     ],
   },
   {
@@ -47,9 +47,9 @@ const quickLinks = [
     title: 'Campaign Banners',
     description: 'Promotional banners with tracking',
     links: [
-      { text: 'Add Banner to Signature', href: '/features' },
-      { text: 'Schedule Campaign Dates', href: '/features' },
-      { text: 'Track Banner Clicks', href: '/features' },
+      { text: 'Add Banner to Signature', href: '/help/add-campaign-banner' },
+      { text: 'Schedule Campaign Dates', href: '/help/campaign-scheduling' },
+      { text: 'Track Banner Clicks', href: '/help/track-banner-clicks' },
     ],
   },
   {
@@ -57,9 +57,9 @@ const quickLinks = [
     title: 'Analytics',
     description: 'Track clicks and measure ROI',
     links: [
-      { text: 'View Click Analytics', href: '/features' },
-      { text: 'Link Performance', href: '/features' },
-      { text: 'Export Reports', href: '/features' },
+      { text: 'View Click Analytics', href: '/help/view-analytics' },
+      { text: 'Link Performance', href: '/help/link-performance' },
+      { text: 'Export Reports', href: '/help/export-reports' },
     ],
   },
   {
@@ -67,8 +67,8 @@ const quickLinks = [
     title: 'Compliance & Security',
     description: 'Disclaimers, audit logs, and more',
     links: [
-      { text: 'Disclaimers Library', href: '/features' },
-      { text: 'Audit Logs', href: '/features' },
+      { text: 'Disclaimers Library', href: '/help/disclaimers-library' },
+      { text: 'Audit Logs', href: '/help/audit-logs' },
       { text: 'GDPR & HIPAA Compliance', href: '/security' },
     ],
   },

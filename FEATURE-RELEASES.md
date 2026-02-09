@@ -27,6 +27,9 @@ When a new feature is released:
 | **RBAC** | Role-based access control (Owner, Admin, Editor, Viewer) | ✅ Live | ⬜ | ⬜ |
 | **Audit Logs** | Complete action logging for compliance | ✅ Live | ⬜ | ⬜ |
 | **Disclaimers Library** | 15 pre-written legal disclaimers (GDPR, HIPAA, etc.) | ✅ Live | ⬜ | ⬜ |
+| **Dynamic Help Articles** | Database-driven help center with step-by-step guides and FAQs | ✅ Live | ✅ | N/A |
+| **Unified Help/Support** | /help and /support share same content with clean article URLs | ✅ Live | ✅ | N/A |
+| **Calendly Help Docs** | 5 comprehensive articles for Calendly integration setup and usage | ✅ Live | ✅ | N/A |
 
 ---
 

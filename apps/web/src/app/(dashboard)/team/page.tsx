@@ -427,12 +427,14 @@ export default function TeamMembersPage() {
     setShowEditModal(true);
   };
 
-  // Check if member can have email edited (users without an auth account)
+  // Check if member can have email edited
   const canEditMemberEmail = (member: TeamMember | null) => {
     if (!member) return false;
-    // Can edit email for users who don't have an auth account yet (auth_id is null)
-    // These are manually added users or synced users who haven't claimed their account
-    return !member.auth_id;
+    // Can only edit email for manually added users who don't have an auth account
+    // Synced users (google/microsoft/hubspot) should have their email managed at the source
+    // Users with auth_id have claimed their account and email is tied to their login
+    const isSynced = member.source === 'google' || member.source === 'microsoft' || member.source === 'hubspot';
+    return !member.auth_id && !isSynced;
   };
 
   const updateMember = async () => {
@@ -444,12 +446,13 @@ export default function TeamMembersPage() {
     try {
       const supabase = createClient();
       
-      // Build update object - include email only for manual users
+      // Check if user is synced (from Google/Microsoft/HubSpot)
+      const isSynced = editingMember.source === 'google' || 
+                       editingMember.source === 'microsoft' || 
+                       editingMember.source === 'hubspot';
+
+      // Personal links are always editable
       const updateData: Record<string, any> = {
-        first_name: editForm.first_name || null,
-        last_name: editForm.last_name || null,
-        title: editForm.title || null,
-        department: editForm.department || null,
         calendly_url: editForm.calendly_url || null,
         linkedin_url: editForm.linkedin_url || null,
         twitter_url: editForm.twitter_url || null,
@@ -460,11 +463,21 @@ export default function TeamMembersPage() {
         youtube_url: editForm.youtube_url || null,
       };
 
-      // Only update email for manually added users (no auth_id)
+      // Only update basic info for manual users (synced users get these from their provider)
+      if (!isSynced) {
+        updateData.first_name = editForm.first_name || null;
+        updateData.last_name = editForm.last_name || null;
+        updateData.title = editForm.title || null;
+        updateData.department = editForm.department || null;
+      }
+
+      // Only update email for manually added users without auth account
       const canEdit = canEditMemberEmail(editingMember);
       console.log('Update member:', { 
         memberId: editingMember.id, 
         auth_id: editingMember.auth_id,
+        source: editingMember.source,
+        isSynced,
         canEditEmail: canEdit,
         newEmail: editForm.email 
       });
@@ -1288,6 +1301,7 @@ export default function TeamMembersPage() {
         memberName={editingMember ? `${editingMember.first_name || ''} ${editingMember.last_name || ''}`.trim() || editingMember.email : ''}
         memberEmail={editingMember?.email || ''}
         canEditEmail={canEditMemberEmail(editingMember)}
+        isSyncedUser={editingMember?.source === 'google' || editingMember?.source === 'microsoft' || editingMember?.source === 'hubspot'}
         editForm={editForm}
         setEditForm={setEditForm}
         onSave={updateMember}
