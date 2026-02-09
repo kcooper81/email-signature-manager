@@ -2,23 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import { createClient } from '@/lib/supabase/server';
 
-async function isAdmin(supabase: ReturnType<typeof createClient>) {
+async function isSuperAdmin(supabase: ReturnType<typeof createClient>) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return false;
 
   const { data: userData } = await supabase
     .from('users')
-    .select('is_admin')
+    .select('is_super_admin')
     .eq('auth_id', user.id)
     .single();
 
-  return userData?.is_admin === true;
+  return userData?.is_super_admin === true;
 }
 
 export async function GET() {
   const supabase = createClient();
   
-  if (!await isAdmin(supabase)) {
+  if (!await isSuperAdmin(supabase)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -41,7 +41,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const supabase = createClient();
   
-  if (!await isAdmin(supabase)) {
+  if (!await isSuperAdmin(supabase)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -15,16 +15,18 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
-  // Check if user has admin flag in database (secure access control)
+  // Check if user has super admin flag in database (platform-level access)
+  // is_super_admin = platform admins who can access /admin panel
+  // is_admin = organization-level admins who can manage their team
   const { data: userData } = await supabase
     .from('users')
-    .select('is_admin')
+    .select('is_super_admin')
     .eq('auth_id', user.id)
     .single();
 
-  const isAdmin = userData?.is_admin === true;
+  const isSuperAdmin = userData?.is_super_admin === true;
 
-  if (!isAdmin) {
+  if (!isSuperAdmin) {
     redirect('/dashboard');
   }
 
