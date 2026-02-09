@@ -93,11 +93,12 @@ export default async function DashboardPage() {
     : 0;
 
   // Get users with signatures - use user_deployment_history for accuracy, fallback to target_emails
+  // Check for both 'completed' and 'success' status for backwards compatibility
   const { data: userDeploymentHistory } = await supabase
     .from('user_deployment_history')
     .select('user_id')
     .eq('organization_id', organizationId)
-    .eq('status', 'completed');
+    .in('status', ['completed', 'success']);
 
   const usersWithHistoryDeployment = new Set(userDeploymentHistory?.map(h => h.user_id) || []);
 

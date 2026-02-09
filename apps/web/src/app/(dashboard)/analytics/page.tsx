@@ -99,11 +99,12 @@ export default function AnalyticsPage() {
     const pendingDeployments = deployments?.filter(d => d.status === 'pending' || d.status === 'running').length || 0;
 
     // Get user deployment history for accurate per-user signature status
+    // Check for both 'completed' and 'success' status for backwards compatibility
     const { data: userDeploymentHistory } = await supabase
       .from('user_deployment_history')
       .select('user_id, template_id, status, deployed_at, template:signature_templates(name)')
       .eq('organization_id', organizationId)
-      .eq('status', 'completed')
+      .in('status', ['completed', 'success'])
       .order('deployed_at', { ascending: false });
 
     // Build a map of user_id to their latest successful deployment
