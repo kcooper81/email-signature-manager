@@ -60,7 +60,7 @@ export const PLANS: Record<string, Plan> = {
       whiteLabel: false,
     },
     featureList: [
-      { text: 'Up to 5 team members', included: true },
+      { text: 'Up to 5 users', included: true },
       { text: '1 signature template', included: true },
       { text: 'Visual drag-and-drop editor', included: true },
       { text: 'Google Workspace integration', included: true },
@@ -102,7 +102,7 @@ export const PLANS: Record<string, Plan> = {
       whiteLabel: false,
     },
     featureList: [
-      { text: 'Unlimited team members ($0.50/user)', included: true },
+      { text: 'Unlimited users ($0.50/user/month)', included: true },
       { text: '5 signature templates', included: true },
       { text: 'Visual drag-and-drop editor', included: true },
       { text: 'Google Workspace integration', included: true },
@@ -145,7 +145,7 @@ export const PLANS: Record<string, Plan> = {
       whiteLabel: false,
     },
     featureList: [
-      { text: 'Unlimited team members ($29 for up to 10, then $1/user)', included: true },
+      { text: 'Up to 10 users included, then $1/user/month', included: true },
       { text: 'Unlimited signature templates', included: true },
       { text: 'Visual drag-and-drop editor', included: true },
       { text: 'Google Workspace integration', included: true },
@@ -188,7 +188,7 @@ export const PLANS: Record<string, Plan> = {
       whiteLabel: true,
     },
     featureList: [
-      { text: 'Unlimited team members (custom pricing)', included: true },
+      { text: 'Unlimited users (custom pricing)', included: true },
       { text: 'Unlimited signature templates', included: true },
       { text: 'Everything in Professional, plus:', included: true },
       { text: 'Dedicated account manager', included: true },
