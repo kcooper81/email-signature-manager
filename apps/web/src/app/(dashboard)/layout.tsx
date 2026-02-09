@@ -20,15 +20,14 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  // Check if user is an admin
+  // Check if user is a super admin (platform-level access to /admin panel)
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('is_admin, email')
+    .select('is_super_admin, email')
     .eq('email', user.email)
     .single();
 
-  console.log('Admin check:', { email: user.email, userData, userError });
-  const isAdmin = userData?.is_admin === true;
+  const isSuperAdmin = userData?.is_super_admin === true;
 
   return (
     <EnsureUserProvider>
@@ -36,7 +35,7 @@ export default async function DashboardLayout({
         <SubscriptionProvider>
           <ImpersonationBanner />
           <div className="min-h-screen bg-background">
-            <DashboardHeader user={user} isAdmin={isAdmin} />
+            <DashboardHeader user={user} isAdmin={isSuperAdmin} />
             <div className="flex">
               <DashboardNav />
               <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
