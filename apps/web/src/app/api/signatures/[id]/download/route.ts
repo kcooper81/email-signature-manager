@@ -27,10 +27,11 @@ export async function GET(
 
     const signatureId = params.id;
 
-    // Get the signature template with blocks - FILTERED BY ORGANIZATION
+    // Get the signature template - FILTERED BY ORGANIZATION
+    // Note: blocks are stored as JSONB in the 'blocks' column, not as a separate table
     const { data: template, error: templateError } = await supabase
       .from('signature_templates')
-      .select('*, signature_blocks(*)')
+      .select('*')
       .eq('id', signatureId)
       .eq('organization_id', currentUser.organization_id)
       .single();
@@ -42,13 +43,11 @@ export async function GET(
       );
     }
 
-    // Sort blocks by order
-    const sortedBlocks = (template.signature_blocks || []).sort(
-      (a: any, b: any) => a.order - b.order
-    );
+    // Blocks are stored in the 'blocks' JSONB column
+    const blocks = template.blocks || [];
 
     // Generate HTML
-    const signatureHtml = generateSignatureHtml(sortedBlocks);
+    const signatureHtml = generateSignatureHtml(blocks);
 
     // Return as downloadable HTML file
     return new NextResponse(signatureHtml, {

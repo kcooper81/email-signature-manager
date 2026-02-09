@@ -442,14 +442,11 @@ export default function SettingsPage() {
     if (!profile) return;
 
     try {
-      // Mark user as deleted in database (soft delete)
-      // The actual auth user deletion should be handled by a server-side function
+      // Delete the user record from the database
+      // Note: This is a hard delete since soft-delete columns don't exist
       await supabase
         .from('users')
-        .update({ 
-          is_active: false,
-          deleted_at: new Date().toISOString()
-        })
+        .delete()
         .eq('id', profile.id);
 
       // Sign out

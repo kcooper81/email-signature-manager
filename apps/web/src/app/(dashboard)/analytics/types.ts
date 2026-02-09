@@ -67,8 +67,8 @@ export interface AnalyticsData {
   
   // IT-focused metrics
   syncStatus: {
-    google: { connected: boolean; lastSync: string | null; userCount: number };
-    microsoft: { connected: boolean; lastSync: string | null; userCount: number };
+    google: { connected: boolean; connectedAt: string | null; userCount: number };
+    microsoft: { connected: boolean; connectedAt: string | null; userCount: number };
   };
   errorRate: number;
   avgDeploymentTime: number;

@@ -295,7 +295,7 @@ export default function AnalyticsPage() {
     // IT-focused metrics - use provider_connections table
     const { data: providerConnections } = await supabase
       .from('provider_connections')
-      .select('provider, is_active, last_sync_at')
+      .select('provider, is_active, created_at')
       .eq('organization_id', organizationId);
 
     const googleConnection = providerConnections?.find(c => c.provider === 'google' && c.is_active);
@@ -307,12 +307,12 @@ export default function AnalyticsPage() {
     const syncStatus = {
       google: {
         connected: !!googleConnection,
-        lastSync: googleConnection?.last_sync_at || null,
+        connectedAt: googleConnection?.created_at || null,
         userCount: googleUsers,
       },
       microsoft: {
         connected: !!microsoftConnection,
-        lastSync: microsoftConnection?.last_sync_at || null,
+        connectedAt: microsoftConnection?.created_at || null,
         userCount: microsoftUsers,
       },
     };
