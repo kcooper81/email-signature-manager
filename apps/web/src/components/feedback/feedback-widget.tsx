@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageCircle, X, Send, Bug, Lightbulb, HelpCircle, CheckCircle } from 'lucide-react';
+import { X, Send, Bug, Lightbulb, HelpCircle, CheckCircle, Headphones } from 'lucide-react';
 import { Button, Textarea } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
@@ -88,7 +88,7 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
           {/* Header */}
           <div className="bg-gradient-to-r from-violet-600 to-blue-600 px-4 py-3 flex items-center justify-between">
             <h3 className="text-white font-semibold">
-              {isSubmitted ? 'Thank You!' : feedbackType ? 'Send Feedback' : 'How can we help?'}
+              {isSubmitted ? 'Thank You!' : feedbackType ? 'Submit Ticket' : 'Help & Support'}
             </h3>
             <button
               onClick={handleClose}
@@ -105,8 +105,8 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
                 <div className="mb-4 rounded-full bg-green-100 p-3">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-foreground font-medium">Feedback Received!</p>
-                <p className="text-sm text-muted-foreground mt-1">We appreciate your input.</p>
+                <p className="text-foreground font-medium">Ticket Submitted!</p>
+                <p className="text-sm text-muted-foreground mt-1">We'll get back to you soon.</p>
               </div>
             ) : !feedbackType ? (
               <div className="space-y-2">
@@ -159,7 +159,7 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Feedback
+                      Submit Ticket
                     </>
                   )}
                 </Button>

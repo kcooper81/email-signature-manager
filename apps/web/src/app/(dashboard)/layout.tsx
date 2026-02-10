@@ -4,6 +4,7 @@ import { DashboardNav } from '@/components/dashboard/nav';
 import { DashboardHeader } from '@/components/dashboard/header';
 import { EnsureUserProvider } from '@/components/providers/ensure-user-provider';
 import { SubscriptionProvider } from '@/components/providers/subscription-provider';
+import { BrandingProviderWrapper } from '@/components/providers/branding-provider-wrapper';
 import { DevBypassIndicator, DevBypassToggle } from '@/components/billing';
 import { ImpersonationBanner } from '@/components/admin/impersonation-banner';
 import { ImpersonationProvider } from '@/hooks/use-impersonation';
@@ -39,16 +40,18 @@ export default async function DashboardLayout({
     <EnsureUserProvider>
       <ImpersonationProvider>
         <SubscriptionProvider>
-          <ImpersonationBanner />
-          <div className="min-h-screen bg-background">
-            <DashboardHeader user={user} isAdmin={isSuperAdmin} />
-            <div className="flex">
-              <DashboardNav />
-              <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
+          <BrandingProviderWrapper>
+            <ImpersonationBanner />
+            <div className="min-h-screen bg-background">
+              <DashboardHeader user={user} isAdmin={isSuperAdmin} />
+              <div className="flex">
+                <DashboardNav />
+                <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
+              </div>
+              <DevBypassIndicator />
+              <DevBypassToggle />
             </div>
-            <DevBypassIndicator />
-            <DevBypassToggle />
-          </div>
+          </BrandingProviderWrapper>
         </SubscriptionProvider>
       </ImpersonationProvider>
     </EnsureUserProvider>
