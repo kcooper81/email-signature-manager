@@ -43,11 +43,21 @@ export default function LoginPage() {
         return;
       }
 
+      // Get the authenticated user
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (!authUser) {
+        // Fallback to dashboard if we can't get user
+        router.push('/dashboard');
+        router.refresh();
+        return;
+      }
+
       // Check user role to determine redirect destination
       const { data: userData } = await supabase
         .from('users')
         .select('role')
-        .eq('auth_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('auth_id', authUser.id)
         .single();
 
       // Redirect members to their portal, admins/owners to dashboard
