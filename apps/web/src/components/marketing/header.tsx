@@ -289,6 +289,18 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
           >
             Pricing
           </Link>
+          
+          <Link 
+            href="/partners/apply" 
+            className={cn(
+              "px-4 py-2 text-sm transition-colors font-medium rounded-lg",
+              isHomepage && !scrolled 
+                ? "text-white/90 hover:text-white hover:bg-white/10" 
+                : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+            )}
+          >
+            Partners
+          </Link>
         </nav>
 
         {/* Mobile menu button */}
@@ -351,6 +363,14 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
               >
                 <Crown className="h-5 w-5 text-amber-500" />
                 Pricing
+              </Link>
+              <Link 
+                href="/partners/apply" 
+                className="flex items-center gap-3 px-3 py-3 text-base font-medium text-gray-900 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Users className="h-5 w-5 text-purple-500" />
+                Partners
               </Link>
             </div>
             

@@ -15,12 +15,14 @@ import {
   Menu,
   X,
   BookOpen,
+  UserPlus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/accounts', label: 'Accounts', icon: Building2 },
+  { href: '/admin/partner-applications', label: 'Partner Applications', icon: UserPlus },
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
   { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard },
   { href: '/admin/help', label: 'Help Articles', icon: BookOpen },

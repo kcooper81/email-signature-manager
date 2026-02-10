@@ -552,9 +552,10 @@ export default function SettingsPage() {
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'organization', label: 'Organization', icon: Building2 },
+    { id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' },
     { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'appearance', label: 'Appearance', icon: Palette },
+    { id: 'appearance', label: 'Appearance', icon: Monitor },
     { id: 'security', label: 'Security', icon: Shield },
   ];
 

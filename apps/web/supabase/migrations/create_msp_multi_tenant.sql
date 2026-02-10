@@ -35,10 +35,15 @@ ALTER TABLE organizations
 ADD COLUMN IF NOT EXISTS partner_tier TEXT DEFAULT 'registered'
 CHECK (partner_tier IN ('registered', 'authorized', 'premier'));
 
+-- White-label subdomain (e.g., "acme-it" → acme-it.siggly.io)
+ALTER TABLE organizations 
+ADD COLUMN IF NOT EXISTS custom_subdomain TEXT UNIQUE;
+
 -- Indexes for fast lookups
 CREATE INDEX IF NOT EXISTS idx_organizations_parent ON organizations(parent_organization_id);
 CREATE INDEX IF NOT EXISTS idx_organizations_type ON organizations(organization_type);
 CREATE INDEX IF NOT EXISTS idx_organizations_partner_tier ON organizations(partner_tier) WHERE organization_type = 'msp';
+CREATE INDEX IF NOT EXISTS idx_organizations_subdomain ON organizations(custom_subdomain) WHERE custom_subdomain IS NOT NULL;
 
 -- ============================================
 -- 2. Organization Domains Table (Multi-Domain)
@@ -312,11 +317,11 @@ ALTER TABLE partner_applications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their org domains" ON organization_domains
   FOR SELECT USING (
     organization_id IN (
-      SELECT organization_id FROM users WHERE auth_id = auth.uid()
+      SELECT organization_id FROM users WHERE auth_id = auth.uid()::text
     )
     OR
     user_has_client_access(
-      (SELECT id FROM users WHERE auth_id = auth.uid()),
+      (SELECT id FROM users WHERE auth_id = auth.uid()::text),
       organization_id,
       'read_only'
     )
@@ -326,21 +331,21 @@ CREATE POLICY "Admins can manage their org domains" ON organization_domains
   FOR ALL USING (
     organization_id IN (
       SELECT u.organization_id FROM users u
-      WHERE u.auth_id = auth.uid() AND u.role IN ('owner', 'admin')
+      WHERE u.auth_id = auth.uid()::text AND u.role IN ('owner', 'admin')
     )
   );
 
 -- MSP client access: MSP users can see their access records
 CREATE POLICY "MSP users can view their access" ON msp_client_access
   FOR SELECT USING (
-    msp_user_id = (SELECT id FROM users WHERE auth_id = auth.uid())
+    msp_user_id = (SELECT id FROM users WHERE auth_id = auth.uid()::text)
   );
 
 CREATE POLICY "MSP owners can manage access" ON msp_client_access
   FOR ALL USING (
     msp_organization_id IN (
       SELECT u.organization_id FROM users u
-      WHERE u.auth_id = auth.uid() AND u.role = 'owner'
+      WHERE u.auth_id = auth.uid()::text AND u.role = 'owner'
     )
   );
 
@@ -348,7 +353,7 @@ CREATE POLICY "MSP owners can manage access" ON msp_client_access
 CREATE POLICY "Platform admins can view applications" ON partner_applications
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM users WHERE auth_id = auth.uid() AND is_admin = true
+      SELECT 1 FROM users WHERE auth_id = auth.uid()::text AND is_super_admin = true
     )
   );
 
@@ -358,7 +363,7 @@ CREATE POLICY "Anyone can submit applications" ON partner_applications
 CREATE POLICY "Platform admins can manage applications" ON partner_applications
   FOR UPDATE USING (
     EXISTS (
-      SELECT 1 FROM users WHERE auth_id = auth.uid() AND is_admin = true
+      SELECT 1 FROM users WHERE auth_id = auth.uid()::text AND is_super_admin = true
     )
   );
 
