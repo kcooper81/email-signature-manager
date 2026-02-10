@@ -16,6 +16,7 @@ import {
   Link2,
   Loader2,
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface HelpArticle {
   id: string;
@@ -62,8 +63,8 @@ function FAQItem({ article }: { article: HelpArticle }) {
         )}
       </button>
       {isOpen && (
-        <div className="pb-4 text-muted-foreground text-sm leading-relaxed">
-          {article.content}
+        <div className="pb-4 text-muted-foreground text-sm leading-relaxed prose prose-sm max-w-none">
+          <ReactMarkdown>{article.content}</ReactMarkdown>
         </div>
       )}
     </div>

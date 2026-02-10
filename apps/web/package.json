@@ -52,6 +52,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.0",
+    "react-markdown": "^10.1.0",
     "reading-time": "^1.5.0",
     "resend": "^6.9.1",
     "stripe": "^14.25.0",

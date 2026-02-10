@@ -138,6 +138,7 @@ export default function TeamMembersPage() {
     instagram_url: '',
     facebook_url: '',
     youtube_url: '',
+    self_manage_enabled: true,
   });
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -441,6 +442,7 @@ export default function TeamMembersPage() {
       instagram_url: member.instagram_url || '',
       facebook_url: member.facebook_url || '',
       youtube_url: member.youtube_url || '',
+      self_manage_enabled: (member as any).self_manage_enabled !== false,
     });
     setShowEditModal(true);
   };
@@ -479,6 +481,7 @@ export default function TeamMembersPage() {
         instagram_url: editForm.instagram_url || null,
         facebook_url: editForm.facebook_url || null,
         youtube_url: editForm.youtube_url || null,
+        self_manage_enabled: editForm.self_manage_enabled,
       };
 
       // Only update basic info for manual users (synced users get these from their provider)
@@ -491,28 +494,15 @@ export default function TeamMembersPage() {
 
       // Only update email for manually added users without auth account
       const canEdit = canEditMemberEmail(editingMember);
-      console.log('Update member:', { 
-        memberId: editingMember.id, 
-        auth_id: editingMember.auth_id,
-        source: editingMember.source,
-        isSynced,
-        canEditEmail: canEdit,
-        newEmail: editForm.email 
-      });
       
       if (canEdit && editForm.email) {
         updateData.email = editForm.email;
       }
 
-      console.log('Update data:', updateData);
-
-      const { error, data } = await supabase
+      const { error } = await supabase
         .from('users')
         .update(updateData)
-        .eq('id', editingMember.id)
-        .select();
-
-      console.log('Update result:', { error, data });
+        .eq('id', editingMember.id);
 
       if (error) throw error;
 
@@ -538,20 +528,12 @@ export default function TeamMembersPage() {
     try {
       const supabase = createClient();
       
-      console.log('Deleting member:', editingMember.id, editingMember.email);
-      
-      const { error, count } = await supabase
+      const { error } = await supabase
         .from('users')
         .delete()
-        .eq('id', editingMember.id)
-        .select();
+        .eq('id', editingMember.id);
 
-      console.log('Delete result:', { error, count });
-
-      if (error) {
-        console.error('Delete error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       setSuccessMessage('Team member deleted successfully');
       setShowEditModal(false);

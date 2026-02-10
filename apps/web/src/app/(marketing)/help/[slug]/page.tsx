@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, BookOpen } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface HelpArticle {
   id: string;
@@ -116,10 +117,8 @@ export default function HelpArticlePage() {
           </div>
 
           {/* Article Content */}
-          <div className="prose max-w-none">
-            <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {article.content}
-            </div>
+          <div className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-ul:my-4 prose-li:text-gray-700 prose-strong:text-gray-900">
+            <ReactMarkdown>{article.content}</ReactMarkdown>
           </div>
 
           {/* Article Footer */}

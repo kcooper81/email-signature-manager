@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface HelpArticle {
   id: string;
@@ -55,7 +56,9 @@ export function DynamicFAQs() {
       {articles.map((article) => (
         <div key={article.id} className="bg-white border border-gray-200 rounded-xl p-6">
           <h3 className="font-semibold mb-2">{article.title}</h3>
-          <p className="text-gray-600">{article.content}</p>
+          <div className="prose prose-sm prose-gray max-w-none text-gray-600">
+            <ReactMarkdown>{article.content}</ReactMarkdown>
+          </div>
         </div>
       ))}
     </div>
