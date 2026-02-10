@@ -28,7 +28,8 @@ export default async function DashboardLayout({
     .single();
 
   // If user is a member (not owner/admin), redirect to employee portal
-  if (userData?.role === 'member') {
+  // Also redirect if role is not explicitly owner or admin (safety check)
+  if (userData?.role === 'member' || (userData && userData.role !== 'owner' && userData.role !== 'admin')) {
     redirect('/my-profile');
   }
 

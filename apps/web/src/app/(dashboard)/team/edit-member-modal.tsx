@@ -1,5 +1,5 @@
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label, Input, Button, Switch } from '@/components/ui';
-import { Loader2, Save, Trash2, AlertTriangle, UserX, UserCheck } from 'lucide-react';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label, Input, Button, Switch, Textarea } from '@/components/ui';
+import { Loader2, Save, Trash2, AlertTriangle, UserX, UserCheck, Calendar, Link as LinkIcon } from 'lucide-react';
 import { useState } from 'react';
 
 interface EditMemberModalProps {
@@ -24,7 +24,12 @@ interface EditMemberModalProps {
     facebook_url: string;
     youtube_url: string;
     self_manage_enabled: boolean;
+    google_calendar_enabled: boolean;
+    google_booking_url: string;
+    ooo_banner_enabled: boolean;
+    ooo_custom_message: string;
   };
+  orgCalendarEnabled?: boolean;
   setEditForm: (form: any) => void;
   onSave: () => void;
   onDelete: () => void;
@@ -45,6 +50,7 @@ export function EditMemberModal({
   onDelete,
   updating,
   deleting,
+  orgCalendarEnabled = false,
 }: EditMemberModalProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -191,7 +197,7 @@ export function EditMemberModal({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="edit_calendly_url">📅 Calendly URL</Label>
+            <Label htmlFor="edit_calendly_url">Calendly URL</Label>
             <Input
               id="edit_calendly_url"
               type="url"
@@ -202,7 +208,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_linkedin_url">💼 LinkedIn Profile</Label>
+            <Label htmlFor="edit_linkedin_url">LinkedIn Profile</Label>
             <Input
               id="edit_linkedin_url"
               type="url"
@@ -213,7 +219,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_twitter_url">🐦 Twitter/X Profile</Label>
+            <Label htmlFor="edit_twitter_url">Twitter/X Profile</Label>
             <Input
               id="edit_twitter_url"
               type="url"
@@ -224,7 +230,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_github_url">💻 GitHub Profile</Label>
+            <Label htmlFor="edit_github_url">GitHub Profile</Label>
             <Input
               id="edit_github_url"
               type="url"
@@ -235,7 +241,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_personal_website">🌐 Personal Website</Label>
+            <Label htmlFor="edit_personal_website">Personal Website</Label>
             <Input
               id="edit_personal_website"
               type="url"
@@ -246,7 +252,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_instagram_url">📸 Instagram</Label>
+            <Label htmlFor="edit_instagram_url">Instagram</Label>
             <Input
               id="edit_instagram_url"
               type="url"
@@ -257,7 +263,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_facebook_url">📘 Facebook</Label>
+            <Label htmlFor="edit_facebook_url">Facebook</Label>
             <Input
               id="edit_facebook_url"
               type="url"
@@ -268,7 +274,7 @@ export function EditMemberModal({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_youtube_url">🎥 YouTube Channel</Label>
+            <Label htmlFor="edit_youtube_url">YouTube Channel</Label>
             <Input
               id="edit_youtube_url"
               type="url"
@@ -278,6 +284,91 @@ export function EditMemberModal({
             />
           </div>
         </div>
+
+        {/* Google Calendar Integration */}
+        {orgCalendarEnabled && (
+          <div className="space-y-4 pt-4 border-t">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Google Calendar Integration
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Configure calendar integration for out-of-office banners and booking links
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-lg border">
+              <div className="flex items-center gap-3">
+                <Calendar className={`h-4 w-4 ${editForm.google_calendar_enabled ? 'text-emerald-600' : 'text-gray-400'}`} />
+                <div>
+                  <p className="font-medium text-sm">Enable Calendar Integration</p>
+                  <p className="text-xs text-muted-foreground">
+                    {editForm.google_calendar_enabled 
+                      ? 'Calendar features are enabled for this user'
+                      : 'Calendar features are disabled'}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={editForm.google_calendar_enabled}
+                onCheckedChange={(checked) => setEditForm({ ...editForm, google_calendar_enabled: checked })}
+              />
+            </div>
+
+            {editForm.google_calendar_enabled && (
+              <>
+                <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div className="flex items-center gap-3">
+                    <AlertTriangle className={`h-4 w-4 ${editForm.ooo_banner_enabled ? 'text-amber-500' : 'text-gray-400'}`} />
+                    <div>
+                      <p className="font-medium text-sm">Out-of-Office Banners</p>
+                      <p className="text-xs text-muted-foreground">
+                        {editForm.ooo_banner_enabled 
+                          ? 'Show OOO banner in signature when on vacation'
+                          : 'OOO banners are disabled'}
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={editForm.ooo_banner_enabled}
+                    onCheckedChange={(checked) => setEditForm({ ...editForm, ooo_banner_enabled: checked })}
+                  />
+                </div>
+
+                {editForm.ooo_banner_enabled && (
+                  <div className="space-y-2">
+                    <Label htmlFor="edit_ooo_message">Custom OOO Message (Optional)</Label>
+                    <Textarea
+                      id="edit_ooo_message"
+                      value={editForm.ooo_custom_message}
+                      onChange={(e) => setEditForm({ ...editForm, ooo_custom_message: e.target.value })}
+                      placeholder="I'm currently out of the office and will respond when I return."
+                      rows={2}
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit_booking_url" className="flex items-center gap-2">
+                    <LinkIcon className="h-3 w-3" />
+                    Google Calendar Booking URL
+                  </Label>
+                  <Input
+                    id="edit_booking_url"
+                    type="url"
+                    value={editForm.google_booking_url}
+                    onChange={(e) => setEditForm({ ...editForm, google_booking_url: e.target.value })}
+                    placeholder="https://calendar.google.com/calendar/appointments/..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Use placeholder {'{{google_booking_url}}'} in templates
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Self-Manage Portal Access */}
         <div className="space-y-4 pt-4 border-t">

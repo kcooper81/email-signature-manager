@@ -21,10 +21,24 @@ export const jobStatusEnum = pgEnum('job_status', ['pending', 'running', 'comple
 export const subscriptionPlanEnum = pgEnum('subscription_plan', ['free', 'starter', 'professional', 'enterprise']);
 export const subscriptionStatusEnum = pgEnum('subscription_status', ['active', 'past_due', 'canceled', 'trialing']);
 export const industryTypeEnum = pgEnum('industry_type', ['general', 'legal', 'healthcare', 'finance', 'real_estate']);
+export const organizationTypeEnum = pgEnum('organization_type', ['standard', 'msp', 'msp_client']);
+export const partnerTierEnum = pgEnum('partner_tier', ['registered', 'authorized', 'premier']);
+export const partnerApplicationStatusEnum = pgEnum('partner_application_status', ['pending', 'under_review', 'approved', 'rejected', 'withdrawn']);
+export const mspAccessLevelEnum = pgEnum('msp_access_level', ['full', 'read_only', 'deploy_only', 'billing_only']);
 
 // ============================================
 // Organizations
 // ============================================
+
+// Branding settings type for white-label support
+export type OrganizationBranding = {
+  primaryColor?: string;
+  secondaryColor?: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+  hideSignlyBranding?: boolean;
+  customDomain?: string;
+};
 
 export const organizations = pgTable('organizations', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -33,15 +47,28 @@ export const organizations = pgTable('organizations', {
   domain: text('domain'),
   logoUrl: text('logo_url'),
   industry: industryTypeEnum('industry').default('general'),
+  // MSP multi-tenant fields
+  parentOrganizationId: uuid('parent_organization_id').references((): any => organizations.id),
+  organizationType: organizationTypeEnum('organization_type').default('standard'),
+  branding: jsonb('branding').$type<OrganizationBranding>().default({}),
+  partnerTier: partnerTierEnum('partner_tier').default('registered'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const organizationsRelations = relations(organizations, ({ many }) => ({
+export const organizationsRelations = relations(organizations, ({ one, many }) => ({
   users: many(users),
   templates: many(signatureTemplates),
   providerConnections: many(providerConnections),
   subscriptions: many(subscriptions),
+  domains: many(organizationDomains),
+  parentOrganization: one(organizations, {
+    fields: [organizations.parentOrganizationId],
+    references: [organizations.id],
+    relationName: 'parentChild',
+  }),
+  childOrganizations: many(organizations, { relationName: 'parentChild' }),
+  mspClientAccess: many(mspClientAccess),
 }));
 
 // ============================================
@@ -336,3 +363,111 @@ export const emailSubscribers = pgTable('email_subscribers', {
   isActive: boolean('is_active').default(true).notNull(),
   metadata: jsonb('metadata'), // Store additional context (page URL, referrer, etc.)
 });
+
+// ============================================
+// Organization Domains (Multi-Domain Support)
+// ============================================
+
+export const organizationDomains = pgTable('organization_domains', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  domain: text('domain').notNull().unique(),
+  isPrimary: boolean('is_primary').default(false).notNull(),
+  verified: boolean('verified').default(false).notNull(),
+  verificationToken: text('verification_token'),
+  verificationMethod: text('verification_method').default('dns_txt'), // 'dns_txt', 'dns_cname', 'meta_tag'
+  verifiedAt: timestamp('verified_at'),
+  verifiedBy: uuid('verified_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const organizationDomainsRelations = relations(organizationDomains, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [organizationDomains.organizationId],
+    references: [organizations.id],
+  }),
+  verifier: one(users, {
+    fields: [organizationDomains.verifiedBy],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
+// MSP Client Access (Cross-Org Access Control)
+// ============================================
+
+export const mspClientAccess = pgTable('msp_client_access', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  mspUserId: uuid('msp_user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  mspOrganizationId: uuid('msp_organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  clientOrganizationId: uuid('client_organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  accessLevel: mspAccessLevelEnum('access_level').default('full').notNull(),
+  grantedAt: timestamp('granted_at').defaultNow().notNull(),
+  grantedBy: uuid('granted_by').references(() => users.id, { onDelete: 'set null' }),
+  revokedAt: timestamp('revoked_at'),
+  revokedBy: uuid('revoked_by').references(() => users.id, { onDelete: 'set null' }),
+});
+
+export const mspClientAccessRelations = relations(mspClientAccess, ({ one }) => ({
+  mspUser: one(users, {
+    fields: [mspClientAccess.mspUserId],
+    references: [users.id],
+    relationName: 'mspUserAccess',
+  }),
+  mspOrganization: one(organizations, {
+    fields: [mspClientAccess.mspOrganizationId],
+    references: [organizations.id],
+    relationName: 'mspOrgAccess',
+  }),
+  clientOrganization: one(organizations, {
+    fields: [mspClientAccess.clientOrganizationId],
+    references: [organizations.id],
+    relationName: 'clientOrgAccess',
+  }),
+  granter: one(users, {
+    fields: [mspClientAccess.grantedBy],
+    references: [users.id],
+    relationName: 'accessGranter',
+  }),
+}));
+
+// ============================================
+// Partner Applications
+// ============================================
+
+export const partnerApplications = pgTable('partner_applications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  // Applicant info
+  companyName: text('company_name').notNull(),
+  website: text('website'),
+  contactName: text('contact_name').notNull(),
+  contactEmail: text('contact_email').notNull(),
+  contactPhone: text('contact_phone'),
+  // Business info
+  numberOfClients: integer('number_of_clients'),
+  primaryServices: text('primary_services').array(),
+  howHeardAboutUs: text('how_heard_about_us'),
+  additionalNotes: text('additional_notes'),
+  // Application status
+  status: partnerApplicationStatusEnum('status').default('pending').notNull(),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedAt: timestamp('reviewed_at'),
+  reviewNotes: text('review_notes'),
+  // If approved, link to the created MSP organization
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'set null' }),
+  // Tracking
+  submittedAt: timestamp('submitted_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const partnerApplicationsRelations = relations(partnerApplications, ({ one }) => ({
+  reviewer: one(users, {
+    fields: [partnerApplications.reviewedBy],
+    references: [users.id],
+  }),
+  organization: one(organizations, {
+    fields: [partnerApplications.organizationId],
+    references: [organizations.id],
+  }),
+}));
