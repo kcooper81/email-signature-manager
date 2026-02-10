@@ -43,8 +43,16 @@ export default function LoginPage() {
         return;
       }
 
-      // Keep loading state active during redirect
-      router.push('/dashboard');
+      // Check user role to determine redirect destination
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      // Redirect members to their portal, admins/owners to dashboard
+      const destination = userData?.role === 'member' ? '/my-profile' : '/dashboard';
+      router.push(destination);
       router.refresh();
     } catch (err) {
       setError('An unexpected error occurred');

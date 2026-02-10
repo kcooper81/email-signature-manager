@@ -27,9 +27,9 @@ export default async function DashboardLayout({
     .eq('auth_id', user.id)
     .single();
 
-  // If user is a member (not owner/admin), redirect to employee portal
-  // Also redirect if role is not explicitly owner or admin (safety check)
-  if (userData?.role === 'member' || (userData && userData.role !== 'owner' && userData.role !== 'admin')) {
+  // If user not found in users table, or is a member (not owner/admin), redirect to employee portal
+  // This prevents users who exist in auth but not in users table from accessing the dashboard
+  if (!userData || userData.role === 'member' || (userData.role !== 'owner' && userData.role !== 'admin')) {
     redirect('/my-profile');
   }
 
