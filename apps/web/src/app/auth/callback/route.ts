@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/dashboard';
+  const next = searchParams.get('next');
   
   // Get base URL - use VERCEL_URL in production or custom domain
   const getBaseUrl = () => {
@@ -27,7 +27,27 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      return NextResponse.redirect(`${baseUrl}${next}`);
+      // If a specific next URL was provided, use it
+      if (next) {
+        return NextResponse.redirect(`${baseUrl}${next}`);
+      }
+
+      // Otherwise, check user role to determine redirect
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('auth_id', user.id)
+          .single();
+
+        // Redirect members to their portal, admins/owners to dashboard
+        const destination = userData?.role === 'member' ? '/my-profile' : '/dashboard';
+        return NextResponse.redirect(`${baseUrl}${destination}`);
+      }
+
+      // Fallback to dashboard if we can't determine role
+      return NextResponse.redirect(`${baseUrl}/dashboard`);
     }
   }
 
