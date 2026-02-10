@@ -169,7 +169,7 @@ function replacePlaceholders(text: string, context: RenderContext): string {
     .replace(/\{\{facebook_url\}\}/gi, user.facebookUrl || '')
     .replace(/\{\{youtube_url\}\}/gi, user.youtubeUrl || '')
     .replace(/\{\{google_booking_url\}\}/gi, user.googleBookingUrl || '')
-    .replace(/\{\{booking_url\}\}/gi, user.googleBookingUrl || user.calendlyUrl || '');
+    .replace(/\{\{booking_url\}\}/gi, user.googleBookingUrl || '');
   
   // Remove any remaining unresolved placeholders
   result = result.replace(/\{\{[^}]+\}\}/gi, '');

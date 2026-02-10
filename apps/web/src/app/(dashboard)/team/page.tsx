@@ -48,6 +48,10 @@ interface TeamMember {
   instagram_url: string | null;
   facebook_url: string | null;
   youtube_url: string | null;
+  google_calendar_enabled: boolean | null;
+  google_booking_url: string | null;
+  ooo_banner_enabled: boolean | null;
+  ooo_custom_message: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -139,6 +143,10 @@ export default function TeamMembersPage() {
     facebook_url: '',
     youtube_url: '',
     self_manage_enabled: true,
+    google_calendar_enabled: false,
+    google_booking_url: '',
+    ooo_banner_enabled: true,
+    ooo_custom_message: '',
   });
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -156,6 +164,9 @@ export default function TeamMembersPage() {
   
   // Current user role (to check permissions)
   const [currentUserRole, setCurrentUserRole] = useState<string>('member');
+  
+  // Organization settings for calendar integration
+  const [orgCalendarEnabled, setOrgCalendarEnabled] = useState(false);
   
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -209,6 +220,17 @@ export default function TeamMembersPage() {
       .eq('organization_id', currentUser.organization_id);
     
     if (connectionsData) setConnections(connectionsData);
+
+    // Load organization settings for calendar integration
+    const { data: orgSettingsData } = await supabase
+      .from('organization_settings')
+      .select('google_calendar_enabled')
+      .eq('organization_id', currentUser.organization_id)
+      .single();
+    
+    if (orgSettingsData) {
+      setOrgCalendarEnabled(orgSettingsData.google_calendar_enabled ?? false);
+    }
 
     setLoading(false);
   };
@@ -443,6 +465,10 @@ export default function TeamMembersPage() {
       facebook_url: member.facebook_url || '',
       youtube_url: member.youtube_url || '',
       self_manage_enabled: (member as any).self_manage_enabled !== false,
+      google_calendar_enabled: member.google_calendar_enabled || false,
+      google_booking_url: member.google_booking_url || '',
+      ooo_banner_enabled: member.ooo_banner_enabled !== false,
+      ooo_custom_message: member.ooo_custom_message || '',
     });
     setShowEditModal(true);
   };
@@ -471,7 +497,7 @@ export default function TeamMembersPage() {
                        editingMember.source === 'microsoft' || 
                        editingMember.source === 'hubspot';
 
-      // Personal links are always editable
+      // Personal links and calendar settings are always editable
       const updateData: Record<string, any> = {
         calendly_url: editForm.calendly_url || null,
         linkedin_url: editForm.linkedin_url || null,
@@ -482,6 +508,10 @@ export default function TeamMembersPage() {
         facebook_url: editForm.facebook_url || null,
         youtube_url: editForm.youtube_url || null,
         self_manage_enabled: editForm.self_manage_enabled,
+        google_calendar_enabled: editForm.google_calendar_enabled,
+        google_booking_url: editForm.google_booking_url || null,
+        ooo_banner_enabled: editForm.ooo_banner_enabled,
+        ooo_custom_message: editForm.ooo_custom_message || null,
       };
 
       // Only update basic info for manual users (synced users get these from their provider)
@@ -1355,7 +1385,7 @@ export default function TeamMembersPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="calendly_url">📅 Calendly URL</Label>
+              <Label htmlFor="calendly_url">Calendly URL</Label>
               <Input
                 id="calendly_url"
                 type="url"
@@ -1366,7 +1396,7 @@ export default function TeamMembersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="linkedin_url">💼 LinkedIn Profile</Label>
+              <Label htmlFor="linkedin_url">LinkedIn Profile</Label>
               <Input
                 id="linkedin_url"
                 type="url"
@@ -1377,7 +1407,7 @@ export default function TeamMembersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="twitter_url">🐦 Twitter/X Profile</Label>
+              <Label htmlFor="twitter_url">Twitter/X Profile</Label>
               <Input
                 id="twitter_url"
                 type="url"
@@ -1388,7 +1418,7 @@ export default function TeamMembersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="personal_website">🌐 Personal Website</Label>
+              <Label htmlFor="personal_website">Personal Website</Label>
               <Input
                 id="personal_website"
                 type="url"
@@ -1436,6 +1466,7 @@ export default function TeamMembersPage() {
         onDelete={deleteMember}
         updating={updating}
         deleting={deleting}
+        orgCalendarEnabled={orgCalendarEnabled}
       />
 
       {/* Share Signatures Modal */}
