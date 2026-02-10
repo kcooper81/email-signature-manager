@@ -32,12 +32,24 @@ export const mspAccessLevelEnum = pgEnum('msp_access_level', ['full', 'read_only
 
 // Branding settings type for white-label support
 export type OrganizationBranding = {
-  primaryColor?: string;
-  secondaryColor?: string;
-  logoUrl?: string;
-  faviconUrl?: string;
-  hideSignlyBranding?: boolean;
-  customDomain?: string;
+  // Colors
+  primaryColor?: string;      // Main brand color (buttons, links, accents)
+  secondaryColor?: string;    // Secondary color (backgrounds, borders)
+  accentColor?: string;       // Accent color (highlights, notifications)
+  // Logos
+  logoUrl?: string;           // Main logo (header, ~200x50px recommended)
+  logoIconUrl?: string;       // Square icon version (favicon, mobile, ~64x64px)
+  logoDarkUrl?: string;       // Logo for dark backgrounds (optional)
+  faviconUrl?: string;        // Browser favicon (32x32 or 16x16)
+  // Text
+  companyName?: string;       // Display name (overrides org name in UI)
+  supportEmail?: string;      // Custom support email shown to users
+  supportUrl?: string;        // Custom help/support page URL
+  // Visibility
+  hideSigglyBranding?: boolean;  // Hide "Powered by Siggly" footer
+  hideHelpLinks?: boolean;       // Hide links to Siggly help docs
+  // Custom CSS (advanced)
+  customCss?: string;         // Additional CSS overrides (premium feature)
 };
 
 export const organizations = pgTable('organizations', {
@@ -52,6 +64,8 @@ export const organizations = pgTable('organizations', {
   organizationType: organizationTypeEnum('organization_type').default('standard'),
   branding: jsonb('branding').$type<OrganizationBranding>().default({}),
   partnerTier: partnerTierEnum('partner_tier').default('registered'),
+  // White-label subdomain (e.g., "acme-it" → acme-it.siggly.io)
+  customSubdomain: text('custom_subdomain').unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -88,7 +102,8 @@ export const users = pgTable('users', {
   avatarUrl: text('avatar_url'),
   organizationId: uuid('organization_id').references(() => organizations.id).notNull(),
   role: userRoleEnum('role').default('member').notNull(),
-  isAdmin: boolean('is_admin').default(false).notNull(), // Platform admin flag
+  isAdmin: boolean('is_admin').default(false).notNull(), // Organization admin flag
+  isSuperAdmin: boolean('is_super_admin').default(false).notNull(), // Platform super admin flag
   calendlyUrl: text('calendly_url'),
   linkedinUrl: text('linkedin_url'),
   twitterUrl: text('twitter_url'),
