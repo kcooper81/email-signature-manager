@@ -271,9 +271,6 @@ function SignatureRenderer({ blocks, client, isMobile, colorMode = 'light' }: { 
 function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block: any; client: EmailClient; isMobile: boolean; colorMode?: 'light' | 'dark' }) {
   const content = block.content;
   const isOutlook = client === 'outlook';
-  
-  // Debug: log block info
-  console.log('BlockPreview rendering:', block.type, content);
   const isGmail = client === 'gmail';
   const isAppleMail = client === 'apple-mail';
   

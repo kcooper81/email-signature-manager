@@ -193,7 +193,7 @@ export function TemplateEditor({
       <div className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left + Center Area */}
-          <div className="lg:col-span-5 space-y-4 lg:space-y-6">
+          <div className="lg:col-span-6 space-y-4 lg:space-y-6">
             {/* Add Block - Collapsible */}
             <Card>
               <CardHeader 
@@ -298,7 +298,7 @@ export function TemplateEditor({
           </div>
 
           {/* Right Column - Email Client Preview */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Email Client Preview</CardTitle>

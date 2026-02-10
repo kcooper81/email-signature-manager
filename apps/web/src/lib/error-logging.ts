@@ -16,6 +16,9 @@ export type ErrorType =
   | 'billing_error'
   | 'sync_error'
   | 'validation_error'
+  | 'calendar_error'
+  | 'calendar_settings_error'
+  | 'ooo_status_error'
   | 'unknown_error';
 
 interface LogErrorParams {
