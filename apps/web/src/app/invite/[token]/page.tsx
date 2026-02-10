@@ -80,19 +80,21 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         throw new Error('Failed to create account');
       }
 
-      // Update user record with auth_id
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ auth_id: authData.user.id })
-        .eq('id', inviteData.user_id);
+      // Use API route to update user record with auth_id (bypasses RLS)
+      const response = await fetch('/api/invite/accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: inviteData.user_id,
+          authId: authData.user.id,
+          token: params.token,
+        }),
+      });
 
-      if (updateError) throw updateError;
-
-      // Mark invite as accepted
-      await supabase
-        .from('user_invites')
-        .update({ accepted_at: new Date().toISOString() })
-        .eq('token', params.token);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to accept invite');
+      }
 
       // Redirect to employee profile portal
       router.push('/my-profile?welcome=true');
