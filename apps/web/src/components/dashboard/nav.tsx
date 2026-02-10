@@ -12,10 +12,10 @@ import {
   Link2,
   BarChart3,
   Settings,
-  HelpCircle,
+  BookOpen,
   Menu,
   X,
-  MessageCircle,
+  Headphones,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeedbackWidget } from '@/components/feedback';
@@ -55,9 +55,9 @@ const mainNavItems = [
 
 const bottomNavItems = [
   {
-    title: 'Help & Support',
+    title: 'Documentation',
     href: '/support',
-    icon: HelpCircle,
+    icon: BookOpen,
   },
   {
     title: 'Settings',
@@ -67,8 +67,8 @@ const bottomNavItems = [
 ];
 
 const feedbackItem = {
-  title: 'Send Feedback',
-  icon: MessageCircle,
+  title: 'Help & Support',
+  icon: Headphones,
 };
 
 export function DashboardNav() {

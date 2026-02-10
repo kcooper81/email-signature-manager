@@ -47,6 +47,11 @@ interface FeedbackEntry {
   createdAt: string;
   updatedAt: string | null;
   notes: TicketNote[];
+  organizationId: string | null;
+  organizationName: string | null;
+  partnerOrganizationId: string | null;
+  partnerOrganizationName: string | null;
+  isPartnerEscalation: boolean;
 }
 
 const PAGE_SIZE = 20;
@@ -100,6 +105,7 @@ export default function TicketsPage() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [partnerFilter, setPartnerFilter] = useState<string>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedTicket, setSelectedTicket] = useState<FeedbackEntry | null>(null);
@@ -112,7 +118,7 @@ export default function TicketsPage() {
   useEffect(() => {
     loadTickets();
     loadCurrentUser();
-  }, [page, typeFilter, statusFilter, priorityFilter]);
+  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
 
   const loadCurrentUser = async () => {
     const supabase = createClient();
@@ -135,7 +141,11 @@ export default function TicketsPage() {
 
     let query = supabase
       .from('feedback')
-      .select('*', { count: 'exact' })
+      .select(`
+        *,
+        organization:organization_id(id, name),
+        partner_organization:partner_organization_id(id, name)
+      `, { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
@@ -151,6 +161,12 @@ export default function TicketsPage() {
       query = query.eq('priority', priorityFilter);
     }
 
+    if (partnerFilter === 'escalations') {
+      query = query.eq('is_partner_escalation', true);
+    } else if (partnerFilter === 'partner') {
+      query = query.not('partner_organization_id', 'is', null);
+    }
+
     const { data, count, error } = await query;
 
     if (error) {
@@ -161,7 +177,7 @@ export default function TicketsPage() {
 
     setTotalCount(count || 0);
 
-    const mapped: FeedbackEntry[] = (data || []).map((item) => ({
+    const mapped: FeedbackEntry[] = (data || []).map((item: any) => ({
       id: item.id,
       userEmail: item.user_email,
       type: item.type,
@@ -172,6 +188,11 @@ export default function TicketsPage() {
       createdAt: item.created_at,
       updatedAt: item.updated_at,
       notes: [],
+      organizationId: item.organization_id,
+      organizationName: item.organization?.name || null,
+      partnerOrganizationId: item.partner_organization_id,
+      partnerOrganizationName: item.partner_organization?.name || null,
+      isPartnerEscalation: item.is_partner_escalation || false,
     }));
 
     setTickets(mapped);
@@ -437,6 +458,18 @@ export default function TicketsPage() {
                 <option value="normal">Normal</option>
                 <option value="low">Low</option>
               </select>
+              <select
+                value={partnerFilter}
+                onChange={(e) => {
+                  setPartnerFilter(e.target.value);
+                  setPage(0);
+                }}
+                className="px-3 py-2 border rounded-lg text-sm bg-white"
+              >
+                <option value="all">All Sources</option>
+                <option value="escalations">Partner Escalations</option>
+                <option value="partner">From Partners</option>
+              </select>
             </div>
           </div>
         </CardContent>
@@ -497,9 +530,20 @@ export default function TicketsPage() {
                             {ticket.message}
                           </p>
                           
-                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 flex-wrap">
                             {ticket.userEmail && (
                               <span>From: {ticket.userEmail}</span>
+                            )}
+                            {ticket.organizationName && (
+                              <span className="text-slate-600">Org: {ticket.organizationName}</span>
+                            )}
+                            {ticket.isPartnerEscalation && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                                Partner Escalation
+                              </span>
+                            )}
+                            {ticket.partnerOrganizationName && (
+                              <span className="text-purple-600">Partner: {ticket.partnerOrganizationName}</span>
                             )}
                           </div>
                         </div>
