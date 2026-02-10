@@ -57,6 +57,7 @@ export function MarketingFooter() {
             <ul className="space-y-3 text-sm text-gray-600">
               <li><Link href="/about" className="hover:text-gray-900 transition-colors">About</Link></li>
               <li><Link href="/contact" className="hover:text-gray-900 transition-colors">Contact</Link></li>
+              <li><Link href="/partners/apply" className="hover:text-gray-900 transition-colors">Partners</Link></li>
               <li><Link href="/careers" className="hover:text-gray-900 transition-colors">Careers</Link></li>
               <li><Link href="/security" className="hover:text-gray-900 transition-colors">Security</Link></li>
             </ul>
