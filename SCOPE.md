@@ -970,3 +970,486 @@ npm run lint
 - **Dynamic fields**: Simple placeholder replacement
 - **Validation**: Can enforce brand guidelines
 - **Portability**: Render to different formats if needed
+
+---
+
+## MSP Market Requirements Analysis
+
+*Research conducted February 2026 to evaluate Siggly's readiness for the MSP (Managed Service Provider) channel.*
+
+### 1. Security & Compliance Requirements
+
+| Requirement | MSP Expectation | Siggly Status |
+|-------------|-----------------|---------------|
+| **SOC 2 Type 2** | Required for enterprise clients | ⚠️ Via Vercel/Supabase (not Siggly-specific) |
+| **ISO 27001** | Expected for security-conscious clients | ❌ Not certified |
+| **GDPR Compliance** | Required for EU clients | ✅ Likely compliant (verify DPA) |
+| **HIPAA** | Healthcare clients | ❌ Not certified |
+| **SSO/SAML** | Enterprise requirement | ❌ Not yet (on roadmap) |
+| **Audit Logs** | Compliance tracking | ✅ Built into schema |
+| **Data Encryption** | At rest and in transit | ✅ Via Supabase (TLS, encrypted storage) |
+| **Role-Based Access Control** | Multi-user management | ⚠️ Basic (needs enhancement) |
+
+**Verdict**: Partial compliance. Basic security needs met, but lacks formal certifications (SOC 2, ISO 27001) that enterprise MSPs require.
+
+### 2. Top 11 MSP Priorities for Email Signature Software
+
+| Priority | What MSPs Want | Siggly Status |
+|----------|----------------|---------------|
+| **1. Integration** | Microsoft 365, Google Workspace, Exchange | ✅ Google & Microsoft done |
+| **2. Centralized Control** | Single admin portal, tamper-proof signatures | ✅ Have this |
+| **3. Automation** | Directory sync, auto-populate fields | ✅ Google/Azure AD sync |
+| **4. Security/Compliance** | ISO 27001, HIPAA, GDPR, SOC 2 | ⚠️ Partial |
+| **5. Scalability** | No user limits, handles growth | ✅ Architecture supports this |
+| **6. Easy Deployment** | SaaS, no IT involvement | ✅ Self-serve OAuth |
+| **7. Branding/Customization** | Templates, logos, banners, HTML | ✅ Have this |
+| **8. Marketing/Analytics** | Click tracking, A/B testing, campaigns | ⚠️ On roadmap |
+| **9. Performance/Reliability** | 99.9% SLA, fast processing | ✅ Via Vercel |
+| **10. Partner Program** | White-label, reseller margins, co-marketing | ❌ Not built |
+| **11. Vendor Reputation** | Reviews, case studies, certifications | ⚠️ Early stage |
+
+### 3. Multi-Domain & Multi-Tenant Requirements
+
+**MSPs require these features to manage multiple clients:**
+
+| Feature | Why It Matters | Siggly Status |
+|---------|----------------|---------------|
+| **Multi-Tenant Portal** | Manage ALL clients from one dashboard | ❌ Not built |
+| **Multi-Domain Support** | One client may have multiple domains | ❌ Not built |
+| **Client Switching** | Quick switch between client orgs | ❌ Not built |
+| **White-Label/Custom Branding** | MSP's logo, not Siggly's | ❌ Not built |
+| **Delegated Admin Access** | Give client limited self-service | ⚠️ Basic RBAC only |
+| **Consolidated Billing** | One invoice for all clients | ❌ Not built |
+| **Per-Client Reporting** | Analytics per organization | ⚠️ Single-org only |
+
+### 4. Gap Analysis Summary
+
+| Category | Current State | Gap |
+|----------|---------------|-----|
+| **Security Certifications** | Rely on infra providers | Need SOC 2 badge (or statement) |
+| **Multi-Tenant Admin** | Single-org only | **Major gap** — MSPs can't manage clients |
+| **Multi-Domain** | Single domain per org | **Major gap** — enterprises have multiple domains |
+| **Partner Program** | None | Need reseller pricing, white-label, co-marketing |
+| **SSO/SAML** | Not built | Enterprise blocker |
+
+### 5. MSP Feature Roadmap (If Pursuing This Market)
+
+**Phase 1: Foundation (2-3 months)**
+- [ ] Multi-tenant organization model (parent/child orgs)
+- [ ] MSP admin dashboard with client switching
+- [ ] Multi-domain support per organization
+- [ ] Enhanced RBAC (MSP Admin, Client Admin, User roles)
+
+**Phase 2: Partner Program (1-2 months)**
+- [ ] Reseller pricing and margins
+- [ ] White-label option (custom branding)
+- [ ] Consolidated billing for MSPs
+- [ ] Partner portal with co-marketing materials
+
+**Phase 3: Enterprise Features (2-3 months)**
+- [ ] SSO/SAML integration (Okta, Azure AD)
+- [ ] SOC 2 Type 2 certification process
+- [ ] SLA documentation and uptime guarantees
+- [ ] Dedicated support tier
+
+### 6. Strategic Recommendation
+
+**Current Focus**: Direct-to-business sales (IT admins, marketing teams) rather than MSP channel.
+
+**Rationale**:
+- MSP features require 4-6 months of focused development
+- Direct sales validates product-market fit first
+- MSP channel can be added once core product is proven
+- Competitors (Exclaimer, Rocketseed) already have mature MSP programs
+
+**When to Pursue MSPs**:
+- After reaching 50+ direct customers
+- When MSPs start requesting access organically
+- If a strategic MSP partnership opportunity arises
+
+---
+
+## MSP Partner Program - Full Scope
+
+*Comprehensive specification for building MSP/multi-tenant capabilities into Siggly.*
+
+### Overview
+
+The MSP Partner Program enables IT service providers to manage email signatures for multiple client organizations from a single dashboard. This is a gated program requiring application and approval.
+
+### Access Hierarchy
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    PLATFORM LEVEL (Siggly Team Only)            │
+│  • is_admin = true on users table                               │
+│  • Access: /admin/* routes                                      │
+│  • Can view all orgs, impersonate, manage billing               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+        ┌─────────────────────┴─────────────────────┐
+        │                                           │
+        ▼                                           ▼
+┌───────────────────────┐               ┌───────────────────────┐
+│   MSP Organization    │               │  Standard Organization │
+│   (type: 'msp')       │               │  (type: 'standard')    │
+├───────────────────────┤               ├───────────────────────┤
+│ • msp_owner           │               │ • owner               │
+│ • msp_admin           │               │ • admin               │
+│                       │               │ • member              │
+│   ┌─────────────────┐ │               └───────────────────────┘
+│   │ Client Org 1    │ │
+│   │ (type: 'client')│ │
+│   │ parent_id → MSP │ │
+│   │ • client_admin  │ │
+│   │ • member        │ │
+│   └─────────────────┘ │
+└───────────────────────┘
+```
+
+### Database Schema Changes
+
+#### 1. Organizations Table Updates
+
+```sql
+-- Add columns to organizations table
+ALTER TABLE organizations ADD COLUMN parent_organization_id UUID REFERENCES organizations(id);
+ALTER TABLE organizations ADD COLUMN organization_type TEXT DEFAULT 'standard';
+-- Values: 'standard', 'msp', 'msp_client'
+
+ALTER TABLE organizations ADD COLUMN branding JSONB DEFAULT '{}';
+-- branding: { primaryColor, logoUrl, faviconUrl, hideSignlyBranding }
+
+CREATE INDEX idx_organizations_parent ON organizations(parent_organization_id);
+CREATE INDEX idx_organizations_type ON organizations(organization_type);
+```
+
+#### 2. Organization Domains Table (Multi-Domain Support)
+
+```sql
+CREATE TABLE organization_domains (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE NOT NULL,
+  domain TEXT NOT NULL UNIQUE,
+  is_primary BOOLEAN DEFAULT false,
+  verified BOOLEAN DEFAULT false,
+  verification_token TEXT,
+  verified_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_org_domains_org ON organization_domains(organization_id);
+```
+
+#### 3. MSP User Access Table (Cross-Org Access)
+
+```sql
+CREATE TABLE msp_client_access (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  msp_user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+  msp_organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE NOT NULL,
+  client_organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE NOT NULL,
+  access_level TEXT DEFAULT 'full', -- 'full', 'read_only', 'deploy_only'
+  granted_at TIMESTAMPTZ DEFAULT NOW(),
+  granted_by UUID REFERENCES users(id),
+  UNIQUE(msp_user_id, client_organization_id)
+);
+
+CREATE INDEX idx_msp_access_user ON msp_client_access(msp_user_id);
+CREATE INDEX idx_msp_access_client ON msp_client_access(client_organization_id);
+```
+
+#### 4. Extended Roles & Permissions
+
+```sql
+-- Add new roles
+INSERT INTO roles (name, description, is_system) VALUES
+  ('msp_owner', 'MSP organization owner with access to all clients', true),
+  ('msp_admin', 'MSP administrator who can manage client orgs', true),
+  ('client_admin', 'Client org admin with limited self-service', true)
+ON CONFLICT (name) DO NOTHING;
+
+-- Add MSP permissions
+INSERT INTO permissions (name, description, category) VALUES
+  ('msp.view_clients', 'View all client organizations', 'msp'),
+  ('msp.manage_clients', 'Create and manage client organizations', 'msp'),
+  ('msp.switch_context', 'Switch between client organizations', 'msp'),
+  ('msp.billing', 'Manage consolidated billing for clients', 'msp'),
+  ('msp.branding', 'Manage white-label branding', 'msp'),
+  ('msp.analytics', 'View aggregate analytics across clients', 'msp')
+ON CONFLICT (name) DO NOTHING;
+```
+
+### Role Permissions Matrix
+
+| Permission | msp_owner | msp_admin | client_admin | owner | admin | member |
+|------------|-----------|-----------|--------------|-------|-------|--------|
+| **MSP Features** |
+| msp.view_clients | ✓ | ✓ | - | - | - | - |
+| msp.manage_clients | ✓ | ✓ | - | - | - | - |
+| msp.switch_context | ✓ | ✓ | - | - | - | - |
+| msp.billing | ✓ | - | - | - | - | - |
+| msp.branding | ✓ | ✓ | - | - | - | - |
+| msp.analytics | ✓ | ✓ | - | - | - | - |
+| **Standard Features** |
+| templates.* | ✓ | ✓ | ✓ | ✓ | ✓ | view |
+| team.* | ✓ | ✓ | ✓ | ✓ | ✓ | view |
+| deployments.* | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| analytics.* | ✓ | ✓ | ✓ | ✓ | ✓ | view |
+| settings.organization | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| settings.integrations | ✓ | ✓ | ✓ | ✓ | ✓ | - |
+| settings.billing | ✓ | - | - | ✓ | - | - |
+
+### Partner Program Flow
+
+#### 1. Application Process
+
+```
+/partners (Marketing Page)
+    │
+    ▼
+[Apply for Partner Program] button
+    │
+    ▼
+Application Form:
+  - Company Name
+  - Website
+  - Contact Email
+  - Phone
+  - Number of clients you manage
+  - Primary services (IT, Security, Cloud, etc.)
+  - How did you hear about us?
+    │
+    ▼
+Application submitted → Email to Siggly team
+    │
+    ▼
+Admin Dashboard: /admin/partner-applications
+  - Review applications
+  - Approve / Reject
+  - Set partner tier
+    │
+    ▼
+On Approval:
+  - Set organization_type = 'msp'
+  - Send welcome email with next steps
+  - Unlock /msp/* routes
+```
+
+#### 2. Partner Tiers (Future)
+
+| Tier | Requirements | Benefits |
+|------|--------------|----------|
+| **Registered** | Approved application | Basic MSP features, standard pricing |
+| **Authorized** | 5+ active clients | 10% margin, co-branded assets, deal registration |
+| **Premier** | 20+ active clients, $5k+ MRR | 20% margin, priority support, joint marketing |
+
+### Route Structure
+
+```
+/partners                      → Marketing page with "Apply" CTA
+/partners/apply                → Application form
+/partners/portal               → Redirect to /msp/dashboard (if approved)
+
+/msp/dashboard                 → MSP overview (all clients)
+/msp/clients                   → Client list with add/edit
+/msp/clients/new               → Add new client org
+/msp/clients/[orgId]           → Client detail / enter client context
+/msp/clients/[orgId]/settings  → Client-specific settings
+/msp/analytics                 → Aggregate analytics
+/msp/billing                   → Consolidated billing view
+/msp/settings                  → MSP settings, branding
+
+/msp/context/[orgId]/*         → Client context (mirrors /dashboard/*)
+  /msp/context/[orgId]/dashboard
+  /msp/context/[orgId]/templates
+  /msp/context/[orgId]/team
+  /msp/context/[orgId]/deployments
+  /msp/context/[orgId]/analytics
+  /msp/context/[orgId]/settings
+```
+
+### UX Flows
+
+#### MSP Onboarding (After Approval)
+
+```
+1. Welcome Email
+   "Your MSP Partner application has been approved!"
+   [Access Partner Portal]
+       │
+       ▼
+2. First Login → /msp/dashboard
+   ┌─────────────────────────────────────────┐
+   │  Welcome to the Partner Portal! 🚀      │
+   │                                         │
+   │  Let's add your first client.           │
+   │                                         │
+   │  [Add Client Organization]              │
+   └─────────────────────────────────────────┘
+       │
+       ▼
+3. Add Client → /msp/clients/new
+   ┌─────────────────────────────────────────┐
+   │  Add Client Organization                │
+   │                                         │
+   │  Client Name: [________________]        │
+   │  Primary Domain: [________________]     │
+   │  Contact Name: [________________]       │
+   │  Contact Email: [________________]      │
+   │                                         │
+   │  [Create Client]                        │
+   └─────────────────────────────────────────┘
+       │
+       ▼
+4. Connect Client's Email
+   ┌─────────────────────────────────────────┐
+   │  Connect "ABC Corp" to their email      │
+   │                                         │
+   │  You'll need admin access to their      │
+   │  Google Workspace or Microsoft 365.     │
+   │                                         │
+   │  [Connect Google] [Connect Microsoft]   │
+   │                                         │
+   │  Or invite client admin to connect:     │
+   │  [Send Invite to Client Admin]          │
+   └─────────────────────────────────────────┘
+       │
+       ▼
+5. MSP Dashboard with Client
+   ┌─────────────────────────────────────────┐
+   │  Your Clients                           │
+   │  ┌─────────────────────────────────────┐│
+   │  │ ABC Corp    0 users    ⚠ Connect   ││
+   │  │ + Add Client                        ││
+   │  └─────────────────────────────────────┘│
+   └─────────────────────────────────────────┘
+```
+
+#### Client Context Switching
+
+```
+Header when in MSP context:
+┌─────────────────────────────────────────────────────────────────┐
+│  Siggly                    [All Clients ▼]    [Acme IT] [👤]    │
+└─────────────────────────────────────────────────────────────────┘
+
+Header when in Client context:
+┌─────────────────────────────────────────────────────────────────┐
+│  Siggly    [← Back to MSP]    [ABC Corp ▼]    [Acme IT] [👤]    │
+└─────────────────────────────────────────────────────────────────┘
+
+Client Switcher Dropdown:
+┌─────────────────────────┐
+│ ← MSP Overview          │
+├─────────────────────────┤
+│ ABC Corp            ✓   │
+│ XYZ Inc                 │
+│ 123 LLC                 │
+├─────────────────────────┤
+│ + Add Client            │
+└─────────────────────────┘
+```
+
+### Billing Model Options
+
+#### Option A: MSP Pays for All (Consolidated)
+
+```
+MSP Organization
+└── Subscription: Professional @ $29/mo + $1/user
+    └── Covers all client orgs
+    └── Total users across all clients = billable users
+```
+
+#### Option B: Per-Client Billing (Pass-Through)
+
+```
+MSP Organization (no subscription)
+├── Client 1: Starter @ $0.50/user × 24 users
+├── Client 2: Starter @ $0.50/user × 18 users
+└── Client 3: Professional @ $29 + $1/user × 45 users
+
+MSP receives single invoice for all clients
+```
+
+#### Option C: Hybrid (MSP Margin)
+
+```
+MSP buys at partner discount (e.g., 20% off)
+MSP bills clients at retail or custom rate
+MSP keeps the margin
+```
+
+**Recommended for MVP:** Option A (Consolidated) — simplest to implement.
+
+### Implementation Phases
+
+#### Phase 1: Foundation (3-4 weeks)
+- [ ] Database migrations (org type, parent_id, domains table)
+- [ ] Partner application form and admin review UI
+- [ ] Basic MSP dashboard with client list
+- [ ] Add/edit client organizations
+- [ ] Client context switching
+
+#### Phase 2: Core Features (3-4 weeks)
+- [ ] Multi-domain support per organization
+- [ ] MSP roles and permissions
+- [ ] Cross-org access control
+- [ ] Client context routes (mirror dashboard)
+- [ ] Aggregate analytics view
+
+#### Phase 3: Billing & Branding (2-3 weeks)
+- [ ] Consolidated billing for MSPs
+- [ ] White-label branding settings
+- [ ] Per-client reporting/exports
+
+#### Phase 4: Polish & Scale (2-3 weeks)
+- [ ] Partner tiers and benefits
+- [ ] Deal registration
+- [ ] Client self-service portal (optional)
+- [ ] SSO/SAML for enterprise MSPs
+
+### Total Estimated Effort
+
+| Phase | Duration | Priority |
+|-------|----------|----------|
+| Phase 1: Foundation | 3-4 weeks | Required for MVP |
+| Phase 2: Core Features | 3-4 weeks | Required for MVP |
+| Phase 3: Billing & Branding | 2-3 weeks | Important |
+| Phase 4: Polish & Scale | 2-3 weeks | Nice-to-have |
+| **Total** | **10-14 weeks** | |
+
+### Success Metrics
+
+- Number of approved MSP partners
+- Number of client orgs managed by MSPs
+- MSP retention rate
+- Revenue from MSP channel vs direct
+- Average clients per MSP
+- Time to first client deployment
+
+### Competitive Positioning
+
+| Feature | Siggly (Planned) | Exclaimer | CodeTwo |
+|---------|------------------|-----------|---------|
+| Multi-tenant portal | ✓ | ✓ | ✓ |
+| Partner tiers | ✓ | ✓ (3 tiers) | ✓ |
+| White-label | ✓ | ✓ | ✓ |
+| Consolidated billing | ✓ | ✓ | ✓ |
+| Self-service signup | ✗ (Application) | ✗ (Application) | ✗ |
+| Partner margins | ✓ | ✓ (up to 20%) | ✓ |
+| Deal registration | ✓ (Phase 4) | ✓ | ✓ |
+
+### Decision: When to Build This
+
+**Build MSP features when:**
+- You have 50+ direct customers (product-market fit proven)
+- MSPs are organically requesting access
+- You have capacity for 10-14 weeks of focused development
+- You're ready to support partner relationships
+
+**Don't build yet if:**
+- Still iterating on core product
+- Limited development resources
+- No MSP demand signals

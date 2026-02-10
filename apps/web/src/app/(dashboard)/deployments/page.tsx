@@ -161,7 +161,6 @@ export default function DeploymentsPage() {
       .order('created_at', { ascending: false })
       .limit(20);
     
-    console.log('Deployments loaded:', deploymentsData, deploymentsError);
     if (deploymentsData) setDeployments(deploymentsData as any);
 
     // Load connections - FILTERED BY ORGANIZATION

@@ -1,5 +1,5 @@
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label, Input, Button } from '@/components/ui';
-import { Loader2, Save, Trash2, AlertTriangle } from 'lucide-react';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label, Input, Button, Switch } from '@/components/ui';
+import { Loader2, Save, Trash2, AlertTriangle, UserX, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 
 interface EditMemberModalProps {
@@ -23,6 +23,7 @@ interface EditMemberModalProps {
     instagram_url: string;
     facebook_url: string;
     youtube_url: string;
+    self_manage_enabled: boolean;
   };
   setEditForm: (form: any) => void;
   onSave: () => void;
@@ -274,6 +275,38 @@ export function EditMemberModal({
               value={editForm.youtube_url}
               onChange={(e) => setEditForm({ ...editForm, youtube_url: e.target.value })}
               placeholder="https://youtube.com/@yourname"
+            />
+          </div>
+        </div>
+
+        {/* Self-Manage Portal Access */}
+        <div className="space-y-4 pt-4 border-t">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900">Portal Access</h3>
+            <p className="text-xs text-gray-500 mt-1">
+              Control whether this employee can access the self-manage portal
+            </p>
+          </div>
+          
+          <div className="flex items-center justify-between p-3 rounded-lg border">
+            <div className="flex items-center gap-3">
+              {editForm.self_manage_enabled ? (
+                <UserCheck className="h-4 w-4 text-emerald-600" />
+              ) : (
+                <UserX className="h-4 w-4 text-red-500" />
+              )}
+              <div>
+                <p className="font-medium text-sm">Self-Manage Portal Access</p>
+                <p className="text-xs text-muted-foreground">
+                  {editForm.self_manage_enabled 
+                    ? 'Employee can update their profile and links'
+                    : 'Employee cannot access the self-manage portal'}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={editForm.self_manage_enabled}
+              onCheckedChange={(checked) => setEditForm({ ...editForm, self_manage_enabled: checked })}
             />
           </div>
         </div>

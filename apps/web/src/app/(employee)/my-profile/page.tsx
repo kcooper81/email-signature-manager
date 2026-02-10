@@ -11,6 +11,7 @@ import {
   Briefcase, 
   Building2,
   Calendar,
+  CalendarClock,
   Linkedin,
   Twitter,
   Github,
@@ -23,7 +24,12 @@ import {
   FileSignature,
   Copy,
   Check,
+  Palmtree,
+  RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface UserProfile {
   id: string;
@@ -43,6 +49,39 @@ interface UserProfile {
   facebook_url: string | null;
   youtube_url: string | null;
   organization_id: string;
+  google_calendar_enabled: boolean | null;
+  google_booking_url: string | null;
+  ooo_banner_enabled: boolean | null;
+  ooo_custom_message: string | null;
+  calendar_sync_enabled: boolean | null;
+  self_manage_enabled: boolean | null;
+}
+
+interface OrgSettings {
+  allow_employee_self_manage: boolean;
+  allow_employee_personal_links: boolean;
+  allow_employee_calendar_integration: boolean;
+  allow_employee_ooo_banners: boolean;
+  google_calendar_enabled: boolean;
+}
+
+interface CalendarData {
+  calendarEnabled: boolean;
+  oooStatus: {
+    isOutOfOffice: boolean;
+    dateRange: string | null;
+    eventTitle?: string;
+    message?: string;
+  };
+  bookingLinks: Array<{
+    name: string;
+    url: string;
+    duration?: number;
+  }>;
+  upcomingOOO: Array<{
+    summary: string;
+    dateRange: string;
+  }>;
 }
 
 interface SignatureData {
@@ -75,6 +114,26 @@ export default function MyProfilePage() {
     youtube_url: '',
   });
 
+  // Calendar integration state
+  const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
+  const [calendarLoading, setCalendarLoading] = useState(false);
+  const [calendarSettings, setCalendarSettings] = useState({
+    calendarEnabled: false,
+    oooEnabled: true,
+    bookingUrl: '',
+    oooCustomMessage: '',
+  });
+
+  // Organization settings (what features are allowed)
+  const [orgSettings, setOrgSettings] = useState<OrgSettings>({
+    allow_employee_self_manage: true,
+    allow_employee_personal_links: true,
+    allow_employee_calendar_integration: true,
+    allow_employee_ooo_banners: true,
+    google_calendar_enabled: true,
+  });
+  const [accessDenied, setAccessDenied] = useState(false);
+
   useEffect(() => {
     loadProfile();
   }, []);
@@ -101,6 +160,38 @@ export default function MyProfilePage() {
       return;
     }
 
+    // Check if user has self-manage access disabled
+    if (userData.self_manage_enabled === false) {
+      setAccessDenied(true);
+      setLoading(false);
+      return;
+    }
+
+    // Load organization settings
+    const { data: orgSettingsData } = await supabase
+      .from('organization_settings')
+      .select('*')
+      .eq('organization_id', userData.organization_id)
+      .single();
+
+    if (orgSettingsData) {
+      const settings = {
+        allow_employee_self_manage: orgSettingsData.allow_employee_self_manage ?? true,
+        allow_employee_personal_links: orgSettingsData.allow_employee_personal_links ?? true,
+        allow_employee_calendar_integration: orgSettingsData.allow_employee_calendar_integration ?? true,
+        allow_employee_ooo_banners: orgSettingsData.allow_employee_ooo_banners ?? true,
+        google_calendar_enabled: orgSettingsData.google_calendar_enabled ?? true,
+      };
+      setOrgSettings(settings);
+
+      // Check if org-wide self-manage is disabled
+      if (!settings.allow_employee_self_manage) {
+        setAccessDenied(true);
+        setLoading(false);
+        return;
+      }
+    }
+
     setProfile(userData);
     setForm({
       first_name: userData.first_name || '',
@@ -116,6 +207,19 @@ export default function MyProfilePage() {
       facebook_url: userData.facebook_url || '',
       youtube_url: userData.youtube_url || '',
     });
+
+    // Set calendar settings from user data
+    setCalendarSettings({
+      calendarEnabled: userData.google_calendar_enabled || false,
+      oooEnabled: userData.ooo_banner_enabled !== false, // Default to true
+      bookingUrl: userData.google_booking_url || '',
+      oooCustomMessage: userData.ooo_custom_message || '',
+    });
+
+    // Load calendar data if enabled
+    if (userData.google_calendar_enabled) {
+      loadCalendarData();
+    }
 
     // Get user's deployed signature if any
     const { data: deployment } = await supabase
@@ -136,6 +240,45 @@ export default function MyProfilePage() {
     }
 
     setLoading(false);
+  };
+
+  const loadCalendarData = async () => {
+    setCalendarLoading(true);
+    try {
+      const response = await fetch('/api/integrations/google/calendar');
+      if (response.ok) {
+        const data = await response.json();
+        setCalendarData(data);
+      }
+    } catch (err) {
+      console.error('Failed to load calendar data:', err);
+    } finally {
+      setCalendarLoading(false);
+    }
+  };
+
+  const saveCalendarSettings = async () => {
+    try {
+      const response = await fetch('/api/integrations/google/calendar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          calendarEnabled: calendarSettings.calendarEnabled,
+          oooEnabled: calendarSettings.oooEnabled,
+          bookingUrl: calendarSettings.bookingUrl,
+          oooCustomMessage: calendarSettings.oooCustomMessage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save calendar settings');
+      }
+
+      setSuccessMessage('Calendar settings updated!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to save calendar settings');
+    }
   };
 
   const saveProfile = async () => {
@@ -201,6 +344,27 @@ export default function MyProfilePage() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+      </div>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-amber-600">
+              <AlertCircle className="h-5 w-5" />
+              Access Restricted
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Your organization administrator has disabled access to the self-manage portal.
+              Please contact your administrator if you need to update your profile information.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -347,7 +511,8 @@ export default function MyProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Personal Links */}
+      {/* Personal Links - only show if org allows */}
+      {orgSettings.allow_employee_personal_links && (
       <Card>
         <CardHeader>
           <CardTitle>Personal Links</CardTitle>
@@ -448,6 +613,165 @@ export default function MyProfilePage() {
           </div>
         </CardContent>
       </Card>
+      )}
+
+      {/* Google Calendar Integration - only show if org allows */}
+      {orgSettings.allow_employee_calendar_integration && orgSettings.google_calendar_enabled && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarClock className="h-5 w-5" />
+            Google Calendar Integration
+          </CardTitle>
+          <CardDescription>
+            Connect your Google Calendar for booking links and out-of-office banners
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Calendar Status */}
+          {calendarData?.oooStatus?.isOutOfOffice && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg flex items-center gap-3">
+              <Palmtree className="h-5 w-5 text-amber-600" />
+              <div>
+                <p className="font-medium">You are currently out of office</p>
+                {calendarData.oooStatus.dateRange && (
+                  <p className="text-sm">{calendarData.oooStatus.dateRange}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Enable Calendar Integration */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="calendar-enabled" className="text-base">Enable Calendar Integration</Label>
+              <p className="text-sm text-muted-foreground">
+                Allow Siggly to read your Google Calendar for scheduling features
+              </p>
+            </div>
+            <Switch
+              id="calendar-enabled"
+              checked={calendarSettings.calendarEnabled}
+              onCheckedChange={(checked) => {
+                setCalendarSettings({ ...calendarSettings, calendarEnabled: checked });
+                if (checked && !calendarData) {
+                  loadCalendarData();
+                }
+              }}
+            />
+          </div>
+
+          {calendarSettings.calendarEnabled && (
+            <>
+              {/* Google Booking URL */}
+              <div>
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  Google Calendar Booking URL
+                </label>
+                <div className="flex gap-2">
+                  <Input 
+                    value={calendarSettings.bookingUrl} 
+                    onChange={(e) => setCalendarSettings({ ...calendarSettings, bookingUrl: e.target.value })}
+                    placeholder="https://calendar.google.com/calendar/appointments/..."
+                    className="flex-1"
+                  />
+                  {calendarData?.bookingLinks && calendarData.bookingLinks.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const firstLink = calendarData.bookingLinks[0];
+                        if (firstLink) {
+                          setCalendarSettings({ ...calendarSettings, bookingUrl: firstLink.url });
+                        }
+                      }}
+                    >
+                      Auto-fill
+                    </Button>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Your Google Calendar appointment scheduling link
+                </p>
+              </div>
+
+              {/* OOO Banner Settings */}
+              <div className="border-t pt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="ooo-enabled" className="text-base">Out-of-Office Banner</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically show a banner in your signature when you&apos;re away
+                    </p>
+                  </div>
+                  <Switch
+                    id="ooo-enabled"
+                    checked={calendarSettings.oooEnabled}
+                    onCheckedChange={(checked) => setCalendarSettings({ ...calendarSettings, oooEnabled: checked })}
+                  />
+                </div>
+
+                {calendarSettings.oooEnabled && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Custom OOO Message (optional)
+                    </label>
+                    <Input 
+                      value={calendarSettings.oooCustomMessage} 
+                      onChange={(e) => setCalendarSettings({ ...calendarSettings, oooCustomMessage: e.target.value })}
+                      placeholder="I am currently out of office and will respond when I return."
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Leave blank to use the default message
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Upcoming OOO Events */}
+              {calendarData?.upcomingOOO && calendarData.upcomingOOO.length > 0 && (
+                <div className="border-t pt-4">
+                  <h4 className="text-sm font-medium mb-2">Upcoming Time Off</h4>
+                  <div className="space-y-2">
+                    {calendarData.upcomingOOO.slice(0, 3).map((event, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Palmtree className="h-4 w-4" />
+                        <span>{event.summary}</span>
+                        <span className="text-xs">({event.dateRange})</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Refresh and Save */}
+              <div className="flex gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadCalendarData}
+                  disabled={calendarLoading}
+                >
+                  {calendarLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  <span className="ml-2">Refresh Calendar</span>
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={saveCalendarSettings}
+                >
+                  Save Calendar Settings
+                </Button>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+      )}
 
       {/* Save Button */}
       <div className="flex justify-end">

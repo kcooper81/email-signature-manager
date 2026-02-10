@@ -22,9 +22,20 @@ interface RenderContext {
     instagramUrl?: string;
     facebookUrl?: string;
     youtubeUrl?: string;
+    googleBookingUrl?: string;
   };
   organization: {
     name?: string;
+  };
+  oooStatus?: {
+    isOutOfOffice: boolean;
+    dateRange?: string;
+    message?: string;
+    bannerSettings?: {
+      backgroundColor?: string;
+      textColor?: string;
+      showReturnDate?: boolean;
+    };
   };
 }
 
@@ -40,9 +51,15 @@ export async function renderSignatureToHtml(
   try {
     const bodyContent = blocks.map((block) => blockToHtml(block, context)).join('');
     
+    // Render OOO banner if user is out of office
+    const oooBanner = context.oooStatus?.isOutOfOffice 
+      ? renderOOOBanner(context.oooStatus)
+      : '';
+    
     // Add dark mode support with color-scheme and media queries
     const html = `
       <div style="color-scheme: light dark;">
+        ${oooBanner}
         <table cellpadding="0" cellspacing="0" border="0" style="font-family: Arial, sans-serif; font-size: 14px; color: #333333;">
           <tbody>
             ${bodyContent}
@@ -62,6 +79,37 @@ export async function renderSignatureToHtml(
       errors: [error.message || 'Failed to render signature'],
     };
   }
+}
+
+/**
+ * Renders an out-of-office banner for the signature
+ */
+function renderOOOBanner(oooStatus: NonNullable<RenderContext['oooStatus']>): string {
+  const bgColor = oooStatus.bannerSettings?.backgroundColor || '#FEF3C7';
+  const textColor = oooStatus.bannerSettings?.textColor || '#92400E';
+  const showReturnDate = oooStatus.bannerSettings?.showReturnDate !== false;
+  
+  const message = oooStatus.message || 'I am currently out of office and will respond when I return.';
+  const dateInfo = showReturnDate && oooStatus.dateRange 
+    ? ` (${oooStatus.dateRange})`
+    : '';
+  
+  return `
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 12px;">
+      <tr>
+        <td style="background-color: ${bgColor}; padding: 10px 14px; border-radius: 6px; border-left: 4px solid ${textColor};">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="font-family: Arial, sans-serif; font-size: 13px; color: ${textColor}; line-height: 1.4;">
+                <strong style="display: block; margin-bottom: 2px;">🌴 Out of Office${dateInfo}</strong>
+                <span style="font-size: 12px;">${message}</span>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  `;
 }
 
 function blockToHtml(block: TemplateBlock, context: RenderContext): string {
@@ -119,7 +167,9 @@ function replacePlaceholders(text: string, context: RenderContext): string {
     .replace(/\{\{personal_website\}\}/gi, user.personalWebsite || '')
     .replace(/\{\{instagram_url\}\}/gi, user.instagramUrl || '')
     .replace(/\{\{facebook_url\}\}/gi, user.facebookUrl || '')
-    .replace(/\{\{youtube_url\}\}/gi, user.youtubeUrl || '');
+    .replace(/\{\{youtube_url\}\}/gi, user.youtubeUrl || '')
+    .replace(/\{\{google_booking_url\}\}/gi, user.googleBookingUrl || '')
+    .replace(/\{\{booking_url\}\}/gi, user.googleBookingUrl || user.calendlyUrl || '');
   
   // Remove any remaining unresolved placeholders
   result = result.replace(/\{\{[^}]+\}\}/gi, '');

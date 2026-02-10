@@ -20,6 +20,10 @@ import {
   Trash2,
   X,
   Copy,
+  Users,
+  CalendarClock,
+  Link2,
+  Palmtree,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -44,6 +48,14 @@ interface Organization {
   domain: string | null;
 }
 
+interface OrgSettings {
+  allow_employee_self_manage: boolean;
+  allow_employee_personal_links: boolean;
+  allow_employee_calendar_integration: boolean;
+  allow_employee_ooo_banners: boolean;
+  google_calendar_enabled: boolean;
+}
+
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,6 +64,13 @@ export default function SettingsPage() {
   
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [organization, setOrganization] = useState<Organization | null>(null);
+  const [orgSettings, setOrgSettings] = useState<OrgSettings>({
+    allow_employee_self_manage: true,
+    allow_employee_personal_links: true,
+    allow_employee_calendar_integration: true,
+    allow_employee_ooo_banners: true,
+    google_calendar_enabled: true,
+  });
   
   // Form states
   const [firstName, setFirstName] = useState('');
@@ -166,6 +185,23 @@ export default function SettingsPage() {
           } else {
             setDomainSource('manual');
           }
+
+          // Load organization settings
+          const { data: orgSettingsData } = await supabase
+            .from('organization_settings')
+            .select('*')
+            .eq('organization_id', userData.organization_id)
+            .single();
+
+          if (orgSettingsData) {
+            setOrgSettings({
+              allow_employee_self_manage: orgSettingsData.allow_employee_self_manage ?? true,
+              allow_employee_personal_links: orgSettingsData.allow_employee_personal_links ?? true,
+              allow_employee_calendar_integration: orgSettingsData.allow_employee_calendar_integration ?? true,
+              allow_employee_ooo_banners: orgSettingsData.allow_employee_ooo_banners ?? true,
+              google_calendar_enabled: orgSettingsData.google_calendar_enabled ?? true,
+            });
+          }
         }
       }
     }
@@ -219,6 +255,20 @@ export default function SettingsPage() {
       .from('organizations')
       .update(updateData)
       .eq('id', organization.id);
+
+    // Upsert organization settings
+    await supabase
+      .from('organization_settings')
+      .upsert({
+        organization_id: organization.id,
+        allow_employee_self_manage: orgSettings.allow_employee_self_manage,
+        allow_employee_personal_links: orgSettings.allow_employee_personal_links,
+        allow_employee_calendar_integration: orgSettings.allow_employee_calendar_integration,
+        allow_employee_ooo_banners: orgSettings.allow_employee_ooo_banners,
+        google_calendar_enabled: orgSettings.google_calendar_enabled,
+      }, {
+        onConflict: 'organization_id',
+      });
 
     setSaving(false);
     setSaved(true);
@@ -747,6 +797,104 @@ export default function SettingsPage() {
                       Connect an integration or enter manually
                     </p>
                   )}
+                </div>
+
+                {/* Employee Self-Management Settings */}
+                <div className="border-t pt-6 mt-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Employee Self-Management
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Control what employees can manage in their self-service portal
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-lg border">
+                      <div>
+                        <p className="font-medium">Employee Self-Manage Portal</p>
+                        <p className="text-sm text-muted-foreground">
+                          Allow employees to access the self-manage portal to update their profile
+                        </p>
+                      </div>
+                      <Switch
+                        checked={orgSettings.allow_employee_self_manage}
+                        onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_self_manage: checked })}
+                      />
+                    </div>
+
+                    {orgSettings.allow_employee_self_manage && (
+                      <>
+                        <div className="flex items-center justify-between p-4 rounded-lg border ml-4">
+                          <div className="flex items-center gap-3">
+                            <Link2 className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">Personal Links</p>
+                              <p className="text-sm text-muted-foreground">
+                                Allow employees to add their own social/booking links
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            checked={orgSettings.allow_employee_personal_links}
+                            onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_personal_links: checked })}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 rounded-lg border ml-4">
+                          <div className="flex items-center gap-3">
+                            <CalendarClock className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">Google Calendar Integration</p>
+                              <p className="text-sm text-muted-foreground">
+                                Allow employees to connect their Google Calendar
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            checked={orgSettings.allow_employee_calendar_integration}
+                            onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_calendar_integration: checked })}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 rounded-lg border ml-4">
+                          <div className="flex items-center gap-3">
+                            <Palmtree className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">Out-of-Office Banners</p>
+                              <p className="text-sm text-muted-foreground">
+                                Allow employees to enable automatic OOO banners
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            checked={orgSettings.allow_employee_ooo_banners}
+                            onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_ooo_banners: checked })}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Google Calendar Org-Wide Setting */}
+                <div className="border-t pt-6 mt-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <CalendarClock className="h-5 w-5" />
+                    Google Calendar (Organization-Wide)
+                  </h3>
+                  <div className="flex items-center justify-between p-4 rounded-lg border">
+                    <div>
+                      <p className="font-medium">Enable Google Calendar Integration</p>
+                      <p className="text-sm text-muted-foreground">
+                        Enable Google Calendar features for booking links and OOO detection
+                      </p>
+                    </div>
+                    <Switch
+                      checked={orgSettings.google_calendar_enabled}
+                      onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, google_calendar_enabled: checked })}
+                    />
+                  </div>
                 </div>
 
                 <Button onClick={saveOrganization} disabled={saving}>

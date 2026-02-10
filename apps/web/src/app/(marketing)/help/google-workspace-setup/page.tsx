@@ -15,7 +15,7 @@ export default function GoogleWorkspaceSetupPage() {
   };
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_CLIENT_ID || '';
-  const scopes = 'https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/admin.directory.user.readonly';
+  const scopes = 'https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/calendar.readonly';
 
   return (
     <div className="min-h-screen bg-gray-50">

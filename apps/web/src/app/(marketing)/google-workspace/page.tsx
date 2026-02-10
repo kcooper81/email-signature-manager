@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw, HelpCircle } from 'lucide-react';
+import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw, HelpCircle, Calendar, Palmtree } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta, generateFAQSchema, generateBreadcrumbSchema } from '@/lib/seo/metadata';
 
@@ -14,6 +14,8 @@ export const metadata = genMeta({
     'centralized gmail signatures',
     'deploy signatures google workspace',
     'gmail signature management tool',
+    'google calendar booking links',
+    'out of office email signature',
   ],
   canonical: '/google-workspace',
 });
@@ -44,6 +46,14 @@ const faqs = [
     answer: 'Yes. When you connect your Google Workspace account, we automatically import all users with their names, titles, departments, and profile photos. You can also set up automatic sync to keep user data current.',
   },
   {
+    question: 'Can I add Google Calendar booking links to signatures?',
+    answer: 'Yes. Siggly integrates with Google Calendar to let employees add their appointment scheduling links directly to their signatures. Recipients can book meetings with one click.',
+  },
+  {
+    question: 'Does Siggly support out-of-office banners?',
+    answer: 'Yes. Siggly can automatically detect when employees are out of office from their Google Calendar and display a dynamic OOO banner in their signature with their return date.',
+  },
+  {
     question: 'What happens if a user changes their signature manually?',
     answer: 'You can choose to allow or prevent manual changes. With enforcement enabled, any manual changes will be overwritten on the next sync, ensuring brand consistency across your organization.',
   },
@@ -63,6 +73,8 @@ const comparisonData = [
   { feature: 'Scheduled Updates', siggly: true, native: false },
   { feature: 'User Directory Sync', siggly: true, native: false },
   { feature: 'Signature Enforcement', siggly: true, native: false },
+  { feature: 'Google Calendar Integration', siggly: true, native: false },
+  { feature: 'Auto Out-of-Office Banners', siggly: true, native: false },
 ];
 
 export default function GoogleWorkspacePage() {
@@ -186,6 +198,37 @@ export default function GoogleWorkspacePage() {
               <p className="text-sm text-gray-600">
                 We use OAuth 2.0 and never store your Google password.
               </p>
+            </div>
+          </div>
+
+          {/* Calendar Integration Features */}
+          <div className="mt-16 pt-16 border-t">
+            <h3 className="text-2xl font-bold text-center mb-8">Google Calendar Integration</h3>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-blue-50 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold">Booking Links in Signatures</h4>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Let employees add their Google Calendar appointment scheduling links directly to their email signatures. 
+                  Recipients can book meetings with one click—no back-and-forth emails needed.
+                </p>
+              </div>
+              <div className="bg-amber-50 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                    <Palmtree className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <h4 className="font-semibold">Automatic Out-of-Office Banners</h4>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Siggly automatically detects when employees are on vacation or out of office from their Google Calendar 
+                  and displays a dynamic banner in their signature with their return date.
+                </p>
+              </div>
             </div>
           </div>
         </div>

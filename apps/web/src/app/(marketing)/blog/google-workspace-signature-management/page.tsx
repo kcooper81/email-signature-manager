@@ -110,6 +110,15 @@ export default function BlogPost() {
               className="rounded-xl my-8"
             />
 
+            <h3 className="text-xl font-semibold mt-8 mb-3">Google Calendar Integration</h3>
+            <p className="text-gray-600 mb-6">
+              Siggly also integrates with Google Calendar to add powerful scheduling features to your signatures:
+            </p>
+            <ul className="list-disc pl-6 text-gray-600 space-y-2 mb-6">
+              <li><strong>Booking Links:</strong> Employees can add their Google Calendar appointment scheduling links directly to their signatures, making it easy for recipients to book meetings</li>
+              <li><strong>Out-of-Office Banners:</strong> Siggly automatically detects when employees are on vacation from their Google Calendar and displays a dynamic OOO banner with their return date</li>
+            </ul>
+
             <h2 className="text-2xl font-bold mt-12 mb-4">Step-by-Step: Setting Up Siggly for Google Workspace</h2>
             
             <div className="space-y-6 my-8">
