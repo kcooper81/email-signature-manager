@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createCustomer, createCheckoutSession } from '@/lib/billing/stripe';
 import { logException } from '@/lib/error-logging';
+import { PARTNER_COUPON_IDS, type PartnerTier } from '@/lib/billing/partner-coupons';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +29,21 @@ export async function POST(request: NextRequest) {
 
     if (!userData?.organization_id) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
+    // Check if this is an MSP organization with a partner tier (for coupon)
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('name, organization_type, partner_tier')
+      .eq('id', userData.organization_id)
+      .single();
+
+    let partnerCouponId: string | undefined;
+    if (orgData?.organization_type === 'msp' && orgData?.partner_tier) {
+      const tier = orgData.partner_tier as PartnerTier;
+      if (PARTNER_COUPON_IDS[tier]) {
+        partnerCouponId = PARTNER_COUPON_IDS[tier];
+      }
     }
 
     // Get or create subscription record
@@ -91,6 +107,7 @@ export async function POST(request: NextRequest) {
       quantity,
       successUrl: `${baseUrl}/settings/billing?success=true`,
       cancelUrl: `${baseUrl}/settings/billing?canceled=true`,
+      couponId: partnerCouponId, // Apply partner discount if applicable
     });
 
     return NextResponse.json({ url: session.url });
