@@ -36,12 +36,17 @@ export async function GET() {
     // Get user's organization and verify it's an MSP
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('id, organization_id')
+      .select('id, organization_id, role')
       .eq('auth_id', user.id)
       .single();
 
     if (userError || !userData) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Only owners and admins can view billing data
+    if (!['owner', 'admin'].includes(userData.role)) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     const { data: orgData, error: orgError } = await supabase

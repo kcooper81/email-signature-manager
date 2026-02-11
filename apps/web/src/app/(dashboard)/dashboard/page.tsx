@@ -18,19 +18,19 @@ import { GettingStartedCard } from './getting-started';
 import { QuickActionsPanel } from './quick-actions';
 import { IntegrationStatusWidget } from './integration-status';
 import { PendingActionsWidget } from './pending-actions';
+import { getEffectiveOrg } from '@/lib/msp/get-effective-org';
 
 export default async function DashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Get current user's organization
-  const { data: currentUser } = await supabase
-    .from('users')
-    .select('organization_id')
-    .eq('auth_id', user?.id)
-    .single();
+  // Get effective organization (respects MSP client context switching)
+  const effectiveOrg = await getEffectiveOrg();
+  if (!effectiveOrg) {
+    return <div>Unable to load dashboard</div>;
+  }
 
-  const organizationId = currentUser?.organization_id;
+  const organizationId = effectiveOrg.organizationId;
 
   // Fetch actual counts for dashboard stats - FILTERED BY ORGANIZATION
   const { count: templateCount } = await supabase

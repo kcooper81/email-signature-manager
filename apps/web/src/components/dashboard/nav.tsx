@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -20,40 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeedbackWidget } from '@/components/feedback';
-import { createClient } from '@/lib/supabase/client';
-
-const mainNavItems = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Templates',
-    href: '/templates',
-    icon: FileSignature,
-  },
-  {
-    title: 'Team Members',
-    href: '/team',
-    icon: Users,
-  },
-  {
-    title: 'Deployments',
-    href: '/deployments',
-    icon: Send,
-  },
-  {
-    title: 'Integrations',
-    href: '/integrations',
-    icon: Link2,
-  },
-  {
-    title: 'Analytics',
-    href: '/analytics',
-    icon: BarChart3,
-  },
-];
+import { useMspContext } from '@/hooks/use-msp-context';
 
 const bottomNavItems = [
   {
@@ -77,32 +44,7 @@ export function DashboardNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [isMspOrg, setIsMspOrg] = useState(false);
-
-  useEffect(() => {
-    const checkMspStatus = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: userData } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('auth_id', user.id)
-        .single();
-
-      if (userData?.organization_id) {
-        const { data: orgData } = await supabase
-          .from('organizations')
-          .select('organization_type')
-          .eq('id', userData.organization_id)
-          .single();
-
-        setIsMspOrg(orgData?.organization_type === 'msp');
-      }
-    };
-    checkMspStatus();
-  }, []);
+  const { isMspOrg } = useMspContext();
 
   // Build nav items dynamically based on org type
   const navItems = [
@@ -115,7 +57,7 @@ export function DashboardNav() {
     { title: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 
-  const renderNavItem = (item: typeof mainNavItems[0], mobile = false) => {
+  const renderNavItem = (item: typeof navItems[0], mobile = false) => {
     const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
     return (
       <Link
