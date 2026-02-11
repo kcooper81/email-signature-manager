@@ -11,16 +11,18 @@ import {
   Link2, 
   Building2, 
   CreditCard,
-  UserPlus,
   Mail,
   CheckCircle2,
   ArrowRight,
   Sparkles,
+  Globe,
+  ExternalLink,
+  UserCog,
   Calendar,
-  BarChart3,
-  Shield,
-  Globe
+  Play,
+  AlertTriangle,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -29,327 +31,401 @@ interface GuideSection {
   title: string;
   icon: React.ReactNode;
   description: string;
+  link?: string;
   steps: {
     title: string;
     description: string;
+    link?: string;
     tips?: string[];
+    warning?: string;
   }[];
 }
 
 const guideSections: GuideSection[] = [
   {
     id: 'getting-started',
-    title: 'Getting Started',
+    title: '1. Getting Started',
     icon: <Sparkles className="h-5 w-5" />,
-    description: 'Set up your account and connect your email provider',
+    description: 'Create your account and set up your organization',
     steps: [
       {
-        title: '1. Create Your Account',
-        description: 'Sign up with your email address. You\'ll automatically get a free plan with up to 5 users and 1 signature template.',
+        title: 'Step 1: Sign Up',
+        description: 'Go to the signup page and create an account with your work email. You\'ll automatically become the organization owner.',
+        link: '/signup',
         tips: [
-          'Use your work email for the best experience',
-          'You\'ll be the organization owner with full admin access'
+          'Use your work email (e.g., you@company.com)',
+          'You\'ll get a free plan with 5 users and 1 template'
         ]
       },
       {
-        title: '2. Connect Google Workspace or Microsoft 365',
-        description: 'Go to Settings → Integrations and click "Connect" next to your email provider. This allows Siggly to deploy signatures and sync your team members.',
+        title: 'Step 2: Verify Your Email',
+        description: 'Check your inbox for a verification email and click the link to confirm your account.',
         tips: [
-          'You\'ll need admin access to your Google Workspace or Microsoft 365 account',
-          'The OAuth flow will request permission to manage signatures and read user directory'
+          'Check spam/junk folder if you don\'t see it',
+          'The link expires after 24 hours'
         ]
       },
       {
-        title: '3. Sync Your Team',
-        description: 'After connecting, go to the Team page and click "Sync Users". This imports all your team members from your directory.',
-        tips: [
-          'Users are imported with their name, email, title, and department',
-          'You can manually add users too if needed'
-        ]
+        title: 'Step 3: Log In',
+        description: 'After verifying, log in to access your dashboard.',
+        link: '/login',
       }
     ]
   },
   {
-    id: 'templates',
-    title: 'Creating Signature Templates',
-    icon: <Palette className="h-5 w-5" />,
-    description: 'Design beautiful, professional email signatures',
+    id: 'connect-google',
+    title: '2. Connect Google Workspace',
+    icon: <Globe className="h-5 w-5" />,
+    description: 'Connect your Google Workspace to sync users and deploy signatures',
+    link: '/integrations',
     steps: [
       {
-        title: '1. Create a New Template',
-        description: 'Go to Templates and click "Create Template". Give it a name like "Company Standard" or "Sales Team".',
+        title: 'Step 1: Go to Integrations',
+        description: 'From the dashboard sidebar, click "Integrations" to see available connections.',
+        link: '/integrations',
+      },
+      {
+        title: 'Step 2: Click "Connect" on Google Workspace',
+        description: 'Find the Google Workspace card and click the "Connect" button. You\'ll be redirected to Google\'s OAuth screen.',
         tips: [
-          'Start with a blank template or duplicate an existing one',
-          'Templates are organization-wide and can be assigned to specific users or departments'
+          'You must be a Google Workspace admin to connect',
+          'The app will request permission to manage Gmail signatures and read your directory'
+        ],
+        warning: 'Personal Gmail accounts won\'t work - you need Google Workspace (business)'
+      },
+      {
+        title: 'Step 3: Authorize the App',
+        description: 'On Google\'s screen, review the permissions and click "Allow" to grant access.',
+        tips: [
+          'You\'ll see permissions for Gmail API and Admin Directory API',
+          'These are required to deploy signatures and sync users'
         ]
       },
       {
-        title: '2. Use the Visual Editor',
-        description: 'Drag and drop blocks to build your signature. Available blocks include: Name, Title, Company, Phone, Email, Social Links, Logo, Banner, and Disclaimer.',
-        tips: [
-          'Use dynamic placeholders like {{first_name}} to personalize for each user',
-          'Add your company logo by uploading an image or entering a URL',
-          'Social links auto-detect the platform from the URL'
-        ]
-      },
-      {
-        title: '3. Add Compliance Blocks',
-        description: 'For regulated industries, add pre-built compliance blocks for Legal, Healthcare, Finance, or Real Estate disclaimers.',
-        tips: [
-          'Compliance blocks are mobile-responsive',
-          'You can customize the disclaimer text'
-        ]
-      },
-      {
-        title: '4. Preview and Save',
-        description: 'Use the preview panel to see how your signature looks on desktop and mobile. Click Save when you\'re happy.',
-        tips: [
-          'Test with different user data to see how placeholders render',
-          'Signatures are automatically optimized for email clients'
-        ]
+        title: 'Step 4: Verify Connection',
+        description: 'After authorizing, you\'ll be redirected back. The Google Workspace card should now show "Connected" with a green checkmark.',
+        link: '/integrations',
       }
     ]
   },
   {
-    id: 'team-management',
-    title: 'Team Management',
+    id: 'sync-team',
+    title: '3. Sync Your Team',
     icon: <Users className="h-5 w-5" />,
-    description: 'Manage your team members and their signature data',
+    description: 'Import team members from Google Workspace',
+    link: '/team',
     steps: [
       {
-        title: '1. View Your Team',
-        description: 'The Team page shows all users in your organization with their name, email, title, department, and signature status.',
+        title: 'Step 1: Go to Team Page',
+        description: 'From the sidebar, click "Team" to see your team members list.',
+        link: '/team',
+      },
+      {
+        title: 'Step 2: Click "Sync Users"',
+        description: 'Click the "Sync Users" button (cloud icon) in the top right. This imports all users from your Google Workspace directory.',
         tips: [
-          'Filter by department to find specific users',
-          'Search by name or email'
+          'Users are imported with name, email, title, and department',
+          'Sync can take a few seconds for large organizations'
         ]
       },
       {
-        title: '2. Edit User Details',
-        description: 'Click on any user to edit their profile. You can update their title, department, phone, and personal links (LinkedIn, Calendly, etc.).',
+        title: 'Step 3: Review Imported Users',
+        description: 'After sync completes, you\'ll see all your team members listed with their details.',
         tips: [
-          'Personal links appear in their signature if the template includes social blocks',
-          'Changes take effect on the next deployment'
-        ]
-      },
-      {
-        title: '3. Invite New Users',
-        description: 'Click "Add Member" to invite someone who isn\'t in your directory. They\'ll receive an email invitation.',
-        tips: [
-          'Invited users can self-manage their profile if enabled',
-          'You can set their role: Admin, Editor, or Viewer'
-        ]
-      },
-      {
-        title: '4. Self-Manage Portal',
-        description: 'Enable "Self-Manage" for users to let them update their own profile and personal links without admin access.',
-        tips: [
-          'Self-manage users see a simplified portal at /my-profile',
-          'They can update their photo, title, phone, and social links',
-          'Admins control which fields are editable'
+          'Users show their source (Google, Microsoft, Manual)',
+          'You can search and filter by department'
         ]
       }
     ]
   },
   {
-    id: 'deployments',
-    title: 'Deploying Signatures',
-    icon: <Rocket className="h-5 w-5" />,
-    description: 'Push signatures to your team\'s email accounts',
+    id: 'create-template',
+    title: '4. Create a Signature Template',
+    icon: <Palette className="h-5 w-5" />,
+    description: 'Design your email signature using the visual editor',
+    link: '/templates',
     steps: [
       {
-        title: '1. Start a Deployment',
-        description: 'Go to Deployments and click "Deploy Signatures". Select a template and choose your target: Just Me, Selected Users, or All Users.',
+        title: 'Step 1: Go to Templates',
+        description: 'From the sidebar, click "Templates" to see your signature templates.',
+        link: '/templates',
+      },
+      {
+        title: 'Step 2: Click "Create Template"',
+        description: 'Click the "Create Template" button to start designing a new signature.',
+        link: '/templates/new',
+      },
+      {
+        title: 'Step 3: Name Your Template',
+        description: 'Give your template a descriptive name like "Company Standard" or "Sales Team Signature".',
+      },
+      {
+        title: 'Step 4: Add Blocks',
+        description: 'Use the block palette on the left to add elements: Name, Title, Company, Phone, Email, Social Links, Logo, Banner, Divider, Disclaimer.',
+        tips: [
+          'Drag blocks to reorder them',
+          'Click a block to edit its settings',
+          'Use placeholders like {{first_name}}, {{title}}, {{email}} for dynamic content'
+        ]
+      },
+      {
+        title: 'Step 5: Add Your Logo',
+        description: 'Add a Logo block and either upload an image or paste a URL to your company logo.',
+        tips: [
+          'Recommended size: 200-300px wide',
+          'Use PNG or JPG format',
+          'The logo will be embedded in the signature'
+        ]
+      },
+      {
+        title: 'Step 6: Add Social Links',
+        description: 'Add a Social Links block. Links are pulled from each user\'s profile (LinkedIn, Twitter, etc.).',
+        tips: [
+          'Social icons are automatically detected from URLs',
+          'Users can set their own links in their profile or /my-profile'
+        ]
+      },
+      {
+        title: 'Step 7: Preview and Save',
+        description: 'Use the preview panel on the right to see how the signature looks. Click "Save" when done.',
+        tips: [
+          'Preview shows desktop and mobile views',
+          'Test with sample user data to see placeholders replaced'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'deploy-signatures',
+    title: '5. Deploy Signatures',
+    icon: <Rocket className="h-5 w-5" />,
+    description: 'Push your signature to Gmail for your team',
+    link: '/deployments',
+    steps: [
+      {
+        title: 'Step 1: Go to Deployments',
+        description: 'From the sidebar, click "Deployments" to manage signature deployments.',
+        link: '/deployments',
+      },
+      {
+        title: 'Step 2: Click "Deploy Signatures"',
+        description: 'Click the "Deploy Signatures" button to start the deployment wizard.',
+      },
+      {
+        title: 'Step 3: Select a Template',
+        description: 'Choose which signature template to deploy from the dropdown.',
+      },
+      {
+        title: 'Step 4: Choose Target Users',
+        description: 'Select who should receive the signature: "Just Me" (test), "Selected Users", or "All Users".',
         tips: [
           'Start with "Just Me" to test before deploying to everyone',
-          'You can filter users by department'
-        ]
+          'You can filter by department when selecting users'
+        ],
+        warning: 'Deploying to "All Users" will overwrite everyone\'s Gmail signature'
       },
       {
-        title: '2. Review and Confirm',
-        description: 'Preview how the signature will look for each user. The system shows a summary of how many users will receive the signature.',
+        title: 'Step 5: Deploy',
+        description: 'Click "Deploy" to push signatures. The system will show progress and results.',
         tips: [
-          'Each user gets a personalized signature with their own data',
-          'Placeholders are replaced with actual user information'
+          'Deployment typically takes a few seconds',
+          'Check Gmail to verify the signature was applied'
         ]
       },
       {
-        title: '3. Deploy',
-        description: 'Click "Deploy" to push signatures to all selected users. The deployment runs in the background and you\'ll see progress updates.',
-        tips: [
-          'Deployments typically complete in under a minute for small teams',
-          'Failed deployments show which users had issues'
-        ]
-      },
-      {
-        title: '4. View Deployment History',
-        description: 'The Deployments page shows a history of all past deployments with status, user counts, and timestamps.',
+        title: 'Step 6: View Results',
+        description: 'After deployment, you\'ll see a summary showing successful and failed deployments.',
         tips: [
           'Click on a deployment to see per-user results',
-          'Re-deploy to fix any failed users'
+          'Failed users can be re-deployed individually'
         ]
       }
     ]
   },
   {
-    id: 'integrations',
-    title: 'Integrations',
-    icon: <Link2 className="h-5 w-5" />,
-    description: 'Connect with Google Workspace, Microsoft 365, HubSpot, and Calendly',
+    id: 'user-profile-settings',
+    title: '6. User Profile & Personal Links',
+    icon: <UserCog className="h-5 w-5" />,
+    description: 'How users can manage their own profile and links',
     steps: [
       {
-        title: '1. Google Workspace',
-        description: 'Connect to deploy Gmail signatures and sync users from Google Directory. Requires Workspace admin access.',
+        title: 'Admin: Edit User from Team Page',
+        description: 'Admins can edit any user by going to Team → clicking on a user → Edit. This opens a modal where you can update their title, department, phone, and personal links.',
+        link: '/team',
         tips: [
-          'Signatures are deployed via Gmail API',
-          'User sync pulls from Google Admin Directory',
-          'Supports domain-wide delegation for enterprise'
+          'Personal links include: LinkedIn, Twitter, Calendly, GitHub, Instagram, Facebook, YouTube, Personal Website',
+          'These links appear in signatures if the template has a Social Links block'
         ]
       },
       {
-        title: '2. Calendly',
-        description: 'Connect Calendly to add meeting scheduling links to signatures. Users can set their own Calendly URL.',
+        title: 'Admin: Enable Self-Manage for Users',
+        description: 'To let users manage their own profile, edit the user and enable "Self-Manage Portal". This gives them access to /my-profile.',
+        link: '/team',
+      },
+      {
+        title: 'User: Access Self-Manage Portal',
+        description: 'Users with self-manage enabled can log in and access /my-profile to update their own information.',
+        link: '/my-profile',
         tips: [
-          'Calendly links appear in the signature booking block',
-          'Each user can have their own scheduling link',
-          'Supports Calendly event types'
+          'Users can update: Name, Title, Phone, Personal Links',
+          'Changes require a re-deployment to update their signature'
         ]
       },
       {
-        title: '3. Google Calendar (OOO)',
-        description: 'Enable Google Calendar integration to automatically show Out of Office banners in signatures.',
+        title: 'Setting Calendly URL',
+        description: 'Calendly links are set per-user. Admin: Edit user on Team page. User: Update in /my-profile under "Personal Links".',
         tips: [
-          'Detects OOO events from Google Calendar',
-          'Automatically adds/removes OOO banner',
-          'Customizable OOO message'
+          'Enter the full Calendly URL (e.g., https://calendly.com/yourname)',
+          'This appears in signatures with a Booking/Calendly block'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'google-calendar-ooo',
+    title: '7. Google Calendar & Out of Office',
+    icon: <Calendar className="h-5 w-5" />,
+    description: 'Automatic OOO banners based on Google Calendar',
+    steps: [
+      {
+        title: 'Admin: Enable Calendar Integration',
+        description: 'Go to Settings → scroll to "Employee Features" → enable "Allow Calendar Integration" and "Allow OOO Banners".',
+        link: '/settings',
+      },
+      {
+        title: 'User: Enable in Self-Manage Portal',
+        description: 'Users go to /my-profile → find "Calendar Integration" section → toggle "Enable Google Calendar" and "Show OOO Banner".',
+        link: '/my-profile',
+        tips: [
+          'User must have Google Calendar access',
+          'OOO events are detected automatically from their calendar'
+        ]
+      },
+      {
+        title: 'How It Works',
+        description: 'When a user has an OOO event in Google Calendar, their signature automatically shows an OOO banner with dates.',
+        tips: [
+          'Users can customize their OOO message',
+          'Banner appears/disappears automatically based on calendar events'
         ]
       }
     ]
   },
   {
     id: 'billing',
-    title: 'Billing & Plans',
+    title: '8. Billing & Upgrades',
     icon: <CreditCard className="h-5 w-5" />,
-    description: 'Manage your subscription and billing',
+    description: 'Manage your subscription',
+    link: '/settings',
     steps: [
       {
-        title: '1. View Your Plan',
-        description: 'Go to Settings → Billing to see your current plan, usage, and limits.',
+        title: 'View Current Plan',
+        description: 'Go to Settings → scroll to the Billing section to see your current plan and usage.',
+        link: '/settings',
+      },
+      {
+        title: 'Upgrade Plan',
+        description: 'Click "Upgrade" to see available plans. You\'ll be redirected to Stripe Checkout.',
         tips: [
-          'Free: 5 users, 1 template, Google Workspace only',
-          'Starter: $0.50/user/month, 5 templates, Google + Microsoft',
-          'Professional: $29/month + $1/user, unlimited templates, all integrations',
+          'Free: 5 users, 1 template, Google only',
+          'Starter ($0.50/user): Unlimited users, 5 templates, Google + Microsoft',
+          'Professional ($29 + $1/user): Unlimited templates, all integrations',
           'Enterprise: Custom pricing, SSO, API, white-label'
         ]
       },
       {
-        title: '2. Upgrade Your Plan',
-        description: 'Click "Upgrade" to move to a higher plan. You\'ll be redirected to Stripe Checkout.',
-        tips: [
-          'Upgrades take effect immediately',
-          'You\'re only charged for the remaining billing period'
-        ]
-      },
-      {
-        title: '3. Manage Billing',
-        description: 'Click "Manage Billing" to access the Stripe Customer Portal where you can update payment methods, view invoices, and cancel.',
-        tips: [
-          'Invoices are sent via email',
-          'You can download past invoices from the portal'
-        ]
+        title: 'Manage Billing',
+        description: 'Click "Manage Billing" to access Stripe Customer Portal for payment methods, invoices, and cancellation.',
       }
     ]
   },
   {
     id: 'msp-multi-tenant',
-    title: 'MSP Multi-Tenant (Partners)',
+    title: '9. MSP Multi-Tenant (Partners)',
     icon: <Building2 className="h-5 w-5" />,
-    description: 'Manage multiple client organizations as an MSP or agency',
+    description: 'Manage multiple client organizations',
     steps: [
       {
-        title: '1. Become an MSP Partner',
-        description: 'Apply for MSP partner status to manage signatures for multiple client organizations. Go to Settings → Partner Program.',
+        title: 'Step 1: Apply for Partner Status',
+        description: 'Go to the Partner Application page and submit your application to become an MSP partner.',
+        link: '/partners/apply',
         tips: [
-          'MSP partners get volume discounts',
-          'Manage all clients from a single dashboard',
-          'White-label options available on Enterprise plan'
+          'Partners get volume discounts',
+          'Manage all clients from one dashboard'
         ]
       },
       {
-        title: '2. Add Client Organizations',
-        description: 'Once approved, go to Clients and click "Add Client". Enter the client\'s company name and admin email.',
+        title: 'Step 2: Wait for Approval',
+        description: 'Our team will review your application. You\'ll receive an email when approved.',
+      },
+      {
+        title: 'Step 3: Add Client Organizations',
+        description: 'Once approved, go to Clients page and click "Add Client". Enter client company name and admin email.',
+        link: '/clients',
         tips: [
-          'Each client is a separate organization with their own users and templates',
-          'Client admins can manage their own organization',
-          'You retain full access as the MSP'
+          'Each client is a separate organization',
+          'Client admin receives an invite email'
         ]
       },
       {
-        title: '3. Switch Between Clients',
-        description: 'Use the organization switcher in the header to switch between your MSP organization and client organizations.',
+        title: 'Step 4: Switch Between Clients',
+        description: 'Use the organization switcher in the dashboard header to switch between your MSP org and client orgs.',
         tips: [
-          'The banner shows which client you\'re currently viewing',
-          'All actions apply to the selected client organization'
+          'A banner shows which client you\'re currently viewing',
+          'All actions apply to the selected organization'
         ]
       },
       {
-        title: '4. Manage Client Access',
-        description: 'Control which MSP team members can access which clients. Set access levels: Full, Read-Only, or None.',
-        tips: [
-          'Full access: Can deploy signatures and edit templates',
-          'Read-only: Can view but not modify',
-          'Audit logs track all MSP actions'
-        ]
-      },
-      {
-        title: '5. Client Billing',
-        description: 'Choose how to bill clients: Direct (client pays Stripe), MSP-Managed (you pay and invoice client), or Included (bundled in your MSP fee).',
-        tips: [
-          'MSP-Managed billing gives you a single invoice for all clients',
-          'Partner discounts apply to all client seats',
-          'Revenue sharing available for referrals'
-        ]
+        title: 'Step 5: Manage Client Templates & Deployments',
+        description: 'While viewing a client org, you can create templates and deploy signatures just like your own org.',
       }
     ]
   },
   {
-    id: 'settings',
-    title: 'Organization Settings',
-    icon: <Settings className="h-5 w-5" />,
-    description: 'Configure your organization preferences',
+    id: 'testing-checklist',
+    title: '10. Testing Checklist',
+    icon: <CheckCircle2 className="h-5 w-5" />,
+    description: 'Quick checklist to verify everything works',
     steps: [
       {
-        title: '1. Organization Profile',
-        description: 'Update your company name, logo, and domain. This information is used in signature templates.',
-        tips: [
-          'Upload a high-resolution logo for best results',
-          'Domain is used for email validation'
-        ]
+        title: '✓ Account & Auth',
+        description: 'Sign up → Verify email → Log in → Log out → Log back in',
+        link: '/signup',
       },
       {
-        title: '2. Branding',
-        description: 'Customize the dashboard appearance with your brand colors. Available on Professional and Enterprise plans.',
-        tips: [
-          'Set primary and secondary colors',
-          'Upload a custom logo for the dashboard header',
-          'White-label removes Siggly branding (Enterprise only)'
-        ]
+        title: '✓ Google Integration',
+        description: 'Connect Google Workspace → Verify "Connected" status → Sync users',
+        link: '/integrations',
       },
       {
-        title: '3. Team Permissions',
-        description: 'Configure default permissions for new team members and control what self-manage users can edit.',
-        tips: [
-          'Roles: Owner, Admin, Editor, Viewer, Member',
-          'Self-manage fields: Name, Title, Phone, Photo, Social Links'
-        ]
+        title: '✓ Team Management',
+        description: 'View synced users → Edit a user → Add personal links → Enable self-manage',
+        link: '/team',
       },
       {
-        title: '4. Notifications',
-        description: 'Configure email notifications for deployments, team changes, and billing events.',
-        tips: [
-          'Get notified when deployments complete or fail',
-          'Weekly summary emails available'
-        ]
+        title: '✓ Templates',
+        description: 'Create template → Add blocks (Name, Title, Logo, Social) → Preview → Save',
+        link: '/templates',
+      },
+      {
+        title: '✓ Deployment',
+        description: 'Deploy to "Just Me" → Check Gmail for signature → Deploy to selected users',
+        link: '/deployments',
+      },
+      {
+        title: '✓ Self-Manage Portal',
+        description: 'Log in as a self-manage user → Access /my-profile → Update personal links',
+        link: '/my-profile',
+      },
+      {
+        title: '✓ Billing',
+        description: 'View current plan → Test upgrade flow (use test card 4242424242424242)',
+        link: '/settings',
+      },
+      {
+        title: '✓ MSP (if applicable)',
+        description: 'Apply for partner → Add client org → Switch to client → Create template → Deploy',
+        link: '/partners/apply',
       }
     ]
   }
@@ -370,7 +446,19 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
               {section.icon}
             </div>
             <div>
-              <CardTitle className="text-lg">{section.title}</CardTitle>
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-lg">{section.title}</CardTitle>
+                {section.link && (
+                  <Link 
+                    href={section.link} 
+                    target="_blank"
+                    className="text-primary hover:text-primary/80"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </Link>
+                )}
+              </div>
               <CardDescription>{section.description}</CardDescription>
             </div>
           </div>
@@ -389,8 +477,34 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
                 <h4 className="font-semibold text-base mb-2 flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                   {step.title}
+                  {step.link && (
+                    <Link 
+                      href={step.link} 
+                      target="_blank"
+                      className="text-primary hover:text-primary/80 ml-1"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                    </Link>
+                  )}
                 </h4>
                 <p className="text-muted-foreground mb-3">{step.description}</p>
+                {step.link && (
+                  <Link 
+                    href={step.link} 
+                    target="_blank"
+                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline mb-3"
+                  >
+                    <Play className="h-3 w-3" /> Open {step.link}
+                  </Link>
+                )}
+                {step.warning && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                    <p className="text-sm text-yellow-800 flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      {step.warning}
+                    </p>
+                  </div>
+                )}
                 {step.tips && step.tips.length > 0 && (
                   <div className="bg-muted/50 rounded-lg p-3">
                     <p className="text-sm font-medium mb-2 flex items-center gap-1">
@@ -424,50 +538,46 @@ export default function GuidePage() {
             Internal Testing Guide
           </Badge>
         </div>
-        <h1 className="text-3xl font-bold mb-2">Siggly User Guide</h1>
+        <h1 className="text-3xl font-bold mb-2">Siggly Testing Guide</h1>
         <p className="text-muted-foreground text-lg">
-          A friendly walkthrough of all Siggly features. Click on any section to expand and see detailed steps.
+          Step-by-step instructions to test all Siggly features. Click any section to expand.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Globe className="h-4 w-4 text-blue-600" />
-              <span className="font-medium text-blue-900">Integrations</span>
-            </div>
-            <p className="text-sm text-blue-700">Google, Microsoft, HubSpot, Calendly</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Users className="h-4 w-4 text-green-600" />
-              <span className="font-medium text-green-900">Team Sync</span>
-            </div>
-            <p className="text-sm text-green-700">Auto-import from directory</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-purple-50 border-purple-200">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Rocket className="h-4 w-4 text-purple-600" />
-              <span className="font-medium text-purple-900">One-Click Deploy</span>
-            </div>
-            <p className="text-sm text-purple-700">Push to all users instantly</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-orange-50 border-orange-200">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Building2 className="h-4 w-4 text-orange-600" />
-              <span className="font-medium text-orange-900">Multi-Tenant</span>
-            </div>
-            <p className="text-sm text-orange-700">MSP client management</p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="mb-6 bg-blue-50 border-blue-200">
+        <CardContent className="pt-4">
+          <h3 className="font-semibold text-blue-900 mb-2">Quick Links</h3>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/signup" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Sign Up <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/login" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Log In <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/integrations" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Integrations <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/team" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Team <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/templates" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Templates <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/deployments" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Deployments <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/my-profile" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              My Profile <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/settings" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Settings <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/clients" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Clients (MSP) <ExternalLink className="h-3 w-3" />
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="space-y-4">
         {guideSections.map((section) => (
@@ -488,7 +598,6 @@ export default function GuidePage() {
               </p>
               <div className="flex gap-2">
                 <Badge variant="secondary">support@siggly.io</Badge>
-                <Badge variant="secondary">Help Center: /help</Badge>
               </div>
             </div>
           </div>
