@@ -32,6 +32,16 @@ const MspContext = createContext<MspContextState>({
 });
 
 const STORAGE_KEY = 'msp_client_context';
+const COOKIE_KEY = 'msp_client_org';
+
+// Helper to set cookie (accessible by server components)
+function setMspCookie(clientId: string | null) {
+  if (clientId) {
+    document.cookie = `${COOKIE_KEY}=${clientId}; path=/; max-age=86400; SameSite=Lax`;
+  } else {
+    document.cookie = `${COOKIE_KEY}=; path=/; max-age=0`;
+  }
+}
 
 export function MspContextProvider({ children }: { children: ReactNode }) {
   const [isMspOrg, setIsMspOrg] = useState(false);
@@ -89,12 +99,19 @@ export function MspContextProvider({ children }: { children: ReactNode }) {
           const validClient = (clients || []).find(c => c.id === data.id);
           if (validClient) {
             setCurrentClientOrg(validClient);
+            // Sync cookie with localStorage
+            setMspCookie(validClient.id);
           } else {
             localStorage.removeItem(STORAGE_KEY);
+            setMspCookie(null);
           }
         } catch {
           localStorage.removeItem(STORAGE_KEY);
+          setMspCookie(null);
         }
+      } else {
+        // Clear cookie if no localStorage context
+        setMspCookie(null);
       }
     }
 
@@ -125,11 +142,13 @@ export function MspContextProvider({ children }: { children: ReactNode }) {
 
   const switchToClient = (client: ClientOrgData) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(client));
+    setMspCookie(client.id);
     setCurrentClientOrg(client);
   };
 
   const switchToMspView = () => {
     localStorage.removeItem(STORAGE_KEY);
+    setMspCookie(null);
     setCurrentClientOrg(null);
   };
 

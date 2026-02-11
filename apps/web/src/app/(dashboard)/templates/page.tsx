@@ -10,6 +10,7 @@ import { SignaturePreview } from '@/components/templates/preview';
 import type { SignatureBlock } from '@/components/templates/types';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import { LimitGate } from '@/components/billing';
+import { useMspContext } from '@/hooks/use-msp-context';
 
 interface Template {
   id: string;
@@ -29,10 +30,11 @@ export default function TemplatesPage() {
   const { plan, usage, limits, refresh } = useSubscription();
   const devBypass = usePayGatesBypass();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const { currentClientOrg } = useMspContext();
 
   useEffect(() => {
     loadTemplates();
-  }, []);
+  }, [currentClientOrg]); // Reload when MSP context changes
 
   const loadTemplates = async () => {
     const supabase = createClient();
@@ -55,11 +57,14 @@ export default function TemplatesPage() {
       return;
     }
 
-    // Load templates - ONLY for current organization
+    // Use MSP client org if viewing a client, otherwise use user's own org
+    const effectiveOrgId = currentClientOrg?.id || currentUser.organization_id;
+
+    // Load templates - ONLY for effective organization
     const { data, error } = await supabase
       .from('signature_templates')
       .select('*')
-      .eq('organization_id', currentUser.organization_id)
+      .eq('organization_id', effectiveOrgId)
       .order('created_at', { ascending: false });
 
     if (!error && data) {

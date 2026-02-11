@@ -39,14 +39,42 @@ interface Client {
   userCount: number;
 }
 
+interface ClientBilling {
+  id: string;
+  name: string;
+  domain: string | null;
+  userCount: number;
+  plan: string;
+  status: string;
+  monthlyAmount: number;
+  nextBillingDate: string | null;
+}
+
+interface BillingSummary {
+  partnerTier: string | null;
+  discountPercent: number;
+  totalClients: number;
+  totalUsers: number;
+  totalMonthlyRevenue: number;
+  partnerMargin: number;
+  clients: ClientBilling[];
+}
+
+type TabType = 'clients' | 'billing';
+
 export default function ClientsPage() {
   const router = useRouter();
   const { switchToClient, refreshClients } = useMspContext();
+  const [activeTab, setActiveTab] = useState<TabType>('clients');
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState<Client[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isNotMsp, setIsNotMsp] = useState(false);
+  
+  // Billing state
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingSummary, setBillingSummary] = useState<BillingSummary | null>(null);
   
   // Add client modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -64,6 +92,12 @@ export default function ClientsPage() {
   useEffect(() => {
     loadClients();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'billing' && !billingSummary && !billingLoading) {
+      loadBilling();
+    }
+  }, [activeTab]);
 
   const loadClients = async () => {
     try {
@@ -84,6 +118,22 @@ export default function ClientsPage() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadBilling = async () => {
+    setBillingLoading(true);
+    try {
+      const response = await fetch('/api/msp/billing');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setBillingSummary(data);
+      }
+    } catch (err: any) {
+      console.error('Failed to load billing:', err);
+    } finally {
+      setBillingLoading(false);
     }
   };
 
@@ -166,31 +216,74 @@ export default function ClientsPage() {
     );
   }
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  const formatPlanName = (plan: string) => {
+    return plan.charAt(0).toUpperCase() + plan.slice(1);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader 
         title="Client Management" 
         description="Manage your MSP client organizations"
         action={
-          <Button onClick={() => setShowAddModal(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Client
-          </Button>
+          activeTab === 'clients' ? (
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Client
+            </Button>
+          ) : undefined
         }
       />
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search clients..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
-        />
+      {/* Tabs */}
+      <div className="flex gap-1 border-b">
+        <button
+          onClick={() => setActiveTab('clients')}
+          className={cn(
+            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+            activeTab === 'clients'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <Building2 className="h-4 w-4 inline mr-2" />
+          Clients
+        </button>
+        <button
+          onClick={() => setActiveTab('billing')}
+          className={cn(
+            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+            activeTab === 'billing'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          )}
+        >
+          <CreditCard className="h-4 w-4 inline mr-2" />
+          Billing Overview
+        </button>
       </div>
 
-      {/* Stats */}
+      {activeTab === 'clients' && (
+        <>
+          {/* Search */}
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search clients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
@@ -311,6 +404,182 @@ export default function ClientsPage() {
             </Card>
           ))}
         </div>
+      )}
+        </>
+      )}
+
+      {/* Billing Tab */}
+      {activeTab === 'billing' && (
+        <>
+          {billingLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : billingSummary ? (
+            <>
+              {/* Partner Tier Banner */}
+              {billingSummary.partnerTier && (
+                <Card className="bg-gradient-to-r from-violet-500 to-purple-600 text-white">
+                  <CardContent className="py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Percent className="h-8 w-8" />
+                        <div>
+                          <p className="font-semibold text-lg">
+                            {billingSummary.partnerTier.charAt(0).toUpperCase() + billingSummary.partnerTier.slice(1)} Partner
+                          </p>
+                          <p className="text-white/80 text-sm">
+                            {billingSummary.discountPercent}% margin on all client subscriptions
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold">{formatCurrency(billingSummary.partnerMargin)}</p>
+                        <p className="text-white/80 text-sm">Monthly Margin</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Billing Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-violet-100 rounded-lg dark:bg-violet-900/30">
+                        <Building2 className="h-6 w-6 text-violet-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{billingSummary.totalClients}</p>
+                        <p className="text-sm text-muted-foreground">Total Clients</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-blue-100 rounded-lg dark:bg-blue-900/30">
+                        <Users className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{billingSummary.totalUsers}</p>
+                        <p className="text-sm text-muted-foreground">Total Users</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-green-100 rounded-lg dark:bg-green-900/30">
+                        <DollarSign className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{formatCurrency(billingSummary.totalMonthlyRevenue)}</p>
+                        <p className="text-sm text-muted-foreground">Monthly Revenue</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-amber-100 rounded-lg dark:bg-amber-900/30">
+                        <TrendingUp className="h-6 w-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{formatCurrency(billingSummary.partnerMargin)}</p>
+                        <p className="text-sm text-muted-foreground">Your Margin</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Client Billing Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Client Subscriptions</CardTitle>
+                  <CardDescription>Billing status for all your managed clients</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {billingSummary.clients.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>No clients with active subscriptions yet.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b text-left">
+                            <th className="pb-3 font-medium">Client</th>
+                            <th className="pb-3 font-medium">Users</th>
+                            <th className="pb-3 font-medium">Plan</th>
+                            <th className="pb-3 font-medium">Status</th>
+                            <th className="pb-3 font-medium text-right">Monthly</th>
+                            <th className="pb-3 font-medium text-right">Your Margin</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {billingSummary.clients.map((client) => (
+                            <tr key={client.id} className="border-b last:border-0">
+                              <td className="py-3">
+                                <div>
+                                  <p className="font-medium">{client.name}</p>
+                                  {client.domain && (
+                                    <p className="text-sm text-muted-foreground">{client.domain}</p>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-3">{client.userCount}</td>
+                              <td className="py-3">
+                                <Badge variant={client.plan === 'free' ? 'secondary' : 'default'}>
+                                  {formatPlanName(client.plan)}
+                                </Badge>
+                              </td>
+                              <td className="py-3">
+                                <Badge variant={client.status === 'active' ? 'outline' : 'secondary'}>
+                                  {client.status}
+                                </Badge>
+                              </td>
+                              <td className="py-3 text-right">{formatCurrency(client.monthlyAmount)}</td>
+                              <td className="py-3 text-right font-medium text-green-600">
+                                {formatCurrency(client.monthlyAmount * (billingSummary.discountPercent / 100))}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot>
+                          <tr className="border-t-2">
+                            <td className="pt-3 font-semibold">Total</td>
+                            <td className="pt-3 font-semibold">{billingSummary.totalUsers}</td>
+                            <td className="pt-3"></td>
+                            <td className="pt-3"></td>
+                            <td className="pt-3 text-right font-semibold">{formatCurrency(billingSummary.totalMonthlyRevenue)}</td>
+                            <td className="pt-3 text-right font-semibold text-green-600">{formatCurrency(billingSummary.partnerMargin)}</td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <CreditCard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Unable to load billing information.</p>
+                <Button variant="outline" className="mt-4" onClick={loadBilling}>
+                  Try Again
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
 
       {/* Add Client Modal */}
