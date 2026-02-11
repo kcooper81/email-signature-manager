@@ -1,4 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
+
+const MSP_COOKIE_KEY = 'msp_client_org';
 
 interface EffectiveOrgResult {
   organizationId: string;
@@ -9,15 +12,26 @@ interface EffectiveOrgResult {
 }
 
 /**
+ * Get MSP client org ID from cookies (set by client-side context switching).
+ */
+export async function getMspClientOrgFromCookies(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get(MSP_COOKIE_KEY)?.value || null;
+}
+
+/**
  * Get the effective organization ID for the current request.
- * If an MSP user is viewing a client org (via header), returns the client org ID.
+ * If an MSP user is viewing a client org (via cookie or header), returns the client org ID.
  * Otherwise returns the user's own organization ID.
  * 
  * Also validates that the user has access to the requested client org.
  */
 export async function getEffectiveOrg(
-  clientOrgIdFromHeader?: string | null
+  clientOrgIdOverride?: string | null
 ): Promise<EffectiveOrgResult | null> {
+  // Check cookie first, then use override if provided
+  const clientOrgIdFromCookie = await getMspClientOrgFromCookies();
+  const clientOrgId = clientOrgIdOverride ?? clientOrgIdFromCookie;
   const supabase = await createClient();
   
   const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -37,7 +51,7 @@ export async function getEffectiveOrg(
   }
 
   // If no client org requested, return user's own org
-  if (!clientOrgIdFromHeader) {
+  if (!clientOrgId) {
     return {
       organizationId: userData.organization_id,
       userId: userData.id,
@@ -63,7 +77,7 @@ export async function getEffectiveOrg(
   const { data: clientOrg } = await supabase
     .from('organizations')
     .select('id, parent_organization_id, organization_type')
-    .eq('id', clientOrgIdFromHeader)
+    .eq('id', clientOrgId)
     .single();
 
   if (!clientOrg) {
@@ -82,7 +96,7 @@ export async function getEffectiveOrg(
 
   // User has access - return client org context
   return {
-    organizationId: clientOrgIdFromHeader,
+    organizationId: clientOrgId,
     userId: userData.id,
     userRole: 'admin', // MSP users act as admin in client orgs
     isMspContext: true,

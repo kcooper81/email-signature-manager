@@ -27,6 +27,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
+import { useMspContext } from '@/hooks/use-msp-context';
 
 interface TeamMember {
   id: string;
@@ -170,11 +171,12 @@ export default function TeamMembersPage() {
   
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { currentClientOrg } = useMspContext();
 
   useEffect(() => {
     loadData();
     loadTemplates();
-  }, []);
+  }, [currentClientOrg]); // Reload when MSP context changes
 
   const loadData = async () => {
     const supabase = createClient();
@@ -197,11 +199,14 @@ export default function TeamMembersPage() {
       return;
     }
 
-    // Load members - ONLY for current organization
+    // Use MSP client org if viewing a client, otherwise use user's own org
+    const effectiveOrgId = currentClientOrg?.id || currentUser.organization_id;
+
+    // Load members - ONLY for effective organization
     const { data: membersData } = await supabase
       .from('users')
       .select('*')
-      .eq('organization_id', currentUser.organization_id)
+      .eq('organization_id', effectiveOrgId)
       .order('email');
     
     if (membersData) {
@@ -213,11 +218,11 @@ export default function TeamMembersPage() {
       }
     }
 
-    // Load connections - ONLY for current organization
+    // Load connections - ONLY for effective organization
     const { data: connectionsData } = await supabase
       .from('provider_connections')
       .select('provider, is_active')
-      .eq('organization_id', currentUser.organization_id);
+      .eq('organization_id', effectiveOrgId);
     
     if (connectionsData) setConnections(connectionsData);
 
@@ -225,7 +230,7 @@ export default function TeamMembersPage() {
     const { data: orgSettingsData } = await supabase
       .from('organization_settings')
       .select('google_calendar_enabled')
-      .eq('organization_id', currentUser.organization_id)
+      .eq('organization_id', effectiveOrgId)
       .single();
     
     if (orgSettingsData) {
