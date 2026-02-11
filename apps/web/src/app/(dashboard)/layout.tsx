@@ -8,6 +8,9 @@ import { BrandingProviderWrapper } from '@/components/providers/branding-provide
 import { DevBypassIndicator, DevBypassToggle } from '@/components/billing';
 import { ImpersonationBanner } from '@/components/admin/impersonation-banner';
 import { ImpersonationProvider } from '@/hooks/use-impersonation';
+import { PoweredByFooter } from '@/components/dashboard/powered-by-footer';
+import { MspContextProvider } from '@/hooks/use-msp-context';
+import { MspContextBanner } from '@/components/msp/msp-context-banner';
 
 export default async function DashboardLayout({
   children,
@@ -39,20 +42,24 @@ export default async function DashboardLayout({
   return (
     <EnsureUserProvider>
       <ImpersonationProvider>
-        <SubscriptionProvider>
-          <BrandingProviderWrapper>
-            <ImpersonationBanner />
-            <div className="min-h-screen bg-background">
-              <DashboardHeader user={user} isAdmin={isSuperAdmin} />
-              <div className="flex">
-                <DashboardNav />
-                <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
+        <MspContextProvider>
+          <SubscriptionProvider>
+            <BrandingProviderWrapper>
+              <ImpersonationBanner />
+              <MspContextBanner />
+              <div className="min-h-screen bg-background flex flex-col">
+                <DashboardHeader user={user} isAdmin={isSuperAdmin} />
+                <div className="flex flex-1">
+                  <DashboardNav />
+                  <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
+                </div>
+                <PoweredByFooter />
+                <DevBypassIndicator />
+                <DevBypassToggle />
               </div>
-              <DevBypassIndicator />
-              <DevBypassToggle />
-            </div>
-          </BrandingProviderWrapper>
-        </SubscriptionProvider>
+            </BrandingProviderWrapper>
+          </SubscriptionProvider>
+        </MspContextProvider>
       </ImpersonationProvider>
     </EnsureUserProvider>
   );

@@ -70,22 +70,31 @@ function hexToHsl(hex: string): string {
 }
 
 // Generate CSS variables from branding
+// These override the default Tailwind CSS variables used throughout the app
 function generateCssVariables(branding: OrganizationBranding): Record<string, string> {
   const vars: Record<string, string> = {};
 
   if (branding.primaryColor) {
+    // Set both custom brand variables and override Tailwind's --primary
     vars['--brand-primary'] = branding.primaryColor;
     vars['--brand-primary-hsl'] = hexToHsl(branding.primaryColor);
+    // Override Tailwind's primary color (used by buttons, links, etc.)
+    vars['--primary'] = hexToHsl(branding.primaryColor);
+    vars['--ring'] = hexToHsl(branding.primaryColor);
   }
 
   if (branding.secondaryColor) {
     vars['--brand-secondary'] = branding.secondaryColor;
     vars['--brand-secondary-hsl'] = hexToHsl(branding.secondaryColor);
+    // Override Tailwind's secondary color
+    vars['--secondary'] = hexToHsl(branding.secondaryColor);
   }
 
   if (branding.accentColor) {
     vars['--brand-accent'] = branding.accentColor;
     vars['--brand-accent-hsl'] = hexToHsl(branding.accentColor);
+    // Override Tailwind's accent color
+    vars['--accent'] = hexToHsl(branding.accentColor);
   }
 
   return vars;

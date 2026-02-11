@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -52,6 +52,13 @@ export default function BrandingSettingsPage() {
       if (!response.ok) throw new Error('Failed to fetch branding settings');
       
       const data = await response.json();
+      
+      // Redirect non-MSP orgs - branding is only for MSP partners
+      if (data.organizationType !== 'msp') {
+        router.push('/settings');
+        return;
+      }
+      
       setFormData({
         ...formData,
         ...data.branding,

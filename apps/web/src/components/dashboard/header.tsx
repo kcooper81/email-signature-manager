@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { LogOut, Settings, User, Shield } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { useBranding } from '@/lib/branding/branding-context';
 
 interface DashboardHeaderProps {
   user: SupabaseUser;
@@ -17,6 +18,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { branding, mspOrgId } = useBranding();
 
   const handleSignOut = async () => {
     setLoading(true);
@@ -37,16 +39,33 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900 backdrop-blur-sm shadow-md">
       <div className="flex h-14 items-center justify-between px-3 sm:px-4 md:px-6">
-        {/* Logo */}
+        {/* Logo - uses custom branding for MSP white-label */}
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Image 
-            src="/siggly-logo.png" 
-            alt="Siggly Logo" 
-            width={32} 
-            height={32}
-            className="h-7 w-auto sm:h-8"
-          />
-          <span className="font-semibold text-base sm:text-lg text-white">Siggly</span>
+          {mspOrgId && branding.logoUrl ? (
+            <>
+              <img 
+                src={branding.logoUrl} 
+                alt={branding.companyName || 'Logo'} 
+                className="h-7 w-auto sm:h-8 object-contain"
+              />
+              {branding.companyName && (
+                <span className="font-semibold text-base sm:text-lg text-white">
+                  {branding.companyName}
+                </span>
+              )}
+            </>
+          ) : (
+            <>
+              <Image 
+                src="/siggly-logo.png" 
+                alt="Siggly Logo" 
+                width={32} 
+                height={32}
+                className="h-7 w-auto sm:h-8"
+              />
+              <span className="font-semibold text-base sm:text-lg text-white">Siggly</span>
+            </>
+          )}
         </Link>
 
         {/* Right side */}

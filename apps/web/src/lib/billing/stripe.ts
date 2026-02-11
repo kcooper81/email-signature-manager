@@ -32,6 +32,7 @@ export async function createCheckoutSession({
   successUrl,
   cancelUrl,
   trialDays,
+  couponId,
 }: {
   customerId: string;
   planId: 'starter' | 'professional';
@@ -39,6 +40,7 @@ export async function createCheckoutSession({
   successUrl: string;
   cancelUrl: string;
   trialDays?: number;
+  couponId?: string;
 }) {
   // Build line items based on plan
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
@@ -78,7 +80,10 @@ export async function createCheckoutSession({
       : undefined,
     success_url: successUrl,
     cancel_url: cancelUrl,
-    allow_promotion_codes: true,
+    // Apply partner coupon if provided, otherwise allow manual promo codes
+    ...(couponId
+      ? { discounts: [{ coupon: couponId }] }
+      : { allow_promotion_codes: true }),
   });
 }
 
