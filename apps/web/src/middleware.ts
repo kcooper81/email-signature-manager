@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 import { createClient } from '@supabase/supabase-js';
 
-const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/partners/apply'];
+const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/partners/apply', '/guide'];
 const authRoutes = ['/login', '/signup', '/forgot-password'];
 
 // Reserved subdomains that cannot be used by MSPs
