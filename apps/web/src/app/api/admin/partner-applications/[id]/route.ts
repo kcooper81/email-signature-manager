@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { stripe } from '@/lib/billing/stripe';
+import { getOrCreatePartnerCoupon, type PartnerTier } from '@/lib/billing/partner-coupons';
 
 // Use service role for admin operations
 const supabaseAdmin = createAdminClient(
@@ -181,6 +183,25 @@ async function handleApprove(
       partner_tier: partnerTier,
     },
   });
+
+  // Ensure partner coupon exists in Stripe for this tier
+  // The coupon will be applied when the partner subscribes
+  try {
+    await getOrCreatePartnerCoupon(stripe, partnerTier as PartnerTier);
+  } catch (stripeError: any) {
+    // Log but don't fail - coupon can be created later
+    console.error('Failed to create partner coupon:', stripeError.message);
+  }
+
+  // Store the partner tier coupon ID in the org for later use during checkout
+  await supabaseAdmin
+    .from('organizations')
+    .update({
+      metadata: {
+        partner_coupon_tier: partnerTier,
+      },
+    })
+    .eq('id', newOrg.id);
 
   // TODO: Send approval email to partner with:
   // - Login instructions

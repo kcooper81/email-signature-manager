@@ -43,6 +43,15 @@ export default function LoginPage() {
         return;
       }
 
+      // Get the session to ensure cookies are set
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setError('Failed to establish session');
+        setLoading(false);
+        return;
+      }
+
       // Redirect to dashboard - the dashboard layout will handle role-based redirects
       window.location.href = '/dashboard';
     } catch (err) {
