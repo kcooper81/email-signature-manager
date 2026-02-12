@@ -53,6 +53,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Auto-confirm the user's email since they were invited
+    const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
+      authId,
+      { email_confirm: true }
+    );
+
+    if (confirmError) {
+      return NextResponse.json(
+        { error: 'Failed to confirm user email' },
+        { status: 500 }
+      );
+    }
+
     // Update user record with auth_id using service role (bypasses RLS)
     const { error: updateError } = await supabaseAdmin
       .from('users')

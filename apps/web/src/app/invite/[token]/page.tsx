@@ -96,8 +96,25 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         throw new Error(data.error || 'Failed to accept invite');
       }
 
-      // Redirect to employee profile portal
-      router.push('/my-profile?welcome=true');
+      // Refresh the session to get the confirmed email status
+      await supabase.auth.refreshSession();
+
+      // Wait a moment for the database update to propagate
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Verify the user record exists and session is established
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, role')
+        .eq('auth_id', authData.user.id)
+        .maybeSingle();
+
+      if (userError || !userData) {
+        throw new Error('Account created but profile not found. Please contact support.');
+      }
+
+      // Use window.location for a hard redirect to ensure fresh session
+      window.location.href = '/my-profile?welcome=true';
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
       setCreating(false);
