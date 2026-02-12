@@ -935,7 +935,7 @@ export default function TeamMembersPage() {
 
           {/* Sticky selection action bar */}
           {selectedMembers.size > 0 && (
-            <div className="sticky top-0 z-10 bg-violet-50 border border-violet-200 rounded-lg p-3 -mx-2 shadow-sm">
+            <div className="sticky top-16 z-20 bg-violet-50 border border-violet-200 rounded-lg p-3 -mx-2 shadow-md backdrop-blur-sm bg-violet-50/95">
               <div className="flex items-center justify-between gap-4">
                 <span className="text-sm font-medium text-violet-800">
                   {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected

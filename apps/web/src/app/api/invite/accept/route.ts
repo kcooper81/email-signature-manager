@@ -10,8 +10,10 @@ const supabaseAdmin = createClient(
 export async function POST(request: NextRequest) {
   try {
     const { userId, email, password, token } = await request.json();
+    console.log('Invite accept request:', { userId, email, token });
 
     if (!userId || !email || !password || !token) {
+      console.error('Missing required fields:', { userId: !!userId, email: !!email, password: !!password, token: !!token });
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -19,6 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the invite token is valid and matches the user
+    console.log('Verifying invite token...');
     const { data: invite, error: inviteError } = await supabaseAdmin
       .from('user_invites')
       .select('id, user_id, expires_at, accepted_at')
@@ -26,11 +29,13 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (inviteError || !invite) {
+      console.error('Invalid invite token:', inviteError);
       return NextResponse.json(
         { error: 'Invalid invite token' },
         { status: 400 }
       );
     }
+    console.log('Invite found:', { inviteId: invite.id, userId: invite.user_id });
 
     if (invite.accepted_at) {
       return NextResponse.json(
@@ -54,15 +59,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if an auth user already exists with this email (from previous invite)
+    console.log('Checking for existing auth user...');
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const existingUser = existingUsers?.users.find(u => u.email === email);
     
     if (existingUser) {
-      // Delete the old auth account
+      console.log('Found existing auth user, deleting:', existingUser.id);
       await supabaseAdmin.auth.admin.deleteUser(existingUser.id);
     }
 
     // Create auth user with admin API (auto-confirmed since they were invited)
+    console.log('Creating new auth user...');
     const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password: password,
@@ -76,8 +83,10 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+    console.log('Auth user created:', authData.user.id);
 
     // Update user record with auth_id using service role (bypasses RLS)
+    console.log('Updating user record with auth_id...');
     const { error: updateError } = await supabaseAdmin
       .from('users')
       .update({ auth_id: authData.user.id })
@@ -90,15 +99,19 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+    console.log('User record updated successfully');
 
     // Mark invite as accepted
+    console.log('Marking invite as accepted...');
     await supabaseAdmin
       .from('user_invites')
       .update({ accepted_at: new Date().toISOString() })
       .eq('token', token);
 
+    console.log('Invite acceptance complete');
     return NextResponse.json({ success: true, authId: authData.user.id });
   } catch (error: any) {
+    console.error('Unexpected error in invite accept:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to accept invite' },
       { status: 500 }
