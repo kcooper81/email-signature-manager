@@ -933,44 +933,6 @@ export default function TeamMembersPage() {
             </div>
           </div>
 
-          {/* Sticky selection action bar */}
-          {selectedMembers.size > 0 && (
-            <div className="sticky top-16 z-20 bg-violet-50 border border-violet-200 rounded-lg p-3 -mx-2 shadow-md backdrop-blur-sm bg-violet-50/95">
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-sm font-medium text-violet-800">
-                  {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
-                </span>
-                <div className="flex gap-2">
-                  <Button onClick={inviteMembers} variant="outline" size="sm" disabled={inviting}>
-                    {inviting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Invite to Self-Manage
-                      </>
-                    )}
-                  </Button>
-                  <Button onClick={() => setShowShareModal(true)} size="sm">
-                    <FileSignature className="mr-2 h-4 w-4" />
-                    Share Signatures
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedMembers(new Set())}
-                    className="text-violet-600 hover:text-violet-800"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Bulk actions */}
           {members.length > 0 && (
             <div className="flex items-center gap-2 pb-2 border-b">
@@ -1048,7 +1010,44 @@ export default function TeamMembersPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="overflow-hidden">
+        <CardContent className="overflow-hidden relative">
+          {/* Sticky selection action bar */}
+          {selectedMembers.size > 0 && (
+            <div className="sticky top-16 z-20 bg-violet-50 border border-violet-200 rounded-lg p-3 mb-4 shadow-md backdrop-blur-sm bg-violet-50/95">
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-sm font-medium text-violet-800">
+                  {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
+                </span>
+                <div className="flex gap-2">
+                  <Button onClick={inviteMembers} variant="outline" size="sm" disabled={inviting}>
+                    {inviting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Invite to Self-Manage
+                      </>
+                    )}
+                  </Button>
+                  <Button onClick={() => setShowShareModal(true)} size="sm">
+                    <FileSignature className="mr-2 h-4 w-4" />
+                    Share Signatures
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedMembers(new Set())}
+                    className="text-violet-600 hover:text-violet-800"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
           {members.length === 0 ? (
             <EmptyState
               icon={UsersIcon}

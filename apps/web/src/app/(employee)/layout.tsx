@@ -15,13 +15,18 @@ export default async function EmployeeLayout({
   }
 
   // Get user data including role
-  const { data: userData } = await supabase
+  const { data: userData, error: userError } = await supabase
     .from('users')
     .select('id, email, first_name, last_name, role, organization_id, organizations(name)')
     .eq('auth_id', user.id)
     .single();
 
-  if (!userData) {
+  if (userError || !userData) {
+    console.error('Failed to fetch user data in employee layout:', {
+      auth_id: user.id,
+      error: userError,
+      hasData: !!userData
+    });
     // User exists in auth but not in users table - this shouldn't happen
     // but if it does, show a helpful error instead of redirect loop
     redirect('/login?error=user_not_found');
