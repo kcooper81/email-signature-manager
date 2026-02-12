@@ -96,8 +96,14 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         throw new Error('Account created but failed to sign in. Please try logging in.');
       }
 
-      // Wait a moment for the session to establish
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Ensure session is fully established
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Failed to establish session. Please try logging in.');
+      }
+
+      // Wait for session to propagate
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Use window.location for a hard redirect to ensure fresh session
       window.location.href = '/my-profile?welcome=true';
