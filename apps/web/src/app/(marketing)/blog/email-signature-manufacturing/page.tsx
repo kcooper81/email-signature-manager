@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Manufacturing Company Email Signatures | Siggly',
   description: 'Email signature best practices for manufacturing companies. Professional signatures for sales, engineering, and plant management.',
   keywords: ['manufacturing email signature', 'industrial email signature', 'factory email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-manufacturing',
+  },
 };
 
 export default function BlogPost() {

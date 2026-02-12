@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Finance Department Email Signatures | Siggly',
   description: 'Email signature best practices for finance teams. Compliance, security, and professional signatures for accounting and finance.',
   keywords: ['finance email signature', 'accounting department signature', 'CFO email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-finance-department',
+  },
 };
 
 export default function BlogPost() {

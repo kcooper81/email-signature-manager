@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Security: Protect Your Brand | Siggly',
   description: 'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
   keywords: ['email signature security', 'signature spoofing', 'email brand protection'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-security',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Adding Pronouns to Email Signatures: Best Practices | Siggly',
   description: 'How to add pronouns to your email signature professionally. Formatting tips and considerations for inclusive signatures.',
   keywords: ['pronouns in email signature', 'email signature pronouns', 'inclusive email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-pronouns',
+  },
 };
 
 export default function BlogPost() {

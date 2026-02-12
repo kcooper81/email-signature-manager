@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Nonprofit Email Signatures: Boost Donations & Awareness | Siggly',
   description: 'Create impactful email signatures for nonprofits. Include donation links, mission statements, and build supporter engagement.',
   keywords: ['nonprofit email signature', 'charity email signature', 'ngo email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/nonprofit-email-signature',
+  },
 };
 
 export default function BlogPost() {

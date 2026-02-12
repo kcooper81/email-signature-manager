@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures for Remote Teams: Best Practices | Siggly',
   description: 'Manage email signatures for distributed and remote teams. Learn deployment strategies, consistency tips, and tools for remote workforce.',
   keywords: ['remote team email signature', 'distributed team signatures', 'work from home email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/remote-team-email-signatures',
+  },
 };
 
 export default function BlogPost() {

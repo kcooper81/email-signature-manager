@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Accounting Firm Email Signatures: CPA Credential Guide | Siggly',
   description: 'Create professional email signatures for CPAs and accounting firms. Include credentials, firm info, and compliance elements.',
   keywords: ['cpa email signature', 'accounting firm signature', 'accountant email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/accounting-firm-email-signature',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures in Dark Mode: Design Tips | Siggly',
   description: 'Design email signatures that work in dark mode. Tips for logos, colors, and images that look good on both light and dark backgrounds.',
   keywords: ['email signature dark mode', 'dark mode email', 'signature dark theme'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-dark-mode',
+  },
 };
 
 export default function BlogPost() {

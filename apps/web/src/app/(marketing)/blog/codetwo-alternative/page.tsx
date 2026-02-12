@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Best CodeTwo Alternatives 2026: Compare Features & Pricing | Siggly',
   description: 'Looking for a CodeTwo alternative? Compare email signature tools with Google Workspace support, easier pricing, and modern features.',
   keywords: ['codetwo alternative', 'codetwo competitor', 'codetwo vs', 'email signature software'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/codetwo-alternative',
+  },
 };
 
 export default function BlogPost() {

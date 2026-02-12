@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Social Media Icons in Email Signatures: Best Practices | Siggly',
   description: 'Add social media icons to your email signature the right way. Learn which platforms to include, icon sizing, and linking best practices.',
   keywords: ['email signature social icons', 'social media email signature', 'linkedin email signature', 'email signature icons'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-social-icons',
+  },
 };
 
 export default function BlogPost() {

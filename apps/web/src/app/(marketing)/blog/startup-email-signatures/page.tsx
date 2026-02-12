@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Startup Email Signatures: Build Credibility on a Budget | Siggly',
   description: 'Create professional email signatures for your startup. Budget-friendly tips to look established and build trust with investors and customers.',
   keywords: ['startup email signature', 'tech startup signature', 'email signature early stage'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/startup-email-signatures',
+  },
 };
 
 export default function BlogPost() {

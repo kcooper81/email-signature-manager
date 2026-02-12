@@ -98,6 +98,7 @@ export default function PartnerApplicationsPage() {
 
   // Rejection form
   const [rejectionReason, setRejectionReason] = useState('');
+  const [sendRejectionEmail, setSendRejectionEmail] = useState(true);
 
   useEffect(() => {
     fetchApplications();
@@ -231,6 +232,7 @@ export default function PartnerApplicationsPage() {
         body: JSON.stringify({
           action: 'reject',
           reviewNotes: rejectionReason,
+          sendNotification: sendRejectionEmail,
         }),
       });
 
@@ -606,9 +608,21 @@ export default function PartnerApplicationsPage() {
               id="rejectionReason"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Reason for rejection (stored internally, not sent to applicant)..."
+              placeholder="Reason for rejection (optional, stored internally)"
               rows={4}
             />
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              id="sendRejectionEmail"
+              checked={sendRejectionEmail}
+              onChange={(e) => setSendRejectionEmail(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+            <Label htmlFor="sendRejectionEmail" className="text-sm font-normal">
+              Send rejection notification email to applicant
+            </Label>
           </div>
         </div>
         <ModalFooter>

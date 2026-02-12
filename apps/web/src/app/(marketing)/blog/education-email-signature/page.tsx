@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Education Email Signatures: Teachers & Administrators | Siggly',
   description: 'Create professional email signatures for educators, teachers, and school administrators. Include credentials and contact info appropriately.',
   keywords: ['teacher email signature', 'education email signature', 'school administrator signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/education-email-signature',
+  },
 };
 
 export default function BlogPost() {

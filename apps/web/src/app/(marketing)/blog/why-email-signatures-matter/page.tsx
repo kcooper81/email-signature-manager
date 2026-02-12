@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Why Email Signatures Matter More Than You Think | Siggly Blog',
   description: 'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.',
+  alternates: {
+    canonical: 'https://siggly.io/blog/why-email-signatures-matter',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Mobile Email Signature Guide: iOS & Android Setup | Siggly',
   description: 'Set up professional email signatures on iPhone and Android. Learn mobile-specific best practices for Gmail, Outlook, and Apple Mail apps.',
   keywords: ['mobile email signature', 'iphone email signature', 'android email signature', 'gmail mobile signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/mobile-email-signature-guide',
+  },
 };
 
 export default function BlogPost() {

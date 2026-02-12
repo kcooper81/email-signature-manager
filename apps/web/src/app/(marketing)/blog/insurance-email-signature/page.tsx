@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Insurance Agent Email Signatures: Compliance Guide | Siggly',
   description: 'Create compliant email signatures for insurance agents. Includes license numbers, carrier info, and regulatory requirements.',
   keywords: ['insurance agent email signature', 'insurance broker signature', 'insurance email compliance'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/insurance-email-signature',
+  },
 };
 
 export default function BlogPost() {

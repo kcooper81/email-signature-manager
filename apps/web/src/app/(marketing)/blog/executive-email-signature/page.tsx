@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Executive Email Signatures: CEO & C-Suite Guide | Siggly',
   description: 'Create executive email signatures that convey authority. Guidance for CEOs, C-suite executives, and senior leadership.',
   keywords: ['executive email signature', 'ceo email signature', 'c-suite signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/executive-email-signature',
+  },
 };
 
 export default function BlogPost() {

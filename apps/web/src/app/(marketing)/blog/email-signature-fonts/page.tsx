@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Fonts: Web-Safe Typography Guide | Siggly',
   description: 'Choose the right fonts for email signatures. Learn which fonts work across all email clients and how to use them effectively.',
   keywords: ['email signature font', 'web safe fonts email', 'signature typography'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-fonts',
+  },
 };
 
 export default function BlogPost() {

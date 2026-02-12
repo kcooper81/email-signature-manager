@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Directory Sync: Automate Updates | Siggly',
   description: 'Sync email signatures with your user directory. Automatically update signatures when employee info changes in AD or Google Directory.',
   keywords: ['email signature directory sync', 'active directory signature', 'auto update signatures'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-directory-sync',
+  },
 };
 
 export default function BlogPost() {

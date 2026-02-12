@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures in Crisis Communication | Siggly',
   description: 'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
   keywords: ['crisis communication email', 'emergency signature update', 'company crisis email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-crisis-communication',
+  },
 };
 
 export default function BlogPost() {

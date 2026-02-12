@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Freelancer Email Signatures: Stand Out Professionally | Siggly',
   description: 'Create professional email signatures as a freelancer. Build credibility with clients and showcase your services effectively.',
   keywords: ['freelancer email signature', 'freelance signature', 'independent contractor email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-for-freelancers',
+  },
 };
 
 export default function BlogPost() {

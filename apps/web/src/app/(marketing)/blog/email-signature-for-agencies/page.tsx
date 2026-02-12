@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures for Marketing Agencies: Client Management | Siggly',
   description: 'Manage email signatures for agency teams and clients. Learn multi-brand strategies and how agencies use signatures for client services.',
   keywords: ['agency email signature', 'marketing agency signature', 'email signature client management'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-for-agencies',
+  },
 };
 
 export default function BlogPost() {

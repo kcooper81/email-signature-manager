@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Professional Services Email Signatures | Siggly',
   description: 'Email signature best practices for professional services firms. Consultants, advisors, and service providers.',
   keywords: ['professional services signature', 'consultant email signature', 'advisor signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-professional-services',
+  },
 };
 
 export default function BlogPost() {

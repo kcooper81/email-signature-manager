@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Legal Requirements for Business Email Signatures | Siggly Blog',
   description: 'What your business email signatures legally need to include, by country and industry.',
+  alternates: {
+    canonical: 'https://siggly.io/blog/legal-requirements-email-signatures',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Engineering Department Email Signatures | Siggly',
   description: 'Email signature best practices for engineering and technical teams. Developer-friendly signatures that balance professionalism with tech culture.',
   keywords: ['engineering email signature', 'developer signature', 'tech team email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-engineering-department',
+  },
 };
 
 export default function BlogPost() {

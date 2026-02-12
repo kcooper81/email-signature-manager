@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Marketing: Measure ROI & Drive Results | Siggly',
   description: 'Turn email signatures into a marketing channel. Learn to measure ROI, add campaign banners, and track clicks from employee signatures.',
   keywords: ['email signature marketing', 'email signature ROI', 'signature banner campaigns', 'email signature analytics'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-marketing-roi',
+  },
 };
 
 export default function BlogPost() {

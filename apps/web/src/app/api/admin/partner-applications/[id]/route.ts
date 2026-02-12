@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { stripe } from '@/lib/billing/stripe';
 import { getOrCreatePartnerCoupon, type PartnerTier } from '@/lib/billing/partner-coupons';
+import { sendPartnerApprovalEmail, sendPartnerRejectionEmail } from '@/lib/email/resend';
 
 // Use service role for admin operations
 const supabaseAdmin = createAdminClient(
@@ -29,6 +30,7 @@ interface ApproveRequest {
 interface RejectRequest {
   action: 'reject';
   reviewNotes?: string;
+  sendNotification?: boolean;
 }
 
 type ActionRequest = ApproveRequest | RejectRequest;
@@ -80,7 +82,7 @@ export async function PATCH(
     if (body.action === 'approve') {
       return handleApprove(id, body, application, userData.id);
     } else if (body.action === 'reject') {
-      return handleReject(id, body, userData.id);
+      return handleReject(id, body, application, userData.id);
     } else {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
@@ -175,6 +177,59 @@ async function handleApprove(
     }
 
     finalOrgId = newOrg.id;
+
+    // Link the applicant's user account to the new organization
+    try {
+      const { data: existingUser } = await supabaseAdmin
+        .from('users')
+        .select('id, auth_id, organization_id')
+        .eq('email', application.contact_email.toLowerCase())
+        .single();
+
+      if (existingUser) {
+        // User exists - update their organization and role
+        await supabaseAdmin
+          .from('users')
+          .update({
+            organization_id: finalOrgId,
+            role: 'owner',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existingUser.id);
+      } else {
+        // No user record exists - create one and send invite
+        const nameParts = application.contact_name.split(' ');
+        const { data: newUser } = await supabaseAdmin
+          .from('users')
+          .insert({
+            email: application.contact_email.toLowerCase(),
+            first_name: nameParts[0] || null,
+            last_name: nameParts.slice(1).join(' ') || null,
+            organization_id: finalOrgId,
+            role: 'owner',
+          })
+          .select('id')
+          .single();
+
+        if (newUser) {
+          const inviteToken = crypto.randomUUID();
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + 14);
+
+          await supabaseAdmin
+            .from('user_invites')
+            .insert({
+              user_id: newUser.id,
+              email: application.contact_email.toLowerCase(),
+              token: inviteToken,
+              expires_at: expiresAt.toISOString(),
+              invited_by: finalOrgId,
+            });
+        }
+      }
+    } catch (linkError) {
+      console.error('Failed to link user to organization:', linkError);
+    }
   }
 
   // Update the application
@@ -234,10 +289,18 @@ async function handleApprove(
     })
     .eq('id', finalOrgId);
 
-  // TODO: Send approval email to partner with:
-  // - Login instructions
-  // - Subdomain URL
-  // - Next steps
+  // Send approval email to partner (non-blocking)
+  try {
+    await sendPartnerApprovalEmail({
+      to: application.contact_email,
+      contactName: application.contact_name,
+      companyName: application.company_name,
+      portalUrl: `https://${sanitizedSubdomain}.siggly.io`,
+      partnerTier,
+    });
+  } catch (emailError) {
+    console.error('Failed to send partner approval email:', emailError);
+  }
 
   return NextResponse.json({
     success: true,
@@ -251,9 +314,10 @@ async function handleApprove(
 async function handleReject(
   applicationId: string,
   body: RejectRequest,
+  application: any,
   reviewerId: string
 ) {
-  const { reviewNotes } = body;
+  const { reviewNotes, sendNotification } = body;
 
   const { error: updateError } = await supabaseAdmin
     .from('partner_applications')
@@ -273,7 +337,18 @@ async function handleReject(
     );
   }
 
-  // TODO: Optionally send rejection email
+  // Send rejection email if admin opted in (defaults to true)
+  if (sendNotification !== false) {
+    try {
+      await sendPartnerRejectionEmail({
+        to: application.contact_email,
+        contactName: application.contact_name,
+        companyName: application.company_name,
+      });
+    } catch (emailError) {
+      console.error('Failed to send partner rejection email:', emailError);
+    }
+  }
 
   return NextResponse.json({
     success: true,

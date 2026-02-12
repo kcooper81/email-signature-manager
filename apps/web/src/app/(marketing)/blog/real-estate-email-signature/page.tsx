@@ -4,9 +4,12 @@ import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata = {
-  title: 'Real Estate Email Signatures: Agent & Broker Guide | Siggly',
-  description: 'Create professional real estate email signatures with license numbers, designations, and Equal Housing logos. Complete guide for agents and brokers.',
+  title: 'Real Estate Email Signatures: Stand Out to Clients | Siggly',
+  description: 'Create professional real estate email signatures with property listings, virtual tour links, and trust-building elements for agents and brokers.',
   keywords: ['real estate email signature', 'realtor email signature', 'real estate agent signature', 'broker email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/real-estate-email-signature',
+  },
 };
 
 export default function BlogPost() {

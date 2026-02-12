@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Colors: Brand Color Best Practices | Siggly',
   description: 'Choose the right colors for email signatures. Learn about brand colors, contrast, and what works across all email clients.',
   keywords: ['email signature colors', 'signature color scheme', 'brand colors email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-colors',
+  },
 };
 
 export default function BlogPost() {

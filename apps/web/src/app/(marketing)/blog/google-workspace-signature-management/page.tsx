@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Managing Email Signatures in Google Workspace | Siggly Blog',
   description: 'A step-by-step guide to deploying consistent signatures across your entire Google Workspace organization.',
+  alternates: {
+    canonical: 'https://siggly.io/blog/google-workspace-signature-management',
+  },
 };
 
 export default function BlogPost() {

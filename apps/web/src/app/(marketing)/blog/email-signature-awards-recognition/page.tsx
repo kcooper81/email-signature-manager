@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Showcasing Awards in Email Signatures | Siggly',
   description: 'Display company awards and recognition in email signatures. Badges, certifications, and trust signals that build credibility.',
   keywords: ['awards email signature', 'recognition signature', 'badges email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-awards-recognition',
+  },
 };
 
 export default function BlogPost() {

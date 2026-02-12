@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Promoting Ebooks & Content Through Email Signatures | Siggly',
   description: 'Use email signatures to distribute content. Promote ebooks, whitepapers, guides, and other lead magnets effectively.',
   keywords: ['email signature ebook', 'content promotion signature', 'lead magnet email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-ebook-promotion',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Adding Social Proof to Email Signatures | Siggly',
   description: 'Include social proof in your email signatures. Awards, ratings, certifications, and trust signals that build credibility.',
   keywords: ['email signature social proof', 'trust signals email', 'signature awards badges'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-social-proof',
+  },
 };
 
 export default function BlogPost() {

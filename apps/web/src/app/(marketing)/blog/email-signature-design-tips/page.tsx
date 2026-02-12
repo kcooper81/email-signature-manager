@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: '10 Email Signature Design Tips for 2026 | Siggly Blog',
   description: 'Modern design principles to make your email signatures stand out while remaining professional.',
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-design-tips',
+  },
 };
 
 export default function BlogPost() {

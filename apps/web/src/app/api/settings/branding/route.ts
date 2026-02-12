@@ -31,7 +31,7 @@ export async function GET() {
     // Get organization branding
     const { data: org, error: orgError } = await supabase
       .from('organizations')
-      .select('branding, custom_subdomain, organization_type')
+      .select('branding, custom_subdomain, organization_type, partner_tier')
       .eq('id', userData.organization_id)
       .single();
 
@@ -43,6 +43,7 @@ export async function GET() {
       branding: org.branding || {},
       customSubdomain: org.custom_subdomain,
       organizationType: org.organization_type || 'standard',
+      partnerTier: org.partner_tier || null,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

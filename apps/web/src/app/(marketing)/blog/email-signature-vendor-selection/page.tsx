@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Choosing an Email Signature Vendor: Buyer Guide | Siggly',
   description: 'How to evaluate and select an email signature management vendor. RFP questions, feature comparison, and decision criteria.',
   keywords: ['email signature vendor', 'signature software selection', 'choose signature tool'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-vendor-selection',
+  },
 };
 
 export default function BlogPost() {

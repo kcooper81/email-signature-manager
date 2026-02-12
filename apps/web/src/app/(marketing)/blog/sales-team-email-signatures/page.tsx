@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Sales Team Email Signatures: Convert More Leads | Siggly',
   description: 'Create high-converting email signatures for sales teams. Includes meeting links, social proof, and CTA best practices for sales professionals.',
   keywords: ['sales email signature', 'sales team signature', 'email signature for salespeople'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/sales-team-email-signatures',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'How to Deploy Email Signatures in Google Workspace | Siggly',
   description: 'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
   keywords: ['google workspace email signature', 'deploy gmail signatures', 'google admin signature', 'gmail signature all users'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/deploy-signatures-google-workspace',
+  },
 };
 
 export default function BlogPost() {
