@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +27,9 @@ import {
   RefreshCw,
   CheckCircle2,
   Mail,
+  ArrowUpRight,
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 const SERVICE_OPTIONS = [
   { id: 'it_support', label: 'IT Support & Managed Services' },
@@ -45,6 +47,36 @@ export default function PartnerApplyPage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Existing org detection for conversion
+  const [existingOrg, setExistingOrg] = useState<{ id: string; name: string } | null>(null);
+  const [convertExisting, setConvertExisting] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkExistingOrg = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('organization_id, organizations(id, name, organization_type)')
+          .eq('auth_id', user.id)
+          .single();
+        
+        if (userData?.organization_id) {
+          const org = userData.organizations as any;
+          // Only show conversion option for standard orgs
+          if (org?.organization_type === 'standard') {
+            setExistingOrg({ id: org.id, name: org.name });
+          }
+        }
+      }
+      setCheckingAuth(false);
+    };
+    checkExistingOrg();
+  }, []);
 
   const [formData, setFormData] = useState({
     companyName: '',
@@ -80,6 +112,7 @@ export default function PartnerApplyPage() {
         body: JSON.stringify({
           ...formData,
           numberOfClients: formData.numberOfClients ? parseInt(formData.numberOfClients) : null,
+          convertExistingOrg: convertExisting,
         }),
       });
 
@@ -433,6 +466,28 @@ export default function PartnerApplyPage() {
               <Alert variant="destructive" className="mb-6">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
+            )}
+
+            {/* Existing Organization Conversion Option */}
+            {existingOrg && (
+              <div className="mb-6 p-4 bg-violet-50 border border-violet-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="convertExisting"
+                    checked={convertExisting}
+                    onCheckedChange={(checked) => setConvertExisting(checked === true)}
+                  />
+                  <div className="flex-1">
+                    <Label htmlFor="convertExisting" className="font-medium cursor-pointer">
+                      Convert my existing organization to an MSP partner account
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Your organization "<strong>{existingOrg.name}</strong>" will be upgraded to an MSP partner account. 
+                      All your existing templates, team members, and settings will be preserved.
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-8">
