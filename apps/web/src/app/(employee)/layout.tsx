@@ -17,7 +17,7 @@ export default async function EmployeeLayout({
   // Get user data including role
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, email, first_name, last_name, role, organization_id, organizations(name)')
+    .select('id, email, first_name, last_name, role, organization_id, organizations!users_organization_id_organizations_id_fk(name)')
     .eq('auth_id', user.id)
     .maybeSingle();
 
