@@ -19,7 +19,7 @@ export default async function EmployeeLayout({
     .from('users')
     .select('id, email, first_name, last_name, role, organization_id, organizations(name)')
     .eq('auth_id', user.id)
-    .single();
+    .maybeSingle();
 
   if (userError || !userData) {
     console.error('Failed to fetch user data in employee layout:', {
