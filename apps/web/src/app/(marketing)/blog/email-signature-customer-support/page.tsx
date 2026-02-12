@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Customer Support Email Signatures: Build Trust | Siggly',
   description: 'Create effective email signatures for customer support teams. Include helpful links, build rapport, and improve customer experience.',
   keywords: ['customer support email signature', 'support team signature', 'help desk email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-customer-support',
+  },
 };
 
 export default function BlogPost() {

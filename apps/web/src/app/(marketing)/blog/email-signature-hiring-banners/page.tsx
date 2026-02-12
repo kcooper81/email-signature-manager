@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Using Email Signatures for Recruiting & Hiring | Siggly',
   description: 'Turn employee emails into a recruiting channel. Add job posting banners to signatures and attract candidates organically.',
   keywords: ['email signature hiring', 'recruiting email signature', 'job posting signature banner'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-hiring-banners',
+  },
 };
 
 export default function BlogPost() {

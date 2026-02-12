@@ -7,6 +7,9 @@ import { MarketingCTA } from '@/components/marketing/cta';
 export const metadata = {
   title: 'Features | Siggly - Email Signature Management',
   description: 'Explore all features of Siggly email signature management: visual editor, team management, one-click deployment, analytics, and more.',
+  alternates: {
+    canonical: 'https://siggly.io/features',
+  },
 };
 
 const features = [

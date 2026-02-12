@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Law Firm Email Signatures: Attorney Requirements Guide | Siggly',
   description: 'Create compliant email signatures for law firms. Includes bar number requirements, confidentiality disclaimers, and professional design tips.',
   keywords: ['law firm email signature', 'attorney email signature', 'legal email signature', 'lawyer email disclaimer'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/law-firm-email-signature',
+  },
 };
 
 export default function BlogPost() {

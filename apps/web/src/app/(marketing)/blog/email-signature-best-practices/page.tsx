@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Best Practices: The Complete Guide | Siggly',
   description: 'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
   keywords: ['email signature best practices', 'professional email signature', 'email signature tips', 'email signature guidelines'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-best-practices',
+  },
 };
 
 export default function BlogPost() {

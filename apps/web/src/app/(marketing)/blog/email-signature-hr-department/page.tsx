@@ -7,6 +7,9 @@ export const metadata = {
   title: 'HR Department Email Signatures: Best Practices | Siggly',
   description: 'Email signature guidelines for HR teams. Professional signatures for recruiting, employee communications, and HR branding.',
   keywords: ['hr email signature', 'human resources signature', 'recruiting email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-hr-department',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Partner Co-Branding in Email Signatures | Siggly',
   description: 'Include partner logos and co-branding in email signatures. Best practices for technology partners, resellers, and strategic alliances.',
   keywords: ['partner email signature', 'co-branding signature', 'partner logo email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-partner-cobranding',
+  },
 };
 
 export default function BlogPost() {

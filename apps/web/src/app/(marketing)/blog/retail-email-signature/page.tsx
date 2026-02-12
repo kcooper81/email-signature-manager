@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Retail Business Email Signatures: Store & Ecommerce | Siggly',
   description: 'Create email signatures for retail businesses. Drive store visits and online sales with strategic signature elements.',
   keywords: ['retail email signature', 'store email signature', 'ecommerce email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/retail-email-signature',
+  },
 };
 
 export default function BlogPost() {

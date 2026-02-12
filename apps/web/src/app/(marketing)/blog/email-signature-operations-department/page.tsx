@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Operations Department Email Signatures | Siggly',
   description: 'Email signature best practices for operations teams. Practical signatures for logistics, facilities, and operational roles.',
   keywords: ['operations email signature', 'logistics signature', 'ops team email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-operations-department',
+  },
 };
 
 export default function BlogPost() {

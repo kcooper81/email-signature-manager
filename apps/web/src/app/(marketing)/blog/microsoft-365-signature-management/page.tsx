@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Microsoft 365 Email Signature Management Guide | Siggly',
   description: 'Deploy and manage email signatures across your Microsoft 365 organization. Learn about transport rules, OWA signatures, and centralized management.',
   keywords: ['microsoft 365 email signature', 'office 365 signature management', 'outlook signature deployment'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/microsoft-365-signature-management',
+  },
 };
 
 export default function BlogPost() {

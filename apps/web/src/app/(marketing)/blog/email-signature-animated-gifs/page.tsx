@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Animated GIFs in Email Signatures: Pros & Cons | Siggly',
   description: 'Should you use animated GIFs in email signatures? Technical considerations, file size issues, and when animation makes sense.',
   keywords: ['animated email signature', 'gif email signature', 'moving signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-animated-gifs',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Updating Email Signatures During Rebranding | Siggly',
   description: 'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
   keywords: ['email signature rebrand', 'update company signature', 'signature brand refresh'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-rebranding',
+  },
 };
 
 export default function BlogPost() {

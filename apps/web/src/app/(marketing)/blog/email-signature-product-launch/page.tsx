@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures for Product Launch Campaigns | Siggly',
   description: 'Use email signatures to amplify product launches. Create excitement, drive signups, and coordinate team messaging.',
   keywords: ['product launch email signature', 'launch announcement signature', 'new product email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-product-launch',
+  },
 };
 
 export default function BlogPost() {

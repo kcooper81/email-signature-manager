@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Government Email Signatures: Compliance Guide | Siggly',
   description: 'Email signature requirements for government agencies. Official formatting, compliance, and accessibility considerations.',
   keywords: ['government email signature', 'public sector signature', 'agency email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-government',
+  },
 };
 
 export default function BlogPost() {

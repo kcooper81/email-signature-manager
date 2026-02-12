@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Generator: Create Professional Signatures Free | Siggly',
   description: 'Use our free email signature generator to create professional signatures in minutes. No design skills needed. Works with Gmail, Outlook, and more.',
   keywords: ['email signature generator', 'free email signature maker', 'create email signature', 'signature generator online'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-generator-guide',
+  },
 };
 
 export default function BlogPost() {

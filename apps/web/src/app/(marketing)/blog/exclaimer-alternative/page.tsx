@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Best Exclaimer Alternatives 2026: Compare Features & Pricing | Siggly',
   description: 'Looking for an Exclaimer alternative? Compare the top email signature management tools with better pricing, easier setup, and modern features.',
   keywords: ['exclaimer alternative', 'exclaimer competitor', 'exclaimer vs', 'email signature software comparison'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/exclaimer-alternative',
+  },
 };
 
 export default function BlogPost() {

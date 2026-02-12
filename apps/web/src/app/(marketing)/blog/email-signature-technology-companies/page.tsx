@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Tech Company Email Signatures: Modern Design Guide | Siggly',
   description: 'Create modern email signatures for technology companies. Balance innovation with professionalism in your tech startup or enterprise.',
   keywords: ['tech company email signature', 'startup signature', 'saas email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-technology-companies',
+  },
 };
 
 export default function BlogPost() {

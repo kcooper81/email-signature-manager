@@ -7,6 +7,9 @@ export const metadata = {
   title: 'HTML Email Signature: Complete Coding Guide | Siggly',
   description: 'Learn to code HTML email signatures that work across all clients. Includes templates, best practices, and Outlook compatibility tips.',
   keywords: ['html email signature', 'email signature code', 'html signature template'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/html-email-signature-guide',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Branding: Build Consistency Across Your Team | Siggly',
   description: 'Create branded email signatures that reinforce your company identity. Learn color, font, and logo best practices for signature branding.',
   keywords: ['email signature branding', 'branded email signature', 'company email signature brand'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-branding',
+  },
 };
 
 export default function BlogPost() {

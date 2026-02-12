@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures for Employee Advocacy Programs | Siggly',
   description: 'Leverage email signatures for employee advocacy. Amplify company content and brand through every employee email.',
   keywords: ['employee advocacy email', 'signature advocacy', 'amplify brand email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-employee-advocacy',
+  },
 };
 
 export default function BlogPost() {

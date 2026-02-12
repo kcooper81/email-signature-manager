@@ -7,6 +7,9 @@ export const metadata = {
   title: 'How to Set Up Gmail Signature: Complete 2026 Guide | Siggly',
   description: 'Learn how to create and set up a professional Gmail signature step-by-step. Includes tips for images, formatting, and mobile optimization.',
   keywords: ['gmail signature', 'gmail signature setup', 'how to add signature in gmail', 'gmail email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/gmail-signature-setup-guide',
+  },
 };
 
 export default function BlogPost() {

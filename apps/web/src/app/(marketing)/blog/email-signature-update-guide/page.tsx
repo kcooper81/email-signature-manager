@@ -7,6 +7,9 @@ export const metadata = {
   title: 'How to Update Email Signatures: Complete Guide | Siggly',
   description: 'Update email signatures across Gmail, Outlook, and Apple Mail. Step-by-step instructions for changing your signature on any platform.',
   keywords: ['update email signature', 'change email signature', 'edit email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-update-guide',
+  },
 };
 
 export default function BlogPost() {

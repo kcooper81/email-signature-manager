@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Seasonal Email Signature Updates: Holiday & Event Ideas | Siggly',
   description: 'Update your email signatures for seasons and holidays. Ideas for holiday banners, event promotions, and timely messaging.',
   keywords: ['holiday email signature', 'seasonal signature', 'email signature holiday banner'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-seasonal-updates',
+  },
 };
 
 export default function BlogPost() {
