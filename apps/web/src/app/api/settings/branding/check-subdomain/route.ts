@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 // Reserved subdomains that cannot be used
 const RESERVED_SUBDOMAINS = [
   'www', 'app', 'api', 'admin', 'dashboard', 'help', 'support',
