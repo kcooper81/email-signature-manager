@@ -9,9 +9,9 @@ const supabaseAdmin = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, authId, token } = await request.json();
+    const { userId, email, password, token } = await request.json();
 
-    if (!userId || !authId || !token) {
+    if (!userId || !email || !password || !token) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -53,15 +53,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Auto-confirm the user's email since they were invited
-    const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(
-      authId,
-      { email_confirm: true }
-    );
+    // Check if an auth user already exists with this email (from previous invite)
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const existingUser = existingUsers?.users.find(u => u.email === email);
+    
+    if (existingUser) {
+      // Delete the old auth account
+      await supabaseAdmin.auth.admin.deleteUser(existingUser.id);
+    }
 
-    if (confirmError) {
+    // Create auth user with admin API (auto-confirmed since they were invited)
+    const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
+      email: email,
+      password: password,
+      email_confirm: true, // Auto-confirm since they were invited
+    });
+
+    if (createError || !authData.user) {
+      console.error('Failed to create auth user:', createError);
       return NextResponse.json(
-        { error: 'Failed to confirm user email' },
+        { error: `Failed to create account: ${createError?.message || 'Unknown error'}` },
         { status: 500 }
       );
     }
@@ -69,12 +80,13 @@ export async function POST(request: NextRequest) {
     // Update user record with auth_id using service role (bypasses RLS)
     const { error: updateError } = await supabaseAdmin
       .from('users')
-      .update({ auth_id: authId })
+      .update({ auth_id: authData.user.id })
       .eq('id', userId);
 
     if (updateError) {
+      console.error('Failed to update user record:', updateError);
       return NextResponse.json(
-        { error: 'Failed to update user record' },
+        { error: 'Failed to link account to profile' },
         { status: 500 }
       );
     }
@@ -85,7 +97,7 @@ export async function POST(request: NextRequest) {
       .update({ accepted_at: new Date().toISOString() })
       .eq('token', token);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, authId: authData.user.id });
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || 'Failed to accept invite' },
