@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'The Complete Guide to Brand Consistency in Email | Siggly Blog',
   description: 'How to ensure every email your team sends reinforces your brand identity and professionalism.',
+  alternates: {
+    canonical: 'https://siggly.io/blog/brand-consistency-guide',
+  },
 };
 
 export default function BlogPost() {

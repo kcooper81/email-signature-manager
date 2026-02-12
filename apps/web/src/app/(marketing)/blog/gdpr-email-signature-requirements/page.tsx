@@ -7,6 +7,9 @@ export const metadata = {
   title: 'GDPR Email Signature Requirements: EU Compliance Guide | Siggly',
   description: 'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
   keywords: ['GDPR email signature', 'EU email compliance', 'email signature privacy', 'GDPR disclaimer email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/gdpr-email-signature-requirements',
+  },
 };
 
 export default function BlogPost() {

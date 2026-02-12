@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Brand Guidelines: A Template | Siggly',
   description: 'Create brand guidelines for email signatures. Document standards for logos, colors, fonts, and signature elements.',
   keywords: ['email signature guidelines', 'signature brand standards', 'email signature policy'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-brand-guidelines',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Disclaimers: When & What to Include | Siggly',
   description: 'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
   keywords: ['email signature disclaimer', 'email confidentiality notice', 'legal email disclaimer'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-disclaimer-guide',
+  },
 };
 
 export default function BlogPost() {

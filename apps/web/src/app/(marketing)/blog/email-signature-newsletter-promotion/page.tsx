@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Growing Your Newsletter with Email Signatures | Siggly',
   description: 'Use email signatures to grow newsletter subscribers. Add signup CTAs, promote content, and convert contacts to subscribers.',
   keywords: ['newsletter email signature', 'grow newsletter signature', 'subscribe CTA email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-newsletter-promotion',
+  },
 };
 
 export default function BlogPost() {

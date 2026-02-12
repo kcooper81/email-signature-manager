@@ -7,6 +7,9 @@ export const metadata = {
   title: 'HTML Email Signatures: A Technical Guide | Siggly',
   description: 'Understand HTML email signature basics. Tables, inline styles, and email client compatibility for custom signature development.',
   keywords: ['html email signature', 'signature html code', 'email signature coding'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-html-basics',
+  },
 };
 
 export default function BlogPost() {

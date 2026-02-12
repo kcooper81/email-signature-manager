@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Templates: Free Designs for Every Industry | Siggly',
   description: 'Download free email signature templates for professionals. Includes designs for corporate, creative, legal, healthcare, and real estate industries.',
   keywords: ['email signature template', 'free email signature', 'signature template download', 'professional email template'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-templates-guide',
+  },
 };
 
 export default function BlogPost() {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { sendTeamInviteEmail } from '@/lib/email/resend';
 
 // GET /api/msp/clients - List all clients for the MSP organization
 export async function GET() {
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     // Get user's organization and verify it's an MSP
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('id, organization_id, role')
+      .select('id, organization_id, role, first_name, last_name')
       .eq('auth_id', user.id)
       .single();
 
@@ -193,9 +194,21 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // TODO: Send invite email to admin
-    // For now, return the invite link
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io'}/invite/${inviteToken}`;
+
+    // Send invite email to client admin (non-blocking)
+    try {
+      const inviterName = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || orgData.name;
+      await sendTeamInviteEmail({
+        to: adminEmail.toLowerCase(),
+        inviterName,
+        organizationName: name,
+        inviteUrl,
+        expiresAt: expiresAt.toISOString(),
+      });
+    } catch (emailError) {
+      console.error('Failed to send client invite email:', emailError);
+    }
 
     return NextResponse.json({
       success: true,

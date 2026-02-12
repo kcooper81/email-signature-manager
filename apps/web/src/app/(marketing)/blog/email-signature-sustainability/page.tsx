@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Sustainability Messaging in Email Signatures | Siggly',
   description: 'Include sustainability and environmental messaging in email signatures. Green initiatives, certifications, and eco-friendly messaging.',
   keywords: ['sustainability email signature', 'green signature', 'environmental messaging email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-sustainability',
+  },
 };
 
 export default function BlogPost() {

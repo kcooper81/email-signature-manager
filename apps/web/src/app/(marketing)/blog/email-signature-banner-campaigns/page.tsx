@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Banner Campaigns: Design & Strategy Guide | Siggly',
   description: 'Create effective email signature banner campaigns. Learn design best practices, campaign ideas, and how to measure banner performance.',
   keywords: ['email signature banner', 'signature campaign banner', 'email signature marketing banner'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-banner-campaigns',
+  },
 };
 
 export default function BlogPost() {

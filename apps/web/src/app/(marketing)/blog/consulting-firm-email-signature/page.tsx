@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Consulting Firm Email Signatures: Professional Guide | Siggly',
   description: 'Create polished email signatures for consultants and consulting firms. Build credibility and make it easy for clients to connect.',
   keywords: ['consulting email signature', 'consultant signature', 'management consulting email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/consulting-firm-email-signature',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Image Hosting: Best Practices Guide | Siggly',
   description: 'Learn where and how to host images for email signatures. Compare hosting options and avoid common image display problems.',
   keywords: ['email signature image hosting', 'host signature logo', 'email signature image url'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-image-hosting',
+  },
 };
 
 export default function BlogPost() {

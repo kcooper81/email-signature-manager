@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Add Calendar Booking Links to Email Signatures | Siggly',
   description: 'Add Calendly, HubSpot, or Cal.com booking links to your email signature. Reduce scheduling friction and book more meetings.',
   keywords: ['email signature calendar link', 'calendly signature', 'meeting link email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-calendar-links',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Photo Guidelines: Look Professional | Siggly',
   description: 'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
   keywords: ['email signature photo', 'signature headshot', 'professional photo email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-photo-guidelines',
+  },
 };
 
 export default function BlogPost() {

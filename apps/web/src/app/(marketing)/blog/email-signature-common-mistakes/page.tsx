@@ -7,6 +7,9 @@ export const metadata = {
   title: '15 Common Email Signature Mistakes to Avoid | Siggly',
   description: 'Avoid these common email signature mistakes. Design errors, technical issues, and content problems that hurt your professional image.',
   keywords: ['email signature mistakes', 'signature errors', 'bad email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-common-mistakes',
+  },
 };
 
 export default function BlogPost() {

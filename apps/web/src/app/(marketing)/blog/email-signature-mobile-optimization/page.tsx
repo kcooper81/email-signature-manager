@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Mobile-Optimized Email Signatures: Design Tips | Siggly',
   description: 'Create email signatures that look great on mobile. Responsive design, touch-friendly links, and mobile email considerations.',
   keywords: ['mobile email signature', 'responsive signature', 'email signature phone'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-mobile-optimization',
+  },
 };
 
 export default function BlogPost() {

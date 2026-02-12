@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Small Business Email Signatures: Complete Guide 2026 | Siggly',
   description: 'Create professional email signatures for your small business. Learn what to include, design tips, and free tools to get started.',
   keywords: ['small business email signature', 'business email signature', 'professional email signature small business'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/small-business-email-signature',
+  },
 };
 
 export default function BlogPost() {

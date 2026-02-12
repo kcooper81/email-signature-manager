@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Healthcare Email Signatures: HIPAA Compliant Guide | Siggly',
   description: 'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
   keywords: ['healthcare email signature', 'HIPAA email signature', 'medical email signature', 'doctor email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/healthcare-email-signature',
+  },
 };
 
 export default function BlogPost() {

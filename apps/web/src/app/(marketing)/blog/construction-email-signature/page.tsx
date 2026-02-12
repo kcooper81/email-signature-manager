@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Construction Company Email Signatures: Contractor Guide | Siggly',
   description: 'Create professional email signatures for construction companies and contractors. Include license info and build client trust.',
   keywords: ['construction email signature', 'contractor email signature', 'builder email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/construction-email-signature',
+  },
 };
 
 export default function BlogPost() {

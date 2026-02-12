@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Promoting Your Podcast Through Email Signatures | Siggly',
   description: 'Use email signatures to grow your podcast audience. Add podcast links, episode promotions, and subscriber CTAs.',
   keywords: ['podcast email signature', 'promote podcast signature', 'podcast link email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-podcast-promotion',
+  },
 };
 
 export default function BlogPost() {

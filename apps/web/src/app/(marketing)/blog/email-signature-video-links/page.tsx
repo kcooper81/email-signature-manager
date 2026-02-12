@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Adding Video Links to Email Signatures | Siggly',
   description: 'Include video content links in your email signature. Product demos, introductions, and video CTAs that engage recipients.',
   keywords: ['email signature video', 'video link signature', 'signature video CTA'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-video-links',
+  },
 };
 
 export default function BlogPost() {

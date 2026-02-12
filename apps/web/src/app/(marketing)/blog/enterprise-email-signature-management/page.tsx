@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Enterprise Email Signature Management: Complete Guide | Siggly',
   description: 'Manage email signatures at scale for large organizations. Learn about centralized control, compliance, and deployment strategies.',
   keywords: ['enterprise email signature', 'corporate email signature management', 'email signature at scale'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/enterprise-email-signature-management',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: '25 Professional Email Signature Examples for 2026 | Siggly',
   description: 'Get inspired by these 25 professional email signature examples. See what works for different industries, roles, and company sizes.',
   keywords: ['email signature examples', 'professional email signature', 'email signature design', 'business email signature examples'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-examples',
+  },
 };
 
 export default function BlogPost() {

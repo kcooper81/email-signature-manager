@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Law Firm Email Signature Policies: Best Practices | Siggly',
   description: 'Develop email signature policies for law firms. Standardize attorney signatures while meeting compliance requirements.',
   keywords: ['law firm signature policy', 'attorney email standards', 'legal firm email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-legal-firm',
+  },
 };
 
 export default function BlogPost() {

@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -6,11 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { 
-  Users, 
-  FileSignature, 
-  Send, 
-  Activity, 
+import {
+  Users,
+  FileSignature,
+  Send,
+  Activity,
   CheckCircle2,
   X,
 } from 'lucide-react';
@@ -31,6 +33,33 @@ export default async function DashboardPage() {
   }
 
   const organizationId = effectiveOrg.organizationId;
+
+  // Check if this is a fresh MSP partner that needs onboarding
+  if (!effectiveOrg.isMspContext) {
+    const { data: orgCheck } = await supabase
+      .from('organizations')
+      .select('organization_type, branding, custom_subdomain')
+      .eq('id', organizationId)
+      .single();
+
+    if (orgCheck?.organization_type === 'msp') {
+      const { count: clientCount } = await supabase
+        .from('organizations')
+        .select('*', { count: 'exact', head: true })
+        .eq('parent_organization_id', organizationId)
+        .eq('organization_type', 'msp_client');
+
+      const branding = orgCheck.branding as any;
+      const hasBranding = branding && (branding.companyName || branding.logoUrl);
+
+      if ((clientCount || 0) === 0 && !hasBranding) {
+        const cookieStore = await cookies();
+        if (!cookieStore.get('partner_welcome_dismissed')) {
+          redirect('/partner-welcome');
+        }
+      }
+    }
+  }
 
   // Fetch actual counts for dashboard stats - FILTERED BY ORGANIZATION
   const { count: templateCount } = await supabase

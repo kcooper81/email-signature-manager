@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Rolling Out Email Signatures to Your Team | Siggly',
   description: 'Step-by-step guide to rolling out new email signatures across your organization. Communication, timing, and change management.',
   keywords: ['email signature rollout', 'deploy signatures team', 'signature change management'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-team-rollout',
+  },
 };
 
 export default function BlogPost() {

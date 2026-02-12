@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Analytics: Track Performance & ROI | Siggly',
   description: 'Measure email signature performance with analytics. Track clicks, conversions, and ROI from signature links and campaign banners.',
   keywords: ['email signature analytics', 'signature tracking', 'email signature metrics', 'signature click tracking'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-analytics',
+  },
 };
 
 export default function BlogPost() {

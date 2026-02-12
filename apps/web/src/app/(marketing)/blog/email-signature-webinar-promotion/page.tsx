@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Promoting Webinars Through Email Signatures | Siggly',
   description: 'Use email signatures to promote webinars and virtual events. Banners, CTAs, and timing strategies for event promotion.',
   keywords: ['email signature webinar', 'promote webinar signature', 'event banner email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-webinar-promotion',
+  },
 };
 
 export default function BlogPost() {

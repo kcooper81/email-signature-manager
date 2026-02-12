@@ -356,3 +356,354 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
     throw error;
   }
 }
+
+// ============================================================
+// Partner / MSP Email Functions
+// ============================================================
+
+export interface PartnerApplicationConfirmationEmailData {
+  to: string;
+  contactName: string;
+  companyName: string;
+}
+
+export async function sendPartnerApplicationConfirmationEmail(data: PartnerApplicationConfirmationEmailData) {
+  const { to, contactName, companyName } = data;
+
+  try {
+    const client = getResendClient();
+    const { data: emailData, error } = await client.emails.send({
+      from: EMAIL_FROM.sales,
+      to: [to],
+      subject: `We've received your MSP Partner application`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Application Received</h1>
+            </div>
+
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${contactName},</p>
+
+              <p style="font-size: 16px; color: #374151;">
+                Thank you for applying to become a Siggly MSP Partner! We've received your application for <strong>${companyName}</strong>.
+              </p>
+
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 14px; color: #166534;">
+                  <strong>What happens next?</strong>
+                </p>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #166534; font-size: 14px;">
+                  <li>Our team will review your application within 2-3 business days</li>
+                  <li>You'll receive an email once your application has been reviewed</li>
+                  <li>If approved, you'll get access to your partner portal right away</li>
+                </ul>
+              </div>
+
+              <p style="font-size: 16px; color: #374151;">
+                In the meantime, if you have any questions about the partner program, don't hesitate to reach out.
+              </p>
+
+              <p style="font-size: 16px; color: #374151; margin-bottom: 0;">
+                Best regards,<br><strong>The Siggly Team</strong>
+              </p>
+            </div>
+
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+              <p style="margin: 5px 0;">
+                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> |
+                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending partner application confirmation email:', error);
+    throw error;
+  }
+}
+
+export interface PartnerApplicationTeamNotificationData {
+  companyName: string;
+  contactName: string;
+  contactEmail: string;
+  numberOfClients: number | null;
+  primaryServices: string[];
+  applicationId: string;
+}
+
+export async function sendPartnerApplicationTeamNotification(data: PartnerApplicationTeamNotificationData) {
+  const { companyName, contactName, contactEmail, numberOfClients, primaryServices, applicationId } = data;
+
+  try {
+    const client = getResendClient();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+    const { data: emailData, error } = await client.emails.send({
+      from: EMAIL_FROM.sales,
+      to: ['sales@siggly.io'],
+      replyTo: contactEmail,
+      subject: `[New Partner Application] ${companyName}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">New Partner Application</h1>
+            </div>
+
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <p style="font-size: 16px; color: #374151; margin-top: 0;">A new MSP partner application has been submitted.</p>
+
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; width: 140px;">Company:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${companyName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Contact:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${contactName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Email:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><a href="mailto:${contactEmail}" style="color: #7c3aed;">${contactEmail}</a></td>
+                </tr>
+                ${numberOfClients ? `
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Clients:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${numberOfClients}</td>
+                </tr>
+                ` : ''}
+                ${primaryServices.length > 0 ? `
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Services:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${primaryServices.join(', ')}</td>
+                </tr>
+                ` : ''}
+              </table>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${appUrl}/admin/partner-applications" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  Review Application
+                </a>
+              </div>
+
+              <div style="margin-top: 20px; padding: 15px; background: #eff6ff; border-radius: 8px;">
+                <p style="margin: 0; font-size: 14px; color: #1e40af;">
+                  <strong>Quick Reply:</strong> Reply to this email to respond directly to ${contactName}.
+                </p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending partner application team notification:', error);
+    throw error;
+  }
+}
+
+export interface PartnerApprovalEmailData {
+  to: string;
+  contactName: string;
+  companyName: string;
+  portalUrl: string;
+  partnerTier: string;
+}
+
+export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
+  const { to, contactName, companyName, portalUrl, partnerTier } = data;
+
+  const tierLabel = partnerTier.charAt(0).toUpperCase() + partnerTier.slice(1);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+
+  try {
+    const client = getResendClient();
+    const { data: emailData, error } = await client.emails.send({
+      from: EMAIL_FROM.sales,
+      to: [to],
+      subject: `Welcome to the Siggly Partner Program!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Welcome, Partner!</h1>
+            </div>
+
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${contactName},</p>
+
+              <p style="font-size: 16px; color: #374151;">
+                Great news! Your application for <strong>${companyName}</strong> has been approved. Welcome to the Siggly Partner Program as a <strong>${tierLabel} Partner</strong>.
+              </p>
+
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 14px; color: #166534;">
+                  <strong>Your Partner Portal:</strong>
+                  <a href="${portalUrl}" style="color: #166534; margin-left: 4px;">${portalUrl}</a>
+                </p>
+              </div>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${appUrl}/login" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  Log In to Get Started
+                </a>
+              </div>
+
+              <p style="font-size: 16px; color: #374151; font-weight: 600;">Next steps to get started:</p>
+
+              <div style="margin: 15px 0;">
+                <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                  <div style="background: #7c3aed; color: white; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-right: 12px;">1</div>
+                  <div>
+                    <p style="margin: 0; font-size: 14px; color: #374151;"><strong>Set up your branding</strong> - Add your logo, colors, and company name to white-label the portal.</p>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                  <div style="background: #7c3aed; color: white; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-right: 12px;">2</div>
+                  <div>
+                    <p style="margin: 0; font-size: 14px; color: #374151;"><strong>Add your first client</strong> - Create a client organization and invite their admin.</p>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                  <div style="background: #7c3aed; color: white; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-right: 12px;">3</div>
+                  <div>
+                    <p style="margin: 0; font-size: 14px; color: #374151;"><strong>Explore billing</strong> - Review your partner margins and subscription overview.</p>
+                  </div>
+                </div>
+              </div>
+
+              <p style="font-size: 14px; color: #6b7280; margin-top: 20px; margin-bottom: 0;">
+                Need help getting started? Reach out to us at <a href="mailto:support@siggly.io" style="color: #7c3aed;">support@siggly.io</a> and we'll be happy to assist.
+              </p>
+            </div>
+
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+              <p style="margin: 5px 0;">
+                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> |
+                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending partner approval email:', error);
+    throw error;
+  }
+}
+
+export interface PartnerRejectionEmailData {
+  to: string;
+  contactName: string;
+  companyName: string;
+}
+
+export async function sendPartnerRejectionEmail(data: PartnerRejectionEmailData) {
+  const { to, contactName, companyName } = data;
+
+  try {
+    const client = getResendClient();
+    const { data: emailData, error } = await client.emails.send({
+      from: EMAIL_FROM.sales,
+      to: [to],
+      subject: `Update on your Siggly Partner application`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Application Update</h1>
+            </div>
+
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi ${contactName},</p>
+
+              <p style="font-size: 16px; color: #374151;">
+                Thank you for your interest in the Siggly Partner Program and for submitting an application for <strong>${companyName}</strong>.
+              </p>
+
+              <p style="font-size: 16px; color: #374151;">
+                After careful review, we're unable to approve your application at this time. This could be due to a variety of factors, and we encourage you to apply again in the future as our program evolves.
+              </p>
+
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0; font-size: 14px; color: #1e40af;">
+                  <strong>Questions?</strong> If you'd like to discuss this further or learn more about what we look for in partners, feel free to reach out to us at <a href="mailto:support@siggly.io" style="color: #7c3aed;">support@siggly.io</a>.
+                </p>
+              </div>
+
+              <p style="font-size: 16px; color: #374151;">
+                You're still welcome to use Siggly as a regular customer. We appreciate your interest and wish you all the best.
+              </p>
+
+              <p style="font-size: 16px; color: #374151; margin-bottom: 0;">
+                Best regards,<br><strong>The Siggly Team</strong>
+              </p>
+            </div>
+
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+              <p style="margin: 5px 0;">
+                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> |
+                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+              </p>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending partner rejection email:', error);
+    throw error;
+  }
+}

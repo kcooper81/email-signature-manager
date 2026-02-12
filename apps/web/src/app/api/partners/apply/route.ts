@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabase/server';
+import { sendPartnerApplicationConfirmationEmail, sendPartnerApplicationTeamNotification } from '@/lib/email/resend';
 
 // Use service role to bypass RLS for inserting applications
 const supabaseAdmin = createClient(
@@ -177,8 +178,30 @@ export async function POST(request: NextRequest) {
         .eq('id', application.id);
     }
 
-    // TODO: Send confirmation email to applicant
-    // TODO: Send notification email to Siggly team
+    // Send confirmation email to applicant (non-blocking)
+    try {
+      await sendPartnerApplicationConfirmationEmail({
+        to: body.contactEmail.toLowerCase().trim(),
+        contactName: body.contactName.trim(),
+        companyName: body.companyName.trim(),
+      });
+    } catch (emailError) {
+      console.error('Failed to send application confirmation email:', emailError);
+    }
+
+    // Send notification to Siggly team (non-blocking)
+    try {
+      await sendPartnerApplicationTeamNotification({
+        companyName: body.companyName.trim(),
+        contactName: body.contactName.trim(),
+        contactEmail: body.contactEmail.toLowerCase().trim(),
+        numberOfClients: body.numberOfClients || null,
+        primaryServices: body.primaryServices || [],
+        applicationId: application?.id || '',
+      });
+    } catch (emailError) {
+      console.error('Failed to send team notification email:', emailError);
+    }
 
     return NextResponse.json({
       success: true,

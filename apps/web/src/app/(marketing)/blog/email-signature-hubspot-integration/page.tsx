@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures with HubSpot CRM Integration | Siggly',
   description: 'Connect your email signatures to HubSpot CRM. Sync contact data, personalize signatures, and track engagement.',
   keywords: ['hubspot email signature', 'crm email signature', 'hubspot signature integration'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-hubspot-integration',
+  },
 };
 
 export default function BlogPost() {

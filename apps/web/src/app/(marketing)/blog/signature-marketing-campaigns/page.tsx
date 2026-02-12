@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 export const metadata = {
   title: 'Using Email Signatures for Marketing Campaigns | Siggly Blog',
   description: 'How to leverage your team\'s email signatures as a powerful, free marketing channel.',
+  alternates: {
+    canonical: 'https://siggly.io/blog/signature-marketing-campaigns',
+  },
 };
 
 export default function BlogPost() {

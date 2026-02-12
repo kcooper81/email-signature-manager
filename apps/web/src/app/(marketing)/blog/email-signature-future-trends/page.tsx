@@ -7,6 +7,9 @@ export const metadata = {
   title: 'The Future of Email Signatures: 2026 Trends | Siggly',
   description: 'Emerging trends in email signatures. AI personalization, dynamic content, analytics, and what to expect in the coming years.',
   keywords: ['email signature trends', 'future email signature', 'signature innovation'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-future-trends',
+  },
 };
 
 export default function BlogPost() {

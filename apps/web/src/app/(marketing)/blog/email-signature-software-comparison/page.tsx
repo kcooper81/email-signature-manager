@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Software Comparison 2026 | Siggly',
   description: 'Compare the top email signature management tools. Features, pricing, and pros/cons of leading signature software solutions.',
   keywords: ['email signature software', 'signature management tools', 'compare email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-software-comparison',
+  },
 };
 
 export default function BlogPost() {

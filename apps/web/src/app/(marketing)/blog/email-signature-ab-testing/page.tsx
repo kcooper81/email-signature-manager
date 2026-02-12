@@ -7,6 +7,9 @@ export const metadata = {
   title: 'A/B Testing Email Signatures: Optimize Performance | Siggly',
   description: 'Learn to A/B test email signatures for better results. Test CTAs, designs, and content to find what converts best.',
   keywords: ['ab test email signature', 'signature testing', 'optimize email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-ab-testing',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Hospitality Email Signatures: Hotels & Restaurants | Siggly',
   description: 'Create welcoming email signatures for hospitality businesses. Hotels, restaurants, and event venues can build guest relationships.',
   keywords: ['hotel email signature', 'hospitality signature', 'restaurant email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/hospitality-email-signature',
+  },
 };
 
 export default function BlogPost() {

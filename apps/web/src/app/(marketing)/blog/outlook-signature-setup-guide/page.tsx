@@ -7,6 +7,9 @@ export const metadata = {
   title: 'How to Set Up Outlook Signature: Step-by-Step Guide 2026 | Siggly',
   description: 'Create a professional Outlook email signature with this complete guide. Covers Outlook desktop, web, and mobile signature setup.',
   keywords: ['outlook signature', 'outlook signature setup', 'how to change outlook signature', 'microsoft outlook email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/outlook-signature-setup-guide',
+  },
 };
 
 export default function BlogPost() {

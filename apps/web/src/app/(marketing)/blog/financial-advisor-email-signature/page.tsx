@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Financial Advisor Email Signatures: Compliance Guide | Siggly',
   description: 'Create compliant email signatures for financial advisors. Covers FINRA requirements, CRD numbers, disclosures, and regulatory disclaimers.',
   keywords: ['financial advisor email signature', 'FINRA email signature', 'investment advisor signature', 'wealth management email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/financial-advisor-email-signature',
+  },
 };
 
 export default function BlogPost() {

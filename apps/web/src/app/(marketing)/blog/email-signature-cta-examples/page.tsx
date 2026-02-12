@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature CTA Examples: Drive Action | Siggly',
   description: 'Effective call-to-action examples for email signatures. Book meetings, drive downloads, and generate leads from your signature.',
   keywords: ['email signature cta', 'signature call to action', 'email signature button'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-cta-examples',
+  },
 };
 
 export default function BlogPost() {

@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature ROI: Calculate Your Return | Siggly',
   description: 'Calculate the ROI of email signature management. Understand the value of consistent branding, banner clicks, and time savings.',
   keywords: ['email signature ROI', 'signature value calculator', 'signature marketing ROI'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-roi-calculator',
+  },
 };
 
 export default function BlogPost() {

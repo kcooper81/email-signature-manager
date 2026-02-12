@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signatures During M&A: Transition Guide | Siggly',
   description: 'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
   keywords: ['email signature merger', 'acquisition rebrand signature', 'company merger email'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-mergers-acquisitions',
+  },
 };
 
 export default function BlogPost() {

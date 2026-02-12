@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Email Signature Troubleshooting: Fix Common Problems | Siggly',
   description: 'Fix common email signature problems. Solutions for broken images, formatting issues, missing signatures, and display problems across email clients.',
   keywords: ['email signature not working', 'fix email signature', 'signature troubleshooting', 'email signature problems'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-troubleshooting',
+  },
 };
 
 export default function BlogPost() {

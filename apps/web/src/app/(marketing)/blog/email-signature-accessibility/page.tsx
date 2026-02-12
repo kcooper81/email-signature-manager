@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Accessible Email Signatures: Inclusive Design | Siggly',
   description: 'Create accessible email signatures for all users. Alt text, color contrast, screen readers, and inclusive design practices.',
   keywords: ['accessible email signature', 'email signature accessibility', 'inclusive signature design'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-accessibility',
+  },
 };
 
 export default function BlogPost() {

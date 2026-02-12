@@ -7,6 +7,9 @@ export const metadata = {
   title: 'Multi-Language Email Signatures for Global Teams | Siggly',
   description: 'Create email signatures for international teams. Multiple languages, localization, and regional variations.',
   keywords: ['multi-language email signature', 'international signature', 'global email signature'],
+  alternates: {
+    canonical: 'https://siggly.io/blog/email-signature-multi-language',
+  },
 };
 
 export default function BlogPost() {
