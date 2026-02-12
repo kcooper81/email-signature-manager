@@ -66,27 +66,14 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
     setError(null);
 
     try {
-      const supabase = createClient();
-
-      // Create auth account
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email: inviteData.email,
-        password: password,
-      });
-
-      if (signUpError) throw signUpError;
-
-      if (!authData.user) {
-        throw new Error('Failed to create account');
-      }
-
-      // Use API route to update user record with auth_id (bypasses RLS)
+      // Use API route to create the user account and link it to the invite
       const response = await fetch('/api/invite/accept', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: inviteData.user_id,
-          authId: authData.user.id,
+          email: inviteData.email,
+          password: password,
           token: params.token,
         }),
       });
@@ -96,22 +83,21 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         throw new Error(data.error || 'Failed to accept invite');
       }
 
-      // Refresh the session to get the confirmed email status
-      await supabase.auth.refreshSession();
+      const { authId } = await response.json();
 
-      // Wait a moment for the database update to propagate
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Now sign in with the created account
+      const supabase = createClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: inviteData.email,
+        password: password,
+      });
 
-      // Verify the user record exists and session is established
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id, role')
-        .eq('auth_id', authData.user.id)
-        .maybeSingle();
-
-      if (userError || !userData) {
-        throw new Error('Account created but profile not found. Please contact support.');
+      if (signInError) {
+        throw new Error('Account created but failed to sign in. Please try logging in.');
       }
+
+      // Wait a moment for the session to establish
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       // Use window.location for a hard redirect to ensure fresh session
       window.location.href = '/my-profile?welcome=true';
