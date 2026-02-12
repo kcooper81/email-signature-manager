@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { escapeHtml } from '@/lib/utils';
 
 let resend: Resend | null = null;
 
@@ -38,7 +39,11 @@ export interface ContactFormEmailData {
 }
 
 export async function sendContactFormEmail(data: ContactFormEmailData) {
-  const { name, email, company, subject, message } = data;
+  const { email } = data;
+  const name = escapeHtml(data.name);
+  const company = data.company ? escapeHtml(data.company) : undefined;
+  const subject = escapeHtml(data.subject);
+  const message = escapeHtml(data.message);
 
   try {
     const client = getResendClient();
@@ -118,7 +123,9 @@ export interface TeamInviteEmailData {
 }
 
 export async function sendTeamInviteEmail(data: TeamInviteEmailData) {
-  const { to, inviterName, organizationName, inviteUrl, expiresAt } = data;
+  const { to, inviteUrl, expiresAt } = data;
+  const inviterName = escapeHtml(data.inviterName);
+  const organizationName = escapeHtml(data.organizationName);
 
   try {
     const client = getResendClient();
@@ -203,7 +210,9 @@ export interface AdminInviteEmailData {
 }
 
 export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
-  const { to, inviterName, organizationName, inviteUrl, expiresAt } = data;
+  const { to, inviteUrl, expiresAt } = data;
+  const inviterName = escapeHtml(data.inviterName);
+  const organizationName = escapeHtml(data.organizationName);
 
   try {
     const client = getResendClient();
@@ -292,7 +301,10 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
 }
 
 export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
-  const { to, ticketId, ticketType, originalMessage, responseMessage, adminEmail } = data;
+  const { to, ticketId, adminEmail } = data;
+  const ticketType = escapeHtml(data.ticketType);
+  const originalMessage = escapeHtml(data.originalMessage);
+  const responseMessage = escapeHtml(data.responseMessage);
 
   try {
     const client = getResendClient();
@@ -368,7 +380,9 @@ export interface PartnerApplicationConfirmationEmailData {
 }
 
 export async function sendPartnerApplicationConfirmationEmail(data: PartnerApplicationConfirmationEmailData) {
-  const { to, contactName, companyName } = data;
+  const { to } = data;
+  const contactName = escapeHtml(data.contactName);
+  const companyName = escapeHtml(data.companyName);
 
   try {
     const client = getResendClient();
@@ -448,7 +462,9 @@ export interface PartnerApplicationTeamNotificationData {
 }
 
 export async function sendPartnerApplicationTeamNotification(data: PartnerApplicationTeamNotificationData) {
-  const { companyName, contactName, contactEmail, numberOfClients, primaryServices, applicationId } = data;
+  const { contactEmail, numberOfClients, primaryServices, applicationId } = data;
+  const companyName = escapeHtml(data.companyName);
+  const contactName = escapeHtml(data.contactName);
 
   try {
     const client = getResendClient();
@@ -495,7 +511,7 @@ export async function sendPartnerApplicationTeamNotification(data: PartnerApplic
                 ${primaryServices.length > 0 ? `
                 <tr>
                   <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Services:</td>
-                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${primaryServices.join(', ')}</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${primaryServices.map(s => escapeHtml(s)).join(', ')}</td>
                 </tr>
                 ` : ''}
               </table>
@@ -538,9 +554,10 @@ export interface PartnerApprovalEmailData {
 }
 
 export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
-  const { to, contactName, companyName, portalUrl, partnerTier } = data;
-
-  const tierLabel = partnerTier.charAt(0).toUpperCase() + partnerTier.slice(1);
+  const { to, portalUrl, partnerTier } = data;
+  const contactName = escapeHtml(data.contactName);
+  const companyName = escapeHtml(data.companyName);
+  const tierLabel = escapeHtml(partnerTier.charAt(0).toUpperCase() + partnerTier.slice(1));
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
 
   try {
@@ -639,7 +656,9 @@ export interface PartnerRejectionEmailData {
 }
 
 export async function sendPartnerRejectionEmail(data: PartnerRejectionEmailData) {
-  const { to, contactName, companyName } = data;
+  const { to } = data;
+  const contactName = escapeHtml(data.contactName);
+  const companyName = escapeHtml(data.companyName);
 
   try {
     const client = getResendClient();
