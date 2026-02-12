@@ -115,37 +115,66 @@ async function handleApprove(
     .eq('custom_subdomain', sanitizedSubdomain)
     .single();
 
-  if (existingOrg) {
+  // Check if subdomain is already taken (but allow if it's the existing org being converted)
+  if (existingOrg && existingOrg.id !== application.existing_organization_id) {
     return NextResponse.json({ error: 'Subdomain is already taken' }, { status: 400 });
   }
 
-  // Generate slug from company name
-  const slug = application.company_name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 50) + '-' + Date.now().toString(36);
+  let finalOrgId: string;
 
-  // Create the MSP organization
-  const { data: newOrg, error: orgError } = await supabaseAdmin
-    .from('organizations')
-    .insert({
-      name: application.company_name,
-      slug,
-      domain: application.website ? new URL(application.website).hostname : null,
-      organization_type: 'msp',
-      partner_tier: partnerTier,
-      custom_subdomain: sanitizedSubdomain,
-      branding: {},
-    })
-    .select('id')
-    .single();
+  // Check if this is a conversion of an existing organization
+  if (application.existing_organization_id) {
+    // Convert existing organization to MSP
+    const { error: convertError } = await supabaseAdmin
+      .from('organizations')
+      .update({
+        organization_type: 'msp',
+        partner_tier: partnerTier,
+        custom_subdomain: sanitizedSubdomain,
+        branding: {},
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', application.existing_organization_id);
 
-  if (orgError || !newOrg) {
-    return NextResponse.json(
-      { error: 'Failed to create organization: ' + orgError?.message },
-      { status: 500 }
-    );
+    if (convertError) {
+      return NextResponse.json(
+        { error: 'Failed to convert organization: ' + convertError.message },
+        { status: 500 }
+      );
+    }
+
+    finalOrgId = application.existing_organization_id;
+  } else {
+    // Generate slug from company name
+    const slug = application.company_name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 50) + '-' + Date.now().toString(36);
+
+    // Create new MSP organization
+    const { data: newOrg, error: orgError } = await supabaseAdmin
+      .from('organizations')
+      .insert({
+        name: application.company_name,
+        slug,
+        domain: application.website ? new URL(application.website).hostname : null,
+        organization_type: 'msp',
+        partner_tier: partnerTier,
+        custom_subdomain: sanitizedSubdomain,
+        branding: {},
+      })
+      .select('id')
+      .single();
+
+    if (orgError || !newOrg) {
+      return NextResponse.json(
+        { error: 'Failed to create organization: ' + orgError?.message },
+        { status: 500 }
+      );
+    }
+
+    finalOrgId = newOrg.id;
   }
 
   // Update the application
@@ -156,14 +185,16 @@ async function handleApprove(
       reviewed_by: reviewerId,
       reviewed_at: new Date().toISOString(),
       review_notes: reviewNotes || null,
-      organization_id: newOrg.id,
+      organization_id: finalOrgId,
       updated_at: new Date().toISOString(),
     })
     .eq('id', applicationId);
 
   if (updateError) {
-    // Rollback org creation
-    await supabaseAdmin.from('organizations').delete().eq('id', newOrg.id);
+    // Rollback org creation only if we created a new one (not converted)
+    if (!application.existing_organization_id) {
+      await supabaseAdmin.from('organizations').delete().eq('id', finalOrgId);
+    }
     return NextResponse.json(
       { error: 'Failed to update application: ' + updateError.message },
       { status: 500 }
@@ -172,7 +203,7 @@ async function handleApprove(
 
   // Create audit log
   await supabaseAdmin.from('audit_logs').insert({
-    organization_id: newOrg.id,
+    organization_id: finalOrgId,
     user_id: reviewerId,
     action: 'partner_application_approved',
     resource_type: 'partner_application',
@@ -201,7 +232,7 @@ async function handleApprove(
         partner_coupon_tier: partnerTier,
       },
     })
-    .eq('id', newOrg.id);
+    .eq('id', finalOrgId);
 
   // TODO: Send approval email to partner with:
   // - Login instructions
@@ -211,7 +242,7 @@ async function handleApprove(
   return NextResponse.json({
     success: true,
     message: 'Application approved',
-    organizationId: newOrg.id,
+    organizationId: finalOrgId,
     subdomain: sanitizedSubdomain,
     portalUrl: `https://${sanitizedSubdomain}.siggly.io`,
   });
