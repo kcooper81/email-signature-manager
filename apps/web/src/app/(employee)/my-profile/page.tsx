@@ -133,6 +133,7 @@ export default function MyProfilePage() {
     google_calendar_enabled: true,
   });
   const [accessDenied, setAccessDenied] = useState(false);
+  const [isWorkspaceUser, setIsWorkspaceUser] = useState(true);
 
   useEffect(() => {
     loadProfile();
@@ -152,7 +153,7 @@ export default function MyProfilePage() {
       .from('users')
       .select('*')
       .eq('auth_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (error || !userData) {
       setErrorMessage('Failed to load profile');
@@ -172,7 +173,7 @@ export default function MyProfilePage() {
       .from('organization_settings')
       .select('*')
       .eq('organization_id', userData.organization_id)
-      .single();
+      .maybeSingle();
 
     if (orgSettingsData) {
       const settings = {
@@ -189,6 +190,23 @@ export default function MyProfilePage() {
         setAccessDenied(true);
         setLoading(false);
         return;
+      }
+    }
+
+    // Check if user is from Google Workspace domain
+    const { data: googleConnection } = await supabase
+      .from('provider_connections')
+      .select('metadata')
+      .eq('organization_id', userData.organization_id)
+      .eq('provider', 'google')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (googleConnection?.metadata) {
+      const workspaceDomain = (googleConnection.metadata as any)?.domain;
+      if (workspaceDomain) {
+        const userDomain = userData.email.split('@')[1];
+        setIsWorkspaceUser(userDomain === workspaceDomain);
       }
     }
 
@@ -224,12 +242,12 @@ export default function MyProfilePage() {
     // Get user's deployed signature if any
     const { data: deployment } = await supabase
       .from('signature_deployments')
-      .select('id, rendered_html, signature_templates(name)')
+      .select('id, rendered_html, signature_templates!signature_deployments_template_id_signature_templates_id_fk(name)')
       .eq('user_id', userData.id)
       .eq('status', 'success')
       .order('deployed_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (deployment) {
       setSignature({
@@ -642,16 +660,30 @@ export default function MyProfilePage() {
           )}
 
           {/* Enable Calendar Integration */}
+          {!isWorkspaceUser && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg flex items-start gap-3 mb-4">
+              <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div>
+                <p className="font-medium">Google Workspace Required</p>
+                <p className="text-sm mt-1">
+                  Calendar integration is only available for users with email addresses from your organization's Google Workspace domain. Contact your administrator if you need access.
+                </p>
+              </div>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="calendar-enabled" className="text-base">Enable Calendar Integration</Label>
               <p className="text-sm text-muted-foreground">
-                Allow Siggly to read your Google Calendar for scheduling features
+                {isWorkspaceUser 
+                  ? 'Allow Siggly to read your Google Calendar for scheduling features'
+                  : 'Only available for Google Workspace users'}
               </p>
             </div>
             <Switch
               id="calendar-enabled"
               checked={calendarSettings.calendarEnabled}
+              disabled={!isWorkspaceUser}
               onCheckedChange={(checked) => {
                 setCalendarSettings({ ...calendarSettings, calendarEnabled: checked });
                 if (checked && !calendarData) {
