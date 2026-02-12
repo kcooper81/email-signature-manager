@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 // Use service role to bypass RLS for inserting applications
 const supabaseAdmin = createClient(
@@ -27,11 +28,48 @@ interface PartnerApplicationRequest {
   howHeardAboutUs?: string;
   additionalNotes?: string;
   preferredSubdomain?: string;
+  convertExistingOrg?: boolean; // If true, convert user's current org to MSP
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: PartnerApplicationRequest = await request.json();
+
+    // Check if user is logged in and wants to convert their existing org
+    let existingOrgId: string | null = null;
+    let existingOrgName: string | null = null;
+    
+    if (body.convertExistingOrg) {
+      const supabase = await createServerClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: userData } = await supabaseAdmin
+          .from('users')
+          .select('organization_id, organizations(id, name, organization_type)')
+          .eq('auth_id', user.id)
+          .single();
+        
+        if (userData?.organization_id) {
+          const org = userData.organizations as any;
+          // Only allow conversion from standard orgs (not already MSP or MSP client)
+          if (org?.organization_type === 'standard') {
+            existingOrgId = userData.organization_id;
+            existingOrgName = org.name;
+          } else if (org?.organization_type === 'msp') {
+            return NextResponse.json(
+              { error: 'Your organization is already an MSP partner' },
+              { status: 400 }
+            );
+          } else if (org?.organization_type === 'msp_client') {
+            return NextResponse.json(
+              { error: 'MSP client organizations cannot apply to become partners' },
+              { status: 400 }
+            );
+          }
+        }
+      }
+    }
 
     // Validate required fields
     if (!body.companyName?.trim()) {
@@ -106,7 +144,7 @@ export async function POST(request: NextRequest) {
     const { data: application, error: insertError } = await supabaseAdmin
       .from('partner_applications')
       .insert({
-        company_name: body.companyName.trim(),
+        company_name: existingOrgName || body.companyName.trim(),
         website: body.website?.trim() || null,
         contact_name: body.contactName.trim(),
         contact_email: body.contactEmail.toLowerCase().trim(),
@@ -115,6 +153,7 @@ export async function POST(request: NextRequest) {
         primary_services: body.primaryServices || [],
         how_heard_about_us: body.howHeardAboutUs?.trim() || null,
         additional_notes: body.additionalNotes?.trim() || null,
+        existing_organization_id: existingOrgId, // Link to existing org for conversion
         status: 'pending',
         submitted_at: new Date().toISOString(),
       })
