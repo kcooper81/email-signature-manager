@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { logException } from '@/lib/error-logging';
+import { escapeHtml } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -83,20 +84,20 @@ function generateSignatureHtml(blocks: any[]): string {
 
     switch (block.type) {
       case 'text':
-        html += `<tr><td style="font-size: ${content.fontSize || 14}px; color: ${content.color || '#000000'}; font-weight: ${content.fontWeight || 'normal'}; padding: 4px 0;">${content.text || ''}</td></tr>`;
+        html += `<tr><td style="font-size: ${parseInt(content.fontSize) || 14}px; color: ${escapeHtml(String(content.color || '#000000'))}; font-weight: ${content.fontWeight === 'bold' ? 'bold' : 'normal'}; padding: 4px 0;">${escapeHtml(String(content.text || ''))}</td></tr>`;
         break;
 
       case 'image':
-        html += `<tr><td style="padding: 8px 0;"><img src="${content.src || ''}" alt="${content.alt || ''}" width="${content.width || 100}" height="${content.height || 100}" style="display: block;" /></td></tr>`;
+        html += `<tr><td style="padding: 8px 0;"><img src="${escapeHtml(String(content.src || ''))}" alt="${escapeHtml(String(content.alt || ''))}" width="${parseInt(content.width) || 100}" height="${parseInt(content.height) || 100}" style="display: block;" /></td></tr>`;
         break;
 
       case 'contact-info':
         const contactItems = [];
-        if (content.email) contactItems.push(`<a href="mailto:${content.email}" style="color: #0066cc; text-decoration: none;">${content.email}</a>`);
-        if (content.phone) contactItems.push(`<a href="tel:${content.phone}" style="color: #0066cc; text-decoration: none;">${content.phone}</a>`);
-        if (content.website) contactItems.push(`<a href="${content.website}" style="color: #0066cc; text-decoration: none;">${content.website}</a>`);
-        if (content.address) contactItems.push(content.address);
-        
+        if (content.email) contactItems.push(`<a href="mailto:${escapeHtml(String(content.email))}" style="color: #0066cc; text-decoration: none;">${escapeHtml(String(content.email))}</a>`);
+        if (content.phone) contactItems.push(`<a href="tel:${escapeHtml(String(content.phone))}" style="color: #0066cc; text-decoration: none;">${escapeHtml(String(content.phone))}</a>`);
+        if (content.website) contactItems.push(`<a href="${escapeHtml(String(content.website))}" style="color: #0066cc; text-decoration: none;">${escapeHtml(String(content.website))}</a>`);
+        if (content.address) contactItems.push(escapeHtml(String(content.address)));
+
         if (contactItems.length > 0) {
           html += `<tr><td style="font-size: 12px; color: #666666; padding: 4px 0;">${contactItems.join(' | ')}</td></tr>`;
         }
@@ -105,14 +106,14 @@ function generateSignatureHtml(blocks: any[]): string {
       case 'social':
         if (content.platforms && content.platforms.length > 0) {
           const socialLinks = content.platforms.map((platform: any) => {
-            return `<a href="${platform.url}" style="margin-right: 8px;"><img src="${getSocialIcon(platform.type)}" alt="${platform.type}" width="24" height="24" /></a>`;
+            return `<a href="${escapeHtml(String(platform.url || ''))}" style="margin-right: 8px;"><img src="${escapeHtml(getSocialIcon(platform.type))}" alt="${escapeHtml(String(platform.type || ''))}" width="24" height="24" /></a>`;
           }).join('');
           html += `<tr><td style="padding: 8px 0;">${socialLinks}</td></tr>`;
         }
         break;
 
       case 'disclaimer':
-        html += `<tr><td style="font-size: 10px; color: #999999; padding: 12px 0; border-top: 1px solid #eeeeee; margin-top: 12px;">${content.text || ''}</td></tr>`;
+        html += `<tr><td style="font-size: 10px; color: #999999; padding: 12px 0; border-top: 1px solid #eeeeee; margin-top: 12px;">${escapeHtml(String(content.text || ''))}</td></tr>`;
         break;
 
       case 'spacer':
