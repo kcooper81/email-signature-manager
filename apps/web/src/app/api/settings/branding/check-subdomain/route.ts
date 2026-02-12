@@ -64,17 +64,21 @@ export async function GET(request: NextRequest) {
       query = query.neq('id', currentOrgId);
     }
 
-    const { data: existingOrg } = await query.single();
+    // Use maybeSingle() instead of single() to avoid error when no rows found
+    const { data: existingOrg, error: queryError } = await query.maybeSingle();
+
+    // If there's a real error (not just no rows), return unavailable
+    if (queryError) {
+      console.error('Subdomain check error:', queryError);
+      return NextResponse.json({ available: false, error: queryError.message });
+    }
 
     return NextResponse.json({
       available: !existingOrg,
       subdomain,
     });
   } catch (error: any) {
-    // If no rows found, subdomain is available
-    if (error.code === 'PGRST116') {
-      return NextResponse.json({ available: true });
-    }
+    console.error('Subdomain check exception:', error);
     return NextResponse.json({ available: false, error: error.message });
   }
 }
