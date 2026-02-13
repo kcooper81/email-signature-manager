@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Modal, ModalHeader, ModalTitle, ModalDescription } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -149,30 +149,31 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        {submitted ? (
-          <div className="py-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Check className="h-8 w-8 text-green-600" />
-            </div>
-            <DialogTitle className="text-2xl font-bold mb-2">Application Submitted!</DialogTitle>
-            <DialogDescription className="text-base mb-6">
-              Thank you for your interest in the Siggly Partner Program. We'll review your application and get back to you within 2-3 business days.
-            </DialogDescription>
-            <p className="text-sm text-muted-foreground mb-6">
-              A confirmation email has been sent to <strong>{formData.contactEmail}</strong>
-            </p>
-            <Button onClick={handleClose}>Close</Button>
+    <Modal open={isOpen} onClose={handleClose} className="max-w-3xl">
+      {submitted ? (
+        <div className="py-8 text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Check className="h-8 w-8 text-green-600" />
           </div>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-2xl">Become a Partner</DialogTitle>
-              <DialogDescription>
+          <ModalTitle className="text-2xl font-bold mb-2">Application Submitted!</ModalTitle>
+          <ModalDescription className="text-base mb-6">
+            Thank you for your interest in the Siggly Partner Program. We'll review your application and get back to you within 2-3 business days.
+          </ModalDescription>
+          <p className="text-sm text-muted-foreground mb-6">
+            A confirmation email has been sent to <strong>{formData.contactEmail}</strong>
+          </p>
+          <Button onClick={handleClose}>Close</Button>
+        </div>
+      ) : (
+        <>
+          <ModalHeader onClose={handleClose}>
+            <div>
+              <ModalTitle className="text-2xl">Become a Partner</ModalTitle>
+              <ModalDescription>
                 Join the Siggly Partner Program and offer white-label email signature management to your clients
-              </DialogDescription>
-            </DialogHeader>
+              </ModalDescription>
+            </div>
+          </ModalHeader>
 
             {/* Benefits Preview */}
             <div className="grid grid-cols-2 gap-3 my-4">
@@ -361,7 +362,6 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
             </form>
           </>
         )}
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }
