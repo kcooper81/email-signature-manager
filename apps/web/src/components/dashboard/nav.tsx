@@ -17,10 +17,12 @@ import {
   X,
   Headphones,
   Building2,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeedbackWidget } from '@/components/feedback';
 import { useMspContext } from '@/hooks/use-msp-context';
+import { PartnerApplicationModal } from '@/components/partners/partner-application-modal';
 
 const bottomNavItems = [
   {
@@ -44,7 +46,8 @@ export function DashboardNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const { isMspOrg } = useMspContext();
+  const [partnerModalOpen, setPartnerModalOpen] = useState(false);
+  const { isMspOrg, organizationType } = useMspContext();
 
   // Build nav items dynamically based on org type
   const navItems = [
@@ -122,6 +125,18 @@ export function DashboardNav() {
             <feedbackItem.icon className="h-4 w-4" />
             {feedbackItem.title}
           </button>
+          {organizationType === 'standard' && (
+            <button
+              onClick={() => {
+                setPartnerModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 w-full"
+            >
+              <Sparkles className="h-4 w-4" />
+              Become a Partner
+            </button>
+          )}
         </div>
       </nav>
 
@@ -142,11 +157,23 @@ export function DashboardNav() {
             <feedbackItem.icon className="h-4 w-4" />
             {feedbackItem.title}
           </button>
+          {organizationType === 'standard' && (
+            <button
+              onClick={() => setPartnerModalOpen(true)}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 w-full text-left"
+            >
+              <Sparkles className="h-4 w-4" />
+              Become a Partner
+            </button>
+          )}
         </div>
       </nav>
 
       {/* Feedback Modal */}
       <FeedbackWidget isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      
+      {/* Partner Application Modal */}
+      <PartnerApplicationModal isOpen={partnerModalOpen} onClose={() => setPartnerModalOpen(false)} />
     </>
   );
 }
