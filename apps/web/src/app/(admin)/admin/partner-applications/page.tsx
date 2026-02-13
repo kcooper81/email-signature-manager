@@ -524,6 +524,16 @@ export default function PartnerApplicationsPage() {
           </ModalDescription>
         </ModalHeader>
         <div className="space-y-4">
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+            <div className="flex gap-2">
+              <div className="text-amber-600 font-semibold text-sm">⚠️ Before Approving:</div>
+            </div>
+            <p className="text-xs text-amber-700 mt-1">
+              You must manually add <span className="font-mono font-semibold">{subdomain}.siggly.io</span> to Vercel domains before clicking "Approve Partner". 
+              Go to Vercel → Settings → Domains → Add the subdomain.
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="subdomain">Subdomain *</Label>
             <div className="flex items-center gap-2">

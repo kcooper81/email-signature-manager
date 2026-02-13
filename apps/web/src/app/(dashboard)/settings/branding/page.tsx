@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Upload, Check, X, ExternalLink, Palette, Image, Type, Globe, Eye } from 'lucide-react';
+import { Loader2, Upload, Check, X, ExternalLink, Palette, Image, Type, Globe, Eye, Trash2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import type { OrganizationBranding } from '@/lib/db/schema';
 
 interface BrandingFormData extends OrganizationBranding {
@@ -25,6 +26,13 @@ export default function BrandingSettingsPage() {
   const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null);
   const [checkingSubdomain, setCheckingSubdomain] = useState(false);
   const [organizationType, setOrganizationType] = useState<string>('standard');
+  const [uploadingLogo, setUploadingLogo] = useState<string | null>(null);
+  const fileInputRefs = {
+    logoUrl: useRef<HTMLInputElement>(null),
+    logoIconUrl: useRef<HTMLInputElement>(null),
+    logoDarkUrl: useRef<HTMLInputElement>(null),
+    faviconUrl: useRef<HTMLInputElement>(null),
+  };
   
   const [formData, setFormData] = useState<BrandingFormData>({
     primaryColor: '#0066cc',
@@ -101,6 +109,69 @@ export default function BrandingSettingsPage() {
     }, 500);
     
     return () => clearTimeout(timeoutId);
+  };
+
+  const handleFileUpload = async (file: File, fieldName: keyof typeof fileInputRefs): Promise<string> => {
+    const supabase = createClient();
+    
+    // Validate file
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      throw new Error('File size must be less than 5MB');
+    }
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error('File must be an image (PNG, JPG, GIF, WebP, or SVG)');
+    }
+
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop();
+    const fileName = `branding/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('signature-assets')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('signature-assets')
+      .getPublicUrl(fileName);
+
+    return publicUrl;
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof typeof fileInputRefs) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(fieldName);
+    setError(null);
+
+    try {
+      const url = await handleFileUpload(file, fieldName);
+      setFormData({ ...formData, [fieldName]: url });
+      setSuccess(`${fieldName === 'logoUrl' ? 'Logo' : fieldName === 'logoIconUrl' ? 'Icon' : fieldName === 'logoDarkUrl' ? 'Dark logo' : 'Favicon'} uploaded successfully`);
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload file');
+    } finally {
+      setUploadingLogo(null);
+      // Reset file input
+      if (fileInputRefs[fieldName].current) {
+        fileInputRefs[fieldName].current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveLogo = (fieldName: keyof typeof fileInputRefs) => {
+    setFormData({ ...formData, [fieldName]: '' });
   };
 
   const handleSave = async () => {
@@ -314,14 +385,47 @@ export default function BrandingSettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="logoUrl">Main Logo</Label>
-                  <Input
-                    id="logoUrl"
-                    type="url"
-                    value={formData.logoUrl}
-                    onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                    placeholder="https://example.com/logo.png"
-                  />
-                  <p className="text-xs text-muted-foreground">Recommended: 200x50px, PNG or SVG</p>
+                  <div className="flex gap-2">
+                    <Input
+                      id="logoUrl"
+                      type="url"
+                      value={formData.logoUrl}
+                      onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
+                      placeholder="https://example.com/logo.png"
+                      className="flex-1"
+                    />
+                    <input
+                      ref={fileInputRefs.logoUrl}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileSelect(e, 'logoUrl')}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRefs.logoUrl.current?.click()}
+                      disabled={uploadingLogo === 'logoUrl'}
+                    >
+                      {uploadingLogo === 'logoUrl' ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                    </Button>
+                    {formData.logoUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleRemoveLogo('logoUrl')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Recommended: 200x50px, PNG or SVG (max 5MB)</p>
                   {formData.logoUrl && (
                     <div className="mt-2 p-4 border rounded-lg bg-muted/50">
                       <img 
@@ -336,14 +440,47 @@ export default function BrandingSettingsPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="logoIconUrl">Square Icon</Label>
-                  <Input
-                    id="logoIconUrl"
-                    type="url"
-                    value={formData.logoIconUrl}
-                    onChange={(e) => setFormData({ ...formData, logoIconUrl: e.target.value })}
-                    placeholder="https://example.com/icon.png"
-                  />
-                  <p className="text-xs text-muted-foreground">Recommended: 64x64px, PNG</p>
+                  <div className="flex gap-2">
+                    <Input
+                      id="logoIconUrl"
+                      type="url"
+                      value={formData.logoIconUrl}
+                      onChange={(e) => setFormData({ ...formData, logoIconUrl: e.target.value })}
+                      placeholder="https://example.com/icon.png"
+                      className="flex-1"
+                    />
+                    <input
+                      ref={fileInputRefs.logoIconUrl}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileSelect(e, 'logoIconUrl')}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRefs.logoIconUrl.current?.click()}
+                      disabled={uploadingLogo === 'logoIconUrl'}
+                    >
+                      {uploadingLogo === 'logoIconUrl' ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                    </Button>
+                    {formData.logoIconUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleRemoveLogo('logoIconUrl')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Recommended: 64x64px, PNG (max 5MB)</p>
                   {formData.logoIconUrl && (
                     <div className="mt-2 p-4 border rounded-lg bg-muted/50">
                       <img 
@@ -358,26 +495,112 @@ export default function BrandingSettingsPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="logoDarkUrl">Logo (Dark Mode)</Label>
-                  <Input
-                    id="logoDarkUrl"
-                    type="url"
-                    value={formData.logoDarkUrl}
-                    onChange={(e) => setFormData({ ...formData, logoDarkUrl: e.target.value })}
-                    placeholder="https://example.com/logo-dark.png"
-                  />
-                  <p className="text-xs text-muted-foreground">Optional: For dark backgrounds</p>
+                  <div className="flex gap-2">
+                    <Input
+                      id="logoDarkUrl"
+                      type="url"
+                      value={formData.logoDarkUrl}
+                      onChange={(e) => setFormData({ ...formData, logoDarkUrl: e.target.value })}
+                      placeholder="https://example.com/logo-dark.png"
+                      className="flex-1"
+                    />
+                    <input
+                      ref={fileInputRefs.logoDarkUrl}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileSelect(e, 'logoDarkUrl')}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRefs.logoDarkUrl.current?.click()}
+                      disabled={uploadingLogo === 'logoDarkUrl'}
+                    >
+                      {uploadingLogo === 'logoDarkUrl' ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                    </Button>
+                    {formData.logoDarkUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleRemoveLogo('logoDarkUrl')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Optional: For dark backgrounds (max 5MB)</p>
+                  {formData.logoDarkUrl && (
+                    <div className="mt-2 p-4 border rounded-lg bg-gray-900">
+                      <img 
+                        src={formData.logoDarkUrl} 
+                        alt="Dark logo preview" 
+                        className="h-8 object-contain"
+                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="faviconUrl">Favicon</Label>
-                  <Input
-                    id="faviconUrl"
-                    type="url"
-                    value={formData.faviconUrl}
-                    onChange={(e) => setFormData({ ...formData, faviconUrl: e.target.value })}
-                    placeholder="https://example.com/favicon.ico"
-                  />
-                  <p className="text-xs text-muted-foreground">Browser tab icon, 32x32px</p>
+                  <div className="flex gap-2">
+                    <Input
+                      id="faviconUrl"
+                      type="url"
+                      value={formData.faviconUrl}
+                      onChange={(e) => setFormData({ ...formData, faviconUrl: e.target.value })}
+                      placeholder="https://example.com/favicon.ico"
+                      className="flex-1"
+                    />
+                    <input
+                      ref={fileInputRefs.faviconUrl}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileSelect(e, 'faviconUrl')}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => fileInputRefs.faviconUrl.current?.click()}
+                      disabled={uploadingLogo === 'faviconUrl'}
+                    >
+                      {uploadingLogo === 'faviconUrl' ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="h-4 w-4" />
+                      )}
+                    </Button>
+                    {formData.faviconUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleRemoveLogo('faviconUrl')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Browser tab icon, 32x32px (max 5MB)</p>
+                  {formData.faviconUrl && (
+                    <div className="mt-2 p-4 border rounded-lg bg-muted/50">
+                      <img 
+                        src={formData.faviconUrl} 
+                        alt="Favicon preview" 
+                        className="h-8 w-8 object-contain"
+                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
