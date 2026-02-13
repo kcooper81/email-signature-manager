@@ -242,7 +242,7 @@ export default function MyProfilePage() {
     // Get user's deployed signature if any
     const { data: deployment } = await supabase
       .from('signature_deployments')
-      .select('id, rendered_html, signature_templates!signature_deployments_template_id_signature_templates_id_fk(name)')
+      .select('id, rendered_html, signature_templates!signature_deployments_template_id_fkey(name)')
       .eq('user_id', userData.id)
       .eq('status', 'success')
       .order('deployed_at', { ascending: false })
