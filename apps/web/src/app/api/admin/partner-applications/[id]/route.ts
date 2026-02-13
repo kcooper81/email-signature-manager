@@ -232,6 +232,58 @@ async function handleApprove(
     }
   }
 
+  // Create organization_settings record
+  const { error: settingsError } = await supabaseAdmin
+    .from('organization_settings')
+    .insert({
+      organization_id: finalOrgId,
+      allow_employee_self_manage: true,
+      require_manager_approval: false,
+      google_calendar_enabled: false,
+    });
+
+  if (settingsError && settingsError.code !== '23505') { // Ignore duplicate key errors
+    console.error('Failed to create organization settings:', settingsError);
+  }
+
+  // Create Stripe customer for the organization
+  let stripeCustomerId: string;
+  try {
+    const customer = await stripe.customers.create({
+      name: application.company_name,
+      email: application.contact_email,
+      metadata: {
+        organization_id: finalOrgId,
+        partner_tier: partnerTier,
+      },
+    });
+    stripeCustomerId = customer.id;
+  } catch (stripeError: any) {
+    console.error('Failed to create Stripe customer:', stripeError);
+    // Rollback org creation
+    if (!application.existing_organization_id) {
+      await supabaseAdmin.from('organizations').delete().eq('id', finalOrgId);
+    }
+    return NextResponse.json(
+      { error: 'Failed to create billing account: ' + stripeError.message },
+      { status: 500 }
+    );
+  }
+
+  // Create subscriptions record (free plan by default)
+  const { error: subscriptionError } = await supabaseAdmin
+    .from('subscriptions')
+    .insert({
+      organization_id: finalOrgId,
+      stripe_customer_id: stripeCustomerId,
+      plan: 'free',
+      status: 'active',
+    });
+
+  if (subscriptionError && subscriptionError.code !== '23505') { // Ignore duplicate key errors
+    console.error('Failed to create subscription record:', subscriptionError);
+  }
+
   // Update the application
   const { error: updateError } = await supabaseAdmin
     .from('partner_applications')
@@ -249,6 +301,7 @@ async function handleApprove(
     // Rollback org creation only if we created a new one (not converted)
     if (!application.existing_organization_id) {
       await supabaseAdmin.from('organizations').delete().eq('id', finalOrgId);
+      await stripe.customers.del(stripeCustomerId);
     }
     return NextResponse.json(
       { error: 'Failed to update application: ' + updateError.message },

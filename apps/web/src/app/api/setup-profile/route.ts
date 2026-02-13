@@ -113,6 +113,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create default free subscription for the organization
+    const { error: subError } = await supabaseAdmin
+      .from('subscriptions')
+      .insert({
+        organization_id: newOrg.id,
+        plan: 'free',
+        status: 'active',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+    if (subError) {
+      console.error('Failed to create subscription:', subError);
+      // Don't fail the whole request if subscription creation fails
+      // User can still use the app, just might have issues with billing features
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Unexpected error in setup-profile:', error);
