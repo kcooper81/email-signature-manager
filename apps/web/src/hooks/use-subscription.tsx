@@ -103,7 +103,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       .from('subscriptions')
       .select('*')
       .eq('organization_id', organizationId)
-      .single();
+      .maybeSingle();
 
     const planId = subData?.plan || 'free';
     const plan = getPlan(planId);
