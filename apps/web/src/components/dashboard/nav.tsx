@@ -131,7 +131,7 @@ export function DashboardNav() {
                 setPartnerModalOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 w-full"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-violet-600 hover:bg-accent hover:text-violet-700 w-full"
             >
               <Sparkles className="h-4 w-4" />
               Become a Partner
@@ -160,7 +160,7 @@ export function DashboardNav() {
           {organizationType === 'standard' && (
             <button
               onClick={() => setPartnerModalOpen(true)}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:from-violet-700 hover:to-purple-700 w-full text-left"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-violet-600 hover:bg-accent hover:text-violet-700 w-full text-left"
             >
               <Sparkles className="h-4 w-4" />
               Become a Partner
