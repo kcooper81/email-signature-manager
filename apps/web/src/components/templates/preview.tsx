@@ -15,7 +15,17 @@ import type {
   HtmlBlockContent,
 } from './types';
 import { ComplianceBlockPreview } from './compliance-block';
-import { Mail, Phone, Globe, MapPin, Linkedin, Twitter, Facebook, Instagram, Youtube, Github, Calendar, Briefcase, User, Building2, Link as LinkIcon } from 'lucide-react';
+import { Mail, Phone, Globe, MapPin, Calendar, Briefcase, User, Building2, Link as LinkIcon } from 'lucide-react';
+
+// Social media icon URLs (same as email client preview for consistency)
+const SOCIAL_ICONS: Record<string, string> = {
+  linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
+  twitter: 'https://cdn.simpleicons.org/x/000000',
+  facebook: 'https://cdn.simpleicons.org/facebook/1877F2',
+  instagram: 'https://cdn.simpleicons.org/instagram/E4405F',
+  youtube: 'https://cdn.simpleicons.org/youtube/FF0000',
+  github: 'https://cdn.simpleicons.org/github/181717',
+};
 
 interface SignaturePreviewProps {
   blocks: SignatureBlock[];
@@ -315,33 +325,6 @@ function renderButtonBlock(
 }
 
 function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
-  const getIcon = (platform: SocialBlockContent['platforms'][0]) => {
-    const size = content.iconSize || 24;
-    const props = { style: { width: size, height: size } };
-
-    switch (platform.type) {
-      case 'linkedin':
-        return <Linkedin {...props} />;
-      case 'twitter':
-        return <Twitter {...props} />;
-      case 'facebook':
-        return <Facebook {...props} />;
-      case 'instagram':
-        return <Instagram {...props} />;
-      case 'youtube':
-        return <Youtube {...props} />;
-      case 'github':
-        return <Github {...props} />;
-      case 'custom':
-        if (platform.icon) {
-          return <img src={platform.icon} alt={platform.label || 'Social'} style={{ width: size, height: size, objectFit: 'contain' }} />;
-        }
-        return <LinkIcon {...props} />;
-      default:
-        return <LinkIcon {...props} />;
-    }
-  };
-
   if (content.platforms.length === 0) {
     return (
       <div style={{ color: '#999', fontSize: 12, marginTop: 8 }}>
@@ -350,20 +333,79 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
     );
   }
 
+  const displayMode = content.displayMode || 'icons';
+  const iconSize = content.iconSize || 24;
+
   return (
-    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-      {content.platforms.map((platform, index) => (
-        <a
-          key={`${platform.type}-${index}`}
-          href={platform.url || '#'}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#666' }}
-          title={platform.type === 'custom' ? platform.label : platform.type}
-        >
-          {getIcon(platform)}
-        </a>
-      ))}
+    <div style={{ display: 'flex', gap: 12, marginTop: 8, alignItems: 'center' }}>
+      {content.platforms.map((platform, index) => {
+        const displayName = platform.type === 'custom' && platform.label 
+          ? platform.label 
+          : platform.type.charAt(0).toUpperCase() + platform.type.slice(1);
+        
+        // Display as text if displayMode is 'text'
+        if (displayMode === 'text') {
+          return (
+            <a
+              key={`${platform.type}-${index}`}
+              href={platform.url || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                color: '#0066cc',
+                textDecoration: 'none',
+                fontSize: 14,
+              }}
+              title={displayName}
+            >
+              {displayName}
+            </a>
+          );
+        }
+        
+        // Display as icons - use CDN images for standard platforms
+        const iconUrl = platform.type === 'custom' && platform.icon 
+          ? platform.icon 
+          : SOCIAL_ICONS[platform.type];
+        
+        if (iconUrl) {
+          return (
+            <a
+              key={`${platform.type}-${index}`}
+              href={platform.url || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={displayName}
+              style={{ display: 'inline-block', lineHeight: 0 }}
+            >
+              <img
+                src={iconUrl}
+                alt={displayName}
+                style={{
+                  width: iconSize,
+                  height: iconSize,
+                  display: 'block',
+                  objectFit: 'contain',
+                }}
+              />
+            </a>
+          );
+        }
+        
+        // Fallback for unknown platforms
+        return (
+          <a
+            key={`${platform.type}-${index}`}
+            href={platform.url || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#666' }}
+            title={displayName}
+          >
+            <LinkIcon style={{ width: iconSize, height: iconSize }} />
+          </a>
+        );
+      })}
     </div>
   );
 }
