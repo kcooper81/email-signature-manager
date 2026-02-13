@@ -44,10 +44,39 @@ export async function POST(request: NextRequest) {
     }
 
     // Create organization using service role (bypasses RLS)
+    // Generate slug from organization name
+    let baseSlug = organizationName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 50);
+    
+    // Ensure slug is unique by appending random string if needed
+    let slug = baseSlug;
+    let slugExists = true;
+    let attempts = 0;
+    
+    while (slugExists && attempts < 5) {
+      const { data: existingOrg } = await supabaseAdmin
+        .from('organizations')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle();
+      
+      if (!existingOrg) {
+        slugExists = false;
+      } else {
+        // Append random 4-digit number
+        slug = `${baseSlug}-${Math.floor(1000 + Math.random() * 9000)}`;
+        attempts++;
+      }
+    }
+    
     const { data: newOrg, error: orgError } = await supabaseAdmin
       .from('organizations')
       .insert({
         name: organizationName,
+        slug: slug,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
