@@ -24,6 +24,13 @@ import {
   CalendarClock,
   Link2,
   Palmtree,
+  Linkedin,
+  Twitter,
+  Github,
+  Globe,
+  Instagram,
+  Facebook,
+  Youtube,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -655,7 +662,10 @@ export default function SettingsPage() {
                   
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium mb-2">📅 Calendly URL</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <CalendarClock className="h-4 w-4" />
+                        Calendly URL
+                      </label>
                       <Input
                         type="url"
                         value={calendlyUrl}
@@ -665,7 +675,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">💼 LinkedIn Profile</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Linkedin className="h-4 w-4" />
+                        LinkedIn Profile
+                      </label>
                       <Input
                         type="url"
                         value={linkedinUrl}
@@ -675,7 +688,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">🐦 Twitter/X Profile</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Twitter className="h-4 w-4" />
+                        Twitter/X Profile
+                      </label>
                       <Input
                         type="url"
                         value={twitterUrl}
@@ -685,7 +701,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">💻 GitHub Profile</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Github className="h-4 w-4" />
+                        GitHub Profile
+                      </label>
                       <Input
                         type="url"
                         value={githubUrl}
@@ -695,7 +714,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">🌐 Personal Website</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Globe className="h-4 w-4" />
+                        Personal Website
+                      </label>
                       <Input
                         type="url"
                         value={personalWebsite}
@@ -705,7 +727,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">📸 Instagram</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Instagram className="h-4 w-4" />
+                        Instagram
+                      </label>
                       <Input
                         type="url"
                         value={instagramUrl}
@@ -715,7 +740,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">📘 Facebook</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Facebook className="h-4 w-4" />
+                        Facebook
+                      </label>
                       <Input
                         type="url"
                         value={facebookUrl}
@@ -725,7 +753,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">🎥 YouTube Channel</label>
+                      <label className="flex items-center gap-2 text-sm font-medium mb-2">
+                        <Youtube className="h-4 w-4" />
+                        YouTube Channel
+                      </label>
                       <Input
                         type="url"
                         value={youtubeUrl}

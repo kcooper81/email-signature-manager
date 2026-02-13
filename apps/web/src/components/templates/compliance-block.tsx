@@ -11,7 +11,14 @@ import {
   HealthcareComplianceFields,
   FinanceComplianceFields,
   RealEstateComplianceFields,
+  InsuranceComplianceFields,
+  AccountingComplianceFields,
+  ConsultingComplianceFields,
+  TechnologyComplianceFields,
+  EducationComplianceFields,
+  NonProfitComplianceFields,
   INDUSTRY_DISCLAIMERS,
+  COMPLIANCE_PRESETS,
 } from './types';
 import { Shield, AlertCircle, Building2 } from 'lucide-react';
 
@@ -21,6 +28,12 @@ const INDUSTRY_OPTIONS: { value: IndustryType; label: string; description: strin
   { value: 'healthcare', label: 'Healthcare', description: 'Medical & HIPAA compliance' },
   { value: 'finance', label: 'Finance', description: 'Financial services & SEC/FINRA' },
   { value: 'real_estate', label: 'Real Estate', description: 'Agents & brokers' },
+  { value: 'insurance', label: 'Insurance', description: 'Insurance agents & brokers' },
+  { value: 'accounting', label: 'Accounting', description: 'CPAs & tax professionals' },
+  { value: 'consulting', label: 'Consulting', description: 'Management & strategy' },
+  { value: 'technology', label: 'Technology', description: 'IT & software companies' },
+  { value: 'education', label: 'Education', description: 'Schools & universities' },
+  { value: 'non_profit', label: 'Non-Profit', description: '501(c)(3) organizations' },
 ];
 
 interface ComplianceBlockEditorProps {
@@ -37,6 +50,22 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
         [field]: value,
       },
     });
+  };
+
+  const handlePresetChange = (presetKey: string) => {
+    if (presetKey === 'custom') {
+      onChange({ ...content, preset: 'custom' });
+      return;
+    }
+    
+    const preset = COMPLIANCE_PRESETS[content.industryType]?.[presetKey];
+    if (preset) {
+      onChange({
+        ...content,
+        preset: presetKey,
+        fields: { ...content.fields, ...preset.fields },
+      });
+    }
   };
 
   const renderLegalFields = (fields: LegalComplianceFields) => (
@@ -314,6 +343,305 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
     </>
   );
 
+  const renderInsuranceFields = (fields: InsuranceComplianceFields) => (
+    <>
+      <div>
+        <Label htmlFor="licenseNumber">License Number *</Label>
+        <Input
+          id="licenseNumber"
+          value={fields.licenseNumber || ''}
+          onChange={(e) => updateField('licenseNumber', e.target.value)}
+          placeholder="Insurance license number"
+        />
+      </div>
+      <div>
+        <Label htmlFor="licenseState">License State *</Label>
+        <Input
+          id="licenseState"
+          value={fields.licenseState || ''}
+          onChange={(e) => updateField('licenseState', e.target.value)}
+          placeholder="e.g., California"
+        />
+      </div>
+      <div>
+        <Label htmlFor="nmlsNumber">NMLS Number</Label>
+        <Input
+          id="nmlsNumber"
+          value={fields.nmlsNumber || ''}
+          onChange={(e) => updateField('nmlsNumber', e.target.value)}
+          placeholder="Nationwide Multistate Licensing System"
+        />
+      </div>
+      <div>
+        <Label htmlFor="credentials">Credentials</Label>
+        <Input
+          id="credentials"
+          value={fields.credentials || ''}
+          onChange={(e) => updateField('credentials', e.target.value)}
+          placeholder="e.g., CLU, ChFC, CPCU"
+        />
+      </div>
+      <div>
+        <Label htmlFor="agencyName">Agency Name</Label>
+        <Input
+          id="agencyName"
+          value={fields.agencyName || ''}
+          onChange={(e) => updateField('agencyName', e.target.value)}
+          placeholder="Insurance agency name"
+        />
+      </div>
+      <div>
+        <Label htmlFor="carrierAffiliations">Carrier Affiliations</Label>
+        <Input
+          id="carrierAffiliations"
+          value={fields.carrierAffiliations || ''}
+          onChange={(e) => updateField('carrierAffiliations', e.target.value)}
+          placeholder="e.g., State Farm, Allstate"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="disclaimer">Insurance Disclaimer</Label>
+        <Textarea
+          id="disclaimer"
+          value={fields.disclaimer || INDUSTRY_DISCLAIMERS.insurance}
+          onChange={(e) => updateField('disclaimer', e.target.value)}
+          rows={3}
+          className="text-xs"
+        />
+      </div>
+    </>
+  );
+
+  const renderAccountingFields = (fields: AccountingComplianceFields) => (
+    <>
+      <div>
+        <Label htmlFor="cpaNumber">CPA Number *</Label>
+        <Input
+          id="cpaNumber"
+          value={fields.cpaNumber || ''}
+          onChange={(e) => updateField('cpaNumber', e.target.value)}
+          placeholder="CPA license number"
+        />
+      </div>
+      <div>
+        <Label htmlFor="licenseState">License State *</Label>
+        <Input
+          id="licenseState"
+          value={fields.licenseState || ''}
+          onChange={(e) => updateField('licenseState', e.target.value)}
+          placeholder="e.g., California"
+        />
+      </div>
+      <div>
+        <Label htmlFor="credentials">Credentials</Label>
+        <Input
+          id="credentials"
+          value={fields.credentials || ''}
+          onChange={(e) => updateField('credentials', e.target.value)}
+          placeholder="e.g., CPA, EA, CMA"
+        />
+      </div>
+      <div>
+        <Label htmlFor="firmName">Firm Name</Label>
+        <Input
+          id="firmName"
+          value={fields.firmName || ''}
+          onChange={(e) => updateField('firmName', e.target.value)}
+          placeholder="Accounting firm name"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="disclaimer">Accounting Disclaimer</Label>
+        <Textarea
+          id="disclaimer"
+          value={fields.disclaimer || INDUSTRY_DISCLAIMERS.accounting}
+          onChange={(e) => updateField('disclaimer', e.target.value)}
+          rows={3}
+          className="text-xs"
+        />
+      </div>
+    </>
+  );
+
+  const renderConsultingFields = (fields: ConsultingComplianceFields) => (
+    <>
+      <div>
+        <Label htmlFor="credentials">Credentials</Label>
+        <Input
+          id="credentials"
+          value={fields.credentials || ''}
+          onChange={(e) => updateField('credentials', e.target.value)}
+          placeholder="e.g., MBA, PMP, Six Sigma"
+        />
+      </div>
+      <div>
+        <Label htmlFor="firmName">Firm Name</Label>
+        <Input
+          id="firmName"
+          value={fields.firmName || ''}
+          onChange={(e) => updateField('firmName', e.target.value)}
+          placeholder="Consulting firm name"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="specializations">Specializations</Label>
+        <Input
+          id="specializations"
+          value={fields.specializations || ''}
+          onChange={(e) => updateField('specializations', e.target.value)}
+          placeholder="e.g., Strategy, Operations, Digital Transformation"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="disclaimer">Consulting Disclaimer</Label>
+        <Textarea
+          id="disclaimer"
+          value={fields.disclaimer || INDUSTRY_DISCLAIMERS.consulting}
+          onChange={(e) => updateField('disclaimer', e.target.value)}
+          rows={3}
+          className="text-xs"
+        />
+      </div>
+    </>
+  );
+
+  const renderTechnologyFields = (fields: TechnologyComplianceFields) => (
+    <>
+      <div>
+        <Label htmlFor="certifications">Certifications</Label>
+        <Input
+          id="certifications"
+          value={fields.certifications || ''}
+          onChange={(e) => updateField('certifications', e.target.value)}
+          placeholder="e.g., AWS Certified, CISSP, PMP"
+        />
+      </div>
+      <div>
+        <Label htmlFor="companyName">Company Name</Label>
+        <Input
+          id="companyName"
+          value={fields.companyName || ''}
+          onChange={(e) => updateField('companyName', e.target.value)}
+          placeholder="Technology company name"
+        />
+      </div>
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="gdprCompliant"
+          checked={fields.gdprCompliant || false}
+          onChange={(e) => updateField('gdprCompliant', e.target.checked)}
+          className="h-4 w-4"
+        />
+        <Label htmlFor="gdprCompliant" className="cursor-pointer">GDPR Compliant</Label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id="soc2Compliant"
+          checked={fields.soc2Compliant || false}
+          onChange={(e) => updateField('soc2Compliant', e.target.checked)}
+          className="h-4 w-4"
+        />
+        <Label htmlFor="soc2Compliant" className="cursor-pointer">SOC 2 Compliant</Label>
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="disclaimer">Technology Disclaimer</Label>
+        <Textarea
+          id="disclaimer"
+          value={fields.disclaimer || INDUSTRY_DISCLAIMERS.technology}
+          onChange={(e) => updateField('disclaimer', e.target.value)}
+          rows={3}
+          className="text-xs"
+        />
+      </div>
+    </>
+  );
+
+  const renderEducationFields = (fields: EducationComplianceFields) => (
+    <>
+      <div>
+        <Label htmlFor="credentials">Credentials</Label>
+        <Input
+          id="credentials"
+          value={fields.credentials || ''}
+          onChange={(e) => updateField('credentials', e.target.value)}
+          placeholder="e.g., PhD, EdD, M.Ed"
+        />
+      </div>
+      <div>
+        <Label htmlFor="institution">Institution</Label>
+        <Input
+          id="institution"
+          value={fields.institution || ''}
+          onChange={(e) => updateField('institution', e.target.value)}
+          placeholder="School or university name"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="accreditation">Accreditation</Label>
+        <Input
+          id="accreditation"
+          value={fields.accreditation || ''}
+          onChange={(e) => updateField('accreditation', e.target.value)}
+          placeholder="e.g., Regional accreditation, AACSB"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="ferpaNotice">FERPA Notice</Label>
+        <Textarea
+          id="ferpaNotice"
+          value={fields.ferpaNotice || INDUSTRY_DISCLAIMERS.education}
+          onChange={(e) => updateField('ferpaNotice', e.target.value)}
+          rows={3}
+          className="text-xs"
+        />
+      </div>
+    </>
+  );
+
+  const renderNonProfitFields = (fields: NonProfitComplianceFields) => (
+    <>
+      <div>
+        <Label htmlFor="ein">EIN (Tax ID) *</Label>
+        <Input
+          id="ein"
+          value={fields.ein || ''}
+          onChange={(e) => updateField('ein', e.target.value)}
+          placeholder="e.g., 12-3456789"
+        />
+      </div>
+      <div>
+        <Label htmlFor="taxExemptStatus">Tax-Exempt Status *</Label>
+        <Input
+          id="taxExemptStatus"
+          value={fields.taxExemptStatus || ''}
+          onChange={(e) => updateField('taxExemptStatus', e.target.value)}
+          placeholder="e.g., 501(c)(3)"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="organizationName">Organization Name</Label>
+        <Input
+          id="organizationName"
+          value={fields.organizationName || ''}
+          onChange={(e) => updateField('organizationName', e.target.value)}
+          placeholder="Non-profit organization name"
+        />
+      </div>
+      <div className="col-span-2">
+        <Label htmlFor="disclaimer">Non-Profit Disclaimer</Label>
+        <Textarea
+          id="disclaimer"
+          value={fields.disclaimer || INDUSTRY_DISCLAIMERS.non_profit}
+          onChange={(e) => updateField('disclaimer', e.target.value)}
+          rows={3}
+          className="text-xs"
+        />
+      </div>
+    </>
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -323,25 +651,48 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
 
       {/* Industry selector for non-general industries - allows changing */}
       {content.industryType !== 'general' && (
-        <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-violet-600" />
-            <span className="text-sm font-medium">
-              {INDUSTRY_OPTIONS.find(o => o.value === content.industryType)?.label}
-            </span>
+        <>
+          <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-violet-600" />
+              <span className="text-sm font-medium">
+                {INDUSTRY_OPTIONS.find(o => o.value === content.industryType)?.label}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onChange({
+                ...content,
+                industryType: 'general',
+                fields: {},
+                preset: undefined,
+              })}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Change industry
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => onChange({
-              ...content,
-              industryType: 'general',
-              fields: {},
-            })}
-            className="text-xs text-muted-foreground hover:text-foreground"
-          >
-            Change industry
-          </button>
-        </div>
+
+          {/* Preset selector */}
+          {Object.keys(COMPLIANCE_PRESETS[content.industryType] || {}).length > 0 && (
+            <div className="space-y-2">
+              <Label>Quick Presets</Label>
+              <select
+                value={content.preset || 'custom'}
+                onChange={(e) => handlePresetChange(e.target.value)}
+                className="w-full h-10 px-3 border rounded-md"
+              >
+                <option value="custom">Custom</option>
+                {Object.entries(COMPLIANCE_PRESETS[content.industryType] || {}).map(([key, preset]) => (
+                  <option key={key} value={key}>{preset.name}</option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Select a preset to auto-fill common compliance fields
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       <div className="grid grid-cols-2 gap-4">
@@ -349,6 +700,12 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
         {content.industryType === 'healthcare' && renderHealthcareFields(content.fields as HealthcareComplianceFields)}
         {content.industryType === 'finance' && renderFinanceFields(content.fields as FinanceComplianceFields)}
         {content.industryType === 'real_estate' && renderRealEstateFields(content.fields as RealEstateComplianceFields)}
+        {content.industryType === 'insurance' && renderInsuranceFields(content.fields as InsuranceComplianceFields)}
+        {content.industryType === 'accounting' && renderAccountingFields(content.fields as AccountingComplianceFields)}
+        {content.industryType === 'consulting' && renderConsultingFields(content.fields as ConsultingComplianceFields)}
+        {content.industryType === 'technology' && renderTechnologyFields(content.fields as TechnologyComplianceFields)}
+        {content.industryType === 'education' && renderEducationFields(content.fields as EducationComplianceFields)}
+        {content.industryType === 'non_profit' && renderNonProfitFields(content.fields as NonProfitComplianceFields)}
         {content.industryType === 'general' && (
           <div className="col-span-2 space-y-4">
             <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">

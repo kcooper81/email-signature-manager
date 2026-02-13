@@ -47,11 +47,11 @@ export default async function DashboardLayout({
             <BrandingProviderWrapper>
               <ImpersonationBanner />
               <MspContextBanner />
-              <div className="min-h-screen bg-background flex flex-col">
+              <div className="h-screen bg-background flex flex-col">
                 <DashboardHeader user={user} isAdmin={isSuperAdmin} />
-                <div className="flex flex-1">
+                <div className="flex flex-1 min-h-0">
                   <DashboardNav />
-                  <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
+                  <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden overflow-y-auto">{children}</main>
                 </div>
                 <PoweredByFooter />
                 <DevBypassIndicator />
