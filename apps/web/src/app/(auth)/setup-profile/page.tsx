@@ -80,46 +80,22 @@ export default function SetupProfilePage() {
     setSubmitting(true);
 
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const response = await fetch('/api/setup-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          organizationName: formData.organizationName,
+        }),
+      });
 
-      if (!user) {
-        setError('Session expired. Please log in again.');
-        router.push('/login');
-        return;
-      }
+      const data = await response.json();
 
-      // Create organization
-      const { data: newOrg, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: formData.organizationName,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .select('id')
-        .single();
-
-      if (orgError || !newOrg) {
-        throw new Error('Failed to create organization');
-      }
-
-      // Create user record
-      const { error: userError } = await supabase
-        .from('users')
-        .insert({
-          auth_id: user.id,
-          email: user.email!,
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          role: 'owner',
-          organization_id: newOrg.id,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
-
-      if (userError) {
-        throw new Error('Failed to create user profile');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to complete setup');
       }
 
       // Success! Redirect to dashboard
