@@ -824,7 +824,7 @@ export default function TeamMembersPage() {
         </Button>
       )}
       {memberLimitReached ? (
-        <Button variant="outline" className="border-violet-300 text-violet-700 hover:bg-violet-50" asChild>
+        <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/5" asChild>
           <a href="/settings/billing">
             <Lock className="mr-2 h-4 w-4" />
             Upgrade to Add More
@@ -978,7 +978,7 @@ export default function TeamMembersPage() {
                   onClick={() => setSourceFilter(filter)}
                   className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                     sourceFilter === filter
-                      ? 'bg-violet-600 text-white shadow-sm'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -1013,9 +1013,9 @@ export default function TeamMembersPage() {
         <CardContent className="overflow-hidden relative">
           {/* Sticky selection action bar */}
           {selectedMembers.size > 0 && (
-            <div className="sticky top-16 z-20 bg-violet-50 border border-violet-200 rounded-lg p-3 mb-4 shadow-md backdrop-blur-sm bg-violet-50/95">
+            <div className="sticky top-16 z-20 bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 shadow-md backdrop-blur-sm">
               <div className="flex items-center justify-between gap-4">
-                <span className="text-sm font-medium text-violet-800">
+                <span className="text-sm font-medium text-primary">
                   {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
                 </span>
                 <div className="flex gap-2">
@@ -1040,7 +1040,7 @@ export default function TeamMembersPage() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedMembers(new Set())}
-                    className="text-violet-600 hover:text-violet-800"
+                    className="text-primary hover:text-primary/80"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -1279,7 +1279,7 @@ export default function TeamMembersPage() {
                                 emp.role === 'admin' 
                                   ? 'bg-blue-100 text-blue-800' 
                                   : 'bg-gray-100 text-gray-800'
-                              } ${changingRole === emp.id ? 'opacity-50' : 'hover:ring-2 hover:ring-violet-300'}`}
+                              } ${changingRole === emp.id ? 'opacity-50' : 'hover:ring-2 hover:ring-primary/30'}`}
                             >
                               <option value="member">member</option>
                               <option value="admin">admin</option>
@@ -1602,7 +1602,7 @@ export default function TeamMembersPage() {
       <Modal open={showAdminInviteModal} onClose={() => setShowAdminInviteModal(false)}>
         <ModalHeader>
           <ModalTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-violet-600" />
+            <Shield className="h-5 w-5 text-primary" />
             Invite Admin
           </ModalTitle>
           <ModalDescription>

@@ -70,7 +70,7 @@ export function DashboardNav() {
         className={cn(
           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
           isActive
-            ? 'bg-violet-600 text-white shadow-sm'
+            ? 'bg-primary text-primary-foreground shadow-sm'
             : 'text-muted-foreground hover:bg-accent hover:text-foreground'
         )}
       >
@@ -86,7 +86,7 @@ export function DashboardNav() {
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full bg-violet-600 text-white shadow-lg hover:bg-violet-700"
+        className="lg:hidden fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
       >
         {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -131,7 +131,7 @@ export function DashboardNav() {
                 setPartnerModalOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-violet-600 hover:bg-accent hover:text-violet-700 w-full"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-primary hover:bg-accent hover:text-primary w-full"
             >
               <Sparkles className="h-4 w-4" />
               Become a Partner

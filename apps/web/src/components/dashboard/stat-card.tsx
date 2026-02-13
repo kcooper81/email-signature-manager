@@ -20,8 +20,8 @@ export function StatCard({ title, value, description, icon: Icon, trend, classNa
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-muted-foreground">{title}</p>
         {Icon && (
-          <div className="rounded-lg bg-violet-100 p-2">
-            <Icon className="h-4 w-4 text-violet-600" />
+          <div className="rounded-lg bg-primary/10 p-2">
+            <Icon className="h-4 w-4 text-primary" />
           </div>
         )}
       </div>

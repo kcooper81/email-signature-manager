@@ -78,7 +78,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
               </p>
               <p className="text-xs text-gray-300">{user.email}</p>
             </div>
-            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 text-white flex items-center justify-center text-xs font-medium">
+            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center text-xs font-medium">
               {initials}
             </div>
           </div>

@@ -121,9 +121,9 @@ export function BrandingProvider({
 
   const isWhiteLabeled = Boolean(mspOrgId && branding.hideSigglyBranding);
   
-  // Only generate CSS variables if this is an MSP-branded experience
-  // Regular users should use the default Tailwind theme, not branding overrides
-  const cssVariables = mspOrgId ? generateCssVariables(branding) : {};
+  // Generate CSS variables for all users to ensure consistent branding
+  // MSP partners can customize these, regular users get default Siggly branding
+  const cssVariables = generateCssVariables(branding);
 
   // Apply CSS variables to document root (only for MSP-branded experiences)
   useEffect(() => {
@@ -145,8 +145,6 @@ export function BrandingProvider({
 
   // Apply custom CSS if provided (premium feature)
   useEffect(() => {
-    if (!mspOrgId) return;
-    
     if (branding.customCss) {
       const styleId = 'msp-custom-css';
       let styleEl = document.getElementById(styleId) as HTMLStyleElement | null;
@@ -168,7 +166,7 @@ export function BrandingProvider({
     }
 
     // Update document title if company name is provided
-    if (branding.companyName && branding.companyName !== 'Siggly') {
+    if (mspOrgId && branding.companyName && branding.companyName !== 'Siggly') {
       const originalTitle = document.title;
       if (originalTitle.includes('Siggly')) {
         document.title = originalTitle.replace('Siggly', branding.companyName);
