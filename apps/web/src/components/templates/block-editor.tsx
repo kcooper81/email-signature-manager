@@ -165,7 +165,7 @@ function ImageEditor({
       const filePath = `logos/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('signatures')
+        .from('signature-assets')
         .upload(filePath, file);
 
       if (uploadError) {
@@ -175,7 +175,7 @@ function ImageEditor({
       }
 
       const { data: { publicUrl } } = supabase.storage
-        .from('signatures')
+        .from('signature-assets')
         .getPublicUrl(filePath);
 
       onChange({ ...content, src: publicUrl });
@@ -813,6 +813,35 @@ function SocialEditor({
         </div>
       )}
 
+      <div className="space-y-2">
+        <Label>Display Mode</Label>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant={content.displayMode === 'icons' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onChange({ ...content, displayMode: 'icons' })}
+            className="flex-1"
+          >
+            Icons
+          </Button>
+          <Button
+            type="button"
+            variant={content.displayMode === 'text' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => onChange({ ...content, displayMode: 'text' })}
+            className="flex-1"
+          >
+            Text
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {content.displayMode === 'icons' 
+            ? 'Social links will display as icons' 
+            : 'Social links will display as text names'}
+        </p>
+      </div>
+
       {content.platforms.length > 0 && (
         <div className="space-y-3">
           <Label>Platform URLs</Label>
@@ -861,16 +890,18 @@ function SocialEditor({
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label>Icon Size (px)</Label>
-        <Input
-          type="number"
-          value={content.iconSize}
-          onChange={(e) => onChange({ ...content, iconSize: parseInt(e.target.value) || 24 })}
-          min={16}
-          max={48}
-        />
-      </div>
+      {content.displayMode === 'icons' && (
+        <div className="space-y-2">
+          <Label>Icon Size (px)</Label>
+          <Input
+            type="number"
+            value={content.iconSize}
+            onChange={(e) => onChange({ ...content, iconSize: parseInt(e.target.value) || 24 })}
+            min={16}
+            max={48}
+          />
+        </div>
+      )}
     </div>
   );
 }

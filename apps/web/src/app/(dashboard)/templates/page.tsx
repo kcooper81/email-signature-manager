@@ -228,9 +228,9 @@ export default function TemplatesPage() {
               </CardHeader>
               <CardContent>
                 <Link href={`/templates/${template.id}`}>
-                  <div className="bg-card border rounded-lg p-4 min-h-[120px] hover:border-primary/50 transition-colors cursor-pointer overflow-hidden">
+                  <div className="bg-card rounded-lg p-6 min-h-[120px] hover:bg-accent/50 transition-colors cursor-pointer overflow-hidden">
                     {template.blocks && template.blocks.length > 0 ? (
-                      <div className="transform scale-[0.85] origin-top-left">
+                      <div className="transform scale-[0.9] origin-top-left">
                         <SignaturePreview blocks={template.blocks} />
                       </div>
                     ) : (

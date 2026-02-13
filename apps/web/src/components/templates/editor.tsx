@@ -379,6 +379,7 @@ function getDefaultContent(type: SignatureBlockType, industry: IndustryType): an
     case 'social':
       return {
         platforms: [],
+        displayMode: 'icons',
         iconSize: 24,
         iconStyle: 'color',
       };
@@ -497,6 +498,71 @@ function getDefaultComplianceFields(industry: IndustryType): any {
           brokerageName: '',
           equalHousingLogo: false 
         } 
+      };
+    case 'insurance':
+      return {
+        ...baseContent,
+        fields: {
+          licenseNumber: '',
+          licenseState: '',
+          nmlsNumber: '',
+          credentials: '',
+          agencyName: '',
+          carrierAffiliations: '',
+          disclaimer: ''
+        }
+      };
+    case 'accounting':
+      return {
+        ...baseContent,
+        fields: {
+          cpaNumber: '',
+          licenseState: '',
+          credentials: '',
+          firmName: '',
+          disclaimer: ''
+        }
+      };
+    case 'consulting':
+      return {
+        ...baseContent,
+        fields: {
+          credentials: '',
+          firmName: '',
+          specializations: '',
+          disclaimer: ''
+        }
+      };
+    case 'technology':
+      return {
+        ...baseContent,
+        fields: {
+          certifications: '',
+          companyName: '',
+          gdprCompliant: false,
+          soc2Compliant: false,
+          disclaimer: ''
+        }
+      };
+    case 'education':
+      return {
+        ...baseContent,
+        fields: {
+          credentials: '',
+          institution: '',
+          accreditation: '',
+          ferpaNotice: ''
+        }
+      };
+    case 'non_profit':
+      return {
+        ...baseContent,
+        fields: {
+          ein: '',
+          organizationName: '',
+          taxExemptStatus: '',
+          disclaimer: ''
+        }
       };
     default:
       return { ...baseContent, fields: {} };
