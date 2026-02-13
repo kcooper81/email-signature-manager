@@ -11,6 +11,7 @@ interface ClientOrgData {
 
 interface MspContextState {
   isMspOrg: boolean;
+  organizationType: 'standard' | 'msp' | 'msp_client' | null;
   isViewingClient: boolean;
   currentClientOrg: ClientOrgData | null;
   availableClients: ClientOrgData[];
@@ -22,6 +23,7 @@ interface MspContextState {
 
 const MspContext = createContext<MspContextState>({
   isMspOrg: false,
+  organizationType: null,
   isViewingClient: false,
   currentClientOrg: null,
   availableClients: [],
@@ -45,6 +47,7 @@ function setMspCookie(clientId: string | null) {
 
 export function MspContextProvider({ children }: { children: ReactNode }) {
   const [isMspOrg, setIsMspOrg] = useState(false);
+  const [organizationType, setOrganizationType] = useState<'standard' | 'msp' | 'msp_client' | null>(null);
   const [currentClientOrg, setCurrentClientOrg] = useState<ClientOrgData | null>(null);
   const [availableClients, setAvailableClients] = useState<ClientOrgData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +79,9 @@ export function MspContextProvider({ children }: { children: ReactNode }) {
       .eq('id', userData.organization_id)
       .single();
 
-    const isMsp = orgData?.organization_type === 'msp';
+    const orgType = orgData?.organization_type as 'standard' | 'msp' | 'msp_client' || 'standard';
+    const isMsp = orgType === 'msp';
+    setOrganizationType(orgType);
     setIsMspOrg(isMsp);
 
     if (isMsp) {
@@ -160,6 +165,7 @@ export function MspContextProvider({ children }: { children: ReactNode }) {
     <MspContext.Provider
       value={{
         isMspOrg,
+        organizationType,
         isViewingClient: !!currentClientOrg,
         currentClientOrg,
         availableClients,
