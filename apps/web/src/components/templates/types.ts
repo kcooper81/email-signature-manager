@@ -39,7 +39,7 @@ export interface SocialBlockContent {
   }[];
   displayMode: 'icons' | 'text'; // Show icons or text names
   iconSize: number;
-  iconStyle: 'color' | 'mono' | 'circle';
+  iconColor: string; // Hex color for monochrome icons
 }
 
 export interface DividerBlockContent {

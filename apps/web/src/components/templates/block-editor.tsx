@@ -891,16 +891,38 @@ function SocialEditor({
       )}
 
       {content.displayMode === 'icons' && (
-        <div className="space-y-2">
-          <Label>Icon Size (px)</Label>
-          <Input
-            type="number"
-            value={content.iconSize}
-            onChange={(e) => onChange({ ...content, iconSize: parseInt(e.target.value) || 24 })}
-            min={16}
-            max={48}
-          />
-        </div>
+        <>
+          <div className="space-y-2">
+            <Label>Icon Size (px)</Label>
+            <Input
+              type="number"
+              value={content.iconSize}
+              onChange={(e) => onChange({ ...content, iconSize: parseInt(e.target.value) || 24 })}
+              min={16}
+              max={48}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Icon Color</Label>
+            <div className="flex gap-2">
+              <Input
+                type="color"
+                value={content.iconColor || '#666666'}
+                onChange={(e) => onChange({ ...content, iconColor: e.target.value })}
+                className="w-12 h-10 p-1"
+              />
+              <Input
+                type="text"
+                value={content.iconColor || '#666666'}
+                onChange={(e) => onChange({ ...content, iconColor: e.target.value })}
+                className="flex-1"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              All icons will be displayed in this color for a uniform look
+            </p>
+          </div>
+        </>
       )}
     </div>
   );

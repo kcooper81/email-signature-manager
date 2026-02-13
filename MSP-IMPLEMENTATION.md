@@ -213,32 +213,39 @@ CREATE TABLE partner_applications (
 
 | Component | Files |
 |-----------|-------|
+| **Foundation** |
 | Database migration | `apps/web/supabase/migrations/create_msp_multi_tenant.sql` |
 | Drizzle schema | `apps/web/src/lib/db/schema.ts` |
+| **White-Label Branding** |
 | Subdomain middleware | `apps/web/src/middleware.ts` |
 | Branding context | `apps/web/src/lib/branding/branding-context.tsx` |
 | Server branding helper | `apps/web/src/lib/branding/get-branding.ts` |
 | Branding settings UI | `apps/web/src/app/(dashboard)/settings/branding/page.tsx` |
 | Branding API | `apps/web/src/app/api/settings/branding/route.ts` |
 | Subdomain check API | `apps/web/src/app/api/settings/branding/check-subdomain/route.ts` |
-| Settings nav update | `apps/web/src/app/(dashboard)/settings/page.tsx` |
+| **Partner Application Flow** |
 | Partner application form | `apps/web/src/app/partners/apply/page.tsx` |
 | Partner application API | `apps/web/src/app/api/partners/apply/route.ts` |
 | Admin review UI | `apps/web/src/app/(admin)/admin/partner-applications/page.tsx` |
 | Approval/rejection API | `apps/web/src/app/api/admin/partner-applications/[id]/route.ts` |
-| Admin nav update | `apps/web/src/components/admin/nav.tsx` |
+| Partner email templates | `apps/web/src/lib/email/resend.ts` |
+| **Client Management** |
+| Client management UI | `apps/web/src/app/(dashboard)/clients/page.tsx` |
+| Client management API | `apps/web/src/app/api/msp/clients/route.ts` |
+| MSP context hook | `apps/web/src/hooks/use-msp-context.tsx` |
+| Effective org resolver | `apps/web/src/lib/msp/get-effective-org.ts` |
+| Billing overview API | `apps/web/src/app/api/msp/billing/route.ts` |
+| Partner coupon system | `apps/web/src/lib/billing/partner-coupons.ts` |
 
 ### 🔲 Remaining
 
-| Component | Priority | Effort |
-|-----------|----------|--------|
-| MSP dashboard | High | 3-4 days |
-| Client management UI | High | 2-3 days |
-| Client context switching | High | 2-3 days |
-| Multi-domain management | Medium | 2-3 days |
-| Consolidated billing | Medium | 3-4 days |
-| Aggregate analytics | Low | 2-3 days |
-| Approval/rejection emails | Low | 1 day |
+| Component | Priority | Effort | Notes |
+|-----------|----------|--------|-------|
+| Multi-domain management | Medium | 2-3 days | Allow clients to have multiple domains |
+| Client analytics dashboard | Low | 2-3 days | Aggregate stats across all clients |
+| Advanced access controls | Low | 2 days | Granular permissions per MSP user |
+| Client self-service portal | Low | 3-4 days | Limited admin access for client admins |
+| Partner tier upgrades | Low | 1 day | Upgrade from registered → authorized → premier |
 
 ---
 
@@ -328,70 +335,247 @@ signature, signatures, email, msp, partner
 ### Partner Application Flow
 
 ```
-/partners (Marketing Page)
+/partners/apply (Application Form)
     │
     ▼
-[Apply for Partner Program] button
-    │
-    ▼
-Application Form:
-  - Company Name
+Applicant fills out:
+  - Company Name *
   - Website
-  - Contact Email/Phone
-  - Number of clients
-  - Primary services
+  - Contact Name *
+  - Contact Email *
+  - Contact Phone
+  - Number of Clients
+  - Primary Services (checkboxes)
+  - How did you hear about us?
+  - Preferred Subdomain (optional)
+  - Additional Notes
     │
     ▼
-Application submitted → Email to Siggly team
+POST /api/partners/apply
+  ├─ Validates required fields
+  ├─ Checks for existing organization (if user logged in)
+  ├─ Creates partner_applications record (status: 'pending')
+  ├─ Stores preferred subdomain in additional_notes
+  ├─ Sends confirmation email to applicant
+  └─ Sends notification to Siggly team
     │
     ▼
+Applicant sees: "Application submitted! We'll review within 2-3 business days."
+```
+
+### Admin Approval Process
+
+```
 Admin Dashboard: /admin/partner-applications
-  - Review applications
-  - Approve / Reject
     │
     ▼
-On Approval:
-  - Set organization_type = 'msp'
-  - Send welcome email
-  - Unlock /msp/* routes
+Admin reviews application:
+  - Company details
+  - Number of clients
+  - Services offered
+  - Preferred subdomain
+    │
+    ├─────────────────┬─────────────────┐
+    ▼                 ▼                 ▼
+[Approve]        [Reject]         [Mark Under Review]
+    │
+    ▼
+PATCH /api/admin/partner-applications/[id]
+{
+  action: 'approve',
+  subdomain: 'acme-it',
+  partnerTier: 'registered',  // or 'authorized', 'premier'
+  reviewNotes: 'Approved - great fit'
+}
+    │
+    ▼
+Backend Process:
+  1. Validate subdomain (3-63 chars, not reserved)
+  2. Check subdomain availability
+  3. Decision: New org or convert existing?
+     │
+     ├─ If existing_organization_id exists:
+     │    └─ UPDATE organizations SET
+     │         organization_type = 'msp',
+     │         partner_tier = 'registered',
+     │         custom_subdomain = 'acme-it',
+     │         branding = {}
+     │
+     └─ If new organization:
+          ├─ CREATE organization (type: 'msp')
+          ├─ Link user account (role: 'owner')
+          └─ If no user exists:
+               └─ Create user + invite token (14-day expiry)
+  4. Update application (status: 'approved')
+  5. Create/verify Stripe partner coupon
+     - Registered: 15% discount
+     - Authorized: 20% discount
+     - Premier: 25% discount
+  6. Store partner_coupon_tier in org metadata
+  7. Create audit log
+  8. Send approval email with portal URL
+    │
+    ▼
+Partner receives email:
+  Subject: "Welcome to the Siggly Partner Program!"
+  - Portal URL: https://acme-it.siggly.io
+  - Partner tier: Registered
+  - Next steps: Add your first client
 ```
 
-### MSP Onboarding (After Approval)
+### What Happens After Approval
+
+**Organization Setup:**
+- ✅ Organization created/converted with `organization_type: 'msp'`
+- ✅ Partner tier assigned (`registered`, `authorized`, or `premier`)
+- ✅ Custom subdomain configured (e.g., `acme-it.siggly.io`)
+- ✅ Empty branding object initialized (ready for customization)
+- ✅ Stripe discount coupon created and linked
+
+**User Access:**
+- ✅ Contact email linked as organization owner
+- ✅ If new user: invite sent (14-day expiration)
+- ✅ If existing user: role updated to owner
+
+**Portal Access:**
+- ✅ Partner can log in at `acme-it.siggly.io`
+- ✅ Middleware detects subdomain → applies branding
+- ✅ Same Siggly app, white-labeled experience
+- ✅ Access to `/clients` page for client management
+
+**Billing:**
+- ✅ Partner discount stored in metadata
+- ⏳ Applied automatically when partner subscribes
+- ⏳ Discount applies to all future invoices
+
+### MSP Client Management Flow
 
 ```
-1. Welcome Email → [Access Partner Portal]
-       │
-       ▼
-2. First Login → /msp/dashboard
-   "Welcome! Let's add your first client."
-       │
-       ▼
-3. Add Client → /msp/clients/new
-   - Client Name
-   - Primary Domain
-   - Contact Info
-       │
-       ▼
-4. Connect Client's Email
-   - [Connect Google] [Connect Microsoft]
-   - Or [Send Invite to Client Admin]
-       │
-       ▼
-5. MSP Dashboard with Client List
+Partner logs in → /clients
+    │
+    ▼
+[Add Client] button
+    │
+    ▼
+Add Client Form:
+  - Company Name * (e.g., "ABC Corporation")
+  - Domain (optional, e.g., "abc.com")
+  - Admin First Name
+  - Admin Last Name
+  - Admin Email * (e.g., "john@abc.com")
+    │
+    ▼
+POST /api/msp/clients
+  ├─ Validates user is in MSP organization
+  ├─ Checks user has owner/admin role
+  ├─ Creates client organization:
+  │    organization_type: 'msp_client'
+  │    parent_organization_id: [MSP org ID]
+  ├─ Creates invite for client admin:
+  │    role: 'owner'
+  │    expires: 7 days
+  ├─ Grants MSP access:
+  │    msp_client_access table
+  │    access_level: 'full'
+  ├─ Creates audit log
+  └─ Sends invite email to client admin
+    │
+    ▼
+Response includes invite URL:
+  https://siggly.io/invite/[token]
+    │
+    ▼
+Partner can:
+  - Copy invite link
+  - Email it to client
+  - Client clicks link → creates account → joins org
 ```
 
 ### Client Context Switching
 
 ```
-Header when in MSP context:
+MSP Dashboard: /clients
 ┌─────────────────────────────────────────────────────────────────┐
-│  Siggly                    [All Clients ▼]    [Acme IT] [👤]    │
+│  Client List:                                                    │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │ ABC Corporation                    [Manage] button       │   │
+│  │ abc.com • 25 users • Added Jan 15                        │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │ XYZ Inc                            [Manage] button       │   │
+│  │ xyz.com • 12 users • Added Feb 1                         │   │
+│  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 
-Header when in Client context:
+When [Manage] clicked:
+  1. useMspContext.switchToClient({ id, name, domain })
+  2. Stores in localStorage: 'msp_client_context'
+  3. Sets cookie: 'msp_client_org' = client_id
+  4. Redirects to /dashboard
+  5. All API calls now scoped to client org
+
+Header when viewing client:
 ┌─────────────────────────────────────────────────────────────────┐
-│  Siggly    [← Back to MSP]    [ABC Corp ▼]    [Acme IT] [👤]    │
+│  [← Back to Clients]    Viewing: ABC Corporation    [Acme IT]   │
 └─────────────────────────────────────────────────────────────────┘
+
+Server-side context resolution:
+  1. Read 'msp_client_org' cookie
+  2. Validate MSP user has access:
+     - User's org is type 'msp'
+     - Client org has parent_organization_id = MSP org
+     - Client org is type 'msp_client'
+  3. Return effective org ID (client org)
+  4. MSP user acts as 'admin' in client context
+```
+
+### Data Scoping Architecture
+
+```typescript
+// Client-side: Switch context
+const { switchToClient } = useMspContext();
+switchToClient({ id: 'client-123', name: 'ABC Corp', domain: 'abc.com' });
+// Sets localStorage + cookie
+
+// Server-side: Resolve effective org
+const effectiveOrg = await getEffectiveOrg();
+// Returns:
+{
+  organizationId: 'client-123',  // The client org
+  userId: 'msp-user-456',        // MSP user ID
+  userRole: 'admin',             // MSP acts as admin
+  isMspContext: true,            // Flag for MSP context
+  mspOrgId: 'msp-789'           // Original MSP org
+}
+
+// All queries automatically scoped
+const signatures = await db.query.signatures.findMany({
+  where: eq(signatures.organization_id, effectiveOrg.organizationId)
+});
+// Returns signatures for ABC Corp, not MSP org
+```
+
+### Multi-Tenant Hierarchy
+
+```
+Organizations Table:
+┌─────────────────────────────────────────────────────────────────┐
+│ Acme IT Services                                                │
+│ id: msp-789                                                     │
+│ organization_type: 'msp'                                        │
+│ partner_tier: 'registered'                                      │
+│ custom_subdomain: 'acme-it'                                     │
+│ parent_organization_id: NULL                                    │
+└─────────────────────────────────────────────────────────────────┘
+                          │
+        ┌─────────────────┴─────────────────┐
+        ▼                                   ▼
+┌──────────────────────┐         ┌──────────────────────┐
+│ ABC Corporation      │         │ XYZ Inc              │
+│ id: client-123       │         │ id: client-456       │
+│ type: 'msp_client'   │         │ type: 'msp_client'   │
+│ parent_id: msp-789   │         │ parent_id: msp-789   │
+└──────────────────────┘         └──────────────────────┘
 ```
 
 ---
@@ -406,24 +590,61 @@ Header when in Client context:
 | PUT | `/api/settings/branding` | Update branding settings |
 | GET | `/api/settings/branding/check-subdomain?subdomain=xxx` | Check subdomain availability |
 
-### Partner Applications (Planned)
+### Partner Applications
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/api/partners/apply` | Submit partner application |
-| GET | `/api/admin/partner-applications` | List applications (admin) |
-| PATCH | `/api/admin/partner-applications/[id]` | Approve/reject (admin) |
+| Method | Route | Description | Status |
+|--------|-------|-------------|--------|
+| POST | `/api/partners/apply` | Submit partner application | ✅ Built |
+| GET | `/api/admin/partner-applications` | List applications (admin) | ✅ Built |
+| PATCH | `/api/admin/partner-applications/[id]` | Approve/reject (admin) | ✅ Built |
 
-### MSP Client Management (Planned)
+**Approval Request Body:**
+```json
+{
+  "action": "approve",
+  "subdomain": "acme-it",
+  "partnerTier": "registered",
+  "reviewNotes": "Approved - great fit"
+}
+```
 
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/api/msp/clients` | List all clients |
-| POST | `/api/msp/clients` | Create new client org |
-| GET | `/api/msp/clients/[id]` | Get client details |
-| PATCH | `/api/msp/clients/[id]` | Update client |
-| DELETE | `/api/msp/clients/[id]` | Remove client |
-| POST | `/api/msp/clients/[id]/switch` | Switch to client context |
+**Rejection Request Body:**
+```json
+{
+  "action": "reject",
+  "reviewNotes": "Not enough clients",
+  "sendNotification": true
+}
+```
+
+### MSP Client Management
+
+| Method | Route | Description | Status |
+|--------|-------|-------------|--------|
+| GET | `/api/msp/clients` | List all clients | ✅ Built |
+| POST | `/api/msp/clients` | Create new client org | ✅ Built |
+| GET | `/api/msp/billing` | Get billing summary | ✅ Built |
+
+**Create Client Request:**
+```json
+{
+  "name": "ABC Corporation",
+  "domain": "abc.com",
+  "adminEmail": "john@abc.com",
+  "adminFirstName": "John",
+  "adminLastName": "Smith"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "client": { "id": "...", "name": "ABC Corporation" },
+  "inviteUrl": "https://siggly.io/invite/[token]",
+  "message": "Client created. Invite sent to john@abc.com"
+}
+```
 
 ---
 

@@ -17,14 +17,23 @@ import type {
 import { ComplianceBlockPreview } from './compliance-block';
 import { Mail, Phone, Globe, MapPin, Calendar, Briefcase, User, Building2, Link as LinkIcon } from 'lucide-react';
 
-// Social media icon URLs (same as email client preview for consistency)
-const SOCIAL_ICONS: Record<string, string> = {
-  linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
-  twitter: 'https://cdn.simpleicons.org/x/000000',
-  facebook: 'https://cdn.simpleicons.org/facebook/1877F2',
-  instagram: 'https://cdn.simpleicons.org/instagram/E4405F',
-  youtube: 'https://cdn.simpleicons.org/youtube/FF0000',
-  github: 'https://cdn.simpleicons.org/github/181717',
+// Social media icon URLs - using Simple Icons CDN with color parameter
+// Format: https://cdn.simpleicons.org/{icon}/{color}
+const getSocialIconUrl = (platform: string, color: string): string => {
+  // Remove # from hex color for URL
+  const hexColor = color.replace('#', '');
+  
+  const iconMap: Record<string, string> = {
+    linkedin: 'linkedin',
+    twitter: 'x',
+    facebook: 'facebook',
+    instagram: 'instagram',
+    youtube: 'youtube',
+    github: 'github',
+  };
+  
+  const iconName = iconMap[platform];
+  return iconName ? `https://cdn.simpleicons.org/${iconName}/${hexColor}` : '';
 };
 
 interface SignaturePreviewProps {
@@ -335,6 +344,7 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
 
   const displayMode = content.displayMode || 'icons';
   const iconSize = content.iconSize || 24;
+  const iconColor = content.iconColor || '#666666';
 
   return (
     <div style={{ display: 'flex', gap: 12, marginTop: 8, alignItems: 'center' }}>
@@ -352,7 +362,7 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
               target="_blank"
               rel="noopener noreferrer"
               style={{ 
-                color: '#0066cc',
+                color: iconColor,
                 textDecoration: 'none',
                 fontSize: 14,
               }}
@@ -363,10 +373,10 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
           );
         }
         
-        // Display as icons - use CDN images for standard platforms
+        // Display as icons - use CDN images with custom color for standard platforms
         const iconUrl = platform.type === 'custom' && platform.icon 
           ? platform.icon 
-          : SOCIAL_ICONS[platform.type];
+          : getSocialIconUrl(platform.type, iconColor);
         
         if (iconUrl) {
           return (
@@ -399,10 +409,10 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
             href={platform.url || '#'}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: '#666' }}
+            style={{ color: iconColor }}
             title={displayName}
           >
-            <LinkIcon style={{ width: iconSize, height: iconSize }} />
+            <LinkIcon style={{ width: iconSize, height: iconSize, color: iconColor }} />
           </a>
         );
       })}

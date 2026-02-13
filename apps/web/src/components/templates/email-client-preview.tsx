@@ -4,14 +4,23 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Mail, Monitor, Smartphone, AlertCircle, ExternalLink, Apple, Moon, Sun } from 'lucide-react';
 
-// Social media icon URLs (hosted on CDN for email compatibility)
-const SOCIAL_ICONS: Record<string, string> = {
-  linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
-  twitter: 'https://cdn.simpleicons.org/x/000000',
-  facebook: 'https://cdn.simpleicons.org/facebook/1877F2',
-  instagram: 'https://cdn.simpleicons.org/instagram/E4405F',
-  youtube: 'https://cdn.simpleicons.org/youtube/FF0000',
-  github: 'https://cdn.simpleicons.org/github/181717',
+// Social media icon URLs - using Simple Icons CDN with color parameter
+// Format: https://cdn.simpleicons.org/{icon}/{color}
+const getSocialIconUrl = (platform: string, color: string): string => {
+  // Remove # from hex color for URL
+  const hexColor = color.replace('#', '');
+  
+  const iconMap: Record<string, string> = {
+    linkedin: 'linkedin',
+    twitter: 'x',
+    facebook: 'facebook',
+    instagram: 'instagram',
+    youtube: 'youtube',
+    github: 'github',
+  };
+  
+  const iconName = iconMap[platform];
+  return iconName ? `https://cdn.simpleicons.org/${iconName}/${hexColor}` : '';
 };
 
 type EmailClient = 'gmail' | 'outlook' | 'apple-mail';
@@ -428,6 +437,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
       
       const displayMode = content.displayMode || 'icons';
       const iconSize = content.iconSize || 24;
+      const iconColor = content.iconColor || '#666666';
       
       return (
         <tr>
@@ -444,7 +454,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
                     key={i} 
                     style={{ 
                       marginRight: isOutlook ? '12px' : '16px',
-                      color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                      color: colorMode === 'dark' ? adaptColor(iconColor) : iconColor,
                       textDecoration: isOutlook ? 'underline' : 'none',
                       fontSize: isOutlook ? '13px' : '14px',
                     }}
@@ -457,7 +467,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
               // Display as icons if displayMode is 'icons'
               const iconUrl = p.type === 'custom' && p.icon 
                 ? p.icon 
-                : SOCIAL_ICONS[p.type] || '';
+                : getSocialIconUrl(p.type, colorMode === 'dark' ? adaptColor(iconColor) : iconColor);
               
               // If we have an icon, render as image; otherwise fallback to text
               if (iconUrl) {
@@ -490,7 +500,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
                     key={i} 
                     style={{ 
                       marginRight: isOutlook ? '12px' : '16px',
-                      color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                      color: colorMode === 'dark' ? adaptColor(iconColor) : iconColor,
                       textDecoration: isOutlook ? 'underline' : 'none',
                       fontSize: isOutlook ? '13px' : '14px',
                     }}
