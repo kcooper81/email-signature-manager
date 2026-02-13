@@ -381,7 +381,7 @@ function getDefaultContent(type: SignatureBlockType, industry: IndustryType): an
         platforms: [],
         displayMode: 'icons',
         iconSize: 24,
-        iconStyle: 'color',
+        iconColor: '#666666',
       };
     case 'divider':
       return {
