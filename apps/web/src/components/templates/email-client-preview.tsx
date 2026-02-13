@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Mail, Monitor, Smartphone, AlertCircle, ExternalLink, Apple, Moon, Sun } from 'lucide-react';
 
+// Social media icon URLs (hosted on CDN for email compatibility)
+const SOCIAL_ICONS: Record<string, string> = {
+  linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
+  twitter: 'https://cdn.simpleicons.org/x/000000',
+  facebook: 'https://cdn.simpleicons.org/facebook/1877F2',
+  instagram: 'https://cdn.simpleicons.org/instagram/E4405F',
+  youtube: 'https://cdn.simpleicons.org/youtube/FF0000',
+  github: 'https://cdn.simpleicons.org/github/181717',
+};
+
 type EmailClient = 'gmail' | 'outlook' | 'apple-mail';
 
 interface EmailClientPreviewProps {
@@ -416,23 +426,80 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
       const platforms = content.platforms || [];
       if (platforms.length === 0) return null;
       
+      const displayMode = content.displayMode || 'icons';
+      const iconSize = content.iconSize || 24;
+      
       return (
         <tr>
-          <td style={{ padding: isOutlook ? '6px 0' : '4px 0' }}>
-            {platforms.map((p: any, i: number) => (
-              <span 
-                key={i} 
-                style={{ 
-                  marginRight: isOutlook ? '12px' : '16px',
-                  color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
-                  // Outlook shows underlines on links
-                  textDecoration: isOutlook ? 'underline' : 'none',
-                  fontSize: isOutlook ? '13px' : '14px',
-                }}
-              >
-                {p.type.charAt(0).toUpperCase() + p.type.slice(1)}
-              </span>
-            ))}
+          <td style={{ padding: isOutlook ? '6px 0' : '8px 0' }}>
+            {platforms.map((p: any, i: number) => {
+              const displayName = p.type === 'custom' && p.label 
+                ? p.label 
+                : p.type.charAt(0).toUpperCase() + p.type.slice(1);
+              
+              // Display as text if displayMode is 'text'
+              if (displayMode === 'text') {
+                return (
+                  <span 
+                    key={i} 
+                    style={{ 
+                      marginRight: isOutlook ? '12px' : '16px',
+                      color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                      textDecoration: isOutlook ? 'underline' : 'none',
+                      fontSize: isOutlook ? '13px' : '14px',
+                    }}
+                  >
+                    {displayName}
+                  </span>
+                );
+              }
+              
+              // Display as icons if displayMode is 'icons'
+              const iconUrl = p.type === 'custom' && p.icon 
+                ? p.icon 
+                : SOCIAL_ICONS[p.type] || '';
+              
+              // If we have an icon, render as image; otherwise fallback to text
+              if (iconUrl) {
+                return (
+                  <a
+                    key={i}
+                    href={p.url || '#'}
+                    style={{
+                      display: 'inline-block',
+                      margin: '0 6px',
+                      textDecoration: 'none',
+                    }}
+                    title={displayName}
+                  >
+                    <img
+                      src={iconUrl}
+                      alt={displayName}
+                      width={iconSize}
+                      height={iconSize}
+                      style={{
+                        display: 'block',
+                        border: 0,
+                      }}
+                    />
+                  </a>
+                );
+              } else {
+                return (
+                  <span 
+                    key={i} 
+                    style={{ 
+                      marginRight: isOutlook ? '12px' : '16px',
+                      color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                      textDecoration: isOutlook ? 'underline' : 'none',
+                      fontSize: isOutlook ? '13px' : '14px',
+                    }}
+                  >
+                    {displayName}
+                  </span>
+                );
+              }
+            })}
           </td>
         </tr>
       );
