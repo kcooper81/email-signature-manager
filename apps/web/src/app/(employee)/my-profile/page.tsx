@@ -156,8 +156,8 @@ export default function MyProfilePage() {
       .maybeSingle();
 
     if (error || !userData) {
-      setErrorMessage('Failed to load profile');
-      setLoading(false);
+      // User has auth but no profile - redirect to setup
+      window.location.href = '/setup-profile';
       return;
     }
 

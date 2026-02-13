@@ -27,9 +27,8 @@ export default async function EmployeeLayout({
       error: userError,
       hasData: !!userData
     });
-    // User exists in auth but not in users table - this shouldn't happen
-    // but if it does, show a helpful error instead of redirect loop
-    redirect('/login?error=user_not_found');
+    // User exists in auth but not in users table - redirect to setup
+    redirect('/setup-profile');
   }
 
   // If user is owner or admin, redirect to full dashboard
