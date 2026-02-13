@@ -1265,21 +1265,6 @@ function DisclaimerEditor({
       </Button>
 
       <div className="space-y-2">
-        <Label>Quick Templates</Label>
-        <select
-          value={content.template}
-          onChange={(e) => handleTemplateChange(e.target.value as DisclaimerBlockContent['template'])}
-          className="w-full h-10 px-3 border rounded-md"
-        >
-          <option value="confidentiality">Confidentiality</option>
-          <option value="legal">Legal / No Contract</option>
-          <option value="gdpr">GDPR Privacy</option>
-          <option value="hipaa">HIPAA (Healthcare)</option>
-          <option value="custom">Custom</option>
-        </select>
-      </div>
-
-      <div className="space-y-2">
         <Label>Disclaimer Text</Label>
         <textarea
           value={content.text}

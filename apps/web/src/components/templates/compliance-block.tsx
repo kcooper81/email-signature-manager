@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Modal, ModalHeader, ModalTitle, ModalDescription } from '@/components/ui';
 import { 
   ComplianceBlockContent, 
   IndustryType,
@@ -20,7 +23,7 @@ import {
   INDUSTRY_DISCLAIMERS,
   COMPLIANCE_PRESETS,
 } from './types';
-import { Shield, AlertCircle, Building2 } from 'lucide-react';
+import { Shield, AlertCircle, Building2, Library } from 'lucide-react';
 
 const INDUSTRY_OPTIONS: { value: IndustryType; label: string; description: string }[] = [
   { value: 'general', label: 'General Business', description: 'Standard business signature' },
@@ -42,6 +45,10 @@ interface ComplianceBlockEditorProps {
 }
 
 export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEditorProps) {
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [loadingLibrary, setLoadingLibrary] = useState(false);
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryType | 'all'>('all');
+
   const updateField = (field: string, value: string | boolean) => {
     onChange({
       ...content,
@@ -52,19 +59,21 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
     });
   };
 
-  const handlePresetChange = (presetKey: string) => {
-    if (presetKey === 'custom') {
-      onChange({ ...content, preset: 'custom' });
-      return;
-    }
-    
-    const preset = COMPLIANCE_PRESETS[content.industryType]?.[presetKey];
+  const handleOpenLibrary = () => {
+    setShowLibrary(true);
+    setLoadingLibrary(false);
+  };
+
+  const handleSelectFromLibrary = (industryType: IndustryType, presetKey: string) => {
+    const preset = COMPLIANCE_PRESETS[industryType]?.[presetKey];
     if (preset) {
       onChange({
         ...content,
+        industryType,
         preset: presetKey,
-        fields: { ...content.fields, ...preset.fields },
+        fields: { ...preset.fields },
       });
+      setShowLibrary(false);
     }
   };
 
@@ -649,50 +658,44 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
         <span>Compliance fields ensure your signatures meet industry regulations</span>
       </div>
 
+      {/* Browse Library Button */}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleOpenLibrary}
+        className="w-full"
+      >
+        <Library className="mr-2 h-4 w-4" />
+        Browse Compliance Library (30+ templates)
+      </Button>
+
       {/* Industry selector for non-general industries - allows changing */}
       {content.industryType !== 'general' && (
-        <>
-          <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-violet-600" />
-              <span className="text-sm font-medium">
-                {INDUSTRY_OPTIONS.find(o => o.value === content.industryType)?.label}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => onChange({
-                ...content,
-                industryType: 'general',
-                fields: {},
-                preset: undefined,
-              })}
-              className="text-xs text-muted-foreground hover:text-foreground"
-            >
-              Change industry
-            </button>
+        <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-violet-600" />
+            <span className="text-sm font-medium">
+              {INDUSTRY_OPTIONS.find(o => o.value === content.industryType)?.label}
+              {content.preset && COMPLIANCE_PRESETS[content.industryType]?.[content.preset] && (
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({COMPLIANCE_PRESETS[content.industryType][content.preset].name})
+                </span>
+              )}
+            </span>
           </div>
-
-          {/* Preset selector */}
-          {Object.keys(COMPLIANCE_PRESETS[content.industryType] || {}).length > 0 && (
-            <div className="space-y-2">
-              <Label>Quick Presets</Label>
-              <select
-                value={content.preset || 'custom'}
-                onChange={(e) => handlePresetChange(e.target.value)}
-                className="w-full h-10 px-3 border rounded-md"
-              >
-                <option value="custom">Custom</option>
-                {Object.entries(COMPLIANCE_PRESETS[content.industryType] || {}).map(([key, preset]) => (
-                  <option key={key} value={key}>{preset.name}</option>
-                ))}
-              </select>
-              <p className="text-xs text-muted-foreground">
-                Select a preset to auto-fill common compliance fields
-              </p>
-            </div>
-          )}
-        </>
+          <button
+            type="button"
+            onClick={() => onChange({
+              ...content,
+              industryType: 'general',
+              fields: {},
+              preset: undefined,
+            })}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Change industry
+          </button>
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-4">
@@ -708,10 +711,6 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
         {content.industryType === 'non_profit' && renderNonProfitFields(content.fields as NonProfitComplianceFields)}
         {content.industryType === 'general' && (
           <div className="col-span-2 space-y-4">
-            <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
-              <AlertCircle className="h-4 w-4" />
-              <span>Select an industry below to configure compliance fields</span>
-            </div>
             <div className="space-y-2">
               <Label>Select Industry for Compliance</Label>
               <div className="grid grid-cols-2 gap-2">
@@ -735,6 +734,80 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
           </div>
         )}
       </div>
+
+      {/* Compliance Library Modal */}
+      <Modal open={showLibrary} onClose={() => { setShowLibrary(false); setSelectedIndustry('all'); }}>
+        <ModalHeader>
+          <ModalTitle>Compliance Library</ModalTitle>
+          <ModalDescription>
+            Choose from 30+ pre-configured compliance templates across 10 industries
+          </ModalDescription>
+        </ModalHeader>
+        <div className="py-4 space-y-3">
+          {/* Industry Filter */}
+          <div className="flex gap-2">
+            <select
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value as IndustryType | 'all')}
+              className="w-full px-3 py-2 border rounded-md text-sm bg-background"
+            >
+              <option value="all">All Industries</option>
+              {INDUSTRY_OPTIONS.filter(opt => opt.value !== 'general').map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Template List */}
+          <div className="max-h-[400px] overflow-y-auto space-y-3">
+            {INDUSTRY_OPTIONS
+              .filter(opt => opt.value !== 'general')
+              .filter(opt => selectedIndustry === 'all' || opt.value === selectedIndustry)
+              .map((industry) => {
+                const presets = COMPLIANCE_PRESETS[industry.value];
+                if (!presets || Object.keys(presets).length === 0) return null;
+                
+                return (
+                  <div key={industry.value} className="space-y-2">
+                    <h4 className="font-medium text-sm text-muted-foreground px-2">
+                      {industry.label}
+                    </h4>
+                    <div className="space-y-2">
+                      {Object.entries(presets).map(([key, preset]) => (
+                        <div
+                          key={key}
+                          className="p-3 border rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                          onClick={() => handleSelectFromLibrary(industry.value, key)}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-sm">{preset.name}</span>
+                            <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">
+                              {industry.label}
+                            </span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {Object.entries(preset.fields)
+                              .filter(([_, value]) => value && value !== '')
+                              .map(([key, value]) => {
+                                if (typeof value === 'boolean') return value ? key : null;
+                                if (typeof value === 'string' && value.length > 50) {
+                                  return `${key}: ${value.substring(0, 50)}...`;
+                                }
+                                return `${key}: ${value}`;
+                              })
+                              .filter(Boolean)
+                              .slice(0, 2)
+                              .join(', ')}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      </Modal>
 
       <div className="grid grid-cols-2 gap-4 pt-4 border-t">
         <div>
