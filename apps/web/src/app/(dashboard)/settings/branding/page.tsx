@@ -259,7 +259,7 @@ export default function BrandingSettingsPage() {
                 className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
                   tab.id === 'branding'
                     ? 'bg-primary/10 text-primary font-medium'
-                    : 'text-muted-foreground hover:bg-accent'
+                    : 'text-muted-foreground hover:bg-secondary'
                 }`}
               >
                 <tab.icon className="h-5 w-5" />

@@ -290,7 +290,7 @@ export default function BillingPage() {
                 className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
                   tab.id === 'billing'
                     ? 'bg-violet-100 text-violet-900 font-medium'
-                    : 'text-muted-foreground hover:bg-accent'
+                    : 'text-muted-foreground hover:bg-secondary'
                 }`}
               >
                 <tab.icon className="h-5 w-5" />

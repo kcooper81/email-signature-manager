@@ -53,7 +53,7 @@ function FAQItem({ article }: { article: HelpArticle }) {
     <div className="border-b border-border last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-4 text-left hover:bg-accent px-4 -mx-4 transition-colors"
+        className="w-full flex items-center justify-between py-4 text-left hover:bg-secondary px-4 -mx-4 transition-colors"
       >
         <span className="font-medium text-foreground pr-4">{article.title}</span>
         {isOpen ? (
@@ -162,7 +162,7 @@ export default function SupportPage() {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCategory === null
                   ? 'bg-violet-600 text-white'
-                  : 'bg-muted text-muted-foreground hover:bg-accent'
+                  : 'bg-muted text-muted-foreground hover:bg-secondary'
               }`}
             >
               All
@@ -176,7 +176,7 @@ export default function SupportPage() {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     selectedCategory === category.name
                       ? 'bg-violet-600 text-white'
-                      : 'bg-muted text-muted-foreground hover:bg-accent'
+                      : 'bg-muted text-muted-foreground hover:bg-secondary'
                   }`}
                 >
                   <IconComponent className="h-3.5 w-3.5" />
