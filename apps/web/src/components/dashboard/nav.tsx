@@ -71,7 +71,7 @@ export function DashboardNav() {
           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
           isActive
             ? 'bg-primary text-primary-foreground shadow-sm'
-            : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+            : 'text-muted-foreground hover:bg-primary/10 hover:text-foreground'
         )}
       >
         <item.icon className="h-4 w-4" />
@@ -120,7 +120,7 @@ export function DashboardNav() {
               setFeedbackOpen(true);
               setMobileMenuOpen(false);
             }}
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-foreground w-full"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-primary/10 hover:text-foreground w-full"
           >
             <feedbackItem.icon className="h-4 w-4" />
             {feedbackItem.title}
@@ -131,7 +131,7 @@ export function DashboardNav() {
                 setPartnerModalOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-primary hover:bg-accent hover:text-primary w-full"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-primary hover:bg-primary/10 hover:text-primary w-full"
             >
               <Sparkles className="h-4 w-4" />
               Become a Partner
@@ -152,7 +152,7 @@ export function DashboardNav() {
           {bottomNavItems.map((item) => renderNavItem(item))}
           <button
             onClick={() => setFeedbackOpen(true)}
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-accent hover:text-foreground w-full text-left"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-muted-foreground hover:bg-primary/10 hover:text-foreground w-full text-left"
           >
             <feedbackItem.icon className="h-4 w-4" />
             {feedbackItem.title}
@@ -160,7 +160,7 @@ export function DashboardNav() {
           {organizationType === 'standard' && (
             <button
               onClick={() => setPartnerModalOpen(true)}
-              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-violet-600 hover:bg-accent hover:text-violet-700 w-full text-left"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 text-violet-600 hover:bg-violet-50 hover:text-violet-700 w-full text-left"
             >
               <Sparkles className="h-4 w-4" />
               Become a Partner

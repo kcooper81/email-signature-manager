@@ -1229,7 +1229,7 @@ export default function TeamMembersPage() {
                 </thead>
                 <tbody>
                   {filteredMembers.map((emp) => (
-                    <tr key={emp.id} className="border-b hover:bg-accent/50 transition-colors">
+                    <tr key={emp.id} className="border-b hover:bg-secondary/50 transition-colors">
                       <td className="p-3">
                         <input
                           type="checkbox"

@@ -688,7 +688,7 @@ export default function DeploymentsPage() {
                       className={`flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all shadow-sm ${
                         selectedTemplate === template.id 
                           ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' 
-                          : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
+                          : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-start gap-3 mb-3">
@@ -758,7 +758,7 @@ export default function DeploymentsPage() {
                 <button
                   onClick={() => { setDeployTarget('me'); setSelectedUsers([]); }}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
-                    deployTarget === 'me' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
+                    deployTarget === 'me' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
                   }`}
                 >
                   <UserIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
@@ -768,7 +768,7 @@ export default function DeploymentsPage() {
                 <button
                   onClick={() => setDeployTarget('selected')}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
-                    deployTarget === 'selected' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
+                    deployTarget === 'selected' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
                   }`}
                   disabled={users.length === 0}
                 >
@@ -779,7 +779,7 @@ export default function DeploymentsPage() {
                 <button
                   onClick={() => { setDeployTarget('all'); setSelectedUsers([]); }}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
-                    deployTarget === 'all' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-accent hover:shadow-md'
+                    deployTarget === 'all' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
                   }`}
                   disabled={users.length === 0}
                 >
@@ -838,7 +838,7 @@ export default function DeploymentsPage() {
                           <button
                             key={dept}
                             onClick={() => selectByDepartment(dept)}
-                            className="text-xs px-2 py-1 bg-background border rounded hover:bg-accent"
+                            className="text-xs px-2 py-1 bg-background border rounded hover:bg-secondary"
                           >
                             {dept}
                           </button>
@@ -879,7 +879,7 @@ export default function DeploymentsPage() {
                         </thead>
                         <tbody>
                           {filteredUsers.map((user) => (
-                            <tr key={user.id} className="border-b hover:bg-accent/50 transition-colors">
+                            <tr key={user.id} className="border-b hover:bg-secondary/50 transition-colors">
                               <td className="p-2">
                                 <input
                                   type="checkbox"
@@ -1121,7 +1121,7 @@ export default function DeploymentsPage() {
                           const userHistory = userDeploymentHistory.find(h => h.user_id === user.id);
                           
                           return (
-                            <tr key={user.id} className="border-b last:border-b-0 hover:bg-accent/50 transition-colors">
+                            <tr key={user.id} className="border-b last:border-b-0 hover:bg-secondary/50 transition-colors">
                               <td className="p-3">
                                 <div className="flex items-center gap-3">
                                   <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center">
