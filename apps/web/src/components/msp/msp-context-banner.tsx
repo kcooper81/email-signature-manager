@@ -12,9 +12,9 @@ export function MspContextBanner() {
   if (!isMspOrg) return null;
 
   return (
-    <div className={`px-4 py-2 flex items-center justify-between text-sm ${
-      isViewingClient 
-        ? 'bg-amber-500 text-amber-950' 
+    <div className={`relative z-50 px-4 py-2 flex items-center justify-between text-sm ${
+      isViewingClient
+        ? 'bg-amber-500 text-amber-950'
         : 'bg-violet-600 text-white'
     }`}>
       <div className="flex items-center gap-3">

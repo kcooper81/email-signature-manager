@@ -112,13 +112,13 @@ function generateSignatureHtml(blocks: any[]): string {
       case 'contact-info':
         const contactItems = [];
         if (content.email) {
-          contactItems.push(`<a href="mailto:${escapeHtml(content.email)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(content.email)}</a>`);
+          contactItems.push(`<a href="mailto:${escapeHtml(content.email)}" style="color: #4d52de; text-decoration: none;">${escapeHtml(content.email)}</a>`);
         }
         if (content.phone) {
-          contactItems.push(`<a href="tel:${escapeHtml(content.phone)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(content.phone)}</a>`);
+          contactItems.push(`<a href="tel:${escapeHtml(content.phone)}" style="color: #4d52de; text-decoration: none;">${escapeHtml(content.phone)}</a>`);
         }
         if (content.website) {
-          contactItems.push(`<a href="${escapeHtml(content.website)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(content.website)}</a>`);
+          contactItems.push(`<a href="${escapeHtml(content.website)}" style="color: #4d52de; text-decoration: none;">${escapeHtml(content.website)}</a>`);
         }
         if (content.address) {
           contactItems.push(escapeHtml(content.address));
@@ -179,7 +179,7 @@ function generateSignatureHtml(blocks: any[]): string {
         html += `
       <tr>
         <td style="padding: 8px 0;">
-          <a href="${escapeHtml(content.url || '#')}" style="display: inline-block; padding: 10px 20px; background-color: ${content.backgroundColor || '#0066cc'}; color: ${content.textColor || '#ffffff'}; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <a href="${escapeHtml(content.url || '#')}" style="display: inline-block; padding: 10px 20px; background-color: ${content.backgroundColor || '#4d52de'}; color: ${content.textColor || '#ffffff'}; text-decoration: none; border-radius: 4px; font-size: 14px;">
             ${escapeHtml(content.text || 'Click here')}
           </a>
         </td>

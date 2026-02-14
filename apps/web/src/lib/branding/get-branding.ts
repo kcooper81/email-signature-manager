@@ -11,7 +11,7 @@ export interface MspBrandingInfo {
 
 // Default Siggly branding
 const DEFAULT_BRANDING: OrganizationBranding = {
-  primaryColor: '#0066cc',
+  primaryColor: '#4d52de',
   secondaryColor: '#f8fafc',
   accentColor: '#10b981',
   companyName: 'Siggly',

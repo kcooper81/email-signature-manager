@@ -36,7 +36,7 @@ export default function BrandingSettingsPage() {
   };
   
   const [formData, setFormData] = useState<BrandingFormData>({
-    primaryColor: '#0066cc',
+    primaryColor: '#4d52de',
     secondaryColor: '#f8fafc',
     accentColor: '#10b981',
     textColor: '#ffffff',
@@ -330,7 +330,7 @@ export default function BrandingSettingsPage() {
                       type="text"
                       value={formData.primaryColor}
                       onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                      placeholder="#0066cc"
+                      placeholder="#4d52de"
                       className="flex-1"
                     />
                   </div>
