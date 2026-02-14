@@ -7,3 +7,4 @@ export { MarketingTab } from './marketing-tab';
 export { SalesTab } from './sales-tab';
 export { HRTab } from './hr-tab';
 export { ITTab } from './it-tab';
+export { CampaignsTab } from './campaigns-tab';
