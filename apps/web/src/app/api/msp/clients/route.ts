@@ -125,11 +125,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Not an MSP organization' }, { status: 403 });
     }
 
+    // Generate slug from organization name
+    const generateSlug = (name: string) => {
+      return name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 63);
+    };
+
+    const slug = generateSlug(name);
+
     // Create the client organization
     const { data: newClient, error: createError } = await supabase
       .from('organizations')
       .insert({
         name,
+        slug,
         domain: domain || null,
         parent_organization_id: userData.organization_id,
         organization_type: 'msp_client',
@@ -139,6 +151,37 @@ export async function POST(request: NextRequest) {
 
     if (createError) {
       throw createError;
+    }
+
+    // Create organization_settings record
+    const { error: settingsError } = await supabase
+      .from('organization_settings')
+      .insert({
+        organization_id: newClient.id,
+        allow_employee_self_manage: true,
+        allow_employee_personal_links: true,
+        allow_employee_calendar_integration: true,
+        allow_employee_ooo_banners: true,
+        google_calendar_enabled: true,
+      });
+
+    if (settingsError) {
+      console.error('Failed to create organization_settings:', settingsError);
+      // Don't fail the whole operation, but log it
+    }
+
+    // Create subscriptions record (free plan by default)
+    const { error: subscriptionError } = await supabase
+      .from('subscriptions')
+      .insert({
+        organization_id: newClient.id,
+        plan: 'free',
+        status: 'active',
+      });
+
+    if (subscriptionError && subscriptionError.code !== '23505') {
+      console.error('Failed to create subscription record:', subscriptionError);
+      // Don't fail the whole operation, but log it
     }
 
     // Create an invite for the client admin

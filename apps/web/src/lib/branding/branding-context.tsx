@@ -8,6 +8,7 @@ const DEFAULT_BRANDING: OrganizationBranding = {
   primaryColor: '#0066cc',
   secondaryColor: '#f8fafc',
   accentColor: '#10b981',
+  textColor: '#ffffff',
   companyName: 'Siggly',
   hideSigglyBranding: false,
   hideHelpLinks: false,
@@ -95,6 +96,13 @@ function generateCssVariables(branding: OrganizationBranding): Record<string, st
     vars['--brand-accent-hsl'] = hexToHsl(branding.accentColor);
     // Override Tailwind's accent color
     vars['--accent'] = hexToHsl(branding.accentColor);
+  }
+
+  if (branding.textColor) {
+    vars['--brand-text'] = branding.textColor;
+    vars['--brand-text-hsl'] = hexToHsl(branding.textColor);
+    // Override Tailwind's primary-foreground (text on primary color backgrounds)
+    vars['--primary-foreground'] = hexToHsl(branding.textColor);
   }
 
   return vars;
