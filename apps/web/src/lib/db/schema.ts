@@ -37,6 +37,7 @@ export type OrganizationBranding = {
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
+  textColor?: string;
   logoUrl?: string;
   logoIconUrl?: string;
   logoDarkUrl?: string;

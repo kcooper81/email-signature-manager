@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, redirect } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Upload, Check, X, ExternalLink, Palette, Image, Type, Globe, Eye, Trash2 } from 'lucide-react';
+import { Loader2, Upload, Check, X, ExternalLink, Palette, Image, Type, Globe, Eye, Trash2, User, Building2, Bell, Shield, CreditCard, Monitor } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import type { OrganizationBranding } from '@/lib/db/schema';
 
@@ -38,6 +39,7 @@ export default function BrandingSettingsPage() {
     primaryColor: '#0066cc',
     secondaryColor: '#f8fafc',
     accentColor: '#10b981',
+    textColor: '#ffffff',
     logoUrl: '',
     logoIconUrl: '',
     logoDarkUrl: '',
@@ -188,6 +190,7 @@ export default function BrandingSettingsPage() {
             primaryColor: formData.primaryColor,
             secondaryColor: formData.secondaryColor,
             accentColor: formData.accentColor,
+            textColor: formData.textColor,
             logoUrl: formData.logoUrl,
             logoIconUrl: formData.logoIconUrl,
             logoDarkUrl: formData.logoDarkUrl,
@@ -226,15 +229,48 @@ export default function BrandingSettingsPage() {
 
   const isMsp = organizationType === 'msp';
 
+  const settingsTabs = [
+    { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
+    { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
+    ...(isMsp ? [{ id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' }] : []),
+    { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
+    { id: 'appearance', label: 'Appearance', icon: Monitor, href: '/settings' },
+    { id: 'security', label: 'Security', icon: Shield, href: '/settings' },
+  ];
+
   return (
-    <div className="container max-w-4xl py-8">
+    <div className="space-y-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Branding Settings</h1>
+        <h1 className="text-3xl font-bold">Settings</h1>
         <p className="text-muted-foreground mt-2">
-          Customize the look and feel of your email signature portal
-          {isMsp && ' for your clients'}
+          Manage your account and preferences
         </p>
       </div>
+
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar */}
+        <div className="w-full lg:w-56 shrink-0">
+          <nav className="space-y-1 lg:sticky lg:top-6">
+            {settingsTabs.map((tab) => (
+              <Link
+                key={tab.id}
+                href={tab.href}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
+                  tab.id === 'branding'
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-accent'
+                }`}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 max-w-4xl">
 
       {error && (
         <Alert variant="destructive" className="mb-6">
@@ -249,7 +285,7 @@ export default function BrandingSettingsPage() {
         </Alert>
       )}
 
-      <Tabs defaultValue="colors" className="space-y-6">
+          <Tabs defaultValue="colors" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="colors" className="flex items-center gap-2">
             <Palette className="h-4 w-4" />
@@ -344,12 +380,42 @@ export default function BrandingSettingsPage() {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="textColor">Button Text Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="textColor"
+                    type="color"
+                    value={formData.textColor}
+                    onChange={(e) => setFormData({ ...formData, textColor: e.target.value })}
+                    className="w-12 h-10 p-1 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={formData.textColor}
+                    onChange={(e) => setFormData({ ...formData, textColor: e.target.value })}
+                    placeholder="#ffffff"
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Text color on buttons and menus</p>
+              </div>
+
               {/* Color Preview */}
               <div className="mt-6 p-6 border rounded-lg bg-background">
                 <h4 className="font-medium mb-4">Preview</h4>
                 <div className="flex flex-wrap gap-4">
-                  <Button style={{ backgroundColor: formData.primaryColor }}>
+                  <Button style={{ backgroundColor: formData.primaryColor, color: formData.textColor }}>
                     Primary Button
+                  </Button>
+                  <Button 
+                    style={{ 
+                      backgroundColor: formData.primaryColor, 
+                      color: formData.textColor,
+                      opacity: 0.9 
+                    }}
+                  >
+                    Hover State
                   </Button>
                   <Button variant="outline" style={{ borderColor: formData.primaryColor, color: formData.primaryColor }}>
                     Outline Button
@@ -361,8 +427,8 @@ export default function BrandingSettingsPage() {
                     Secondary Background
                   </div>
                   <div 
-                    className="px-4 py-2 rounded-md text-sm text-white"
-                    style={{ backgroundColor: formData.accentColor }}
+                    className="px-4 py-2 rounded-md text-sm"
+                    style={{ backgroundColor: formData.accentColor, color: formData.textColor }}
                   >
                     Accent Color
                   </div>
@@ -773,9 +839,14 @@ export default function BrandingSettingsPage() {
               Saving...
             </>
           ) : (
-            'Save Changes'
+            <>
+              <Check className="mr-2 h-4 w-4" />
+              Save Changes
+            </>
           )}
         </Button>
+      </div>
+        </div>
       </div>
     </div>
   );
