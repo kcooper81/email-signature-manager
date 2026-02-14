@@ -319,7 +319,7 @@ function renderSocialBlock(content: any, context: RenderContext): string {
 
       // Display as text if displayMode is 'text'
       if (displayMode === 'text') {
-        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
+        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #4d52de; text-decoration: none;">${name}</a>`;
       }
 
       // Display as icons if displayMode is 'icons'
@@ -331,7 +331,7 @@ function renderSocialBlock(content: any, context: RenderContext): string {
       if (iconUrl) {
         return `<a href="${trackedUrl}" style="display: inline-block; margin: 0 6px; text-decoration: none;" title="${name}"><img src="${iconUrl}" alt="${name}" width="${iconSize}" height="${iconSize}" style="display: block; border: 0;" /></a>`;
       } else {
-        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
+        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #4d52de; text-decoration: none;">${name}</a>`;
       }
     })
     .filter(Boolean)
@@ -357,20 +357,20 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
   if (content.email) {
     const email = replacePlaceholders(content.email, context);
     if (email) {
-      items.push(`<a href="mailto:${email}" class="contact-link" style="color: #0066cc; text-decoration: none;">${email}</a>`);
+      items.push(`<a href="mailto:${email}" class="contact-link" style="color: #4d52de; text-decoration: none;">${email}</a>`);
     }
   }
   if (content.phone) {
     const phone = replacePlaceholders(content.phone, context);
     if (phone) {
-      items.push(`<a href="tel:${phone}" class="contact-link" style="color: #0066cc; text-decoration: none;">${phone}</a>`);
+      items.push(`<a href="tel:${phone}" class="contact-link" style="color: #4d52de; text-decoration: none;">${phone}</a>`);
     }
   }
   if (content.website) {
     const website = replacePlaceholders(content.website, context);
     if (website) {
       const trackedWebsite = wrapTrackingUrl(website, context, detectLinkType(website) || 'custom');
-      items.push(`<a href="${trackedWebsite}" class="contact-link" style="color: #0066cc; text-decoration: none;">${website}</a>`);
+      items.push(`<a href="${trackedWebsite}" class="contact-link" style="color: #4d52de; text-decoration: none;">${website}</a>`);
     }
   }
   if (content.address) {
@@ -401,7 +401,7 @@ function renderButtonBlock(content: any, context: RenderContext): string {
   const text = content.text || 'Click Here';
   const rawUrl = replacePlaceholders(content.url || '#', context);
   const url = wrapTrackingUrl(rawUrl, context, 'button');
-  const bgColor = content.backgroundColor || '#0066cc';
+  const bgColor = content.backgroundColor || '#4d52de';
   const textColor = content.textColor || '#ffffff';
   const borderRadius = content.borderRadius || 4;
 

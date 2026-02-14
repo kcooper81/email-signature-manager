@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already has a profile
+    // Check if user already has a profile by auth_id
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
@@ -41,6 +41,41 @@ export async function POST(request: NextRequest) {
         { error: 'Profile already exists' },
         { status: 400 }
       );
+    }
+
+    // Check if a user with this email already exists (e.g. synced via Google Workspace)
+    // If so, link their auth_id instead of creating a duplicate org
+    if (user.email) {
+      const { data: emailMatch } = await supabaseAdmin
+        .from('users')
+        .select('id, organization_id, auth_id')
+        .eq('email', user.email)
+        .is('auth_id', null)
+        .maybeSingle();
+
+      if (emailMatch) {
+        // Link auth to existing user record
+        const { error: linkError } = await supabaseAdmin
+          .from('users')
+          .update({
+            auth_id: user.id,
+            first_name: firstName,
+            last_name: lastName,
+            role: 'owner',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', emailMatch.id);
+
+        if (linkError) {
+          console.error('Failed to link auth to existing user:', linkError);
+          return NextResponse.json(
+            { error: 'Failed to link account' },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({ success: true });
+      }
     }
 
     // Create organization using service role (bypasses RLS)

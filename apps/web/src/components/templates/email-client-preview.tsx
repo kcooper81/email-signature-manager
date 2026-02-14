@@ -421,7 +421,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
               <span key={i}>
                 {i > 0 && ' | '}
                 <span style={{ 
-                  color: colorMode === 'dark' ? '#66b3ff' : '#0066cc',
+                  color: colorMode === 'dark' ? '#8b8ff5' : '#4d52de',
                   // Outlook renders links with underline by default
                   textDecoration: isOutlook ? 'underline' : 'none',
                 }}>{item}</span>
@@ -525,7 +525,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
                   <tr>
                     <td
                       style={{
-                        backgroundColor: content.backgroundColor || '#0066cc',
+                        backgroundColor: content.backgroundColor || '#4d52de',
                         padding: '10px 20px',
                         fontWeight: 'bold',
                         color: content.textColor || '#ffffff',
@@ -547,7 +547,7 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
               style={{
                 display: 'inline-block',
                 padding: isMobile ? '8px 16px' : '10px 20px',
-                backgroundColor: content.backgroundColor || '#0066cc',
+                backgroundColor: content.backgroundColor || '#4d52de',
                 color: content.textColor || '#ffffff',
                 textDecoration: 'none',
                 // Gmail and Apple Mail support border-radius

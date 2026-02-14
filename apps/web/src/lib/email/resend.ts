@@ -60,7 +60,7 @@ export async function sendContactFormEmail(data: ContactFormEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">New Contact Form Submission</h1>
             </div>
             
@@ -72,7 +72,7 @@ export async function sendContactFormEmail(data: ContactFormEmailData) {
                 </tr>
                 <tr>
                   <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Email:</td>
-                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><a href="mailto:${email}" style="color: #7c3aed;">${email}</a></td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><a href="mailto:${email}" style="color: #4d52de;">${email}</a></td>
                 </tr>
                 ${company ? `
                 <tr>
@@ -141,7 +141,7 @@ export async function sendTeamInviteEmail(data: TeamInviteEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">You're Invited!</h1>
             </div>
             
@@ -157,14 +157,14 @@ export async function sendTeamInviteEmail(data: TeamInviteEmailData) {
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                   Accept Invitation
                 </a>
               </div>
               
               <p style="font-size: 14px; color: #6b7280;">
                 Or copy and paste this link into your browser:<br>
-                <a href="${inviteUrl}" style="color: #7c3aed; word-break: break-all;">${inviteUrl}</a>
+                <a href="${inviteUrl}" style="color: #4d52de; word-break: break-all;">${inviteUrl}</a>
               </p>
               
               <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px;">
@@ -180,8 +180,8 @@ export async function sendTeamInviteEmail(data: TeamInviteEmailData) {
             
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> | 
-                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> | 
+                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
               </p>
             </div>
           </body>
@@ -228,7 +228,7 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Admin Invitation</h1>
             </div>
             
@@ -256,14 +256,14 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
               </p>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                <a href="${inviteUrl}" style="display: inline-block; background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                   Accept Admin Invitation
                 </a>
               </div>
               
               <p style="font-size: 14px; color: #6b7280;">
                 Or copy and paste this link into your browser:<br>
-                <a href="${inviteUrl}" style="color: #7c3aed; word-break: break-all;">${inviteUrl}</a>
+                <a href="${inviteUrl}" style="color: #4d52de; word-break: break-all;">${inviteUrl}</a>
               </p>
               
               <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px;">
@@ -279,8 +279,8 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
             
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> | 
-                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> | 
+                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
               </p>
             </div>
           </body>
@@ -320,7 +320,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Siggly Support</h1>
             </div>
             
@@ -329,7 +329,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
               
               <p style="font-size: 16px; color: #374151;">Thank you for reaching out to us. We've reviewed your ${ticketType} and wanted to respond:</p>
               
-              <div style="background: #f3f4f6; border-left: 4px solid #7c3aed; padding: 15px; margin: 20px 0; border-radius: 4px;">
+              <div style="background: #f3f4f6; border-left: 4px solid #4d52de; padding: 15px; margin: 20px 0; border-radius: 4px;">
                 <p style="margin: 0; color: #6b7280; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Your Original Message:</p>
                 <p style="margin: 10px 0 0 0; color: #1f2937; white-space: pre-wrap;">${originalMessage}</p>
               </div>
@@ -347,8 +347,8 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p style="margin: 5px 0;">This email was sent in response to ticket #${ticketId.slice(0, 8)}</p>
               <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> | 
-                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> | 
+                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
               </p>
             </div>
           </body>
@@ -398,7 +398,7 @@ export async function sendPartnerApplicationConfirmationEmail(data: PartnerAppli
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Application Received</h1>
             </div>
 
@@ -431,8 +431,8 @@ export async function sendPartnerApplicationConfirmationEmail(data: PartnerAppli
 
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> |
-                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> |
+                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
               </p>
             </div>
           </body>
@@ -482,7 +482,7 @@ export async function sendPartnerApplicationTeamNotification(data: PartnerApplic
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">New Partner Application</h1>
             </div>
 
@@ -574,7 +574,7 @@ export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Welcome, Partner!</h1>
             </div>
 
@@ -622,14 +622,14 @@ export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
               </div>
 
               <p style="font-size: 14px; color: #6b7280; margin-top: 20px; margin-bottom: 0;">
-                Need help getting started? Reach out to us at <a href="mailto:support@siggly.io" style="color: #7c3aed;">support@siggly.io</a> and we'll be happy to assist.
+                Need help getting started? Reach out to us at <a href="mailto:support@siggly.io" style="color: #4d52de;">support@siggly.io</a> and we'll be happy to assist.
               </p>
             </div>
 
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> |
-                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> |
+                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
               </p>
             </div>
           </body>
@@ -674,7 +674,7 @@ export async function sendPartnerRejectionEmail(data: PartnerRejectionEmailData)
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px;">Application Update</h1>
             </div>
 
@@ -706,8 +706,8 @@ export async function sendPartnerRejectionEmail(data: PartnerRejectionEmailData)
 
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
               <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #7c3aed; text-decoration: none;">Visit Siggly</a> |
-                <a href="mailto:support@siggly.io" style="color: #7c3aed; text-decoration: none;">Contact Support</a>
+                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> |
+                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
               </p>
             </div>
           </body>

@@ -24,7 +24,7 @@ export function getBrandGradientStyle(direction: string = '135deg'): React.CSSPr
  * Get the primary brand color as a CSS variable
  */
 export function getPrimaryColor(): string {
-  return 'var(--brand-primary, #0066cc)';
+  return 'var(--brand-primary, #4d52de)';
 }
 
 /**
