@@ -871,6 +871,41 @@ export const signatureImpressionsRelations = relations(signatureImpressions, ({ 
 }));
 
 // ============================================
+// Brand Assets
+// ============================================
+
+export const brandAssets = pgTable('brand_assets', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  fileName: text('file_name').notNull(),
+  filePath: text('file_path').notNull(),
+  publicUrl: text('public_url').notNull(),
+  mimeType: text('mime_type').notNull(),
+  fileSize: integer('file_size').notNull(),
+  width: integer('width'),
+  height: integer('height'),
+  displayName: text('display_name').notNull(),
+  category: text('category').notNull().default('uncategorized'),
+  tags: text('tags').array().default([]),
+  description: text('description'),
+  uploadedBy: uuid('uploaded_by').references(() => users.id, { onDelete: 'set null' }),
+  usageCount: integer('usage_count').default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const brandAssetsRelations = relations(brandAssets, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [brandAssets.organizationId],
+    references: [organizations.id],
+  }),
+  uploader: one(users, {
+    fields: [brandAssets.uploadedBy],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
 // User Invites
 // ============================================
 

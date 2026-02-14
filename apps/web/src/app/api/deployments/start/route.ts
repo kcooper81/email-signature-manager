@@ -272,6 +272,11 @@ export async function POST(request: NextRequest) {
           organization: {
             name: '', // Can be populated from org settings later
           },
+          tracking: {
+            userId: targetUser.id,
+            templateId: actualTemplateId,
+            enabled: true,
+          },
         };
 
         const signatureResult = await renderSignatureToHtml(actualTemplate.blocks, renderContext);

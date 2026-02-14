@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, Button } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   Loader2,
   Lock,
   Sparkles,
@@ -16,11 +16,12 @@ import {
   TrendingUp,
   UserCheck,
   Monitor,
+  Target,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import Link from 'next/link';
 import { AnalyticsData, EmployeeSignatureStatus } from './types';
-import { OverviewTab, DeploymentsTab, TemplatesTab, MarketingTab, SalesTab, HRTab, ITTab } from './tabs';
+import { OverviewTab, DeploymentsTab, TemplatesTab, MarketingTab, SalesTab, HRTab, ITTab, CampaignsTab } from './tabs';
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -518,7 +519,7 @@ export default function AnalyticsPage() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1">
+        <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 h-auto gap-1 p-1">
           <TabsTrigger value="overview" className="flex items-center gap-2 py-2">
             <LayoutDashboard className="h-4 w-4" />
             <span className="hidden sm:inline">Overview</span>
@@ -526,6 +527,10 @@ export default function AnalyticsPage() {
           <TabsTrigger value="marketing" className="flex items-center gap-2 py-2">
             <Megaphone className="h-4 w-4" />
             <span className="hidden sm:inline">Marketing</span>
+          </TabsTrigger>
+          <TabsTrigger value="campaigns" className="flex items-center gap-2 py-2">
+            <Target className="h-4 w-4" />
+            <span className="hidden sm:inline">Campaigns</span>
           </TabsTrigger>
           <TabsTrigger value="sales" className="flex items-center gap-2 py-2">
             <TrendingUp className="h-4 w-4" />
@@ -555,6 +560,10 @@ export default function AnalyticsPage() {
 
         <TabsContent value="marketing">
           <MarketingTab data={data} employeeData={employeeData} />
+        </TabsContent>
+
+        <TabsContent value="campaigns">
+          <CampaignsTab data={data} timeRange={timeRange} />
         </TabsContent>
 
         <TabsContent value="sales">

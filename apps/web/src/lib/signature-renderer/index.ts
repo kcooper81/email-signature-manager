@@ -1,3 +1,5 @@
+import { buildTrackableUrl, detectLinkType } from '@/lib/analytics/url-builder';
+
 // Social media icon URLs (hosted on CDN for email compatibility)
 const SOCIAL_ICONS: Record<string, string> = {
   linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
@@ -47,6 +49,34 @@ interface RenderContext {
       showReturnDate?: boolean;
     };
   };
+  tracking?: {
+    userId?: string;
+    templateId?: string;
+    enabled?: boolean;
+  };
+}
+
+/**
+ * Wraps a URL through the click tracking endpoint when tracking is enabled
+ */
+function wrapTrackingUrl(
+  url: string,
+  context: RenderContext,
+  linkType: 'calendly' | 'linkedin' | 'twitter' | 'github' | 'banner' | 'button' | 'custom',
+  campaign?: string
+): string {
+  if (!url || !context.tracking?.enabled) return url;
+  try {
+    return buildTrackableUrl(url, {
+      userId: context.tracking.userId,
+      templateId: context.tracking.templateId,
+      linkType,
+      campaign,
+    });
+  } catch {
+    // If URL is invalid, return original
+    return url;
+  }
 }
 
 /**
@@ -135,7 +165,7 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
     case 'spacer':
       return renderSpacerBlock(content);
     case 'social':
-      return renderSocialBlock(content);
+      return renderSocialBlock(content, context);
     case 'contact-info':
       return renderContactInfoBlock(content, context);
     case 'button':
@@ -269,9 +299,9 @@ function renderSpacerBlock(content: any): string {
   `;
 }
 
-function renderSocialBlock(content: any): string {
+function renderSocialBlock(content: any, context: RenderContext): string {
   const platforms = content.platforms || [];
-  
+
   if (platforms.length === 0) return '';
 
   const displayMode = content.displayMode || 'icons';
@@ -279,26 +309,29 @@ function renderSocialBlock(content: any): string {
   const links = platforms
     .map((p: any) => {
       if (!p.url) return '';
-      
-      const name = p.type === 'custom' && p.label 
-        ? p.label 
+
+      const name = p.type === 'custom' && p.label
+        ? p.label
         : p.type.charAt(0).toUpperCase() + p.type.slice(1);
-      
+
+      const detectedType = detectLinkType(p.url) || 'custom';
+      const trackedUrl = wrapTrackingUrl(p.url, context, detectedType);
+
       // Display as text if displayMode is 'text'
       if (displayMode === 'text') {
-        return `<a href="${p.url}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
+        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
       }
-      
+
       // Display as icons if displayMode is 'icons'
-      const iconUrl = p.type === 'custom' && p.icon 
-        ? p.icon 
+      const iconUrl = p.type === 'custom' && p.icon
+        ? p.icon
         : SOCIAL_ICONS[p.type] || '';
-      
+
       // If we have an icon, render as image; otherwise fallback to text
       if (iconUrl) {
-        return `<a href="${p.url}" style="display: inline-block; margin: 0 6px; text-decoration: none;" title="${name}"><img src="${iconUrl}" alt="${name}" width="${iconSize}" height="${iconSize}" style="display: block; border: 0;" /></a>`;
+        return `<a href="${trackedUrl}" style="display: inline-block; margin: 0 6px; text-decoration: none;" title="${name}"><img src="${iconUrl}" alt="${name}" width="${iconSize}" height="${iconSize}" style="display: block; border: 0;" /></a>`;
       } else {
-        return `<a href="${p.url}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
+        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #0066cc; text-decoration: none;">${name}</a>`;
       }
     })
     .filter(Boolean)
@@ -336,7 +369,8 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
   if (content.website) {
     const website = replacePlaceholders(content.website, context);
     if (website) {
-      items.push(`<a href="${website}" class="contact-link" style="color: #0066cc; text-decoration: none;">${website}</a>`);
+      const trackedWebsite = wrapTrackingUrl(website, context, detectLinkType(website) || 'custom');
+      items.push(`<a href="${trackedWebsite}" class="contact-link" style="color: #0066cc; text-decoration: none;">${website}</a>`);
     }
   }
   if (content.address) {
@@ -365,7 +399,8 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
 
 function renderButtonBlock(content: any, context: RenderContext): string {
   const text = content.text || 'Click Here';
-  const url = replacePlaceholders(content.url || '#', context);
+  const rawUrl = replacePlaceholders(content.url || '#', context);
+  const url = wrapTrackingUrl(rawUrl, context, 'button');
   const bgColor = content.backgroundColor || '#0066cc';
   const textColor = content.textColor || '#ffffff';
   const borderRadius = content.borderRadius || 4;
@@ -382,15 +417,25 @@ function renderButtonBlock(content: any, context: RenderContext): string {
 }
 
 function renderBannerBlock(content: any, context: RenderContext): string {
+  // Banner scheduling enforcement: check startDate/endDate
+  const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+  if (content.startDate && today < content.startDate) return '';
+  if (content.endDate && today > content.endDate) return '';
+
   const src = content.src || '';
   const alt = content.alt || 'Banner';
-  const link = content.link ? replacePlaceholders(content.link, context) : '';
+  const rawLink = content.link ? replacePlaceholders(content.link, context) : '';
   const width = content.width ? `width="${content.width}"` : '';
 
   if (!src) return '';
 
+  // Wrap link through click tracking when trackClicks is not explicitly false
+  const link = rawLink && content.trackClicks !== false
+    ? wrapTrackingUrl(rawLink, context, 'banner', content.campaignName)
+    : rawLink;
+
   const img = `<img src="${src}" alt="${alt}" ${width} style="display: block; max-width: 100%;" />`;
-  
+
   return `
     <tr>
       <td style="padding: 8px 0;">

@@ -5,10 +5,10 @@ import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Switch } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
 import { 
-  Building2, 
-  User, 
-  Bell, 
-  Shield, 
+  Building2,
+  User,
+  Bell,
+  Shield,
   Palette,
   Save,
   Loader2,
@@ -31,6 +31,7 @@ import {
   Instagram,
   Facebook,
   Youtube,
+  Image as ImageIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -564,6 +565,7 @@ export default function SettingsPage() {
     { id: 'organization', label: 'Organization', icon: Building2 },
     // Branding is only available for MSP organizations with white-label subdomains
     ...(isMspOrg ? [{ id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' }] : []),
+    { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
     { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'appearance', label: 'Appearance', icon: Monitor },

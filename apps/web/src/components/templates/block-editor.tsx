@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Modal, ModalHeader, ModalTitle, ModalDescription } from '@/components/ui';
-import { Upload, Plus, Trash2, Link as LinkIcon, Library } from 'lucide-react';
+import { Upload, Plus, Trash2, Link as LinkIcon, Library, Image as ImageIcon } from 'lucide-react';
 import type {
   SignatureBlock,
   TextBlockContent,
@@ -23,6 +23,7 @@ import type {
 } from './types';
 import { DYNAMIC_FIELDS, DISCLAIMER_TEMPLATES } from './types';
 import { ComplianceBlockEditor } from './compliance-block';
+import { AssetPickerModal } from './asset-picker-modal';
 
 interface BlockEditorProps {
   block: SignatureBlock;
@@ -144,6 +145,7 @@ function ImageEditor({
 }) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [showAssetPicker, setShowAssetPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (file: File) => {
@@ -257,6 +259,25 @@ function ImageEditor({
           )}
         </div>
       </div>
+
+      {/* Asset Library */}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={() => setShowAssetPicker(true)}
+      >
+        <ImageIcon className="mr-2 h-4 w-4" />
+        Choose from Asset Library
+      </Button>
+      <AssetPickerModal
+        open={showAssetPicker}
+        onClose={() => setShowAssetPicker(false)}
+        category="logo"
+        onSelect={(asset) => {
+          onChange({ ...content, src: asset.publicUrl, alt: asset.displayName || content.alt });
+        }}
+      />
 
       {/* Or use URL */}
       <div className="relative">
@@ -1035,6 +1056,7 @@ function BannerEditor({
   onChange: (content: BannerBlockContent) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [showAssetPicker, setShowAssetPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1093,12 +1115,54 @@ function BannerEditor({
           >
             {uploading ? 'Uploading...' : <Upload className="h-4 w-4" />}
           </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowAssetPicker(true)}
+            title="Asset Library"
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
         </div>
+        <AssetPickerModal
+          open={showAssetPicker}
+          onClose={() => setShowAssetPicker(false)}
+          category="banner"
+          onSelect={(asset) => {
+            onChange({ ...content, src: asset.publicUrl, alt: asset.displayName || content.alt });
+          }}
+        />
         {content.src && (
           <div className="border rounded-lg p-2 bg-muted">
             <img src={content.src} alt={content.alt || 'Banner preview'} className="max-h-32 mx-auto" />
           </div>
         )}
+        {/* Scheduling status badge */}
+        {(content.startDate || content.endDate) && (() => {
+          const today = new Date().toISOString().split('T')[0];
+          if (content.startDate && today < content.startDate) {
+            return (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                Scheduled: starts {content.startDate}
+              </div>
+            );
+          }
+          if (content.endDate && today > content.endDate) {
+            return (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                Expired: ended {content.endDate}
+              </div>
+            );
+          }
+          return (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              Currently active
+            </div>
+          );
+        })()}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
