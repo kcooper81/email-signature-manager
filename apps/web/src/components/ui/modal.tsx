@@ -55,7 +55,7 @@ function ModalHeader({ className, children, onClose }: { className?: string; chi
       {onClose && (
         <button
           onClick={onClose}
-          className="flex-shrink-0 rounded-full p-1 hover:bg-accent transition-colors"
+          className="flex-shrink-0 rounded-full p-1 hover:bg-secondary transition-colors"
         >
           <X className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
         </button>

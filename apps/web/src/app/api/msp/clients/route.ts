@@ -190,16 +190,12 @@ export async function POST(request: NextRequest) {
     expiresAt.setDate(expiresAt.getDate() + 7); // 7 day expiry
 
     const { error: inviteError } = await supabase
-      .from('invites')
+      .from('user_invites')
       .insert({
-        organization_id: newClient.id,
         email: adminEmail.toLowerCase(),
-        role: 'owner',
         token: inviteToken,
         expires_at: expiresAt.toISOString(),
-        invited_by: userData.id,
-        first_name: adminFirstName || null,
-        last_name: adminLastName || null,
+        invited_by: userData.organization_id,
       });
 
     if (inviteError) {

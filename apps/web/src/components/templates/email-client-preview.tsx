@@ -91,7 +91,7 @@ export function EmailClientPreview({ blocks, className }: EmailClientPreviewProp
                 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
                 selectedClient === client
                   ? 'bg-violet-600 text-white shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
               )}
             >
               {CLIENT_ICONS[client]}
