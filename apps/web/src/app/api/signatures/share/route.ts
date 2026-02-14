@@ -93,9 +93,9 @@ function generateSignatureHtml(blocks: any[]): string {
 
       case 'contact-info':
         const contactItems = [];
-        if (content.email) contactItems.push(`<a href="mailto:${escapeHtml(String(content.email))}" style="color: #0066cc; text-decoration: none;">${escapeHtml(String(content.email))}</a>`);
-        if (content.phone) contactItems.push(`<a href="tel:${escapeHtml(String(content.phone))}" style="color: #0066cc; text-decoration: none;">${escapeHtml(String(content.phone))}</a>`);
-        if (content.website) contactItems.push(`<a href="${escapeHtml(String(content.website))}" style="color: #0066cc; text-decoration: none;">${escapeHtml(String(content.website))}</a>`);
+        if (content.email) contactItems.push(`<a href="mailto:${escapeHtml(String(content.email))}" style="color: #4d52de; text-decoration: none;">${escapeHtml(String(content.email))}</a>`);
+        if (content.phone) contactItems.push(`<a href="tel:${escapeHtml(String(content.phone))}" style="color: #4d52de; text-decoration: none;">${escapeHtml(String(content.phone))}</a>`);
+        if (content.website) contactItems.push(`<a href="${escapeHtml(String(content.website))}" style="color: #4d52de; text-decoration: none;">${escapeHtml(String(content.website))}</a>`);
         if (content.address) contactItems.push(escapeHtml(String(content.address)));
 
         if (contactItems.length > 0) {

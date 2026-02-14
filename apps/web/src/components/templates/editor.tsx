@@ -405,7 +405,7 @@ function getDefaultContent(type: SignatureBlockType, industry: IndustryType): an
       return {
         text: 'Click Here',
         url: '',
-        backgroundColor: '#0066cc',
+        backgroundColor: '#4d52de',
         textColor: '#ffffff',
         borderRadius: 4,
       };
