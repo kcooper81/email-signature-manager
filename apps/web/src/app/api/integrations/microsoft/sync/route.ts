@@ -28,6 +28,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check plan — Microsoft 365 requires Professional or above
+    const { data: planSub } = await supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('organization_id', userData.organization_id)
+      .single();
+
+    const currentPlan = getPlan(planSub?.plan || 'free');
+    const devBypassEnabled = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+    if (!devBypassEnabled && !currentPlan.features.microsoft365) {
+      return NextResponse.json(
+        { error: 'Microsoft 365 integration requires the Professional plan' },
+        { status: 403 }
+      );
+    }
+
     const { data: connection } = await supabase
       .from('provider_connections')
       .select('*')

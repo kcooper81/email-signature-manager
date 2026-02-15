@@ -784,7 +784,7 @@ export const templatesPages: SEOLandingPageData[] = [
       {
         question: 'Is this template free for early-stage startups?',
         answer:
-          'Siggly offers a generous free tier that includes the startup template. As your team grows, you can upgrade for advanced features like analytics and centralized management.',
+          'Siggly offers a generous free tier that includes the startup template with full features. As your team grows past 5 users, you can upgrade to Professional for full analytics and unlimited templates.',
       },
       {
         question: 'Can I add a link to our product or demo?',

@@ -124,7 +124,7 @@ export const alternativesPages: SEOLandingPageData[] = [
       {
         question: 'Is Siggly really free to start?',
         answer:
-          'Siggly offers a free plan for small teams. When you need advanced features like analytics, banner campaigns, or enterprise deployment, affordable paid plans are available.',
+          'Siggly offers a free plan for small teams with full features including banner campaigns and HubSpot integration. When you need full analytics or Microsoft 365 deployment, affordable paid plans are available.',
       },
       {
         question: 'How does Siggly handle signature updates across the company?',
@@ -527,7 +527,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     cta: {
       title: 'Switch from Sigstr Without the Sticker Shock',
       description:
-        'See how much your team can save. Start a free 14-day trial with full access to every feature.',
+        'See how much your team can save. Sign up free and explore every feature with your team.',
     },
   },
 
@@ -906,7 +906,7 @@ export const alternativesPages: SEOLandingPageData[] = [
       {
         question: 'Is Siggly free like MySignature?',
         answer:
-          'Siggly offers a free plan that includes team management basics. For analytics, banner campaigns, and enterprise deployment, paid plans start at competitive rates.',
+          'Siggly offers a free plan that includes full features like banner campaigns, HubSpot sync, and centralized management. For full analytics and Microsoft 365 deployment, Professional plans start at $1.50/user/month.',
       },
       {
         question: 'Can I recreate my MySignature design in Siggly?',

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Badge } from '@/components/ui';
-import { 
-  Search, 
+import {
+  Search,
   CreditCard,
   Loader2,
   ExternalLink,
@@ -19,8 +19,10 @@ import {
   PlayCircle,
   History,
   Building2,
+  Download,
 } from 'lucide-react';
 import { PLANS } from '@/lib/billing/plans';
+import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 
 interface SubscriptionEntry {
   id: string;
@@ -248,6 +250,19 @@ export default function SubscriptionsPage() {
     );
   }
 
+  const handleExport = () => {
+    const columns: CSVColumn<SubscriptionEntry>[] = [
+      { label: 'Organization', accessor: (r) => r.orgName },
+      { label: 'Plan', accessor: (r) => r.plan },
+      { label: 'Status', accessor: (r) => r.status },
+      { label: 'Users', accessor: (r) => r.userCount },
+      { label: 'MRR', accessor: (r) => `$${r.mrr.toFixed(2)}` },
+      { label: 'Period End', accessor: (r) => r.currentPeriodEnd ? new Date(r.currentPeriodEnd).toLocaleDateString() : '' },
+      { label: 'Stripe ID', accessor: (r) => r.stripeCustomerId },
+    ];
+    exportToCSV(filteredSubs, columns, 'billing');
+  };
+
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
       case 'upgraded':
@@ -293,15 +308,21 @@ export default function SubscriptionsPage() {
           <h1 className="text-2xl font-bold text-slate-900">Subscriptions</h1>
           <p className="text-slate-500">Subscription management and revenue tracking</p>
         </div>
-        <a
-          href="https://dashboard.stripe.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
-        >
-          <ExternalLink className="h-4 w-4" />
-          Open Stripe
-        </a>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleExport} disabled={filteredSubs.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+          <a
+            href="https://dashboard.stripe.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Open Stripe
+          </a>
+        </div>
       </div>
 
       {/* Metrics */}

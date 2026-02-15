@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button } from '@/components/ui';
-import { 
-  Search, 
+import {
+  Search,
   ScrollText,
   Loader2,
   Filter,
@@ -13,7 +13,9 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Download,
 } from 'lucide-react';
+import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 
 interface AuditLogEntry {
   id: string;
@@ -128,6 +130,17 @@ export default function ActivityPage() {
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
+  const handleExport = () => {
+    const columns: CSVColumn<AuditLogEntry>[] = [
+      { label: 'Timestamp', accessor: (r) => new Date(r.createdAt).toLocaleString() },
+      { label: 'Action', accessor: (r) => r.action },
+      { label: 'Resource', accessor: (r) => r.resourceType },
+      { label: 'Organization', accessor: (r) => r.orgName },
+      { label: 'User', accessor: (r) => r.userEmail },
+    ];
+    exportToCSV(filteredLogs, columns, 'activity-logs');
+  };
+
   const getActionColor = (action: string) => {
     if (action.includes('create') || action.includes('add')) return 'bg-green-100 text-green-700';
     if (action.includes('delete') || action.includes('remove')) return 'bg-red-100 text-red-700';
@@ -138,9 +151,15 @@ export default function ActivityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Activity Logs</h1>
-        <p className="text-slate-500">Platform-wide audit trail of all actions</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Activity Logs</h1>
+          <p className="text-slate-500">Platform-wide audit trail of all actions</p>
+        </div>
+        <Button variant="outline" onClick={handleExport} disabled={filteredLogs.length === 0}>
+          <Download className="h-4 w-4 mr-2" />
+          Export CSV
+        </Button>
       </div>
 
       {/* Filters */}
