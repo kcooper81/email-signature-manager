@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Modal, ModalHeader, ModalTitle, ModalDescription } from '@/components/ui';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Loader2, Image as ImageIcon } from 'lucide-react';
 
@@ -24,13 +25,17 @@ interface AssetPickerModalProps {
   category?: string;
 }
 
+const PICKER_CATEGORIES = ['all', 'logo', 'banner', 'icon', 'photo', 'uncategorized'] as const;
+
 export function AssetPickerModal({ open, onClose, onSelect, category }: AssetPickerModalProps) {
   const [assets, setAssets] = useState<BrandAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>(category || 'all');
 
   useEffect(() => {
     if (open) {
+      setActiveCategory(category || 'all');
       loadAssets();
     }
   }, [open]);
@@ -50,25 +55,21 @@ export function AssetPickerModal({ open, onClose, onSelect, category }: AssetPic
 
     if (!currentUser?.organization_id) { setLoading(false); return; }
 
-    let query = supabase
+    const { data } = await supabase
       .from('brand_assets')
       .select('id, public_url, display_name, category, width, height, file_size, usage_count')
       .eq('organization_id', currentUser.organization_id)
       .order('created_at', { ascending: false });
 
-    if (category) {
-      query = query.eq('category', category);
-    }
-
-    const { data } = await query;
     setAssets(data || []);
     setLoading(false);
   };
 
-  const filteredAssets = assets.filter(
-    (a) =>
-      !search || a.display_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredAssets = assets.filter((a) => {
+    const matchesCategory = activeCategory === 'all' || a.category === activeCategory;
+    const matchesSearch = !search || a.display_name.toLowerCase().includes(search.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const handleSelect = async (asset: BrandAsset) => {
     // Increment usage count via direct update
@@ -97,6 +98,19 @@ export function AssetPickerModal({ open, onClose, onSelect, category }: AssetPic
       </ModalHeader>
 
       <div className="space-y-4">
+        <div className="flex items-center gap-2 flex-wrap">
+          {PICKER_CATEGORIES.map((cat) => (
+            <Button
+              key={cat}
+              variant={activeCategory === cat ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setActiveCategory(cat)}
+              className="capitalize h-7 text-xs"
+            >
+              {cat}
+            </Button>
+          ))}
+        </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input

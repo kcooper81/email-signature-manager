@@ -127,8 +127,8 @@ export default function SupportPage() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-violet-100 p-3">
-              <Mail className="h-6 w-6 text-violet-600" />
+            <div className="rounded-lg bg-primary/10 p-3">
+              <Mail className="h-6 w-6 text-primary" />
             </div>
             <div>
               <h3 className="font-semibold text-foreground">Email Support</h3>
@@ -137,7 +137,7 @@ export default function SupportPage() {
               </p>
               <a
                 href="mailto:support@siggly.io"
-                className="text-sm text-violet-600 hover:text-violet-700 font-medium mt-2 inline-block"
+                className="text-sm text-primary hover:text-primary font-medium mt-2 inline-block"
               >
                 support@siggly.io
               </a>
@@ -161,7 +161,7 @@ export default function SupportPage() {
               onClick={() => setSelectedCategory(null)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCategory === null
-                  ? 'bg-violet-600 text-white'
+                  ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-secondary'
               }`}
             >
@@ -175,7 +175,7 @@ export default function SupportPage() {
                   onClick={() => setSelectedCategory(category.name)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     selectedCategory === category.name
-                      ? 'bg-violet-600 text-white'
+                      ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground hover:bg-secondary'
                   }`}
                 >
@@ -187,7 +187,7 @@ export default function SupportPage() {
           </div>
 
           {/* FAQ List */}
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {filteredArticles.map((article) => (
               <FAQItem key={article.id} article={article} />
             ))}
@@ -202,7 +202,7 @@ export default function SupportPage() {
       </Card>
 
       {/* Still Need Help */}
-      <Card className="bg-gradient-to-r from-violet-50 to-blue-50 border-violet-200">
+      <Card className="bg-gradient-to-r from-primary/5 to-blue-500/5 border-primary/20">
         <CardContent className="p-6 text-center">
           <h3 className="font-semibold text-foreground mb-2">Still need help?</h3>
           <p className="text-sm text-muted-foreground mb-4">
@@ -210,7 +210,7 @@ export default function SupportPage() {
           </p>
           <a
             href="mailto:support@siggly.io"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-medium hover:bg-violet-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
           >
             <Mail className="h-4 w-4" />
             Contact Support

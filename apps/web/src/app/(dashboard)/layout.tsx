@@ -11,6 +11,7 @@ import { ImpersonationProvider } from '@/hooks/use-impersonation';
 import { PoweredByFooter } from '@/components/dashboard/powered-by-footer';
 import { MspContextProvider } from '@/hooks/use-msp-context';
 import { MspContextBanner } from '@/components/msp/msp-context-banner';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 export default async function DashboardLayout({
   children,
@@ -44,6 +45,7 @@ export default async function DashboardLayout({
   const isSuperAdmin = userData?.is_super_admin === true;
 
   return (
+    <ThemeProvider>
     <EnsureUserProvider>
       <ImpersonationProvider>
         <MspContextProvider>
@@ -66,5 +68,6 @@ export default async function DashboardLayout({
         </MspContextProvider>
       </ImpersonationProvider>
     </EnsureUserProvider>
+    </ThemeProvider>
   );
 }

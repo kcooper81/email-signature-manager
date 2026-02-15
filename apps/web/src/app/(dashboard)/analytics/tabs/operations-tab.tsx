@@ -44,14 +44,14 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${data.syncStatus.google.connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <div className={`w-2 h-2 rounded-full ${data.syncStatus.google.connected ? 'bg-emerald-500' : 'bg-muted-foreground/30'}`} />
                     <span className="text-sm">Google Workspace</span>
                   </div>
                   <span className="text-xs text-muted-foreground">{data.syncStatus.google.userCount} users</span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
                   <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${data.syncStatus.microsoft.connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <div className={`w-2 h-2 rounded-full ${data.syncStatus.microsoft.connected ? 'bg-emerald-500' : 'bg-muted-foreground/30'}`} />
                     <span className="text-sm">Microsoft 365</span>
                   </div>
                   <span className="text-xs text-muted-foreground">{data.syncStatus.microsoft.userCount} users</span>
@@ -61,12 +61,12 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
 
             {/* Error Rate */}
             <div className="text-center p-4 bg-muted rounded-lg">
-              <div className={`text-2xl font-bold ${data.errorRate > 10 ? 'text-red-600' : data.errorRate > 5 ? 'text-amber-600' : 'text-green-600'}`}>
+              <div className={`text-2xl font-bold ${data.errorRate > 10 ? 'text-red-600' : data.errorRate > 5 ? 'text-amber-600' : 'text-emerald-500'}`}>
                 {data.errorRate}%
               </div>
               <p className="text-xs text-muted-foreground mt-1">Error Rate</p>
               {data.errorRate > 10 && (
-                <Badge variant="outline" className="mt-2 border-red-200 text-red-700">
+                <Badge variant="outline" className="mt-2 border-red-500/20 text-red-600">
                   <AlertCircle className="h-3 w-3 mr-1" />
                   Needs attention
                 </Badge>
@@ -85,16 +85,16 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
             <div className="space-y-2">
               <h4 className="text-sm font-medium">Failure Reasons</h4>
               {data.failedDeploymentReasons.length === 0 ? (
-                <p className="text-xs text-muted-foreground p-2 bg-green-50 rounded-lg text-center">
-                  <CheckCircle2 className="h-4 w-4 inline mr-1 text-green-600" />
+                <p className="text-xs text-muted-foreground p-2 bg-emerald-500/10 rounded-lg text-center">
+                  <CheckCircle2 className="h-4 w-4 inline mr-1 text-emerald-500" />
                   No failures
                 </p>
               ) : (
                 <div className="space-y-1">
                   {data.failedDeploymentReasons.slice(0, 3).map((reason, i) => (
-                    <div key={i} className="flex justify-between text-xs p-2 bg-red-50 rounded">
-                      <span className="text-red-700">{reason.reason}</span>
-                      <span className="font-medium text-red-800">{reason.count}</span>
+                    <div key={i} className="flex justify-between text-xs p-2 bg-red-500/10 rounded">
+                      <span className="text-red-600">{reason.reason}</span>
+                      <span className="font-medium text-red-600">{reason.count}</span>
                     </div>
                   ))}
                 </div>
@@ -108,7 +108,7 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <UserCheck className="h-5 w-5 text-green-600" />
+            <UserCheck className="h-5 w-5 text-emerald-500" />
             HR & People Operations
           </CardTitle>
           <CardDescription>
@@ -120,7 +120,7 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
             {/* New Users */}
             <div className="text-center p-4 bg-muted rounded-lg">
               <div className="flex items-center justify-center gap-1">
-                <UserPlus className="h-5 w-5 text-green-600" />
+                <UserPlus className="h-5 w-5 text-emerald-500" />
                 <span className="text-2xl font-bold">{data.newUsersThisPeriod}</span>
               </div>
               <p className="text-xs text-muted-foreground mt-1">New Users ({timeRange})</p>
@@ -128,7 +128,7 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
 
             {/* Users Without Signatures */}
             <div className="text-center p-4 bg-muted rounded-lg">
-              <div className={`text-2xl font-bold ${data.usersWithoutSignatures > 10 ? 'text-amber-600' : 'text-green-600'}`}>
+              <div className={`text-2xl font-bold ${data.usersWithoutSignatures > 10 ? 'text-amber-600' : 'text-emerald-500'}`}>
                 {data.usersWithoutSignatures}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Without Signatures</p>
@@ -143,7 +143,7 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
 
             {/* Department Coverage */}
             <div className="text-center p-4 bg-muted rounded-lg">
-              <div className={`text-2xl font-bold ${data.departmentCoverage >= 80 ? 'text-green-600' : data.departmentCoverage >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+              <div className={`text-2xl font-bold ${data.departmentCoverage >= 80 ? 'text-emerald-500' : data.departmentCoverage >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
                 {data.departmentCoverage}%
               </div>
               <p className="text-xs text-muted-foreground mt-1">Dept Coverage (&gt;50%)</p>
@@ -151,7 +151,7 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
 
             {/* Onboarding Pending */}
             <div className="text-center p-4 bg-muted rounded-lg">
-              <div className={`text-2xl font-bold ${data.onboardingPending > 5 ? 'text-amber-600' : 'text-green-600'}`}>
+              <div className={`text-2xl font-bold ${data.onboardingPending > 5 ? 'text-amber-600' : 'text-emerald-500'}`}>
                 {data.onboardingPending}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Onboarding Pending</p>
@@ -175,38 +175,38 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {/* Banners */}
-            <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-white rounded-lg border border-pink-100">
+            <div className="text-center p-4 bg-gradient-to-br from-pink-500/10 to-white rounded-lg border border-pink-500/20">
               <Image className="h-6 w-6 mx-auto text-pink-600 mb-2" />
-              <div className="text-2xl font-bold text-pink-700">{data.bannersDeployed}</div>
+              <div className="text-2xl font-bold text-pink-600">{data.bannersDeployed}</div>
               <p className="text-xs text-muted-foreground mt-1">Banners in Use</p>
               <p className="text-xs text-pink-600">{data.templatesWithBanners} templates</p>
             </div>
 
             {/* CTA Buttons */}
-            <div className="text-center p-4 bg-gradient-to-br from-violet-50 to-white rounded-lg border border-violet-100">
-              <MousePointerClick className="h-6 w-6 mx-auto text-violet-600 mb-2" />
-              <div className="text-2xl font-bold text-violet-700">{data.ctaButtonsDeployed}</div>
+            <div className="text-center p-4 bg-gradient-to-br from-primary/10 to-white rounded-lg border border-primary/30">
+              <MousePointerClick className="h-6 w-6 mx-auto text-primary mb-2" />
+              <div className="text-2xl font-bold text-primary">{data.ctaButtonsDeployed}</div>
               <p className="text-xs text-muted-foreground mt-1">CTA Buttons</p>
             </div>
 
             {/* Social Links */}
-            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-100">
+            <div className="text-center p-4 bg-gradient-to-br from-blue-500/10 to-white rounded-lg border border-blue-500/20">
               <Link2 className="h-6 w-6 mx-auto text-blue-600 mb-2" />
-              <div className="text-2xl font-bold text-blue-700">{data.socialLinksDeployed}</div>
+              <div className="text-2xl font-bold text-blue-600">{data.socialLinksDeployed}</div>
               <p className="text-xs text-muted-foreground mt-1">Social Links</p>
             </div>
 
             {/* Avg Social per Signature */}
             <div className="text-center p-4 bg-gradient-to-br from-cyan-50 to-white rounded-lg border border-cyan-100">
               <Activity className="h-6 w-6 mx-auto text-cyan-600 mb-2" />
-              <div className="text-2xl font-bold text-cyan-700">{data.avgSocialLinksPerSignature}</div>
+              <div className="text-2xl font-bold text-cyan-600">{data.avgSocialLinksPerSignature}</div>
               <p className="text-xs text-muted-foreground mt-1">Avg Social/Template</p>
             </div>
 
             {/* Brand Consistency Score */}
-            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-white rounded-lg border border-green-100">
-              <Target className="h-6 w-6 mx-auto text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-green-700">
+            <div className="text-center p-4 bg-gradient-to-br from-emerald-500/10 to-white rounded-lg border border-emerald-500/20">
+              <Target className="h-6 w-6 mx-auto text-emerald-500 mb-2" />
+              <div className="text-2xl font-bold text-emerald-500">
                 {data.totalTemplates ? Math.round((data.templatesWithBanners / data.totalTemplates) * 100) : 0}%
               </div>
               <p className="text-xs text-muted-foreground mt-1">Templates w/ Branding</p>

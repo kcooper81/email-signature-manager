@@ -34,56 +34,56 @@ export function ITTab({ data, timeRange }: ITTabProps) {
     <div className="space-y-6">
       {/* IT KPIs */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-white border-blue-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-500/15 rounded-lg">
                 <Shield className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-700">{successRate}%</p>
+                <p className="text-2xl font-bold text-blue-600">{successRate}%</p>
                 <p className="text-sm text-muted-foreground">Deployment Success</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-white border-emerald-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Activity className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <Activity className="h-5 w-5 text-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-700">{data.totalDeployments}</p>
+                <p className="text-2xl font-bold text-emerald-500">{data.totalDeployments}</p>
                 <p className="text-sm text-muted-foreground">Total Deployments</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-gradient-to-br ${data.errorRate > 10 ? 'from-red-50 border-red-100' : 'from-amber-50 border-amber-100'} to-white`}>
+        <Card className={`bg-gradient-to-br ${data.errorRate > 10 ? 'from-red-500/10 border-red-500/20' : 'from-amber-500/10 border-amber-500/20'} to-white`}>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${data.errorRate > 10 ? 'bg-red-100' : 'bg-amber-100'}`}>
+              <div className={`p-2 rounded-lg ${data.errorRate > 10 ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
                 <AlertCircle className={`h-5 w-5 ${data.errorRate > 10 ? 'text-red-600' : 'text-amber-600'}`} />
               </div>
               <div>
-                <p className={`text-2xl font-bold ${data.errorRate > 10 ? 'text-red-700' : 'text-amber-700'}`}>{data.errorRate}%</p>
+                <p className={`text-2xl font-bold ${data.errorRate > 10 ? 'text-red-600' : 'text-amber-600'}`}>{data.errorRate}%</p>
                 <p className="text-sm text-muted-foreground">Error Rate</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-violet-50 to-white border-violet-100">
+        <Card className="bg-gradient-to-br from-primary/10 to-white border-primary/30">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Zap className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Zap className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-violet-700">{data.avgDeploymentTime}s</p>
+                <p className="text-2xl font-bold text-primary">{data.avgDeploymentTime}s</p>
                 <p className="text-sm text-muted-foreground">Avg Deploy Time</p>
               </div>
             </div>
@@ -105,13 +105,13 @@ export function ITTab({ data, timeRange }: ITTabProps) {
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Google Workspace */}
-            <div className={`p-4 border rounded-lg ${isGoogleStale ? 'border-amber-200 bg-amber-50' : ''}`}>
+            <div className={`p-4 border rounded-lg ${isGoogleStale ? 'border-amber-500/20 bg-amber-500/10' : ''}`}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${data.syncStatus.google.connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`w-3 h-3 rounded-full ${data.syncStatus.google.connected ? 'bg-emerald-500' : 'bg-muted-foreground/30'}`} />
                   <h4 className="font-medium">Google Workspace</h4>
                 </div>
-                <Badge variant="outline" className={data.syncStatus.google.connected ? 'border-green-200 text-green-700' : ''}>
+                <Badge variant="outline" className={data.syncStatus.google.connected ? 'border-emerald-500/20 text-emerald-500' : ''}>
                   {data.syncStatus.google.connected ? 'Connected' : 'Not Connected'}
                 </Badge>
               </div>
@@ -134,7 +134,7 @@ export function ITTab({ data, timeRange }: ITTabProps) {
               </div>
               {isGoogleStale && (
                 <Link href="/integrations" className="block mt-3">
-                  <Button size="sm" variant="outline" className="w-full border-amber-300 text-amber-700">
+                  <Button size="sm" variant="outline" className="w-full border-amber-500/20 text-amber-600">
                     <RefreshCw className="h-4 w-4 mr-1" />
                     Sync Now
                   </Button>
@@ -143,13 +143,13 @@ export function ITTab({ data, timeRange }: ITTabProps) {
             </div>
 
             {/* Microsoft 365 */}
-            <div className={`p-4 border rounded-lg ${isMicrosoftStale ? 'border-amber-200 bg-amber-50' : ''}`}>
+            <div className={`p-4 border rounded-lg ${isMicrosoftStale ? 'border-amber-500/20 bg-amber-500/10' : ''}`}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${data.syncStatus.microsoft.connected ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`w-3 h-3 rounded-full ${data.syncStatus.microsoft.connected ? 'bg-emerald-500' : 'bg-muted-foreground/30'}`} />
                   <h4 className="font-medium">Microsoft 365</h4>
                 </div>
-                <Badge variant="outline" className={data.syncStatus.microsoft.connected ? 'border-green-200 text-green-700' : ''}>
+                <Badge variant="outline" className={data.syncStatus.microsoft.connected ? 'border-emerald-500/20 text-emerald-500' : ''}>
                   {data.syncStatus.microsoft.connected ? 'Connected' : 'Not Connected'}
                 </Badge>
               </div>
@@ -172,7 +172,7 @@ export function ITTab({ data, timeRange }: ITTabProps) {
               </div>
               {isMicrosoftStale && (
                 <Link href="/integrations" className="block mt-3">
-                  <Button size="sm" variant="outline" className="w-full border-amber-300 text-amber-700">
+                  <Button size="sm" variant="outline" className="w-full border-amber-500/20 text-amber-600">
                     <RefreshCw className="h-4 w-4 mr-1" />
                     Sync Now
                   </Button>
@@ -202,10 +202,10 @@ export function ITTab({ data, timeRange }: ITTabProps) {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     <span className="text-sm">Successful</span>
                   </div>
-                  <span className="font-medium text-green-600">{data.successfulDeployments}</span>
+                  <span className="font-medium text-emerald-500">{data.successfulDeployments}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -228,10 +228,10 @@ export function ITTab({ data, timeRange }: ITTabProps) {
             <div className="p-4 border rounded-lg text-center">
               <h4 className="font-medium mb-3">Error Rate</h4>
               <div className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center ${
-                data.errorRate > 10 ? 'bg-red-100' : data.errorRate > 5 ? 'bg-amber-100' : 'bg-green-100'
+                data.errorRate > 10 ? 'bg-red-500/10' : data.errorRate > 5 ? 'bg-amber-500/10' : 'bg-emerald-500/10'
               }`}>
                 <span className={`text-2xl font-bold ${
-                  data.errorRate > 10 ? 'text-red-600' : data.errorRate > 5 ? 'text-amber-600' : 'text-green-600'
+                  data.errorRate > 10 ? 'text-red-600' : data.errorRate > 5 ? 'text-amber-600' : 'text-emerald-500'
                 }`}>
                   {data.errorRate}%
                 </span>
@@ -247,15 +247,15 @@ export function ITTab({ data, timeRange }: ITTabProps) {
               <h4 className="font-medium mb-3">Failure Reasons</h4>
               {data.failedDeploymentReasons.length === 0 ? (
                 <div className="text-center py-4">
-                  <CheckCircle2 className="h-8 w-8 mx-auto text-green-600 mb-2" />
-                  <p className="text-sm text-green-600">No failures recorded</p>
+                  <CheckCircle2 className="h-8 w-8 mx-auto text-emerald-500 mb-2" />
+                  <p className="text-sm text-emerald-500">No failures recorded</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {data.failedDeploymentReasons.map((reason, i) => (
-                    <div key={i} className="flex justify-between items-center p-2 bg-red-50 rounded">
-                      <span className="text-sm text-red-700">{reason.reason}</span>
-                      <Badge variant="outline" className="border-red-200 text-red-700">
+                    <div key={i} className="flex justify-between items-center p-2 bg-red-500/10 rounded">
+                      <span className="text-sm text-red-600">{reason.reason}</span>
+                      <Badge variant="outline" className="border-red-500/20 text-red-600">
                         {reason.count}
                       </Badge>
                     </div>
@@ -269,9 +269,9 @@ export function ITTab({ data, timeRange }: ITTabProps) {
 
       {/* System Recommendations */}
       {(data.errorRate > 5 || isGoogleStale || isMicrosoftStale || data.pendingDeployments > 0) && (
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card className="border-blue-500/20 bg-blue-500/10">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-900">
+            <CardTitle className="flex items-center gap-2 text-blue-600">
               <AlertCircle className="h-5 w-5 text-blue-600" />
               System Recommendations
             </CardTitle>
@@ -279,19 +279,19 @@ export function ITTab({ data, timeRange }: ITTabProps) {
           <CardContent>
             <ul className="space-y-2">
               {data.errorRate > 5 && (
-                <li className="flex items-start gap-2 text-sm text-blue-800">
+                <li className="flex items-start gap-2 text-sm text-blue-600">
                   <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2" />
                   Error rate is above 5%. Review failed deployments and check API connectivity.
                 </li>
               )}
               {(isGoogleStale || isMicrosoftStale) && (
-                <li className="flex items-start gap-2 text-sm text-blue-800">
+                <li className="flex items-start gap-2 text-sm text-blue-600">
                   <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2" />
                   One or more integrations haven't synced in over 7 days. Run a manual sync to ensure user data is current.
                 </li>
               )}
               {data.pendingDeployments > 0 && (
-                <li className="flex items-start gap-2 text-sm text-blue-800">
+                <li className="flex items-start gap-2 text-sm text-blue-600">
                   <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2" />
                   {data.pendingDeployments} deployment{data.pendingDeployments > 1 ? 's are' : ' is'} still pending. Check for stuck jobs.
                 </li>

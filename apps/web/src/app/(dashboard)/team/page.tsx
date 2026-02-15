@@ -869,12 +869,12 @@ export default function TeamMembersPage() {
 
       {/* Success message */}
       {successMessage && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-start gap-3">
+        <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 p-4 rounded-lg flex items-start gap-3">
           <CheckCircle2 className="h-5 w-5 flex-shrink-0 mt-0.5 text-emerald-600" />
           <div className="flex-1">
             <p>{successMessage}</p>
           </div>
-          <button onClick={() => setSuccessMessage(null)} className="text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setSuccessMessage(null)} className="text-emerald-600 hover:text-emerald-600">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -909,12 +909,50 @@ export default function TeamMembersPage() {
 
       {/* Sync result */}
       {syncResult && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center gap-3">
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-          <p className="text-emerald-800">
+          <p className="text-emerald-600">
             Synced {syncResult.synced} members
             {syncResult.errors > 0 && ` (${syncResult.errors} errors)`}
           </p>
+        </div>
+      )}
+
+      {/* Sticky selection action bar */}
+      {selectedMembers.size > 0 && (
+        <div className="sticky top-16 z-20 bg-primary/5 border border-primary/20 rounded-lg p-3 shadow-md backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm font-medium text-primary">
+              {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
+            </span>
+            <div className="flex gap-2">
+              <Button onClick={inviteMembers} variant="outline" size="sm" disabled={inviting}>
+                {inviting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="mr-2 h-4 w-4" />
+                    Invite to Self-Manage
+                  </>
+                )}
+              </Button>
+              <Button onClick={() => setShowShareModal(true)} size="sm">
+                <FileSignature className="mr-2 h-4 w-4" />
+                Share Signatures
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedMembers(new Set())}
+                className="text-primary hover:text-primary/80"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -940,7 +978,7 @@ export default function TeamMembersPage() {
                 type="checkbox"
                 checked={selectedMembers.size === filteredMembers.length && filteredMembers.length > 0}
                 onChange={selectAllMembers}
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-border"
               />
               <span className="text-sm text-muted-foreground">
                 {selectedMembers.size > 0 ? `${selectedMembers.size} selected` : 'Select all'}
@@ -1011,43 +1049,6 @@ export default function TeamMembersPage() {
           </div>
         </CardHeader>
         <CardContent className="overflow-hidden relative">
-          {/* Sticky selection action bar */}
-          {selectedMembers.size > 0 && (
-            <div className="sticky top-16 z-20 bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 shadow-md backdrop-blur-sm">
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-sm font-medium text-primary">
-                  {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
-                </span>
-                <div className="flex gap-2">
-                  <Button onClick={inviteMembers} variant="outline" size="sm" disabled={inviting}>
-                    {inviting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Invite to Self-Manage
-                      </>
-                    )}
-                  </Button>
-                  <Button onClick={() => setShowShareModal(true)} size="sm">
-                    <FileSignature className="mr-2 h-4 w-4" />
-                    Share Signatures
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedMembers(new Set())}
-                    className="text-primary hover:text-primary/80"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
           {members.length === 0 ? (
             <EmptyState
               icon={UsersIcon}
@@ -1075,7 +1076,7 @@ export default function TeamMembersPage() {
                         type="checkbox"
                         checked={selectedMembers.size === filteredMembers.length && filteredMembers.length > 0}
                         onChange={selectAllMembers}
-                        className="h-4 w-4 rounded border-gray-300"
+                        className="h-4 w-4 rounded border-border"
                       />
                     </th>
                     <th className="p-3 text-left">
@@ -1235,7 +1236,7 @@ export default function TeamMembersPage() {
                           type="checkbox"
                           checked={selectedMembers.has(emp.id)}
                           onChange={() => toggleMemberSelection(emp.id)}
-                          className="h-4 w-4 rounded border-gray-300"
+                          className="h-4 w-4 rounded border-border"
                         />
                       </td>
                       <td className="p-3">
@@ -1277,8 +1278,8 @@ export default function TeamMembersPage() {
                               disabled={changingRole === emp.id}
                               className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer appearance-none pr-6 ${
                                 emp.role === 'admin' 
-                                  ? 'bg-blue-100 text-blue-800' 
-                                  : 'bg-gray-100 text-gray-800'
+                                  ? 'bg-blue-500/15 text-blue-500'
+                                  : 'bg-muted text-foreground'
                               } ${changingRole === emp.id ? 'opacity-50' : 'hover:ring-2 hover:ring-primary/30'}`}
                             >
                               <option value="member">member</option>
@@ -1382,8 +1383,8 @@ export default function TeamMembersPage() {
           {/* Personal Links Section */}
           <div className="space-y-4 pt-4 border-t">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">Personal Links (Optional)</h3>
-              <p className="text-xs text-gray-500 mt-1">
+              <h3 className="text-sm font-semibold text-foreground">Personal Links (Optional)</h3>
+              <p className="text-xs text-muted-foreground mt-1">
                 Add personal URLs that can be used in signature templates
               </p>
             </div>
@@ -1550,7 +1551,7 @@ export default function TeamMembersPage() {
                         >
                           {copiedId === sig.userId ? (
                             <>
-                              <CheckCircle2 className="h-4 w-4 text-green-600" />
+                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                             </>
                           ) : (
                             <>
@@ -1610,8 +1611,8 @@ export default function TeamMembersPage() {
           </ModalDescription>
         </ModalHeader>
         <div className="space-y-4 py-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <p className="text-sm text-blue-800">
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+            <p className="text-sm text-blue-600">
               <strong>Admins can:</strong> Create templates, deploy signatures, manage integrations, and invite team members.
             </p>
           </div>

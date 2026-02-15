@@ -416,53 +416,53 @@ export default function IntegrationsPage() {
 
       {/* Status messages */}
       {success === 'google_connected' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-          <p className="text-green-800">Google Workspace connected successfully!</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          <p className="text-emerald-500">Google Workspace connected successfully!</p>
         </div>
       )}
 
       {success === 'microsoft_connected' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-          <p className="text-green-800">Microsoft 365 connected successfully!</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          <p className="text-emerald-500">Microsoft 365 connected successfully!</p>
         </div>
       )}
 
       {success === 'hubspot_connected' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-          <p className="text-green-800">HubSpot CRM connected successfully!</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          <p className="text-emerald-500">HubSpot CRM connected successfully!</p>
         </div>
       )}
 
       {success === 'calendly_connected' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-          <p className="text-green-800">Calendly connected successfully!</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          <p className="text-emerald-500">Calendly connected successfully!</p>
         </div>
       )}
 
       {syncSuccess && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-          <p className="text-green-800">{syncSuccess}</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          <p className="text-emerald-500">{syncSuccess}</p>
         </div>
       )}
 
       {syncError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-center gap-3">
           <XCircle className="h-5 w-5 text-red-600" />
-          <p className="text-red-800">{syncError}</p>
+          <p className="text-red-600">{syncError}</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
             <div>
-              <p className="font-medium text-amber-800">
+              <p className="font-medium text-amber-600">
                 {error === 'oauth_denied' && 'Connection was denied'}
                 {error === 'missing_params' && 'Invalid callback'}
                 {error === 'state_expired' && 'Session timed out'}
@@ -472,7 +472,7 @@ export default function IntegrationsPage() {
                 {error === 'storage_failed' && 'Failed to save connection'}
                 {error === 'oauth_failed' && 'OAuth failed'}
               </p>
-              <p className="text-sm text-amber-700 mt-1">
+              <p className="text-sm text-amber-600 mt-1">
                 {error === 'oauth_denied' && 'You declined the permission request. Please try connecting again.'}
                 {error === 'missing_params' && 'The callback was missing required parameters. Please try connecting again.'}
                 {error === 'state_expired' && 'The authorization took too long. This can happen if you needed to get admin approval first. Simply try connecting again.'}
@@ -507,7 +507,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
               {googleConnection?.is_active && (
-                <span className="flex items-center gap-1 text-sm text-green-600">
+                <span className="flex items-center gap-1 text-sm text-emerald-500">
                   <CheckCircle2 className="h-4 w-4" />
                   Connected
                 </span>
@@ -524,7 +524,7 @@ export default function IntegrationsPage() {
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(googleConnection.created_at).toLocaleDateString()}
                   {googleConnection.auth_type === 'marketplace' && (
-                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                    <span className="ml-2 px-2 py-0.5 bg-blue-500/15 text-blue-500 rounded text-xs">
                       Marketplace
                     </span>
                   )}
@@ -609,7 +609,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
               {microsoftConnection?.is_active && (
-                <span className="flex items-center gap-1 text-sm text-green-600">
+                <span className="flex items-center gap-1 text-sm text-emerald-500">
                   <CheckCircle2 className="h-4 w-4" />
                   Connected
                 </span>
@@ -622,9 +622,9 @@ export default function IntegrationsPage() {
             </p>
             
             {!hasMicrosoft365Access ? (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
-                <Lock className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                <p className="text-sm font-medium text-slate-700 mb-1">Upgrade Required</p>
+              <div className="bg-muted border border-border rounded-lg p-4 text-center">
+                <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm font-medium text-foreground mb-1">Upgrade Required</p>
                 <p className="text-xs text-muted-foreground mb-3">
                   Microsoft 365 integration is available on Starter plans and above.
                 </p>
@@ -637,7 +637,7 @@ export default function IntegrationsPage() {
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(microsoftConnection.created_at).toLocaleDateString()}
                 </div>
-                <div className="bg-blue-50 border border-blue-100 rounded p-2 text-xs text-blue-700">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 text-xs text-blue-600">
                   <strong>Note:</strong> Signatures deploy to Outlook Web only. Desktop users can copy their signature from Outlook Web or use the Copy button in the editor.
                 </div>
                 <div className="flex gap-2">
@@ -703,7 +703,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
               {hubspotConnection?.is_active && (
-                <span className="flex items-center gap-1 text-sm text-green-600">
+                <span className="flex items-center gap-1 text-sm text-emerald-500">
                   <CheckCircle2 className="h-4 w-4" />
                   Connected
                 </span>
@@ -716,9 +716,9 @@ export default function IntegrationsPage() {
             </p>
 
             {!hasHubSpotAccess ? (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-center">
-                <Lock className="h-8 w-8 mx-auto mb-2 text-slate-400" />
-                <p className="text-sm font-medium text-slate-700 mb-1">Upgrade Required</p>
+              <div className="bg-muted border border-border rounded-lg p-4 text-center">
+                <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm font-medium text-foreground mb-1">Upgrade Required</p>
                 <p className="text-xs text-muted-foreground mb-3">
                   HubSpot CRM integration is available on Professional plans and above.
                 </p>
@@ -728,14 +728,14 @@ export default function IntegrationsPage() {
               </div>
             ) : !hubspotConnection?.is_active ? (
               <>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm font-medium text-blue-900 mb-2">Recommended Setup:</p>
-                  <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
+                  <p className="text-sm font-medium text-blue-600 mb-2">Recommended Setup:</p>
+                  <ol className="text-xs text-blue-600 space-y-1 list-decimal list-inside">
                     <li>Create a list in HubSpot called "Employees"</li>
                     <li>Add all employee contacts to this list</li>
                     <li>After connecting, select the list to sync from</li>
                   </ol>
-                  <p className="text-xs text-blue-700 mt-2">
+                  <p className="text-xs text-blue-600 mt-2">
                     <strong>Note:</strong> HubSpot typically contains customers/leads. We recommend using Google Workspace or Microsoft 365 for employee management.
                   </p>
                 </div>
@@ -846,7 +846,7 @@ export default function IntegrationsPage() {
                 </div>
               </div>
               {calendlyConnection?.is_active && (
-                <span className="flex items-center gap-1 text-sm text-green-600">
+                <span className="flex items-center gap-1 text-sm text-emerald-500">
                   <CheckCircle2 className="h-4 w-4" />
                   Connected
                 </span>
@@ -860,9 +860,9 @@ export default function IntegrationsPage() {
 
             {!calendlyConnection?.is_active ? (
               <>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm font-medium text-blue-900 mb-2">How it works:</p>
-                  <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
+                  <p className="text-sm font-medium text-blue-600 mb-2">How it works:</p>
+                  <ol className="text-xs text-blue-600 space-y-1 list-decimal list-inside">
                     <li>Connect your Calendly account</li>
                     <li>We&apos;ll fetch your event types (30 min call, discovery call, etc.)</li>
                     <li>Add Calendly links to your signature templates</li>
@@ -908,11 +908,11 @@ export default function IntegrationsPage() {
                 )}
 
                 {calendlyEventTypes.length > 0 && (
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-                    <p className="text-xs font-medium text-slate-700 mb-2">Available Event Types:</p>
+                  <div className="bg-muted border border-border rounded-lg p-3">
+                    <p className="text-xs font-medium text-foreground mb-2">Available Event Types:</p>
                     <div className="space-y-1">
                       {calendlyEventTypes.slice(0, 5).map((eventType: any) => (
-                        <div key={eventType.uri} className="text-xs text-slate-600 flex items-center gap-2">
+                        <div key={eventType.uri} className="text-xs text-muted-foreground flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
                           <span className="font-medium">{eventType.name}</span>
                           <span className="text-muted-foreground">({eventType.duration} min)</span>
@@ -927,8 +927,8 @@ export default function IntegrationsPage() {
                   </div>
                 )}
 
-                <div className="bg-blue-50 border border-blue-100 rounded p-2 text-xs text-blue-700">
-                  <strong>Usage:</strong> Use <code className="bg-blue-100 px-1 rounded">{'{{calendly_link}}'}</code> in your signature templates to insert your scheduling link.
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 text-xs text-blue-600">
+                  <strong>Usage:</strong> Use <code className="bg-blue-500/15 px-1 rounded">{'{{calendly_link}}'}</code> in your signature templates to insert your scheduling link.
                 </div>
 
                 <div className="flex gap-2">
@@ -1020,8 +1020,8 @@ export default function IntegrationsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <p className="text-sm text-amber-800">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                <p className="text-sm text-amber-600">
                   <strong>First time?</strong> You&apos;ll need to{' '}
                   <a 
                     href="/help/google-workspace-setup#org-setup" 
@@ -1060,8 +1060,8 @@ export default function IntegrationsPage() {
                 </div>
 
                 {marketplaceError && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-sm text-red-800">{marketplaceError}</p>
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                    <p className="text-sm text-red-600">{marketplaceError}</p>
                   </div>
                 )}
               </div>
@@ -1108,17 +1108,17 @@ export default function IntegrationsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-                <p className="text-sm font-medium text-blue-900">Before you connect:</p>
-                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-blue-600">Before you connect:</p>
+                <ol className="text-sm text-blue-600 space-y-2 list-decimal list-inside">
                   <li>You must be a <strong>Google Workspace administrator</strong></li>
                   <li>You&apos;ll be asked to grant permissions to manage Gmail signatures</li>
                   <li>The app will only access signature settings, not email content</li>
                 </ol>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                <p className="text-sm text-amber-600">
                   <strong>Note:</strong> If you see &quot;This app isn&apos;t verified&quot;, click &quot;Advanced&quot; then &quot;Go to Siggly&quot; to continue. 
                   Our app is currently in the verification process with Google.
                 </p>
@@ -1155,29 +1155,29 @@ export default function IntegrationsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-                <p className="text-sm font-medium text-blue-900">Before you connect:</p>
-                <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-3">
+                <p className="text-sm font-medium text-blue-600">Before you connect:</p>
+                <ol className="text-sm text-blue-600 space-y-2 list-decimal list-inside">
                   <li>You must be a <strong>Microsoft 365 administrator</strong></li>
                   <li>You&apos;ll be asked to grant permissions to manage mail settings</li>
                   <li>Admin consent may be required for organization-wide access</li>
                 </ol>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                <p className="text-sm text-amber-600">
                   <strong>Admin Consent:</strong> If prompted, check &quot;Consent on behalf of your organization&quot; to allow 
                   signature management for all users. Without this, only your personal signature can be managed.
                 </p>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-                <p className="text-sm font-medium text-blue-900">Important: Web vs Desktop Clients</p>
-                <p className="text-sm text-blue-800">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-2">
+                <p className="text-sm font-medium text-blue-600">Important: Web vs Desktop Clients</p>
+                <p className="text-sm text-blue-600">
                   Signatures deployed via Microsoft 365 apply to <strong>Outlook Web (outlook.office.com)</strong> only. 
                   Desktop Outlook apps store signatures locally and cannot be updated remotely.
                 </p>
-                <p className="text-sm text-blue-800">
+                <p className="text-sm text-blue-600">
                   <strong>For desktop users:</strong> After deployment, users can copy their signature from Outlook Web 
                   or use the &quot;Copy Signature&quot; button in the signature editor to paste into their desktop Outlook settings.
                 </p>

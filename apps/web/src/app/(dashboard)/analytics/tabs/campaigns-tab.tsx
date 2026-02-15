@@ -227,11 +227,11 @@ export function CampaignsTab({ data, timeRange }: CampaignsTabProps) {
   const statusBadge = (status: CampaignRow['status']) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Active</Badge>;
+        return <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/10">Active</Badge>;
       case 'scheduled':
-        return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">Scheduled</Badge>;
+        return <Badge className="bg-blue-500/15 text-blue-500 hover:bg-blue-500/15">Scheduled</Badge>;
       case 'expired':
-        return <Badge className="bg-red-100 text-red-700 hover:bg-red-100">Expired</Badge>;
+        return <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10">Expired</Badge>;
       default:
         return <Badge variant="secondary">Unknown</Badge>;
     }
@@ -249,42 +249,42 @@ export function CampaignsTab({ data, timeRange }: CampaignsTabProps) {
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-violet-50 to-white border-violet-100">
+        <Card className="bg-gradient-to-br from-primary/10 to-white border-primary/30">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Target className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Target className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-violet-700">{totalActiveCampaigns}</p>
+                <p className="text-2xl font-bold text-primary">{totalActiveCampaigns}</p>
                 <p className="text-sm text-muted-foreground">Active Campaigns</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-white border-blue-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-500/15 rounded-lg">
                 <MousePointerClick className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-700">{totalClicks}</p>
+                <p className="text-2xl font-bold text-blue-600">{totalClicks}</p>
                 <p className="text-sm text-muted-foreground">Total Clicks Tracked</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-white border-emerald-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-lg">
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-emerald-700">
+                <p className="text-2xl font-bold text-emerald-600">
                   {topCampaign?.name || '-'}
                 </p>
                 <p className="text-sm text-muted-foreground">Top Campaign</p>
@@ -293,14 +293,14 @@ export function CampaignsTab({ data, timeRange }: CampaignsTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+        <Card className="bg-gradient-to-br from-amber-500/10 to-white border-amber-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
+              <div className="p-2 bg-amber-500/10 rounded-lg">
                 <BarChart3 className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-amber-700">{avgClicksPerCampaign}</p>
+                <p className="text-2xl font-bold text-amber-600">{avgClicksPerCampaign}</p>
                 <p className="text-sm text-muted-foreground">Avg Clicks / Campaign</p>
               </div>
             </div>
@@ -341,7 +341,7 @@ export function CampaignsTab({ data, timeRange }: CampaignsTabProps) {
                       key={row.name}
                       className={`border-b last:border-0 cursor-pointer transition-colors ${
                         selectedCampaign === row.name
-                          ? 'bg-violet-50'
+                          ? 'bg-primary/10'
                           : 'hover:bg-muted/50'
                       }`}
                       onClick={() =>

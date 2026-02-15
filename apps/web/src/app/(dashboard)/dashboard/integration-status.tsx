@@ -49,7 +49,7 @@ export function IntegrationStatusWidget({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
-            <Link2 className="h-4 w-4 text-violet-600" />
+            <Link2 className="h-4 w-4 text-primary" />
             Integrations
           </CardTitle>
           <span className="text-xs text-muted-foreground">
@@ -81,7 +81,7 @@ export function IntegrationStatusWidget({
               </div>
               <div className="flex items-center gap-2">
                 {status.connected ? (
-                  <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                  <span className="flex items-center gap-1 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full">
                     <CheckCircle2 className="h-3 w-3" />
                     Connected
                   </span>

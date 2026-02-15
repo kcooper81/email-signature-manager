@@ -145,7 +145,7 @@ export default function EditTemplatePage({ params }: PageProps) {
             onClick={() => setActiveTab('design')}
             className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
               activeTab === 'design'
-                ? 'border-violet-600 text-violet-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -156,7 +156,7 @@ export default function EditTemplatePage({ params }: PageProps) {
             onClick={() => setActiveTab('rules')}
             className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition-colors ${
               activeTab === 'rules'
-                ? 'border-violet-600 text-violet-600'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >

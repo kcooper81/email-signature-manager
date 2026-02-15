@@ -466,8 +466,8 @@ export default function AnalyticsPage() {
         <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-white">
           <CardContent className="py-12">
             <div className="text-center max-w-md mx-auto">
-              <div className="mx-auto w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-4">
-                <Lock className="h-8 w-8 text-violet-600" />
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Lock className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Unlock Analytics</h3>
               <p className="text-muted-foreground mb-6">

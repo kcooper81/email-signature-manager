@@ -34,7 +34,7 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">{data.successfulDeployments}</p>
+              <p className="text-3xl font-bold text-emerald-500">{data.successfulDeployments}</p>
               <p className="text-sm text-muted-foreground">Successful</p>
             </div>
           </CardContent>
@@ -61,7 +61,7 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-violet-600" />
+            <BarChart3 className="h-5 w-5 text-primary" />
             Deployment Trend
           </CardTitle>
           <CardDescription>
@@ -76,11 +76,11 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
                 className="flex-1 flex flex-col justify-end relative group"
               >
                 <div 
-                  className="bg-violet-200 rounded-t"
+                  className="bg-primary/20 rounded-t"
                   style={{ height: `${Math.max((day.users / maxUsers) * 100, 2)}%` }}
                 />
                 <div 
-                  className="bg-violet-500 rounded-t -mt-1"
+                  className="bg-primary rounded-t -mt-1"
                   style={{ height: `${Math.max((day.count / maxDeployments) * 60, 2)}%` }}
                 />
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border z-10">
@@ -94,8 +94,8 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
           <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <span>{data.deploymentsByDay[0]?.date ? new Date(data.deploymentsByDay[0].date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>
             <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-violet-500 rounded" /> Deployments</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-violet-200 rounded" /> Users</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-primary rounded" /> Deployments</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 bg-primary/20 rounded" /> Users</span>
             </div>
             <span>Today</span>
           </div>
@@ -108,7 +108,7 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <RefreshCw className="h-5 w-5 text-violet-600" />
+                <RefreshCw className="h-5 w-5 text-primary" />
                 Recent Activity
               </CardTitle>
               <CardDescription>
@@ -133,7 +133,7 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
                   className="flex items-center gap-3 p-3 border rounded-lg"
                 >
                   {deployment.status === 'completed' ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0" />
                   ) : deployment.status === 'failed' ? (
                     <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
                   ) : (
@@ -155,9 +155,9 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
                   <Badge 
                     variant="outline" 
                     className={
-                      deployment.status === 'completed' ? 'border-green-200 text-green-700' :
-                      deployment.status === 'failed' ? 'border-red-200 text-red-700' :
-                      'border-amber-200 text-amber-700'
+                      deployment.status === 'completed' ? 'border-emerald-500/20 text-emerald-500' :
+                      deployment.status === 'failed' ? 'border-red-500/20 text-red-600' :
+                      'border-amber-500/20 text-amber-600'
                     }
                   >
                     {deployment.status}
@@ -188,7 +188,7 @@ export function DeploymentsTab({ data }: DeploymentsTabProps) {
                 <div key={day} className="text-center">
                   <div className="h-24 flex items-end justify-center mb-2">
                     <div 
-                      className="w-full max-w-[40px] bg-violet-500 rounded-t"
+                      className="w-full max-w-[40px] bg-primary rounded-t"
                       style={{ height: `${Math.max((total / maxTotal) * 100, 5)}%` }}
                     />
                   </div>

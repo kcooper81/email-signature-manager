@@ -48,56 +48,56 @@ export function SalesTab({ data, employeeData }: SalesTabProps) {
     <div className="space-y-6">
       {/* Sales KPIs */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-white border-emerald-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-lg">
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-emerald-700">{salesAdoption}%</p>
+                <p className="text-2xl font-bold text-emerald-600">{salesAdoption}%</p>
                 <p className="text-sm text-muted-foreground">Sales Team Adoption</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-white border-blue-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-500/15 rounded-lg">
                 <Users className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-700">{salesDeployed}</p>
+                <p className="text-2xl font-bold text-blue-600">{salesDeployed}</p>
                 <p className="text-sm text-muted-foreground">Reps with Signatures</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+        <Card className="bg-gradient-to-br from-amber-500/10 to-white border-amber-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
+              <div className="p-2 bg-amber-500/10 rounded-lg">
                 <Target className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-amber-700">{salesTotal - salesDeployed}</p>
+                <p className="text-2xl font-bold text-amber-600">{salesTotal - salesDeployed}</p>
                 <p className="text-sm text-muted-foreground">Pending Deployment</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-violet-50 to-white border-violet-100">
+        <Card className="bg-gradient-to-br from-primary/10 to-white border-primary/30">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Briefcase className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Briefcase className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-violet-700">{templateUsage.length}</p>
+                <p className="text-2xl font-bold text-primary">{templateUsage.length}</p>
                 <p className="text-sm text-muted-foreground">Templates in Use</p>
               </div>
             </div>
@@ -107,16 +107,16 @@ export function SalesTab({ data, employeeData }: SalesTabProps) {
 
       {/* Sales Coverage Alert */}
       {salesTotal - salesDeployed > 0 && (
-        <Card className="border-amber-200 bg-amber-50/50">
+        <Card className="border-amber-500/20 bg-amber-500/10">
           <CardContent className="py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-100 rounded-lg">
+                <div className="p-2 bg-amber-500/10 rounded-lg">
                   <Target className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-900">Sales Coverage Gap</h4>
-                  <p className="text-sm text-amber-700">
+                  <h4 className="font-semibold text-amber-600">Sales Coverage Gap</h4>
+                  <p className="text-sm text-amber-600">
                     {salesTotal - salesDeployed} sales team member{salesTotal - salesDeployed > 1 ? 's' : ''} don't have professional signatures yet
                   </p>
                 </div>
@@ -221,12 +221,12 @@ export function SalesTab({ data, employeeData }: SalesTabProps) {
                       </td>
                       <td className="py-3 px-2">
                         {employee.hasSignature ? (
-                          <Badge className="bg-green-100 text-green-700 border-green-200">
+                          <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                             <CheckCircle2 className="h-3 w-3 mr-1" />
                             Active
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-amber-600 border-amber-200">
+                          <Badge variant="outline" className="text-amber-600 border-amber-500/20">
                             <XCircle className="h-3 w-3 mr-1" />
                             Pending
                           </Badge>

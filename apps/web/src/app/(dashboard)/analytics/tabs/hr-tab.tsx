@@ -61,56 +61,56 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
     <div className="space-y-6">
       {/* HR KPIs */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-white border-emerald-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <UserCheck className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <UserCheck className="h-5 w-5 text-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-700">{data.adoptionRate}%</p>
+                <p className="text-2xl font-bold text-emerald-500">{data.adoptionRate}%</p>
                 <p className="text-sm text-muted-foreground">Overall Adoption</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-white border-blue-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-500/15 rounded-lg">
                 <UserPlus className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-700">{data.newUsersThisPeriod}</p>
+                <p className="text-2xl font-bold text-blue-600">{data.newUsersThisPeriod}</p>
                 <p className="text-sm text-muted-foreground">New Hires ({timeRange})</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+        <Card className="bg-gradient-to-br from-amber-500/10 to-white border-amber-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
+              <div className="p-2 bg-amber-500/10 rounded-lg">
                 <Clock className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-amber-700">{data.onboardingPending}</p>
+                <p className="text-2xl font-bold text-amber-600">{data.onboardingPending}</p>
                 <p className="text-sm text-muted-foreground">Onboarding Pending</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-violet-50 to-white border-violet-100">
+        <Card className="bg-gradient-to-br from-primary/10 to-white border-primary/30">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Building2 className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Building2 className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-violet-700">{data.departmentCoverage}%</p>
+                <p className="text-2xl font-bold text-primary">{data.departmentCoverage}%</p>
                 <p className="text-sm text-muted-foreground">Dept Coverage (&gt;50%)</p>
               </div>
             </div>
@@ -120,23 +120,23 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
 
       {/* Low Adoption Alert */}
       {lowAdoptionDepts.length > 0 && (
-        <Card className="border-amber-200 bg-amber-50/50">
+        <Card className="border-amber-500/20 bg-amber-500/10">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-semibold text-amber-900">Departments Needing Attention</h4>
-                <p className="text-sm text-amber-700 mt-1">
+                <h4 className="font-semibold text-amber-600">Departments Needing Attention</h4>
+                <p className="text-sm text-amber-600 mt-1">
                   {lowAdoptionDepts.length} department{lowAdoptionDepts.length > 1 ? 's have' : ' has'} less than 50% signature adoption:
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {lowAdoptionDepts.slice(0, 5).map(dept => (
-                    <Badge key={dept.name} variant="outline" className="border-amber-300 text-amber-700">
+                    <Badge key={dept.name} variant="outline" className="border-amber-500/20 text-amber-600">
                       {dept.name} ({dept.rate}%)
                     </Badge>
                   ))}
                   {lowAdoptionDepts.length > 5 && (
-                    <Badge variant="outline" className="border-amber-300 text-amber-700">
+                    <Badge variant="outline" className="border-amber-500/20 text-amber-600">
                       +{lowAdoptionDepts.length - 5} more
                     </Badge>
                   )}
@@ -156,7 +156,7 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-green-600" />
+            <Building2 className="h-5 w-5 text-emerald-500" />
             Department Adoption Breakdown
           </CardTitle>
           <CardDescription>
@@ -177,7 +177,7 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{dept.name}</span>
                       {dept.rate < 50 && (
-                        <Badge variant="outline" className="text-amber-600 border-amber-200 text-xs">
+                        <Badge variant="outline" className="text-amber-600 border-amber-500/20 text-xs">
                           Low
                         </Badge>
                       )}
@@ -189,7 +189,7 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
                   <div className="w-full bg-muted rounded-full h-3">
                     <div 
                       className={`h-3 rounded-full transition-all ${
-                        dept.rate >= 80 ? 'bg-green-500' :
+                        dept.rate >= 80 ? 'bg-emerald-500' :
                         dept.rate >= 50 ? 'bg-amber-500' : 'bg-red-500'
                       }`}
                       style={{ width: `${dept.rate}%` }}
@@ -208,7 +208,7 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <UserPlus className="h-5 w-5 text-green-600" />
+                <UserPlus className="h-5 w-5 text-emerald-500" />
                 Employees Without Signatures
               </CardTitle>
               <CardDescription>
@@ -228,10 +228,10 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
         <CardContent>
           {pendingOnboarding.length === 0 ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-3">
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
+              <div className="w-16 h-16 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3">
+                <CheckCircle2 className="h-8 w-8 text-emerald-500" />
               </div>
-              <p className="font-medium text-green-700">All employees have signatures!</p>
+              <p className="font-medium text-emerald-500">All employees have signatures!</p>
               <p className="text-sm text-muted-foreground mt-1">Great job maintaining 100% coverage.</p>
             </div>
           ) : (
@@ -257,7 +257,7 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
                         <span className="text-sm">{employee.department}</span>
                       </td>
                       <td className="py-3 px-2 hidden md:table-cell">
-                        <Badge variant="outline" className="text-amber-600 border-amber-200">
+                        <Badge variant="outline" className="text-amber-600 border-amber-500/20">
                           <XCircle className="h-3 w-3 mr-1" />
                           Pending
                         </Badge>
@@ -281,7 +281,7 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
+              <TrendingUp className="h-5 w-5 text-emerald-500" />
               Recently Deployed (Last 7 Days)
             </CardTitle>
             <CardDescription>
@@ -293,10 +293,10 @@ export function HRTab({ data, employeeData, timeRange }: HRTabProps) {
               {recentlyDeployed.slice(0, 10).map((employee) => (
                 <div 
                   key={employee.email}
-                  className="flex items-center justify-between p-3 bg-green-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-emerald-500/10 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     <div>
                       <p className="font-medium text-sm">{employee.name}</p>
                       <p className="text-xs text-muted-foreground">{employee.department}</p>

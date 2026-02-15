@@ -57,42 +57,42 @@ export function MarketingTab({ data, employeeData }: MarketingTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-violet-50 to-white border-violet-100">
+        <Card className="bg-gradient-to-br from-primary/10 to-white border-primary/30">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Palette className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Palette className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-violet-700">{brandConsistencyScore}%</p>
+                <p className="text-2xl font-bold text-primary">{brandConsistencyScore}%</p>
                 <p className="text-sm text-muted-foreground">Brand Consistency</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-100">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-white border-blue-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-500/15 rounded-lg">
                 <Image className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-700">{data.bannersDeployed}</p>
+                <p className="text-2xl font-bold text-blue-600">{data.bannersDeployed}</p>
                 <p className="text-sm text-muted-foreground">Campaign Banners</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-white border-green-100">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-white border-emerald-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Link2 className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <Link2 className="h-5 w-5 text-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-700">{data.socialLinksDeployed}</p>
+                <p className="text-2xl font-bold text-emerald-500">{data.socialLinksDeployed}</p>
                 <p className="text-sm text-muted-foreground">Social Links Active</p>
               </div>
             </div>
@@ -141,11 +141,11 @@ export function MarketingTab({ data, employeeData }: MarketingTabProps) {
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-medium flex items-center gap-2">
-                  <MousePointerClick className="h-4 w-4 text-violet-600" />
+                  <MousePointerClick className="h-4 w-4 text-primary" />
                   Call-to-Action Buttons
                 </h4>
               </div>
-              <p className="text-3xl font-bold text-violet-700">{data.ctaButtonsDeployed}</p>
+              <p className="text-3xl font-bold text-primary">{data.ctaButtonsDeployed}</p>
               <p className="text-sm text-muted-foreground mt-1">
                 CTA buttons driving engagement
               </p>
@@ -164,7 +164,7 @@ export function MarketingTab({ data, employeeData }: MarketingTabProps) {
                   Social Media Links
                 </h4>
               </div>
-              <p className="text-3xl font-bold text-blue-700">{data.socialLinksDeployed}</p>
+              <p className="text-3xl font-bold text-blue-600">{data.socialLinksDeployed}</p>
               <p className="text-sm text-muted-foreground mt-1">
                 Social profile links deployed
               </p>
@@ -214,11 +214,11 @@ export function MarketingTab({ data, employeeData }: MarketingTabProps) {
                 <div 
                   key={employee.email}
                   className={`flex items-center justify-between p-3 rounded-lg ${
-                    employee.hasSignature ? 'bg-green-50' : 'bg-amber-50'
+                    employee.hasSignature ? 'bg-emerald-500/10' : 'bg-amber-500/10'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${employee.hasSignature ? 'bg-green-500' : 'bg-amber-500'}`} />
+                    <div className={`w-2 h-2 rounded-full ${employee.hasSignature ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                     <div>
                       <p className="font-medium text-sm">{employee.name}</p>
                       <p className="text-xs text-muted-foreground">{employee.email}</p>
@@ -227,11 +227,11 @@ export function MarketingTab({ data, employeeData }: MarketingTabProps) {
                   <div className="text-right">
                     {employee.hasSignature ? (
                       <>
-                        <Badge className="bg-green-100 text-green-700 border-green-200">Deployed</Badge>
+                        <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Deployed</Badge>
                         <p className="text-xs text-muted-foreground mt-1">{employee.templateName}</p>
                       </>
                     ) : (
-                      <Badge variant="outline" className="text-amber-600 border-amber-200">Pending</Badge>
+                      <Badge variant="outline" className="text-amber-600 border-amber-500/20">Pending</Badge>
                     )}
                   </div>
                 </div>

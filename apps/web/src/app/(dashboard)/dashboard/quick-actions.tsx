@@ -15,25 +15,25 @@ const actions = [
     label: 'Create Template',
     href: '/templates/new',
     icon: Plus,
-    color: 'bg-violet-100 text-violet-600 hover:bg-violet-200',
+    color: 'bg-primary/10 text-primary hover:bg-primary/20',
   },
   {
     label: 'Deploy Signatures',
     href: '/deployments',
     icon: Rocket,
-    color: 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200',
+    color: 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20',
   },
   {
     label: 'Sync Users',
     href: '/integrations',
     icon: RefreshCw,
-    color: 'bg-blue-100 text-blue-600 hover:bg-blue-200',
+    color: 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20',
   },
   {
     label: 'View Analytics',
     href: '/analytics',
     icon: BarChart3,
-    color: 'bg-amber-100 text-amber-600 hover:bg-amber-200',
+    color: 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20',
   },
 ];
 

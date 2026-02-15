@@ -279,7 +279,7 @@ export default function BrandingSettingsPage() {
       )}
 
       {success && (
-        <Alert className="mb-6 border-green-500 bg-green-50 text-green-700">
+        <Alert className="mb-6 border-emerald-500 bg-emerald-500/10 text-emerald-500">
           <Check className="h-4 w-4" />
           <AlertDescription>{success}</AlertDescription>
         </Alert>
