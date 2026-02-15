@@ -43,21 +43,14 @@ export const SUBSCRIPTION_LIMITS = {
   free: {
     users: 5,
     templates: 1,
-    banners: 0,
+    banners: -1, // unlimited
     customDomain: false,
-    analytics: false,
-  },
-  starter: {
-    users: 25,
-    templates: 5,
-    banners: 2,
-    customDomain: false,
-    analytics: true,
+    analytics: false, // 7-day preview only; full analytics requires Professional
   },
   professional: {
-    users: 100,
-    templates: 20,
-    banners: 10,
+    users: -1, // unlimited (billed per user, 10-user minimum)
+    templates: -1,
+    banners: -1,
     customDomain: true,
     analytics: true,
   },

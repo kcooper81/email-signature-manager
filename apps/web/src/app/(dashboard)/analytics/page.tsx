@@ -27,12 +27,17 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [employeeData, setEmployeeData] = useState<EmployeeSignatureStatus[]>([]);
   const [loading, setLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
+  const [selectedRange, setSelectedRange] = useState<'7d' | '30d' | '90d'>('7d');
   const [activeTab, setActiveTab] = useState('overview');
   const { plan } = useSubscription();
   const devBypass = usePayGatesBypass();
-  
-  const hasAnalyticsAccess = devBypass || plan.features.analytics;
+
+  const hasFullAnalytics = devBypass || plan.features.analytics;
+  const timeRange = hasFullAnalytics ? selectedRange : '7d';
+  const setTimeRange = (range: '7d' | '30d' | '90d') => {
+    if (!hasFullAnalytics && range !== '7d') return;
+    setSelectedRange(range);
+  };
 
   useEffect(() => {
     loadAnalytics();
@@ -456,57 +461,31 @@ export default function AnalyticsPage() {
     );
   }
 
-  if (!hasAnalyticsAccess) {
-    return (
-      <div className="space-y-6">
-        <PageHeader
-          title="Analytics"
-          description="Track your signature deployment metrics"
-        />
-        <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-white">
-          <CardContent className="py-12">
-            <div className="text-center max-w-md mx-auto">
-              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                <Lock className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Unlock Analytics</h3>
-              <p className="text-muted-foreground mb-6">
-                Get detailed insights into your signature deployments, track success rates, 
-                and monitor team adoption with our analytics dashboard.
-              </p>
-              <Link href="/settings/billing">
-                <Button size="lg">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Upgrade to Professional
-                </Button>
-              </Link>
-              <p className="text-xs text-muted-foreground mt-3">
-                Available on the Professional plan
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   if (!data) return null;
 
   const timeRangeAction = (
     <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-      {(['7d', '30d', '90d'] as const).map((range) => (
-        <button
-          key={range}
-          onClick={() => setTimeRange(range)}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            timeRange === range
-              ? 'bg-background shadow text-foreground'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
-        </button>
-      ))}
+      {(['7d', '30d', '90d'] as const).map((range) => {
+        const isLocked = !hasFullAnalytics && range !== '7d';
+        return (
+          <button
+            key={range}
+            onClick={() => !isLocked && setTimeRange(range)}
+            disabled={isLocked}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1 ${
+              timeRange === range
+                ? 'bg-background shadow text-foreground'
+                : isLocked
+                ? 'text-muted-foreground/50 cursor-not-allowed'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            title={isLocked ? 'Upgrade to Professional for 30-day and 90-day analytics' : undefined}
+          >
+            {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '90 Days'}
+            {isLocked && <Lock className="h-3 w-3" />}
+          </button>
+        );
+      })}
     </div>
   );
 
@@ -517,6 +496,25 @@ export default function AnalyticsPage() {
         description="Comprehensive insights into your email signature program"
         action={timeRangeAction}
       />
+
+      {!hasFullAnalytics && (
+        <Card className="border-violet-200 bg-gradient-to-r from-violet-50 to-white">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-5 w-5 text-violet-600" />
+                <div>
+                  <p className="text-sm font-medium">You&apos;re viewing a 7-day analytics preview</p>
+                  <p className="text-xs text-muted-foreground">Upgrade to Professional for 30-day and 90-day reporting</p>
+                </div>
+              </div>
+              <Link href="/settings/billing">
+                <Button size="sm" variant="default">Upgrade</Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 h-auto gap-1 p-1">

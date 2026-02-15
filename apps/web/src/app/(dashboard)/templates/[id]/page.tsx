@@ -74,7 +74,7 @@ export default function EditTemplatePage({ params }: PageProps) {
     setLoading(false);
   };
 
-  const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry: IndustryType) => {
+  const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry?: IndustryType) => {
     setSaving(true);
 
     try {
@@ -105,7 +105,7 @@ export default function EditTemplatePage({ params }: PageProps) {
           name,
           description,
           blocks,
-          industry,
+          industry: industry || 'general',
           updated_at: new Date().toISOString(),
         })
         .eq('id', params.id)

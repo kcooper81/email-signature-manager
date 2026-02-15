@@ -44,6 +44,27 @@ export default async function DashboardLayout({
 
   const isSuperAdmin = userData?.is_super_admin === true;
 
+  // Check if org is suspended (non-admins get redirected)
+  if (!isSuperAdmin) {
+    const { data: orgData } = await supabase
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', user.id)
+      .single();
+
+    if (orgData?.organization_id) {
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('is_suspended')
+        .eq('id', orgData.organization_id)
+        .single();
+
+      if (org?.is_suspended) {
+        redirect('/suspended');
+      }
+    }
+  }
+
   return (
     <ThemeProvider>
     <EnsureUserProvider>

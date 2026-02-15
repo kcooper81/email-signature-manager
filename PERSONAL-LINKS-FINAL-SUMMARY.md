@@ -228,9 +228,9 @@ A complete per-user personal links system that allows each team member to have t
 - ✅ No separate user types
 
 **Billing stays simple:**
-- Free: Up to 5 users
-- Starter: $0.50/user/month
-- Professional: $29 + $1/user/month
+- Free: $0/forever, up to 5 users, 1 template, full features
+- Professional: $1.50/user/month (10-user minimum), everything unlocked
+- Enterprise: Custom pricing, SSO, white-label, dedicated AM
 
 ---
 

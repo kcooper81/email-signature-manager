@@ -46,14 +46,13 @@ import {
 import type { SignatureBlock, SignatureBlockType, IndustryType } from './types';
 import { BlockEditor } from './block-editor';
 import { EmailClientPreview } from './email-client-preview';
-import { IndustrySelector } from './industry-selector';
 
 interface TemplateEditorProps {
   initialBlocks: SignatureBlock[];
   initialName?: string;
   initialDescription?: string;
   initialIndustry?: IndustryType;
-  onSave: (name: string, description: string, blocks: SignatureBlock[], industry: IndustryType) => Promise<void>;
+  onSave: (name: string, description: string, blocks: SignatureBlock[], industry?: IndustryType) => Promise<void>;
   saving: boolean;
 }
 
@@ -82,7 +81,6 @@ export function TemplateEditor({
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
-  const [industry, setIndustry] = useState<IndustryType>(initialIndustry);
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -120,7 +118,7 @@ export function TemplateEditor({
     const newBlock: SignatureBlock = {
       id: Math.random().toString(36).substr(2, 9),
       type,
-      content: getDefaultContent(type, industry),
+      content: getDefaultContent(type, 'general'),
     };
     setBlocks([...blocks, newBlock]);
     setSelectedBlockId(newBlock.id);
@@ -143,7 +141,7 @@ export function TemplateEditor({
       return;
     }
     setValidationError(null);
-    await onSave(name, description, blocks, industry);
+    await onSave(name, description, blocks);
   };
 
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
@@ -211,11 +209,6 @@ export function TemplateEditor({
               </CardHeader>
               {addBlockExpanded && (
                 <CardContent className="space-y-4">
-                  {/* Industry Selector */}
-                  <div className="pb-4 border-b">
-                    <IndustrySelector value={industry} onChange={setIndustry} />
-                  </div>
-                  
                   {/* Block Type Buttons - Grid layout */}
                   <div className="grid grid-cols-4 gap-2">
                     {BLOCK_TYPES.map((blockType) => (

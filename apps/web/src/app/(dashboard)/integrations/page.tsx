@@ -77,7 +77,7 @@ export default function IntegrationsPage() {
   const { plan } = useSubscription();
   const devBypass = usePayGatesBypass();
   const hasMicrosoft365Access = devBypass || plan.features.microsoft365;
-  const hasHubSpotAccess = devBypass || plan.features.hubspotCRM;
+  // HubSpot is free for all plans — no access check needed
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
@@ -715,18 +715,7 @@ export default function IntegrationsPage() {
               Connect your HubSpot CRM to automatically sync contact data and populate signature fields with employee information.
             </p>
 
-            {!hasHubSpotAccess ? (
-              <div className="bg-muted border border-border rounded-lg p-4 text-center">
-                <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm font-medium text-foreground mb-1">Upgrade Required</p>
-                <p className="text-xs text-muted-foreground mb-3">
-                  HubSpot CRM integration is available on Professional plans and above.
-                </p>
-                <Link href="/settings/billing">
-                  <Button size="sm">Upgrade Plan</Button>
-                </Link>
-              </div>
-            ) : !hubspotConnection?.is_active ? (
+            {!hubspotConnection?.is_active ? (
               <>
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
                   <p className="text-sm font-medium text-blue-600 mb-2">Recommended Setup:</p>

@@ -135,7 +135,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       {
         question: 'Is there a free trial available?',
         answer:
-          'Absolutely. Siggly offers a generous free plan and a 14-day trial of our Pro features — no credit card required.',
+          'Absolutely. Siggly offers a generous free plan with full features for up to 5 users — no credit card required.',
       },
       {
         question: 'What if I need help migrating my team?',
@@ -552,7 +552,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       {
         question: 'How does Siggly compare to Opensense on analytics?',
         answer:
-          'Siggly provides the same core analytics — impressions, clicks, and click-through rates — with real-time dashboards included in every plan. No premium tier required.',
+          'Siggly provides the same core analytics — impressions, clicks, and click-through rates — with a 7-day preview on the free plan and full real-time dashboards on Professional.',
       },
       {
         question: 'Can Siggly handle enterprise-scale deployments?',

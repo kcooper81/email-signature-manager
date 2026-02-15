@@ -10,7 +10,7 @@ import { ProfessionalPricingCalculator } from '@/components/pricing/professional
 
 export const metadata = genMeta({
   title: 'Pricing - Email Signature Management',
-  description: 'Free to try. One plan for teams. Custom for enterprise. Professional email signatures from $1.50/user/month with a 10-user minimum.',
+  description: 'Free forever for small teams. Professional plan at $1.50/user/month with a 10-user minimum. Full features on every plan — 25-73% cheaper than competitors.',
   keywords: ['pricing', 'email signature pricing', 'signature management cost', 'exclaimer pricing alternative'],
   canonical: '/pricing',
 });
@@ -63,46 +63,14 @@ export default function PricingPage() {
       <section className="py-20 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold mb-6">
-            Free to try. One plan for teams. Custom for enterprise.
+            Free forever. Simple pricing when you grow.
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-4">
-            Full feature access on the Free plan. Upgrade when you need more users or templates.
+            Full feature access on the Free plan. One paid plan for teams — no tiers, no confusion.
           </p>
           <p className="text-lg text-violet-600 font-medium">
-            Still 25-73% cheaper than Exclaimer, CodeTwo, and Siggy.io
+            25-73% cheaper than Exclaimer, CodeTwo, and Siggy.io
           </p>
-        </div>
-      </section>
-
-      {/* Pricing Calculator */}
-      <section className="py-12 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="bg-violet-50 border-2 border-violet-200 rounded-2xl p-8">
-            <h2 className="text-2xl font-bold text-center mb-4">Calculate Your Cost</h2>
-            <p className="text-center text-gray-600 mb-6">
-              Professional plan — $1.50/user/month, 10-user minimum
-            </p>
-            <div className="grid md:grid-cols-3 gap-6 text-center">
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="text-sm text-gray-500 mb-2">10 users</div>
-                <div className="text-3xl font-bold text-violet-600 mb-1">$15/mo</div>
-                <div className="text-xs text-gray-500">$1.50 &times; 10 users</div>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-violet-500">
-                <div className="text-sm text-gray-500 mb-2">50 users</div>
-                <div className="text-3xl font-bold text-violet-600 mb-1">$75/mo</div>
-                <div className="text-xs text-gray-500">vs Exclaimer $100+, Siggy $200</div>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="text-sm text-gray-500 mb-2">100 users</div>
-                <div className="text-3xl font-bold text-violet-600 mb-1">$150/mo</div>
-                <div className="text-xs text-gray-500">vs Exclaimer $200+, Siggy $400</div>
-              </div>
-            </div>
-            <p className="text-center text-sm text-gray-500 mt-6">
-              The best value in email signature management — same features, better price
-            </p>
-          </div>
         </div>
       </section>
 
@@ -111,7 +79,7 @@ export default function PricingPage() {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-4">Choose Your Plan</h2>
           <p className="text-center text-gray-600 mb-12">
-            Full feature access on Free. Upgrade for unlimited users, templates, and analytics.
+            Everything included on Free. Upgrade when your team outgrows 5 users.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             {PLANS_LIST.map((plan) => (

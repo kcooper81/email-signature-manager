@@ -96,7 +96,7 @@ export default function NewTemplatePage() {
   // Check if user can create more templates
   const canCreate = devBypass || limits.maxTemplates === -1 || templateCount < limits.maxTemplates;
 
-  const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry: string) => {
+  const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry?: string) => {
     setSaving(true);
 
     try {
@@ -129,7 +129,7 @@ export default function NewTemplatePage() {
           name,
           description,
           blocks,
-          industry,
+          industry: industry || 'general',
           is_default: false,
         })
         .select('id')
