@@ -71,7 +71,7 @@ The following pages still have inline headers/footers that should be removed sin
 - `about/page.tsx`
 - `blog/*.tsx` (all blog pages)
 - `compare/codetwo/page.tsx`
-- `compare/siggy/page.tsx`
+- `compare/wisestamp/page.tsx`
 - `contact/page.tsx`
 - `demo/page.tsx`
 - `features/page.tsx`

@@ -8,27 +8,35 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/dashboard';
-import { 
-  Building2, 
-  Plus, 
-  Users, 
+import {
+  Building2,
+  Plus,
+  Users,
   Calendar,
-  ExternalLink,
   Loader2,
   Search,
   Copy,
   Check,
   Mail,
   Globe,
-  ArrowRight,
   Settings,
   CreditCard,
   DollarSign,
   TrendingUp,
   Percent,
+  LayoutDashboard,
+  FileText,
+  Rocket,
+  MousePointerClick,
+  AlertTriangle,
+  Download,
+  Wifi,
+  WifiOff,
+  Clock,
 } from 'lucide-react';
 import { useMspContext } from '@/hooks/use-msp-context';
 import { cn } from '@/lib/utils';
+import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 
 interface Client {
   id: string;
@@ -37,6 +45,13 @@ interface Client {
   created_at: string;
   updated_at: string;
   userCount: number;
+  templateCount: number;
+  deploymentCount: number;
+  plan: string;
+  subscriptionStatus: string;
+  googleConnected: boolean;
+  microsoftConnected: boolean;
+  lastActivity: string | null;
 }
 
 interface ClientBilling {
@@ -60,7 +75,22 @@ interface BillingSummary {
   clients: ClientBilling[];
 }
 
-type TabType = 'clients' | 'billing';
+interface MspOverview {
+  totalDeployments: number;
+  totalTemplates: number;
+  totalSignatureClicks: number;
+  clientsWithNoDeployments: number;
+  recentActivity: {
+    id: string;
+    action: string;
+    resourceType: string;
+    createdAt: string;
+    orgName: string;
+  }[];
+}
+
+type TabType = 'clients' | 'overview' | 'billing';
+type PlanFilter = 'all' | 'free' | 'professional';
 
 export default function ClientsPage() {
   const router = useRouter();
@@ -69,13 +99,18 @@ export default function ClientsPage() {
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState<Client[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [planFilter, setPlanFilter] = useState<PlanFilter>('all');
   const [error, setError] = useState<string | null>(null);
   const [isNotMsp, setIsNotMsp] = useState(false);
-  
+
+  // Overview state
+  const [overviewLoading, setOverviewLoading] = useState(false);
+  const [overview, setOverview] = useState<MspOverview | null>(null);
+
   // Billing state
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingSummary, setBillingSummary] = useState<BillingSummary | null>(null);
-  
+
   // Add client modal state
   const [showAddModal, setShowAddModal] = useState(false);
   const [addingClient, setAddingClient] = useState(false);
@@ -97,13 +132,16 @@ export default function ClientsPage() {
     if (activeTab === 'billing' && !billingSummary && !billingLoading) {
       loadBilling();
     }
+    if (activeTab === 'overview' && !overview && !overviewLoading) {
+      loadOverview();
+    }
   }, [activeTab]);
 
   const loadClients = async () => {
     try {
       const response = await fetch('/api/msp/clients');
       const data = await response.json();
-      
+
       if (!response.ok) {
         if (data.error === 'Not an MSP organization') {
           setIsNotMsp(true);
@@ -112,7 +150,7 @@ export default function ClientsPage() {
         }
         return;
       }
-      
+
       setClients(data.clients || []);
     } catch (err: any) {
       setError(err.message);
@@ -121,12 +159,26 @@ export default function ClientsPage() {
     }
   };
 
+  const loadOverview = async () => {
+    setOverviewLoading(true);
+    try {
+      const response = await fetch('/api/msp/overview');
+      const data = await response.json();
+      if (response.ok) {
+        setOverview(data);
+      }
+    } catch (err: any) {
+      console.error('Failed to load overview:', err);
+    } finally {
+      setOverviewLoading(false);
+    }
+  };
+
   const loadBilling = async () => {
     setBillingLoading(true);
     try {
       const response = await fetch('/api/msp/billing');
       const data = await response.json();
-      
       if (response.ok) {
         setBillingSummary(data);
       }
@@ -157,7 +209,7 @@ export default function ClientsPage() {
 
       setInviteUrl(data.inviteUrl);
       loadClients();
-      refreshClients(); // Update the MSP context with new client
+      refreshClients();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -180,10 +232,54 @@ export default function ClientsPage() {
     setError(null);
   };
 
-  const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.domain?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredClients = clients
+    .filter(client =>
+      client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      client.domain?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter(client => planFilter === 'all' || client.plan === planFilter);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  };
+
+  const formatPlanName = (plan: string) => {
+    return plan.charAt(0).toUpperCase() + plan.slice(1);
+  };
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  };
+
+  const getHealthStatus = (client: Client) => {
+    if (client.deploymentCount === 0) return { label: 'No Deployments', color: 'text-amber-600 bg-amber-50' };
+    if (!client.lastActivity) return { label: 'Inactive', color: 'text-gray-500 bg-gray-50' };
+    const daysSinceActivity = (Date.now() - new Date(client.lastActivity).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceActivity > 30) return { label: 'Inactive', color: 'text-gray-500 bg-gray-50' };
+    return { label: 'Active', color: 'text-green-600 bg-green-50' };
+  };
+
+  const handleExportBilling = () => {
+    if (!billingSummary) return;
+    const columns: CSVColumn<ClientBilling>[] = [
+      { label: 'Client', accessor: (r) => r.name },
+      { label: 'Domain', accessor: (r) => r.domain || '' },
+      { label: 'Users', accessor: (r) => r.userCount },
+      { label: 'Plan', accessor: (r) => r.plan },
+      { label: 'Status', accessor: (r) => r.status },
+      { label: 'Monthly Amount', accessor: (r) => r.monthlyAmount.toFixed(2) },
+      { label: 'Your Margin', accessor: (r) => (r.monthlyAmount * (billingSummary.discountPercent / 100)).toFixed(2) },
+      { label: 'Next Billing', accessor: (r) => r.nextBillingDate ? new Date(r.nextBillingDate).toLocaleDateString() : '' },
+    ];
+    exportToCSV(billingSummary.clients, columns, 'partner-billing');
+  };
 
   if (loading) {
     return (
@@ -196,8 +292,8 @@ export default function ClientsPage() {
   if (isNotMsp) {
     return (
       <div className="space-y-6">
-        <PageHeader 
-          title="Client Management" 
+        <PageHeader
+          title="Client Management"
           description="Manage your MSP client organizations"
         />
         <Card>
@@ -216,199 +312,377 @@ export default function ClientsPage() {
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
-  const formatPlanName = (plan: string) => {
-    return plan.charAt(0).toUpperCase() + plan.slice(1);
+  const getActionColor = (action: string) => {
+    if (action.includes('create') || action.includes('add')) return 'bg-green-100 text-green-700';
+    if (action.includes('delete') || action.includes('remove')) return 'bg-red-100 text-red-700';
+    if (action.includes('update') || action.includes('edit')) return 'bg-blue-100 text-blue-700';
+    if (action.includes('deploy')) return 'bg-violet-100 text-violet-700';
+    return 'bg-slate-100 text-slate-700';
   };
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Client Management" 
+      <PageHeader
+        title="Client Management"
         description="Manage your MSP client organizations"
         action={
-          activeTab === 'clients' ? (
-            <Button onClick={() => setShowAddModal(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Client
-            </Button>
-          ) : undefined
+          <Button onClick={() => setShowAddModal(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Client
+          </Button>
         }
       />
 
       {/* Tabs */}
       <div className="flex gap-1 border-b">
-        <button
-          onClick={() => setActiveTab('clients')}
-          className={cn(
-            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-            activeTab === 'clients'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <Building2 className="h-4 w-4 inline mr-2" />
-          Clients
-        </button>
-        <button
-          onClick={() => setActiveTab('billing')}
-          className={cn(
-            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-            activeTab === 'billing'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
-          )}
-        >
-          <CreditCard className="h-4 w-4 inline mr-2" />
-          Billing Overview
-        </button>
+        {([
+          { key: 'clients' as TabType, label: 'Clients', icon: Building2 },
+          { key: 'overview' as TabType, label: 'Overview', icon: LayoutDashboard },
+          { key: 'billing' as TabType, label: 'Billing', icon: CreditCard },
+        ]).map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+              activeTab === tab.key
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <tab.icon className="h-4 w-4 inline mr-2" />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
+      {/* ───── CLIENTS TAB ───── */}
       {activeTab === 'clients' && (
         <>
-          {/* Search */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search clients..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search clients..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <select
+              value={planFilter}
+              onChange={(e) => setPlanFilter(e.target.value as PlanFilter)}
+              className="px-3 py-2 border rounded-lg text-sm bg-white dark:bg-slate-900"
+            >
+              <option value="all">All Plans</option>
+              <option value="free">Free</option>
+              <option value="professional">Professional</option>
+            </select>
           </div>
 
           {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-violet-100 rounded-lg dark:bg-violet-900/30">
-                <Building2 className="h-6 w-6 text-violet-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{clients.length}</p>
-                <p className="text-sm text-muted-foreground">Total Clients</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 rounded-lg dark:bg-blue-900/30">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {clients.reduce((sum, c) => sum + c.userCount, 0)}
-                </p>
-                <p className="text-sm text-muted-foreground">Total Users</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 rounded-lg dark:bg-green-900/30">
-                <Calendar className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {clients.filter(c => {
-                    const created = new Date(c.created_at);
-                    const now = new Date();
-                    return (now.getTime() - created.getTime()) < 30 * 24 * 60 * 60 * 1000;
-                  }).length}
-                </p>
-                <p className="text-sm text-muted-foreground">New This Month</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Client List */}
-      {filteredClients.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
-              {searchQuery ? 'No clients found' : 'No clients yet'}
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              {searchQuery 
-                ? 'Try adjusting your search query'
-                : 'Add your first client to get started'}
-            </p>
-            {!searchQuery && (
-              <Button onClick={() => setShowAddModal(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Client
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4">
-          {filteredClients.map((client) => (
-            <Card key={client.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-slate-100 rounded-lg dark:bg-slate-800">
-                      <Building2 className="h-6 w-6 text-slate-600 dark:text-slate-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{client.name}</h3>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        {client.domain && (
-                          <span className="flex items-center gap-1">
-                            <Globe className="h-3 w-3" />
-                            {client.domain}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {client.userCount} users
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          Added {new Date(client.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-violet-100 rounded-lg dark:bg-violet-900/30">
+                    <Building2 className="h-5 w-5 text-violet-600" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">Active</Badge>
-                    <Button 
-                      variant="default" 
-                      size="sm"
-                      onClick={() => {
-                        switchToClient({ id: client.id, name: client.name, domain: client.domain });
-                        router.push('/dashboard');
-                      }}
-                    >
-                      <Settings className="h-4 w-4 mr-1" />
-                      Manage
-                    </Button>
+                  <div>
+                    <p className="text-2xl font-bold">{clients.length}</p>
+                    <p className="text-xs text-muted-foreground">Total Clients</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-blue-100 rounded-lg dark:bg-blue-900/30">
+                    <Users className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {clients.reduce((sum, c) => sum + c.userCount, 0)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Total Users</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-green-100 rounded-lg dark:bg-green-900/30">
+                    <Rocket className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {clients.reduce((sum, c) => sum + c.deploymentCount, 0)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Deployments</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-100 rounded-lg dark:bg-amber-900/30">
+                    <AlertTriangle className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">
+                      {clients.filter(c => c.deploymentCount === 0).length}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Need Setup</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Client List */}
+          {filteredClients.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  {searchQuery || planFilter !== 'all' ? 'No clients found' : 'No clients yet'}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {searchQuery || planFilter !== 'all'
+                    ? 'Try adjusting your filters'
+                    : 'Add your first client to get started'}
+                </p>
+                {!searchQuery && planFilter === 'all' && (
+                  <Button onClick={() => setShowAddModal(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Client
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-3">
+              {filteredClients.map((client) => {
+                const health = getHealthStatus(client);
+                return (
+                  <Card key={client.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="py-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 min-w-0 flex-1">
+                          <div className="p-3 bg-slate-100 rounded-lg dark:bg-slate-800 shrink-0">
+                            <Building2 className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold truncate">{client.name}</h3>
+                              <Badge variant={client.plan === 'free' ? 'secondary' : 'default'} className="text-xs">
+                                {formatPlanName(client.plan)}
+                              </Badge>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${health.color}`}>
+                                {health.label}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 flex-wrap">
+                              {client.domain && (
+                                <span className="flex items-center gap-1">
+                                  <Globe className="h-3 w-3" />
+                                  {client.domain}
+                                </span>
+                              )}
+                              <span className="flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {client.userCount}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <FileText className="h-3 w-3" />
+                                {client.templateCount} templates
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Rocket className="h-3 w-3" />
+                                {client.deploymentCount} deployed
+                              </span>
+                              {client.lastActivity && (
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {timeAgo(client.lastActivity)}
+                                </span>
+                              )}
+                            </div>
+                            {/* Integration pills */}
+                            <div className="flex items-center gap-2 mt-1.5">
+                              {client.googleConnected && (
+                                <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded dark:bg-green-900/20">
+                                  <Wifi className="h-3 w-3" /> Google
+                                </span>
+                              )}
+                              {client.microsoftConnected && (
+                                <span className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded dark:bg-blue-900/20">
+                                  <Wifi className="h-3 w-3" /> Microsoft
+                                </span>
+                              )}
+                              {!client.googleConnected && !client.microsoftConnected && (
+                                <span className="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded dark:bg-gray-900/20">
+                                  <WifiOff className="h-3 w-3" /> No integration
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="shrink-0"
+                          onClick={() => {
+                            switchToClient({ id: client.id, name: client.name, domain: client.domain });
+                            router.push('/dashboard');
+                          }}
+                        >
+                          <Settings className="h-4 w-4 mr-1" />
+                          Manage
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
 
-      {/* Billing Tab */}
+      {/* ───── OVERVIEW TAB ───── */}
+      {activeTab === 'overview' && (
+        <>
+          {overviewLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : overview ? (
+            <>
+              {/* Aggregate Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-violet-100 rounded-lg dark:bg-violet-900/30">
+                        <Rocket className="h-5 w-5 text-violet-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{overview.totalDeployments}</p>
+                        <p className="text-xs text-muted-foreground">Total Deployments</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-blue-100 rounded-lg dark:bg-blue-900/30">
+                        <FileText className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{overview.totalTemplates}</p>
+                        <p className="text-xs text-muted-foreground">Total Templates</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-green-100 rounded-lg dark:bg-green-900/30">
+                        <MousePointerClick className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{overview.totalSignatureClicks}</p>
+                        <p className="text-xs text-muted-foreground">Clicks (30d)</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-amber-100 rounded-lg dark:bg-amber-900/30">
+                        <AlertTriangle className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold">{overview.clientsWithNoDeployments}</p>
+                        <p className="text-xs text-muted-foreground">Need Deployment</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Attention Items */}
+              {overview.clientsWithNoDeployments > 0 && (
+                <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/10 dark:border-amber-900">
+                  <CardContent className="py-4">
+                    <div className="flex items-center gap-3">
+                      <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
+                      <div>
+                        <p className="font-medium text-amber-800 dark:text-amber-200">
+                          {overview.clientsWithNoDeployments} client{overview.clientsWithNoDeployments > 1 ? 's have' : ' has'} no active deployments
+                        </p>
+                        <p className="text-sm text-amber-600 dark:text-amber-400">
+                          Switch to their account to set up templates and deploy signatures.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Recent Activity across all clients */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Recent Client Activity</CardTitle>
+                  <CardDescription>Latest actions across all managed organizations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {overview.recentActivity.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">No recent activity across clients.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {overview.recentActivity.map((activity) => (
+                        <div key={activity.id} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-3">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${getActionColor(activity.action)}`}>
+                              {activity.action.replace(/_/g, ' ')}
+                            </span>
+                            <span className="text-muted-foreground">{activity.resourceType}</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-muted-foreground">
+                            <span className="font-medium text-foreground">{activity.orgName}</span>
+                            <span className="text-xs">{timeAgo(activity.createdAt)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <LayoutDashboard className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Unable to load overview data.</p>
+                <Button variant="outline" className="mt-4" onClick={loadOverview}>
+                  Try Again
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+
+      {/* ───── BILLING TAB ───── */}
       {activeTab === 'billing' && (
         <>
           {billingLoading ? (
@@ -443,55 +717,55 @@ export default function ClientsPage() {
               )}
 
               {/* Billing Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-violet-100 rounded-lg dark:bg-violet-900/30">
-                        <Building2 className="h-6 w-6 text-violet-600" />
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-violet-100 rounded-lg dark:bg-violet-900/30">
+                        <Building2 className="h-5 w-5 text-violet-600" />
                       </div>
                       <div>
                         <p className="text-2xl font-bold">{billingSummary.totalClients}</p>
-                        <p className="text-sm text-muted-foreground">Total Clients</p>
+                        <p className="text-xs text-muted-foreground">Total Clients</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-100 rounded-lg dark:bg-blue-900/30">
-                        <Users className="h-6 w-6 text-blue-600" />
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-blue-100 rounded-lg dark:bg-blue-900/30">
+                        <Users className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
                         <p className="text-2xl font-bold">{billingSummary.totalUsers}</p>
-                        <p className="text-sm text-muted-foreground">Total Users</p>
+                        <p className="text-xs text-muted-foreground">Total Users</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-green-100 rounded-lg dark:bg-green-900/30">
-                        <DollarSign className="h-6 w-6 text-green-600" />
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-green-100 rounded-lg dark:bg-green-900/30">
+                        <DollarSign className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
                         <p className="text-2xl font-bold">{formatCurrency(billingSummary.totalMonthlyRevenue)}</p>
-                        <p className="text-sm text-muted-foreground">Monthly Revenue</p>
+                        <p className="text-xs text-muted-foreground">Monthly Revenue</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-amber-100 rounded-lg dark:bg-amber-900/30">
-                        <TrendingUp className="h-6 w-6 text-amber-600" />
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-amber-100 rounded-lg dark:bg-amber-900/30">
+                        <TrendingUp className="h-5 w-5 text-amber-600" />
                       </div>
                       <div>
                         <p className="text-2xl font-bold">{formatCurrency(billingSummary.partnerMargin)}</p>
-                        <p className="text-sm text-muted-foreground">Your Margin</p>
+                        <p className="text-xs text-muted-foreground">Your Margin</p>
                       </div>
                     </div>
                   </CardContent>
@@ -501,8 +775,16 @@ export default function ClientsPage() {
               {/* Client Billing Table */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Client Subscriptions</CardTitle>
-                  <CardDescription>Billing status for all your managed clients</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Client Subscriptions</CardTitle>
+                      <CardDescription>Billing status for all your managed clients</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleExportBilling} disabled={billingSummary.clients.length === 0}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export CSV
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {billingSummary.clients.length === 0 ? (
@@ -512,7 +794,7 @@ export default function ClientsPage() {
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
-                      <table className="w-full">
+                      <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b text-left">
                             <th className="pb-3 font-medium">Client</th>
@@ -530,7 +812,7 @@ export default function ClientsPage() {
                                 <div>
                                   <p className="font-medium">{client.name}</p>
                                   {client.domain && (
-                                    <p className="text-sm text-muted-foreground">{client.domain}</p>
+                                    <p className="text-xs text-muted-foreground">{client.domain}</p>
                                   )}
                                 </div>
                               </td>
@@ -591,7 +873,7 @@ export default function ClientsPage() {
                 {inviteUrl ? 'Client Created!' : 'Add New Client'}
               </CardTitle>
               <CardDescription>
-                {inviteUrl 
+                {inviteUrl
                   ? 'Share the invite link with your client\'s admin'
                   : 'Create a new client organization and invite their admin'}
               </CardDescription>
@@ -660,7 +942,7 @@ export default function ClientsPage() {
                       <Mail className="h-4 w-4" />
                       Client Admin Details
                     </h4>
-                    
+
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="adminFirstName">First Name</Label>

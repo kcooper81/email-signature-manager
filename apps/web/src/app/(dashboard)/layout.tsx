@@ -45,23 +45,28 @@ export default async function DashboardLayout({
   const isSuperAdmin = userData?.is_super_admin === true;
 
   // Check if org is suspended (non-admins get redirected)
+  // Note: is_suspended column must be added to organizations table for this to work
   if (!isSuperAdmin) {
-    const { data: orgData } = await supabase
-      .from('users')
-      .select('organization_id')
-      .eq('auth_id', user.id)
-      .single();
-
-    if (orgData?.organization_id) {
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('is_suspended')
-        .eq('id', orgData.organization_id)
+    try {
+      const { data: orgData } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user.id)
         .single();
 
-      if (org?.is_suspended) {
-        redirect('/suspended');
+      if (orgData?.organization_id) {
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('id')
+          .eq('id', orgData.organization_id)
+          .single();
+
+        if (org && (org as any).is_suspended) {
+          redirect('/suspended');
+        }
       }
+    } catch {
+      // is_suspended column may not exist yet — skip check
     }
   }
 

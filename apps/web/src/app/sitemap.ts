@@ -166,7 +166,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const comparisonPages: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/compare/exclaimer`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/compare/codetwo`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/compare/siggy`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/compare/wisestamp`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
   ];
 

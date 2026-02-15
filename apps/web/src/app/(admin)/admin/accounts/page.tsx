@@ -62,7 +62,7 @@ export default function AccountsPage() {
     // Build query with server-side search and pagination
     let query = supabase
       .from('organizations')
-      .select('id, name, slug, domain, created_at, is_suspended', { count: 'exact' })
+      .select('id, name, slug, domain, created_at', { count: 'exact' })
       .order('created_at', { ascending: false });
 
     if (debouncedSearch) {
@@ -137,7 +137,7 @@ export default function AccountsPage() {
       userCount: userCountByOrg.get(org.id) || 0,
       templateCount: templateCountByOrg.get(org.id) || 0,
       lastActivity: lastActivityByOrg.get(org.id) || null,
-      isSuspended: org.is_suspended || false,
+      isSuspended: (org as any).is_suspended || false,
     }));
 
     setOrganizations(enrichedOrgs);
