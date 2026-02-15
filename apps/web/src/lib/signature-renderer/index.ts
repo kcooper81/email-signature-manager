@@ -1,14 +1,5 @@
 import { buildTrackableUrl, detectLinkType } from '@/lib/analytics/url-builder';
-
-// Social media icon URLs (hosted on CDN for email compatibility)
-const SOCIAL_ICONS: Record<string, string> = {
-  linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
-  twitter: 'https://cdn.simpleicons.org/x/000000',
-  facebook: 'https://cdn.simpleicons.org/facebook/1877F2',
-  instagram: 'https://cdn.simpleicons.org/instagram/E4405F',
-  youtube: 'https://cdn.simpleicons.org/youtube/FF0000',
-  github: 'https://cdn.simpleicons.org/github/181717',
-};
+import { SOCIAL_ICONS } from '@/lib/social-icons';
 
 // Template block types matching the actual database structure
 interface TemplateBlock {
