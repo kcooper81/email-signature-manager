@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -16,28 +17,69 @@ import {
   X,
   BookOpen,
   UserPlus,
+  Cog,
+  MousePointerClick,
+  BarChart3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+interface NavBadgeCounts {
+  newTickets: number;
+  unresolvedErrors: number;
+  pendingPartners: number;
+}
+
 const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/accounts', label: 'Accounts', icon: Building2 },
-  { href: '/admin/partner-applications', label: 'Partner Applications', icon: UserPlus },
-  { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
-  { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard },
-  { href: '/admin/help', label: 'Help Articles', icon: BookOpen },
-  { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText },
-  { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle },
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null },
+  { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: null },
+  { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners' as const },
+  { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets' as const },
+  { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null },
+  { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null },
+  { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null },
+  { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null },
+  { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null },
+  { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors' as const },
 ];
 
 export function AdminNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [badges, setBadges] = useState<NavBadgeCounts>({
+    newTickets: 0,
+    unresolvedErrors: 0,
+    pendingPartners: 0,
+  });
+
+  useEffect(() => {
+    loadBadgeCounts();
+    // Refresh badge counts every 60 seconds
+    const interval = setInterval(loadBadgeCounts, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadBadgeCounts = async () => {
+    const supabase = createClient();
+
+    const [ticketsResult, errorsResult, partnersResult] = await Promise.all([
+      supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('status', 'new'),
+      supabase.from('error_logs').select('*', { count: 'exact', head: true }).eq('resolved', false),
+      supabase.from('partner_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'under_review']),
+    ]);
+
+    setBadges({
+      newTickets: ticketsResult.count || 0,
+      unresolvedErrors: errorsResult.count || 0,
+      pendingPartners: partnersResult.count || 0,
+    });
+  };
 
   const renderNavItem = (item: typeof navItems[0], mobile?: boolean) => {
-    const isActive = pathname === item.href || 
+    const isActive = pathname === item.href ||
       (item.href !== '/admin' && pathname.startsWith(item.href));
-    
+
+    const badgeCount = item.badgeKey ? badges[item.badgeKey] : 0;
+
     return (
       <Link
         key={item.href}
@@ -50,7 +92,12 @@ export function AdminNav() {
         }`}
       >
         <item.icon className="h-5 w-5" />
-        {item.label}
+        <span className="flex-1">{item.label}</span>
+        {badgeCount > 0 && (
+          <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </span>
+        )}
       </Link>
     );
   };

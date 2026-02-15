@@ -41,13 +41,7 @@ export async function GET() {
     // Get all client organizations
     const { data: clients, error: clientsError } = await supabase
       .from('organizations')
-      .select(`
-        id,
-        name,
-        domain,
-        created_at,
-        updated_at
-      `)
+      .select('id, name, domain, created_at, updated_at, google_workspace_connected, microsoft_365_connected')
       .eq('parent_organization_id', userData.organization_id)
       .eq('organization_type', 'msp_client')
       .order('name');
@@ -56,22 +50,57 @@ export async function GET() {
       throw clientsError;
     }
 
-    // Get user counts for each client
-    const clientsWithCounts = await Promise.all(
+    // Enrich each client with counts, plan, integrations, and activity
+    const clientsWithDetails = await Promise.all(
       (clients || []).map(async (client) => {
-        const { count } = await supabase
-          .from('users')
-          .select('*', { count: 'exact', head: true })
-          .eq('organization_id', client.id);
+        const [
+          { count: userCount },
+          { count: templateCount },
+          { count: deploymentCount },
+          { data: subscription },
+          { data: lastAudit },
+        ] = await Promise.all([
+          supabase
+            .from('users')
+            .select('*', { count: 'exact', head: true })
+            .eq('organization_id', client.id),
+          supabase
+            .from('signature_templates')
+            .select('*', { count: 'exact', head: true })
+            .eq('organization_id', client.id),
+          supabase
+            .from('signature_deployments')
+            .select('*', { count: 'exact', head: true })
+            .eq('organization_id', client.id),
+          supabase
+            .from('subscriptions')
+            .select('plan, status')
+            .eq('organization_id', client.id)
+            .single(),
+          supabase
+            .from('audit_logs')
+            .select('created_at')
+            .eq('organization_id', client.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single(),
+        ]);
 
         return {
           ...client,
-          userCount: count || 0,
+          userCount: userCount || 0,
+          templateCount: templateCount || 0,
+          deploymentCount: deploymentCount || 0,
+          plan: subscription?.plan || 'free',
+          subscriptionStatus: subscription?.status || 'inactive',
+          googleConnected: (client as any).google_workspace_connected || false,
+          microsoftConnected: (client as any).microsoft_365_connected || false,
+          lastActivity: lastAudit?.created_at || null,
         };
       })
     );
 
-    return NextResponse.json({ clients: clientsWithCounts });
+    return NextResponse.json({ clients: clientsWithDetails });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
