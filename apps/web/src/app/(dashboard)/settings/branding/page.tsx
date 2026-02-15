@@ -233,6 +233,7 @@ export default function BrandingSettingsPage() {
     { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
     { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
     ...(isMsp ? [{ id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' }] : []),
+    { id: 'brand-assets', label: 'Brand Assets', icon: Image, href: '/settings/brand-assets' },
     { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
     { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
     { id: 'appearance', label: 'Appearance', icon: Monitor, href: '/settings' },

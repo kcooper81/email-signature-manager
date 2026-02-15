@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
-import { 
-  CreditCard, 
-  Check, 
+import {
+  CreditCard,
+  Check,
   X,
   Loader2,
   ExternalLink,
@@ -22,14 +22,18 @@ import {
   Palette,
   Shield,
   RefreshCw,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { PLANS, getPlan, formatPrice } from '@/lib/billing/plans';
 import { trackViewItem, trackBeginCheckout, trackAddToCart, trackPurchase, trackSubscriptionEvent } from '@/components/analytics';
 import { useSearchParams } from 'next/navigation';
 
+// Note: billing page can't know MSP status without extra fetch, so we always show Brand Assets
+// and skip the conditional Branding tab (users navigate there from the main settings page).
 const settingsTabs = [
   { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
   { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
+  { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
   { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
   { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
   { id: 'appearance', label: 'Appearance', icon: Palette, href: '/settings' },
