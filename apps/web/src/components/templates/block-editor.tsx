@@ -107,10 +107,36 @@ function TextEditor({
           <select
             value={content.fontWeight}
             onChange={(e) => onChange({ ...content, fontWeight: e.target.value as 'normal' | 'bold' })}
-            className="w-full h-10 px-3 border rounded-md"
+            className="w-full h-10 px-3 border rounded-md bg-background"
           >
             <option value="normal">Normal</option>
             <option value="bold">Bold</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Style</Label>
+          <select
+            value={content.fontStyle || 'normal'}
+            onChange={(e) => onChange({ ...content, fontStyle: e.target.value as 'normal' | 'italic' })}
+            className="w-full h-10 px-3 border rounded-md bg-background"
+          >
+            <option value="normal">Normal</option>
+            <option value="italic">Italic</option>
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label>Alignment</Label>
+          <select
+            value={content.align || 'left'}
+            onChange={(e) => onChange({ ...content, align: e.target.value as 'left' | 'center' | 'right' })}
+            className="w-full h-10 px-3 border rounded-md bg-background"
+          >
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
           </select>
         </div>
       </div>

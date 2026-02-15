@@ -348,7 +348,7 @@ function renderSocialBlock(content: any, context: RenderContext): string {
 
 function renderContactInfoBlock(content: any, context: RenderContext): string {
   const items: string[] = [];
-  
+
   if (content.email) {
     const email = replacePlaceholders(content.email, context);
     if (email) {
@@ -358,13 +358,14 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
   if (content.phone) {
     const phone = replacePlaceholders(content.phone, context);
     if (phone) {
-      items.push(`<a href="tel:${phone}" class="contact-link" style="color: #4d52de; text-decoration: none;">${phone}</a>`);
+      items.push(`<a href="tel:${phone.replace(/\s/g, '')}" class="contact-link" style="color: #4d52de; text-decoration: none;">${phone}</a>`);
     }
   }
   if (content.website) {
     const website = replacePlaceholders(content.website, context);
     if (website) {
-      const trackedWebsite = wrapTrackingUrl(website, context, detectLinkType(website) || 'custom');
+      const href = website.startsWith('http') ? website : `https://${website}`;
+      const trackedWebsite = wrapTrackingUrl(href, context, detectLinkType(href) || 'custom');
       items.push(`<a href="${trackedWebsite}" class="contact-link" style="color: #4d52de; text-decoration: none;">${website}</a>`);
     }
   }
@@ -372,6 +373,19 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
     const address = replacePlaceholders(content.address, context);
     if (address) {
       items.push(address);
+    }
+  }
+
+  // Render custom fields
+  if (content.customFields && Array.isArray(content.customFields)) {
+    for (const field of content.customFields) {
+      if (field.value) {
+        const value = replacePlaceholders(field.value, context);
+        if (value) {
+          const text = field.label ? `${field.label}: ${value}` : value;
+          items.push(text);
+        }
+      }
     }
   }
 
@@ -393,7 +407,7 @@ function renderContactInfoBlock(content: any, context: RenderContext): string {
 }
 
 function renderButtonBlock(content: any, context: RenderContext): string {
-  const text = content.text || 'Click Here';
+  const text = replacePlaceholders(content.text || 'Click Here', context);
   const rawUrl = replacePlaceholders(content.url || '#', context);
   const url = wrapTrackingUrl(rawUrl, context, 'button');
   const bgColor = content.backgroundColor || '#4d52de';
