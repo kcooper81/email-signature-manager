@@ -499,7 +499,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
                               });
                             }
                           }}
-                          className="h-4 w-4 rounded border-gray-300"
+                          className="h-4 w-4 rounded border-input"
                         />
                         <span className="text-sm">{dept}</span>
                       </label>
@@ -557,7 +557,7 @@ export function RulesManager({ templateId, templateName, organizationId }: Rules
                                   });
                                 }
                               }}
-                              className="h-4 w-4 rounded border-gray-300"
+                              className="h-4 w-4 rounded border-input"
                             />
                             <span className="text-sm">{emp.name}</span>
                             <span className="text-xs text-muted-foreground">({emp.email})</span>
