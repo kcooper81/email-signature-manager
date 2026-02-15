@@ -1,4 +1,12 @@
 import { MetadataRoute } from 'next';
+import { industriesPages } from '@/lib/seo-pages/data/industries';
+import { useCasesPages } from '@/lib/seo-pages/data/use-cases';
+import { solutionsPages } from '@/lib/seo-pages/data/solutions';
+import { featuresPages } from '@/lib/seo-pages/data/features';
+import { integrationsPages } from '@/lib/seo-pages/data/integrations';
+import { guidesPages } from '@/lib/seo-pages/data/guides';
+import { comparisonsPages } from '@/lib/seo-pages/data/comparisons';
+import { templatesPages } from '@/lib/seo-pages/data/templates';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
@@ -211,6 +219,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
   ];
 
+  // SEO landing pages - dynamically generated from data files
+  const seoRouteMap: { pages: { meta: { canonical: string } }[]; priority: number; changeFrequency: 'weekly' | 'monthly' }[] = [
+    { pages: solutionsPages, priority: 0.85, changeFrequency: 'weekly' },
+    { pages: comparisonsPages, priority: 0.85, changeFrequency: 'weekly' },
+    { pages: industriesPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: featuresPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: integrationsPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: useCasesPages, priority: 0.75, changeFrequency: 'monthly' },
+    { pages: templatesPages, priority: 0.75, changeFrequency: 'monthly' },
+    { pages: guidesPages, priority: 0.7, changeFrequency: 'monthly' },
+  ];
+
+  const seoLandingPages: MetadataRoute.Sitemap = seoRouteMap.flatMap(
+    ({ pages, priority, changeFrequency }) =>
+      pages.map((page) => ({
+        url: `${baseUrl}${page.meta.canonical}`,
+        lastModified: new Date(),
+        changeFrequency,
+        priority,
+      }))
+  );
+
   return [
     ...corePages,
     ...solutionPages,
@@ -219,5 +249,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...toolPages,
     ...industryPages,
     ...otherPages,
+    ...seoLandingPages,
   ];
 }
