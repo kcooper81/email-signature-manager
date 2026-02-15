@@ -24,7 +24,7 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
 
     window.addEventListener('scroll', handleScroll);
     handleScroll(); // Check initial state
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -34,9 +34,9 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled
           ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-sm'
-          : transparent
+          : isHomepage
           ? 'bg-transparent border-b border-transparent'
-          : 'bg-white border-b border-gray-200'
+          : 'bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 border-b border-transparent'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
@@ -48,12 +48,12 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
             height={48}
             className={cn(
               "h-8 sm:h-10 w-auto transition-all",
-              isHomepage && !scrolled && "brightness-0 invert"
+              !scrolled && "brightness-0 invert"
             )}
           />
           <span className={cn(
             "font-bold text-lg sm:text-xl tracking-tight transition-colors",
-            isHomepage && !scrolled ? "text-white" : "text-gray-900"
+            !scrolled ? "text-white" : "text-gray-900"
           )}>Siggly</span>
         </Link>
         
@@ -62,8 +62,8 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
             href="/features" 
             className={cn(
               "px-4 py-2 text-sm transition-colors font-medium rounded-lg",
-              isHomepage && !scrolled 
-                ? "text-white/90 hover:text-white hover:bg-white/10" 
+              !scrolled
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             )}
           >
@@ -74,8 +74,8 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
           <div className="relative group">
             <button className={cn(
               "px-4 py-2 text-sm transition-colors font-medium flex items-center gap-1 rounded-lg",
-              isHomepage && !scrolled 
-                ? "text-white/90 hover:text-white hover:bg-white/10" 
+              !scrolled
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             )}>
               Solutions
@@ -182,8 +182,8 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
           <div className="relative group">
             <button className={cn(
               "px-4 py-2 text-sm transition-colors font-medium flex items-center gap-1 rounded-lg",
-              isHomepage && !scrolled 
-                ? "text-white/90 hover:text-white hover:bg-white/10" 
+              !scrolled
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             )}>
               Integrations
@@ -246,8 +246,8 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
           <div className="relative group">
             <button className={cn(
               "px-4 py-2 text-sm transition-colors font-medium flex items-center gap-1 rounded-lg",
-              isHomepage && !scrolled 
-                ? "text-white/90 hover:text-white hover:bg-white/10" 
+              !scrolled
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             )}>
               Resources
@@ -282,8 +282,8 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
             href="/pricing" 
             className={cn(
               "px-4 py-2 text-sm transition-colors font-medium rounded-lg",
-              isHomepage && !scrolled 
-                ? "text-white/90 hover:text-white hover:bg-white/10" 
+              !scrolled
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             )}
           >
@@ -294,8 +294,8 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
             href="/partners/apply" 
             className={cn(
               "px-4 py-2 text-sm transition-colors font-medium rounded-lg",
-              isHomepage && !scrolled 
-                ? "text-white/90 hover:text-white hover:bg-white/10" 
+              !scrolled
+                ? "text-white/90 hover:text-white hover:bg-white/10"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
             )}
           >
@@ -308,7 +308,7 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className={cn(
             "lg:hidden p-2 transition-colors",
-            isHomepage && !scrolled ? "text-white hover:text-white/80" : "text-gray-700 hover:text-gray-900"
+            !scrolled ? "text-white hover:text-white/80" : "text-gray-700 hover:text-gray-900"
           )}
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -317,11 +317,11 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
         {/* Desktop buttons */}
         <div className="hidden lg:flex items-center gap-3">
           <Link href="/login">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className={cn(
-                isHomepage && !scrolled 
-                  ? "text-white hover:text-white hover:bg-white/10" 
+                !scrolled
+                  ? "text-white hover:text-white hover:bg-white/10"
                   : "text-gray-700 hover:text-gray-900"
               )}
             >
@@ -329,9 +329,9 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
             </Button>
           </Link>
           <Link href="/signup">
-            <Button 
+            <Button
               className={cn(
-                isHomepage && !scrolled
+                !scrolled
                   ? "bg-white text-violet-600 hover:bg-white/90"
                   : "bg-gradient-to-r from-violet-600 to-blue-600 hover:opacity-90"
               )}

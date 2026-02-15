@@ -4,14 +4,17 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge } from '@/components/ui';
-import { 
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from '@/components/ui/modal';
+import { Select } from '@/components/ui/select';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
   ArrowLeft,
-  Building2, 
+  Building2,
   Users,
   FileSignature,
   CreditCard,
   Loader2,
-  Mail,
   Calendar,
   Globe,
   Eye,
@@ -20,6 +23,9 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
+  ShieldAlert,
+  Ban,
+  RefreshCw,
 } from 'lucide-react';
 import Link from 'next/link';
 import { PLANS } from '@/lib/billing/plans';
@@ -31,6 +37,7 @@ interface OrgDetails {
   domain: string | null;
   industry: string | null;
   createdAt: string;
+  isSuspended: boolean;
 }
 
 interface Subscription {
@@ -76,6 +83,11 @@ interface AuditLog {
   userEmail: string | null;
 }
 
+const PLAN_OPTIONS = [
+  { value: 'free', label: 'Free' },
+  { value: 'professional', label: 'Professional' },
+];
+
 export default function OrgDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -89,6 +101,16 @@ export default function OrgDetailPage() {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
 
+  // Change plan state
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('free');
+  const [planChanging, setPlanChanging] = useState(false);
+  const [planError, setPlanError] = useState<string | null>(null);
+
+  // Suspend state
+  const [showSuspendDialog, setShowSuspendDialog] = useState(false);
+  const [suspendLoading, setSuspendLoading] = useState(false);
+
   useEffect(() => {
     loadOrgDetails();
   }, [orgId]);
@@ -99,7 +121,7 @@ export default function OrgDetailPage() {
     // Get organization
     const { data: orgData } = await supabase
       .from('organizations')
-      .select('id, name, slug, domain, industry, created_at')
+      .select('id, name, slug, domain, industry, created_at, is_suspended')
       .eq('id', orgId)
       .single();
 
@@ -115,6 +137,7 @@ export default function OrgDetailPage() {
       domain: orgData.domain,
       industry: orgData.industry,
       createdAt: orgData.created_at,
+      isSuspended: orgData.is_suspended || false,
     });
 
     // Get subscription
@@ -132,6 +155,7 @@ export default function OrgDetailPage() {
         stripeSubscriptionId: subData.stripe_subscription_id,
         currentPeriodEnd: subData.current_period_end,
       });
+      setSelectedPlan(subData.plan);
     }
 
     // Get users
@@ -229,6 +253,58 @@ export default function OrgDetailPage() {
     }
   };
 
+  const handleChangePlan = async () => {
+    setPlanChanging(true);
+    setPlanError(null);
+
+    try {
+      const response = await fetch(`/api/admin/accounts/${orgId}/plan`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: selectedPlan }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to change plan');
+      }
+
+      setSubscription(prev => prev ? { ...prev, plan: selectedPlan } : prev);
+      setShowPlanModal(false);
+    } catch (err: any) {
+      setPlanError(err.message);
+    } finally {
+      setPlanChanging(false);
+    }
+  };
+
+  const handleToggleSuspend = async () => {
+    if (!org) return;
+    setSuspendLoading(true);
+
+    try {
+      const response = await fetch(`/api/admin/accounts/${orgId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_suspended: !org.isSuspended }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update status');
+      }
+
+      setOrg(prev => prev ? { ...prev, isSuspended: !prev.isSuspended } : prev);
+      setShowSuspendDialog(false);
+    } catch (err: any) {
+      console.error('Failed to toggle suspension:', err);
+    } finally {
+      setSuspendLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -245,6 +321,21 @@ export default function OrgDetailPage() {
 
   return (
     <div className="space-y-6">
+      {/* Suspended Banner */}
+      {org.isSuspended && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4 flex items-center gap-3">
+          <ShieldAlert className="h-5 w-5 text-red-600 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="font-medium text-red-800">This organization is suspended</p>
+            <p className="text-sm text-red-600">Users cannot access the dashboard while suspended.</p>
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setShowSuspendDialog(true)}>
+            <RefreshCw className="h-4 w-4 mr-1" />
+            Reactivate
+          </Button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -259,10 +350,26 @@ export default function OrgDetailPage() {
             <p className="text-slate-500">{org.slug}</p>
           </div>
         </div>
-        <Button onClick={startImpersonation} variant="outline">
-          <Eye className="h-4 w-4 mr-2" />
-          View as Customer
-        </Button>
+        <div className="flex items-center gap-2">
+          {!org.isSuspended && (
+            <Button
+              variant="outline"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={() => setShowSuspendDialog(true)}
+            >
+              <Ban className="h-4 w-4 mr-2" />
+              Suspend
+            </Button>
+          )}
+          <Button variant="outline" onClick={() => { setSelectedPlan(subscription?.plan || 'free'); setShowPlanModal(true); }}>
+            <CreditCard className="h-4 w-4 mr-2" />
+            Change Plan
+          </Button>
+          <Button onClick={startImpersonation} variant="outline">
+            <Eye className="h-4 w-4 mr-2" />
+            View as Customer
+          </Button>
+        </div>
       </div>
 
       {/* Overview Cards */}
@@ -358,7 +465,7 @@ export default function OrgDetailPage() {
                 <div className="flex items-center gap-2 text-sm">
                   <CreditCard className="h-4 w-4 text-slate-400" />
                   <span className="text-slate-500">Stripe Customer:</span>
-                  <a 
+                  <a
                     href={`https://dashboard.stripe.com/customers/${subscription.stripeCustomerId}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -519,6 +626,67 @@ export default function OrgDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Change Plan Modal */}
+      <Modal open={showPlanModal} onClose={() => setShowPlanModal(false)}>
+        <ModalHeader onClose={() => setShowPlanModal(false)}>
+          <ModalTitle>Change Subscription Plan</ModalTitle>
+          <ModalDescription>
+            Change the plan for {org.name}
+          </ModalDescription>
+        </ModalHeader>
+        <div className="space-y-4">
+          {subscription?.stripeSubscriptionId && selectedPlan === 'free' && (
+            <Alert variant="destructive">
+              <AlertDescription>
+                Downgrading to free will immediately cancel the active Stripe subscription.
+              </AlertDescription>
+            </Alert>
+          )}
+          <Select
+            options={PLAN_OPTIONS}
+            value={selectedPlan}
+            onChange={(e) => setSelectedPlan(e.target.value)}
+          />
+          {planError && (
+            <p className="text-sm text-red-600">{planError}</p>
+          )}
+        </div>
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setShowPlanModal(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleChangePlan}
+            disabled={planChanging || selectedPlan === (subscription?.plan || 'free')}
+          >
+            {planChanging ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              'Update Plan'
+            )}
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Suspend/Reactivate Dialog */}
+      <ConfirmDialog
+        open={showSuspendDialog}
+        onClose={() => setShowSuspendDialog(false)}
+        onConfirm={handleToggleSuspend}
+        title={org.isSuspended ? 'Reactivate Organization' : 'Suspend Organization'}
+        description={
+          org.isSuspended
+            ? `Are you sure you want to reactivate ${org.name}? Users will regain access to the dashboard.`
+            : `Are you sure you want to suspend ${org.name}? All non-admin users will be locked out of the dashboard.`
+        }
+        confirmText={org.isSuspended ? 'Reactivate' : 'Suspend'}
+        variant={org.isSuspended ? 'default' : 'destructive'}
+        loading={suspendLoading}
+      />
     </div>
   );
 }

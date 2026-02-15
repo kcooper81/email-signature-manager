@@ -20,6 +20,7 @@ import { GettingStartedCard } from './getting-started';
 import { QuickActionsPanel } from './quick-actions';
 import { IntegrationStatusWidget } from './integration-status';
 import { PendingActionsWidget } from './pending-actions';
+import { UpgradeBanner } from './upgrade-banner';
 import { getEffectiveOrg } from '@/lib/msp/get-effective-org';
 
 export default async function DashboardPage() {
@@ -242,6 +243,9 @@ export default async function DashboardPage() {
           icon={<Activity className="h-4 w-4 text-muted-foreground" />}
         />
       </div>
+
+      {/* Upgrade Banner for Free Users */}
+      <UpgradeBanner />
 
       {/* Quick Actions Panel */}
       <QuickActionsPanel />

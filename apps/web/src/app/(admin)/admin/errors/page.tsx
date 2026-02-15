@@ -5,18 +5,20 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  Loader2, 
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
   RefreshCw,
   ChevronDown,
   ChevronUp,
   Filter,
   Search,
   X,
+  Download,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 
 interface ErrorLog {
   id: string;
@@ -128,6 +130,18 @@ export default function AdminErrorLogsPage() {
 
   const errorTypes = [...new Set(errors.map(e => e.error_type))];
 
+  const handleExport = () => {
+    const columns: CSVColumn<ErrorLog>[] = [
+      { label: 'Message', accessor: (r) => r.error_message },
+      { label: 'Route', accessor: (r) => r.route ? `${r.method || ''} ${r.route}` : '' },
+      { label: 'Type', accessor: (r) => r.error_type },
+      { label: 'Status Code', accessor: (r) => r.status_code },
+      { label: 'Created', accessor: (r) => new Date(r.created_at).toLocaleString() },
+      { label: 'Resolved', accessor: (r) => r.resolved ? 'Yes' : 'No' },
+    ];
+    exportToCSV(filteredErrors, columns, 'error-logs');
+  };
+
   const getTimeAgo = (date: string) => {
     const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
     if (seconds < 60) return `${seconds}s ago`;
@@ -148,10 +162,16 @@ export default function AdminErrorLogsPage() {
             Monitor and resolve application errors
           </p>
         </div>
-        <Button onClick={loadErrors} variant="outline" disabled={loading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={handleExport} disabled={filteredErrors.length === 0}>
+            <Download className="h-4 w-4 mr-2" />
+            Export CSV
+          </Button>
+          <Button onClick={loadErrors} variant="outline" disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}

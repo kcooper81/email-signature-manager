@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { FeedbackWidget } from '@/components/feedback';
 import { useMspContext } from '@/hooks/use-msp-context';
 import { PartnerApplicationModal } from '@/components/partners/partner-application-modal';
+import { useSubscription } from '@/hooks/use-subscription';
 
 const bottomNavItems = [
   {
@@ -48,6 +49,8 @@ export function DashboardNav() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [partnerModalOpen, setPartnerModalOpen] = useState(false);
   const { isMspOrg, organizationType } = useMspContext();
+  const { plan } = useSubscription();
+  const isFreePlan = plan.id === 'free';
 
   // Build nav items dynamically based on org type
   const navItems = [
@@ -112,6 +115,23 @@ export function DashboardNav() {
           {navItems.map((item) => renderNavItem(item, true))}
         </div>
 
+        {/* Upgrade nudge for free users */}
+        {isFreePlan && (
+          <Link
+            href="/settings/billing"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block mx-0 mb-3 p-3 rounded-lg bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-3.5 w-3.5 text-violet-600" />
+              <span className="text-xs font-semibold text-violet-700">Go Pro</span>
+            </div>
+            <p className="text-[11px] text-violet-600/80 leading-tight">
+              Unlimited users, templates, and full analytics from $15/mo
+            </p>
+          </Link>
+        )}
+
         {/* Bottom nav items */}
         <div className="space-y-1.5 pt-4 border-t">
           {bottomNavItems.map((item) => renderNavItem(item, true))}
@@ -146,6 +166,22 @@ export function DashboardNav() {
         <div className="space-y-1.5 flex-1">
           {navItems.map((item) => renderNavItem(item))}
         </div>
+
+        {/* Upgrade nudge for free users */}
+        {isFreePlan && (
+          <Link
+            href="/settings/billing"
+            className="block mx-0 mb-3 p-3 rounded-lg bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200 hover:border-violet-300 transition-colors group"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-3.5 w-3.5 text-violet-600" />
+              <span className="text-xs font-semibold text-violet-700">Go Pro</span>
+            </div>
+            <p className="text-[11px] text-violet-600/80 leading-tight">
+              Unlimited users, templates, and full analytics from $15/mo
+            </p>
+          </Link>
+        )}
 
         {/* Bottom nav items */}
         <div className="space-y-1.5 pt-4 border-t">
