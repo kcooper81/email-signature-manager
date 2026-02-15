@@ -231,7 +231,7 @@ export default function TeamMembersPage() {
       .from('organization_settings')
       .select('google_calendar_enabled')
       .eq('organization_id', effectiveOrgId)
-      .single();
+      .maybeSingle();
     
     if (orgSettingsData) {
       setOrgCalendarEnabled(orgSettingsData.google_calendar_enabled ?? false);
