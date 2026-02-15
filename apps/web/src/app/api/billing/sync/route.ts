@@ -159,19 +159,22 @@ export async function POST(request: NextRequest) {
 
 function getPlanFromSubscription(subscription: any): string {
   const priceIds = subscription.items.data.map((item: any) => item.price.id);
-  
-  const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
-  const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
-  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
 
-  if (priceIds.includes(professionalBasePriceId) || priceIds.includes(professionalPerUserPriceId)) {
+  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
+  // Legacy price IDs for backward compatibility
+  const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
+  const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
+
+  // New professional pricing (per-user only) or legacy professional (base + per-user)
+  if (priceIds.includes(professionalPerUserPriceId) || priceIds.includes(professionalBasePriceId)) {
     return 'professional';
   }
-  
+
+  // Legacy starter customers are migrated to professional
   if (priceIds.includes(starterPriceId)) {
-    return 'starter';
+    return 'professional';
   }
-  
+
   return 'free';
 }
 

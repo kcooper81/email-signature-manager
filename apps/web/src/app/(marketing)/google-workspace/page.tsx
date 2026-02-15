@@ -59,7 +59,7 @@ const faqs = [
   },
   {
     question: 'Is there a free plan for Google Workspace?',
-    answer: 'Yes. Siggly is free for teams up to 5 users, forever. No credit card required. Paid plans start at just $0.50/user/month for larger teams.',
+    answer: 'Yes. Siggly is free for teams up to 5 users, forever. No credit card required. The Professional plan is $1.50/user/month for larger teams, with everything unlocked.',
   },
 ];
 

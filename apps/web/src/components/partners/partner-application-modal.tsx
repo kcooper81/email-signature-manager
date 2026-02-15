@@ -187,7 +187,7 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
               </div>
               <div className="flex items-start gap-2 text-sm">
                 <DollarSign className="h-4 w-4 text-violet-600 mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">From $0.50/user</span>
+                <span className="text-muted-foreground">From $1.50/user</span>
               </div>
               <div className="flex items-start gap-2 text-sm">
                 <Users className="h-4 w-4 text-violet-600 mt-0.5 flex-shrink-0" />

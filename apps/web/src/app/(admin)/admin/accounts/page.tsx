@@ -123,7 +123,7 @@ export default function AccountsPage() {
 
   const planBadgeClass = (plan: string) => {
     switch (plan) {
-      case 'starter': return 'bg-blue-100 text-blue-700';
+      case 'starter': return 'bg-blue-100 text-blue-700'; // Legacy plan
       case 'professional': return 'bg-violet-100 text-violet-700';
       case 'enterprise': return 'bg-amber-100 text-amber-700';
       default: return 'bg-slate-100 text-slate-700';

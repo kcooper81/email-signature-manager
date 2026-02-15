@@ -40,7 +40,7 @@ const features = [
   {
     icon: DollarSign,
     title: 'Free for Small Teams',
-    description: 'Up to 5 team members free forever. Paid plans start at just $0.50/user.',
+    description: 'Up to 5 team members free forever. Paid plans start at just $1.50/user/month.',
   },
   {
     icon: Heart,
@@ -76,9 +76,9 @@ const testimonials = [
 ];
 
 const pricingComparison = [
-  { competitor: 'WiseStamp', price: '$1.00/user', siggly: '$0.50/user', savings: '50%' },
-  { competitor: 'Exclaimer', price: '$2.00/user', siggly: '$0.50/user', savings: '75%' },
-  { competitor: 'CodeTwo', price: '$1.50/user', siggly: '$0.50/user', savings: '67%' },
+  { competitor: 'CodeTwo', price: '$2.00/user', siggly: '$1.50/user', savings: '25%' },
+  { competitor: 'Exclaimer', price: '$2-3/user', siggly: '$1.50/user', savings: '50%' },
+  { competitor: 'Siggy.io', price: '$4.00/user', siggly: '$1.50/user', savings: '63%' },
 ];
 
 export default function SmallBusinessPage() {
@@ -185,7 +185,7 @@ export default function SmallBusinessPage() {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Save up to 75% vs competitors</h2>
+            <h2 className="text-3xl font-bold mb-4">Save up to 63% vs competitors</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Enterprise signature tools charge enterprise prices. 
               Siggly gives you the same features at a fraction of the cost.

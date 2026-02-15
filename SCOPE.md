@@ -403,8 +403,8 @@ email-signature-manager/
 
 ### Phase 4 - Billing & Pay Gates ✅ COMPLETE
 - [x] Stripe billing integration (checkout, portal, webhooks)
-- [x] Subscription plans (Free, Starter, Professional, Enterprise)
-- [x] Pay gates system with feature and usage limits
+- [x] Subscription plans (Free, Professional, Enterprise)
+- [x] Pay gates system with feature and usage limits (only analytics, MS365, multiple templates gated)
 - [x] Development bypass toggle for testing
 - [x] Upgrade prompts and billing page
 
@@ -470,9 +470,10 @@ Understanding buyer segments helps guide pricing and feature prioritization:
 
 | Tier | Buyer Profile | What They Care About | Willingness to Pay | Siggly Plan |
 |------|---------------|---------------------|-------------------|-------------|
-| **Basic SMB** | Small teams (5-20 people) | Price, ease of use, quick setup | Low ($0-10/mo) | Free / Starter |
-| **Mid-Market** | Marketing teams, growing companies | Campaign banners, reporting, ROI tracking | Medium-High ($29-99/mo) | Professional |
-| **Enterprise** | IT buyers, large orgs | Compliance, SSO, API, governance, SLA | Highest ($200+/mo) | Enterprise |
+| **Basic SMB** | Small teams (1-5 people) | Price, ease of use, quick setup | Low ($0/mo) | Free |
+| **Growing Teams** | Teams (6-50 people) | MS365, analytics, multiple templates | Medium ($15-75/mo) | Professional |
+| **Mid-Market** | Marketing teams, growing companies | Campaign banners, reporting, ROI tracking | Medium-High ($75-750/mo) | Professional |
+| **Enterprise** | IT buyers, large orgs | Compliance, SSO, white-label, SLA | Highest ($200+/mo) | Enterprise |
 
 **Key insight**: Mid-market marketing teams are the sweet spot — they have budget AND pain, and will pay for measurable ROI.
 
@@ -483,7 +484,7 @@ Competitors like Exclaimer and CodeTwo focus on enterprise. This leaves gaps:
 | Gap | Opportunity | Siggly Advantage |
 |-----|-------------|------------------|
 | **SMB-Friendly UX** | Most solutions feel enterprise-heavy and complex | Simple, modern UI that non-technical users love |
-| **Affordable Entry Tier** | Competitors start at $2-4/user/month minimum | Free tier + $0.50/user Starter plan |
+| **Affordable Entry Tier** | Competitors start at $1-4/user/month minimum | Free tier with full features + $1.50/user Professional plan |
 | **Better Analytics & ROI** | "Did signatures generate leads?" is unanswered | Click tracking, campaign attribution, engagement dashboard |
 | **AI-Powered Signatures** | No personalization without admin hassle | AI generator, smart suggestions, auto-optimization |
 | **Seamless Gmail/Outlook Sync** | Competitors require scripts, admin certs, IT involvement | One-click OAuth connection, no IT needed |
@@ -714,14 +715,15 @@ NEXT_PUBLIC_BYPASS_PAY_GATES=true  # Set to 'false' in production
 
 ### Pricing Model
 
-Siggly uses a **per-team-member pricing model** similar to competitors but at lower rates:
+Siggly uses a **simple per-user pricing model** with a generous free tier:
 
 | Tier | Price | Templates | Team Members | Key Features |
 |------|-------|-----------|--------------|--------------|
-| **Free** | $0 forever | 1 | 5 | Basic editor, Google Workspace sync |
-| **Starter** | $0.50/member/mo | 5 | Unlimited | + Microsoft 365, analytics, remove watermark |
-| **Professional** | $29/mo + $1/member | Unlimited | Unlimited | + Scheduled deployments, API access, priority support |
-| **Enterprise** | Custom | Unlimited | Unlimited | + SSO/SAML, white-label, dedicated support |
+| **Free** | $0 forever | 1 | 5 | Full features: editor, Google Workspace, HubSpot, bulk ops, compliance, directory sync, scheduled deployments, API access |
+| **Professional** | $1.50/user/mo (10-user min) | Unlimited | Unlimited | + Microsoft 365, full analytics, unlimited templates, priority support |
+| **Enterprise** | Custom | Unlimited | Unlimited | + SSO/SAML, white-label, dedicated AM, custom integrations, SLA |
+
+**Feature gates (Free plan):** Only analytics (7-day preview), Microsoft 365, and multiple templates are gated to Professional. Everything else is free.
 
 ### Stripe Integration
 
@@ -743,8 +745,7 @@ Siggly uses a **per-team-member pricing model** similar to competitors but at lo
 STRIPE_SECRET_KEY=sk_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_...
-STRIPE_STARTER_PRICE_ID=price_...
-STRIPE_PROFESSIONAL_PRICE_ID=price_...
+STRIPE_PROFESSIONAL_PRICE_ID=price_...  # $1.50/user/month per-seat price
 ```
 
 ---
@@ -791,28 +792,34 @@ Pay gates restrict access to features and enforce usage limits based on the user
 
 ### Feature Gates
 
-Features are gated by plan using the `canAccess()` function:
+Features are gated by plan using the `canAccess()` function. Most features are now free:
 
-| Feature | Free | Starter | Professional | Enterprise |
-|---------|------|---------|--------------|------------|
-| `analytics` | ❌ | ✅ | ✅ | ✅ |
-| `microsoft365` | ❌ | ✅ | ✅ | ✅ |
-| `customBranding` | ❌ | ✅ | ✅ | ✅ |
-| `removeWatermark` | ❌ | ✅ | ✅ | ✅ |
-| `scheduledDeployments` | ❌ | ❌ | ✅ | ✅ |
-| `apiAccess` | ❌ | ❌ | ✅ | ✅ |
-| `prioritySupport` | ❌ | ❌ | ✅ | ✅ |
-| `sso` | ❌ | ❌ | ❌ | ✅ |
-| `whiteLabel` | ❌ | ❌ | ❌ | ✅ |
+| Feature | Free | Professional | Enterprise |
+|---------|------|--------------|------------|
+| `analytics` | ⚠️ 7-day preview | ✅ Full | ✅ Full |
+| `microsoft365` | ❌ | ✅ | ✅ |
+| `hubspotCRM` | ✅ | ✅ | ✅ |
+| `customBranding` | ✅ | ✅ | ✅ |
+| `removeWatermark` | ✅ | ✅ | ✅ |
+| `scheduledDeployments` | ✅ | ✅ | ✅ |
+| `bulkOperations` | ✅ | ✅ | ✅ |
+| `directorySync` | ✅ | ✅ | ✅ |
+| `complianceBlocks` | ✅ | ✅ | ✅ |
+| `apiAccess` | ✅ | ✅ | ✅ |
+| `prioritySupport` | ❌ | ✅ | ✅ |
+| `sso` | ❌ | ❌ | ✅ |
+| `whiteLabel` | ❌ | ❌ | ✅ |
+
+**Only 3 feature gates on Free plan:** analytics (full history), Microsoft 365, and multiple templates.
 
 ### Usage Limits
 
 Limits are enforced using the `isWithinLimit()` function:
 
-| Resource | Free | Starter | Professional | Enterprise |
-|----------|------|---------|--------------|------------|
-| Templates | 1 | 5 | Unlimited | Unlimited |
-| Team Members | 5 | Unlimited | Unlimited | Unlimited |
+| Resource | Free | Professional | Enterprise |
+|----------|------|--------------|------------|
+| Templates | 1 | Unlimited | Unlimited |
+| Team Members | 5 | Unlimited | Unlimited |
 
 ### Implementation Examples
 
@@ -821,7 +828,7 @@ Limits are enforced using the `isWithinLimit()` function:
 const { canAccess } = useSubscription();
 
 if (!canAccess('analytics')) {
-  return <UpgradePrompt feature="Analytics" requiredPlan="starter" />;
+  return <UpgradePrompt feature="Analytics" requiredPlan="professional" />;
 }
 ```
 
@@ -1357,18 +1364,18 @@ Client Switcher Dropdown:
 
 ```
 MSP Organization
-└── Subscription: Professional @ $29/mo + $1/user
+└── Subscription: Professional @ $1.50/user/month
     └── Covers all client orgs
-    └── Total users across all clients = billable users
+    └── Total users across all clients = billable users (10-user minimum)
 ```
 
 #### Option B: Per-Client Billing (Pass-Through)
 
 ```
 MSP Organization (no subscription)
-├── Client 1: Starter @ $0.50/user × 24 users
-├── Client 2: Starter @ $0.50/user × 18 users
-└── Client 3: Professional @ $29 + $1/user × 45 users
+├── Client 1: Professional @ $1.50/user × 24 users = $36/mo
+├── Client 2: Professional @ $1.50/user × 18 users = $27/mo
+└── Client 3: Professional @ $1.50/user × 45 users = $67.50/mo
 
 MSP receives single invoice for all clients
 ```

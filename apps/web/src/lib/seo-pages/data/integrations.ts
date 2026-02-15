@@ -250,7 +250,7 @@ export const integrationsPages: SEOLandingPageData[] = [
       {
         question: 'Is the Slack app free?',
         answer:
-          'The Slack integration is included at no extra cost on all Siggly Team and Enterprise plans. Free-tier accounts can enable read-only deployment notifications.',
+          'The Slack integration is included at no extra cost on all Siggly plans, including the Free plan. Professional and Enterprise accounts get full integration features.',
       },
     ],
     cta: {
@@ -1567,6 +1567,965 @@ export const integrationsPages: SEOLandingPageData[] = [
       title: 'Manage Signatures Through Jira',
       description:
         'Bring email signature management into your Jira workflows for full visibility, approval tracking, and audit compliance.',
+    },
+  },
+
+  // ─── Monday.com ─────────────────────────────────────────────────────
+  {
+    slug: 'monday',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + Monday.com Integration | Email Signatures',
+      description:
+        'Automate email signature updates with Monday.com workflows. Trigger signature changes from boards, items, and status columns in real time.',
+      keywords: [
+        'monday.com email signatures',
+        'monday integration',
+        'workflow automation signatures',
+        'project management email signatures',
+      ],
+      canonical: '/integrations/monday',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'Monday.com', url: '/integrations/monday' },
+    ],
+    hero: {
+      badge: { icon: 'layout-grid', text: 'Monday.com Integration' },
+      title: 'Board-Driven Signature Management with Monday.com',
+      description:
+        'Connect Siggly to Monday.com and let your boards drive email signature updates. When a team member changes role, department, or project, their signature updates automatically.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '80%', label: 'Less manual signature admin' },
+      { value: '2 min', label: 'Average board-to-signature sync' },
+      { value: '100%', label: 'Automation accuracy' },
+    ],
+    featuresTitle: 'What You Get with Siggly + Monday.com',
+    features: [
+      {
+        icon: 'layout-grid',
+        title: 'Board-Triggered Updates',
+        description:
+          'Signature fields update automatically when items move between groups, statuses change, or column values are edited on your Monday boards.',
+      },
+      {
+        icon: 'repeat',
+        title: 'Two-Way Sync',
+        description:
+          'Changes in Siggly reflect back in Monday.com as status updates, keeping your project boards accurate and your signatures current.',
+      },
+      {
+        icon: 'users',
+        title: 'Team Directory Boards',
+        description:
+          'Use a dedicated Monday board as your team directory. Siggly pulls names, titles, and contact info directly from columns you define.',
+      },
+      {
+        icon: 'zap',
+        title: 'Automation Recipes',
+        description:
+          'Leverage Monday.com automation recipes to trigger signature deployments, approval requests, or template swaps without writing code.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Connecting Monday.com to Siggly',
+        steps: [
+          {
+            step: '1',
+            title: 'Install the Siggly App',
+            description:
+              'Find Siggly in the Monday.com marketplace and install it to your workspace with a single click.',
+          },
+          {
+            step: '2',
+            title: 'Map Board Columns',
+            description:
+              'Select which Monday columns map to signature fields like name, title, phone, and department.',
+          },
+          {
+            step: '3',
+            title: 'Activate Automations',
+            description:
+              'Choose from pre-built automation recipes or create custom triggers that update signatures when board items change.',
+          },
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Popular Use Cases',
+        cases: [
+          {
+            title: 'New Hire Onboarding',
+            description:
+              'When a new employee item is created in your HR board, their email signature is generated and deployed automatically.',
+          },
+          {
+            title: 'Role Changes',
+            description:
+              'Moving an employee between Monday groups triggers an immediate signature template swap matching their new role.',
+          },
+          {
+            title: 'Campaign Launches',
+            description:
+              'Link marketing campaign boards to signature banners so promotional content goes live when the campaign status changes.',
+          },
+          {
+            title: 'Client Project Staffing',
+            description:
+              'When team members are assigned to a client project board, their signatures can reflect the project or client branding.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We run everything through Monday.com, so having signatures update from our boards was a game-changer. No more chasing people to update their email footers.',
+      authorName: 'Amir Hassan',
+      authorTitle: 'Operations Lead, PixelForge Studio',
+    },
+    faqs: [
+      {
+        question: 'Which Monday.com plans support the Siggly integration?',
+        answer:
+          'The integration works on Monday.com Standard, Pro, and Enterprise plans. The free plan does not support third-party integrations.',
+      },
+      {
+        question: 'Can I trigger signature updates from Monday automations?',
+        answer:
+          'Yes. You can use Monday automation recipes to trigger Siggly actions like deploying a new template, requesting approval, or updating specific signature fields.',
+      },
+      {
+        question: 'Is there a limit to how many boards can connect to Siggly?',
+        answer:
+          'No. You can connect as many boards as you need. Each board can map to different signature templates or user groups.',
+      },
+      {
+        question: 'Does the integration support Monday.com subitems?',
+        answer:
+          'Yes. Siggly can read data from both items and subitems, allowing nested project structures to drive signature updates.',
+      },
+    ],
+    cta: {
+      title: 'Connect Your Monday.com Boards to Siggly',
+      description:
+        'Let your project boards drive email signature updates automatically. Install the Siggly app from the Monday marketplace.',
+    },
+  },
+
+  // ─── Notion ─────────────────────────────────────────────────────────
+  {
+    slug: 'notion',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + Notion Integration for Email Signatures | Siggly',
+      description:
+        'Sync team directory data from Notion databases to Siggly. Keep email signatures accurate by pulling employee details from your Notion workspace.',
+      keywords: [
+        'notion email signatures',
+        'notion integration',
+        'team directory notion',
+        'notion workspace signatures',
+      ],
+      canonical: '/integrations/notion',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'Notion', url: '/integrations/notion' },
+    ],
+    hero: {
+      badge: { icon: 'book-open', text: 'Notion Integration' },
+      title: 'Your Notion Workspace Powers Your Email Signatures',
+      description:
+        'Use Notion databases as the single source of truth for employee information. Siggly reads your team directory and keeps every signature up to date without manual data entry.',
+      variant: 'light',
+    },
+    featuresTitle: 'Siggly + Notion Features',
+    featuresDescription: 'Everything you need to bridge your knowledge base and your email signatures.',
+    features: [
+      {
+        icon: 'database',
+        title: 'Database-Driven Signatures',
+        description:
+          'Point Siggly at any Notion database and map properties like Name, Title, Department, and Phone directly to signature fields.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Automatic Sync',
+        description:
+          'When someone edits a record in Notion, the corresponding email signature updates within minutes. No manual intervention required.',
+      },
+      {
+        icon: 'layers',
+        title: 'Multi-Database Support',
+        description:
+          'Connect multiple Notion databases for different teams or offices. Each database can feed a different signature template.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'How the Notion Integration Works',
+        steps: [
+          {
+            step: '1',
+            title: 'Authorize Notion Access',
+            description:
+              'Connect your Notion workspace from the Siggly integrations page and grant access to the relevant databases.',
+          },
+          {
+            step: '2',
+            title: 'Map Database Properties',
+            description:
+              'Tell Siggly which Notion properties correspond to signature fields like full name, job title, email, and phone.',
+          },
+          {
+            step: '3',
+            title: 'Deploy Signatures',
+            description:
+              'Siggly generates signatures from your Notion data and deploys them to Google Workspace or Microsoft 365 automatically.',
+          },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Why Use Notion as Your Signature Data Source',
+        items: [
+          {
+            icon: 'file-text',
+            title: 'Single Source of Truth',
+            description:
+              'Your Notion team directory becomes the authoritative source for all employee data that flows into email signatures.',
+          },
+          {
+            icon: 'edit-3',
+            title: 'Easy for Anyone to Update',
+            description:
+              'Non-technical team members can edit Notion records and signature data updates automatically without touching Siggly.',
+          },
+          {
+            icon: 'globe',
+            title: 'Works Across Workspaces',
+            description:
+              'Connect databases from multiple Notion workspaces to a single Siggly account for centralized signature management.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Which Notion property types are supported?',
+        answer:
+          'Siggly supports text, email, phone, URL, select, multi-select, and relation properties. Rich text and formula properties are read as plain text.',
+      },
+      {
+        question: 'How often does Siggly sync with Notion?',
+        answer:
+          'By default, Siggly checks for Notion changes every 15 minutes. You can also trigger an immediate sync from the dashboard or via webhook.',
+      },
+      {
+        question: 'Can I use Notion templates with Siggly?',
+        answer:
+          'Notion database templates work normally. When a new record is created from a template, Siggly picks it up on the next sync cycle and generates the corresponding signature.',
+      },
+    ],
+    cta: {
+      title: 'Bring Your Notion Directory to Life in Every Email',
+      description:
+        'Connect Notion to Siggly and turn your team database into polished, always-current email signatures.',
+    },
+  },
+
+  // ─── ServiceNow ─────────────────────────────────────────────────────
+  {
+    slug: 'servicenow',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + ServiceNow Integration | Managed Signatures',
+      description:
+        'Integrate Siggly with ServiceNow for ticket-based signature change requests and CMDB-driven employee data sync across your organization.',
+      keywords: [
+        'servicenow email signatures',
+        'servicenow integration',
+        'ITSM signature management',
+        'CMDB email signatures',
+      ],
+      canonical: '/integrations/servicenow',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'ServiceNow', url: '/integrations/servicenow' },
+    ],
+    hero: {
+      badge: { icon: 'headphones', text: 'ServiceNow Integration' },
+      title: 'IT-Managed Signatures Through ServiceNow Workflows',
+      description:
+        'Route email signature requests through ServiceNow tickets, pull employee data from the CMDB, and maintain a full audit trail for every change, all within the ITSM platform your team already uses.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: 'ITIL', label: 'Aligned change management' },
+      { value: '100%', label: 'Audit trail coverage' },
+      { value: '< 1 hr', label: 'Average ticket resolution' },
+    ],
+    featuresTitle: 'Enterprise Signature Management via ServiceNow',
+    features: [
+      {
+        icon: 'file-check',
+        title: 'Ticket-Based Change Requests',
+        description:
+          'Employees submit signature change requests as ServiceNow tickets. Approvals, assignments, and deployments follow your existing ITSM workflows.',
+      },
+      {
+        icon: 'database',
+        title: 'CMDB Data Sync',
+        description:
+          'Pull employee names, titles, departments, and locations from the ServiceNow CMDB to keep signature fields accurate without duplicate data entry.',
+      },
+      {
+        icon: 'shield-check',
+        title: 'Full Audit Trail',
+        description:
+          'Every signature change is logged as a ServiceNow record with who requested it, who approved it, and when it was deployed.',
+      },
+      {
+        icon: 'cog',
+        title: 'Flow Designer Actions',
+        description:
+          'Use ServiceNow Flow Designer to build custom automation flows that trigger Siggly deployments based on HR events, onboarding, or role changes.',
+      },
+      {
+        icon: 'lock',
+        title: 'Role-Based Governance',
+        description:
+          'Mirror ServiceNow roles and groups to control who can request, approve, or override email signature templates in Siggly.',
+      },
+    ],
+    sections: [
+      {
+        type: 'checklist',
+        title: 'What the ServiceNow Integration Covers',
+        items: [
+          'Ticket-based signature change request workflow',
+          'CMDB-driven employee data population',
+          'ServiceNow approval chains for signature updates',
+          'Flow Designer actions for automated deployments',
+          'Audit log sync between Siggly and ServiceNow',
+          'Support for ServiceNow scoped applications',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We needed signature management that fit inside our ServiceNow governance model. Siggly was the only vendor that integrated natively with our ITSM workflows.',
+      authorName: 'Patricia Gomez',
+      authorTitle: 'IT Service Manager, ClearPoint Health',
+    },
+    faqs: [
+      {
+        question: 'Which ServiceNow editions are supported?',
+        answer:
+          'Siggly integrates with ServiceNow ITSM on San Diego, Tokyo, Utah, Vancouver, and Washington DC releases. Both standard and enterprise editions are supported.',
+      },
+      {
+        question: 'Can I use existing ServiceNow approval workflows?',
+        answer:
+          'Yes. Siggly signature change requests plug into your existing approval chains, escalation policies, and SLA rules within ServiceNow.',
+      },
+      {
+        question: 'Does the integration require a ServiceNow developer instance?',
+        answer:
+          'No. The integration installs as a scoped application from the ServiceNow Store and works on production instances out of the box.',
+      },
+      {
+        question: 'How does CMDB sync handle organizational changes?',
+        answer:
+          'When an employee record changes in the CMDB, Siggly detects the update on the next sync cycle and queues a signature refresh. You can also configure real-time webhooks for instant updates.',
+      },
+      {
+        question: 'Is there support for ServiceNow Virtual Agent?',
+        answer:
+          'Yes. You can configure Virtual Agent topics that let employees request signature changes through a conversational interface within ServiceNow.',
+      },
+    ],
+    cta: {
+      title: 'Bring Signature Management Into ServiceNow',
+      description:
+        'Route every signature change through your ITSM platform for full governance, compliance, and traceability.',
+    },
+  },
+
+  // ─── Rippling ───────────────────────────────────────────────────────
+  {
+    slug: 'rippling',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + Rippling Integration | HR-Driven Signatures',
+      description:
+        'Connect Rippling HR to Siggly for automated email signature provisioning. Sync employee data, handle onboarding, and manage offboarding seamlessly.',
+      keywords: [
+        'rippling email signatures',
+        'rippling integration',
+        'HR signature automation',
+        'employee lifecycle signatures',
+      ],
+      canonical: '/integrations/rippling',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'Rippling', url: '/integrations/rippling' },
+    ],
+    hero: {
+      badge: { icon: 'user-plus', text: 'Rippling Integration' },
+      title: 'Signatures That Follow the Employee Lifecycle',
+      description:
+        'When Rippling hires, promotes, or offboards someone, Siggly creates, updates, or removes their email signature automatically. Zero manual work, zero stale data.',
+      variant: 'emerald',
+    },
+    featuresTitle: 'HR-Powered Signature Automation',
+    features: [
+      {
+        icon: 'user-plus',
+        title: 'Automatic Onboarding',
+        description:
+          'New hires added in Rippling get a branded email signature deployed to their mailbox before their first day even starts.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Role & Department Sync',
+        description:
+          'Promotions, transfers, and title changes in Rippling trigger real-time signature field updates across all connected email platforms.',
+      },
+      {
+        icon: 'user-minus',
+        title: 'Offboarding Cleanup',
+        description:
+          'When an employee is terminated in Rippling, Siggly revokes their signature and removes them from active templates automatically.',
+      },
+      {
+        icon: 'shield',
+        title: 'Compliance-Ready',
+        description:
+          'Ensure every employee has a compliant, approved signature from day one. No gaps between hire date and signature deployment.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Setting Up Rippling with Siggly',
+        steps: [
+          {
+            step: '1',
+            title: 'Connect Rippling',
+            description:
+              'Authorize Siggly from Rippling App Shop or the Siggly integrations page using OAuth.',
+          },
+          {
+            step: '2',
+            title: 'Map Employee Fields',
+            description:
+              'Select which Rippling fields feed into signature templates: name, title, department, location, phone, and more.',
+          },
+          {
+            step: '3',
+            title: 'Set Lifecycle Triggers',
+            description:
+              'Configure what happens when employees are hired, promoted, transferred, or offboarded. Siggly handles the rest.',
+          },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Benefits of Rippling + Siggly',
+        items: [
+          {
+            icon: 'clock',
+            title: 'Zero IT Overhead',
+            description:
+              'HR manages employee data in Rippling; signatures update themselves. IT never has to manually configure a signature again.',
+          },
+          {
+            icon: 'check-circle',
+            title: 'Day-One Readiness',
+            description:
+              'New employees have their professional signature ready before they even log in for the first time.',
+          },
+          {
+            icon: 'shield-check',
+            title: 'No Stale Signatures',
+            description:
+              'Terminated employees are cleaned up instantly. No risk of former staff sending emails with your brand signature.',
+          },
+        ],
+      },
+    ],
+    cta: {
+      title: 'Automate Signatures with Rippling',
+      description:
+        'Let your HR platform handle the heavy lifting. Connect Rippling to Siggly and eliminate manual signature management forever.',
+    },
+  },
+
+  // ─── Deel ───────────────────────────────────────────────────────────
+  {
+    slug: 'deel',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + Deel Integration | Global Team Signatures',
+      description:
+        'Manage email signatures for global contractors and employees with Siggly and Deel. Automate signature provisioning across international teams effortlessly.',
+      keywords: [
+        'deel email signatures',
+        'deel integration',
+        'global team signatures',
+        'contractor email signatures',
+        'international signature management',
+      ],
+      canonical: '/integrations/deel',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'Deel', url: '/integrations/deel' },
+    ],
+    hero: {
+      badge: { icon: 'globe', text: 'Deel Integration' },
+      title: 'Professional Signatures for Every Global Team Member',
+      description:
+        'Whether you employ full-time staff or international contractors through Deel, Siggly ensures everyone has a consistent, branded email signature that reflects their role and location.',
+      variant: 'violet',
+    },
+    stats: [
+      { value: '150+', label: 'Countries supported' },
+      { value: '100%', label: 'Contractor and employee coverage' },
+      { value: '< 5 min', label: 'Signature deployment per person' },
+    ],
+    featuresTitle: 'Global Signature Management with Deel',
+    features: [
+      {
+        icon: 'globe',
+        title: 'Multi-Country Support',
+        description:
+          'Generate signatures that include country-specific phone formats, legal disclaimers, and office addresses based on Deel employee location data.',
+      },
+      {
+        icon: 'briefcase',
+        title: 'Contractor-Friendly',
+        description:
+          'Deel contractors get professional signatures that match your brand, even when they are not on your company domain. Configurable labels distinguish contractors from employees.',
+      },
+      {
+        icon: 'repeat',
+        title: 'Contract Lifecycle Sync',
+        description:
+          'When a Deel contract starts, renews, or ends, the associated signature is created, updated, or deactivated accordingly.',
+      },
+      {
+        icon: 'flag',
+        title: 'Locale-Aware Formatting',
+        description:
+          'Signatures automatically format names, dates, and phone numbers according to the local conventions of each team member.',
+      },
+      {
+        icon: 'landmark',
+        title: 'Entity-Specific Branding',
+        description:
+          'Different Deel entities can have their own signature templates, logos, and legal footers while staying under unified management.',
+      },
+    ],
+    sections: [
+      {
+        type: 'checklist',
+        title: 'Deel Integration Capabilities',
+        items: [
+          'Automatic signature creation for new Deel contracts',
+          'Multi-entity and multi-country signature templates',
+          'Contractor vs. employee signature differentiation',
+          'Locale-aware phone and address formatting',
+          'Signature deactivation on contract termination',
+          'Bulk deployment for existing Deel workforce',
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'Why Global Teams Choose Siggly with Deel',
+        paragraphs: [
+          'Managing email signatures for a distributed, international team is a logistical challenge. Different countries have different legal requirements, phone formats, and branding expectations. Deel already handles the complexity of hiring globally, and Siggly extends that same ease to email signatures.',
+          'By connecting Deel to Siggly, you ensure that every team member, whether a full-time employee in Berlin or a contractor in Buenos Aires, sends emails with a professional, compliant signature that reflects your brand standards. No spreadsheets, no manual setups, no gaps.',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We have 80 contractors across 12 countries on Deel. Siggly gave every single one of them a branded signature within an hour of connecting the integration.',
+      authorName: 'Sophie Lindgren',
+      authorTitle: 'Head of People, Waveform Analytics',
+    },
+    faqs: [
+      {
+        question: 'Does the integration support Deel EOR employees?',
+        answer:
+          'Yes. Siggly recognizes Deel EOR (Employer of Record) employees and can apply signatures based on their entity, location, or contract type.',
+      },
+      {
+        question: 'Can I differentiate contractor signatures from employee signatures?',
+        answer:
+          'Absolutely. Create separate templates for contractors and employees, or use conditional fields that display different labels based on the Deel worker type.',
+      },
+      {
+        question: 'What happens when a Deel contract expires?',
+        answer:
+          'When a contract ends in Deel, Siggly automatically deactivates the associated signature. If the contract is renewed, the signature is reactivated on the next sync.',
+      },
+    ],
+    cta: {
+      title: 'Unify Signatures Across Your Global Team',
+      description:
+        'Connect Deel and Siggly to give every employee and contractor a professional email signature, no matter where they are.',
+    },
+  },
+
+  // ─── Personio ───────────────────────────────────────────────────────
+  {
+    slug: 'personio',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + Personio HR Integration | Email Signatures',
+      description:
+        'Sync employee data from Personio to Siggly for automated email signature management. Streamline onboarding workflows and keep signatures current.',
+      keywords: [
+        'personio email signatures',
+        'personio integration',
+        'european HR signatures',
+        'personio onboarding signatures',
+      ],
+      canonical: '/integrations/personio',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'Personio', url: '/integrations/personio' },
+    ],
+    hero: {
+      badge: { icon: 'users-round', text: 'Personio Integration' },
+      title: 'HR-Driven Email Signatures with Personio',
+      description:
+        'Connect your Personio HR platform to Siggly and let employee data flow directly into email signatures. Onboarding, role changes, and offboarding trigger automatic signature updates.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '100%', label: 'HR data accuracy in signatures' },
+      { value: '0', label: 'Manual signature setups needed' },
+      { value: 'GDPR', label: 'Compliant data handling' },
+    ],
+    featuresTitle: 'Personio + Siggly Feature Highlights',
+    features: [
+      {
+        icon: 'user-check',
+        title: 'Onboarding Automation',
+        description:
+          'When a new employee is created in Personio, Siggly generates and deploys their email signature before their start date.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Employee Data Sync',
+        description:
+          'Names, titles, departments, office locations, and phone numbers sync from Personio to signature fields automatically.',
+      },
+      {
+        icon: 'shield-check',
+        title: 'GDPR-Compliant Processing',
+        description:
+          'Employee data is processed in compliance with GDPR. Siggly only accesses the Personio fields you explicitly authorize.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Absence-Aware Signatures',
+        description:
+          'Optionally update signatures during extended absences with a delegate contact or an out-of-office notice pulled from Personio absence data.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Connecting Personio to Siggly',
+        steps: [
+          {
+            step: '1',
+            title: 'Generate API Credentials',
+            description:
+              'Create a Personio API token with read access to employee data from the Personio Settings page.',
+          },
+          {
+            step: '2',
+            title: 'Connect in Siggly',
+            description:
+              'Paste your Personio API credentials into the Siggly integrations panel and select which employee attributes to sync.',
+          },
+          {
+            step: '3',
+            title: 'Assign Templates',
+            description:
+              'Map Personio departments or teams to signature templates. Siggly deploys the correct template to each employee automatically.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Is the Personio integration GDPR compliant?',
+        answer:
+          'Yes. Siggly processes Personio data under a data processing agreement and only accesses fields you explicitly configure. All data is encrypted in transit and at rest.',
+      },
+      {
+        question: 'Can I sync custom Personio attributes?',
+        answer:
+          'Yes. In addition to standard fields, Siggly can map custom Personio attributes to signature template variables for full flexibility.',
+      },
+      {
+        question: 'What happens when an employee leaves?',
+        answer:
+          'When an employee status changes to inactive in Personio, Siggly automatically removes their signature and deactivates their account.',
+      },
+    ],
+    cta: {
+      title: 'Sync Personio with Siggly Today',
+      description:
+        'Automate your email signature lifecycle with data straight from Personio. Start your free trial now.',
+    },
+  },
+
+  // ─── JumpCloud ──────────────────────────────────────────────────────
+  {
+    slug: 'jumpcloud',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + JumpCloud Directory Integration | Siggly',
+      description:
+        'Use JumpCloud directory and identity management to power Siggly email signatures. LDAP, SAML, and SCIM provisioning for seamless signature control.',
+      keywords: [
+        'jumpcloud email signatures',
+        'jumpcloud integration',
+        'directory as a service signatures',
+        'LDAP email signatures',
+        'jumpcloud SAML',
+      ],
+      canonical: '/integrations/jumpcloud',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'JumpCloud', url: '/integrations/jumpcloud' },
+    ],
+    hero: {
+      badge: { icon: 'server', text: 'JumpCloud Integration' },
+      title: 'Directory-Powered Signatures with JumpCloud',
+      description:
+        'Leverage JumpCloud as your identity backbone for email signatures. User attributes, group memberships, and device policies all feed into Siggly for consistent, secure signature management.',
+      variant: 'emerald',
+    },
+    featuresTitle: 'JumpCloud + Siggly Capabilities',
+    features: [
+      {
+        icon: 'key',
+        title: 'SAML SSO',
+        description:
+          'Authenticate Siggly users through JumpCloud SSO. One set of credentials, one login experience, no separate password.',
+      },
+      {
+        icon: 'user-check',
+        title: 'SCIM User Provisioning',
+        description:
+          'Automatically create, update, and deactivate Siggly accounts based on JumpCloud user lifecycle events.',
+      },
+      {
+        icon: 'users',
+        title: 'Group-Based Templates',
+        description:
+          'Assign signature templates based on JumpCloud user groups. Engineering, sales, and support each get the right design automatically.',
+      },
+      {
+        icon: 'database',
+        title: 'Directory Attribute Mapping',
+        description:
+          'Map JumpCloud custom attributes to signature fields. Job title, phone, location, and any custom attribute flow into templates in real time.',
+      },
+      {
+        icon: 'laptop',
+        title: 'Device-Aware Context',
+        description:
+          'Optionally tailor signature formats based on JumpCloud device policies, distinguishing between managed corporate devices and BYOD.',
+      },
+    ],
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Why JumpCloud Users Choose Siggly',
+        items: [
+          {
+            icon: 'lock',
+            title: 'Zero-Trust Compatible',
+            description:
+              'Siggly respects JumpCloud conditional access policies, ensuring signature admin access follows your zero-trust security model.',
+          },
+          {
+            icon: 'cloud',
+            title: 'Cloud-Native Architecture',
+            description:
+              'Both JumpCloud and Siggly are cloud-native, so there are no on-premises dependencies or VPN requirements for the integration.',
+          },
+          {
+            icon: 'fingerprint',
+            title: 'MFA Enforcement',
+            description:
+              'JumpCloud MFA policies carry through to Siggly, adding an extra layer of security for signature management actions.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'JumpCloud is our directory for everything. Having Siggly pull user data and group memberships from JumpCloud means we never have to manage signature data separately.',
+      authorName: 'Carlos Rivera',
+      authorTitle: 'IT Director, Apex Logistics',
+    },
+    faqs: [
+      {
+        question: 'Does Siggly appear in the JumpCloud SSO portal?',
+        answer:
+          'Yes. Once configured, Siggly appears as an application tile in the JumpCloud user portal for single-click access.',
+      },
+      {
+        question: 'Can I use JumpCloud LDAP with Siggly?',
+        answer:
+          'Siggly supports JumpCloud Cloud LDAP for directory queries. This is useful for organizations that prefer LDAP-based attribute lookups over SCIM.',
+      },
+      {
+        question: 'What happens when a user is suspended in JumpCloud?',
+        answer:
+          'Suspended users are automatically deactivated in Siggly. Their signature is removed from active deployment and can be restored if the account is reactivated.',
+      },
+      {
+        question: 'Are JumpCloud system groups supported?',
+        answer:
+          'Siggly currently supports JumpCloud user groups for template assignment. System groups and device groups are on the roadmap for a future release.',
+      },
+    ],
+    cta: {
+      title: 'Extend JumpCloud to Your Email Signatures',
+      description:
+        'Connect JumpCloud to Siggly and let your directory handle signature provisioning, updates, and access control.',
+    },
+  },
+
+  // ─── OneLogin ───────────────────────────────────────────────────────
+  {
+    slug: 'onelogin',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + OneLogin SSO Integration | Email Signatures',
+      description:
+        'Integrate OneLogin with Siggly for SSO authentication, SCIM provisioning, and directory-driven email signature management across your organization.',
+      keywords: [
+        'onelogin email signatures',
+        'onelogin SSO integration',
+        'SCIM provisioning signatures',
+        'onelogin identity management',
+      ],
+      canonical: '/integrations/onelogin',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'OneLogin', url: '/integrations/onelogin' },
+    ],
+    hero: {
+      badge: { icon: 'fingerprint', text: 'OneLogin Integration' },
+      title: 'Secure Signature Management Powered by OneLogin',
+      description:
+        'Authenticate users, provision accounts, and sync directory data through OneLogin. Siggly inherits your identity policies so signature management is governed by the same security standards as every other app.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: 'SSO', label: 'One-click SAML authentication' },
+      { value: 'SCIM', label: 'Automated provisioning' },
+      { value: '100%', label: 'Policy inheritance from OneLogin' },
+    ],
+    featuresTitle: 'OneLogin + Siggly Feature Set',
+    features: [
+      {
+        icon: 'key',
+        title: 'SAML 2.0 SSO',
+        description:
+          'Users access Siggly through the OneLogin portal with a single click. No separate login credentials to manage.',
+      },
+      {
+        icon: 'user-cog',
+        title: 'SCIM Provisioning & Deprovisioning',
+        description:
+          'User accounts in Siggly are created, updated, and removed automatically as changes occur in OneLogin.',
+      },
+      {
+        icon: 'shield',
+        title: 'Access Policy Enforcement',
+        description:
+          'OneLogin access policies, including IP restrictions, device trust, and adaptive authentication, are enforced when accessing Siggly.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Setting Up OneLogin with Siggly',
+        steps: [
+          {
+            step: '1',
+            title: 'Add Siggly in OneLogin',
+            description:
+              'Search for Siggly in the OneLogin app catalog and add it to your company apps. Configure SAML settings using the metadata provided by Siggly.',
+          },
+          {
+            step: '2',
+            title: 'Enable SCIM Provisioning',
+            description:
+              'Turn on SCIM in the OneLogin app configuration to automatically sync users, groups, and attributes to Siggly.',
+          },
+          {
+            step: '3',
+            title: 'Assign Users and Groups',
+            description:
+              'Use OneLogin roles and groups to control who has access to Siggly and which signature templates they receive.',
+          },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'OneLogin Integration Checklist',
+        items: [
+          'SAML 2.0 single sign-on configured',
+          'SCIM user and group provisioning enabled',
+          'OneLogin MFA policies enforced in Siggly',
+          'Directory attributes mapped to signature fields',
+          'Access policies applied for admin and editor roles',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We standardized on OneLogin for SSO across all our apps. Adding Siggly to our OneLogin portal meant zero new passwords and instant SCIM provisioning for 200 employees.',
+      authorName: 'Tomoko Arai',
+      authorTitle: 'Security Engineer, BrightSignal Technologies',
+    },
+    cta: {
+      title: 'Add Siggly to Your OneLogin Portal',
+      description:
+        'Unify identity management and email signatures under one roof. Connect OneLogin to Siggly in minutes.',
     },
   },
 ];

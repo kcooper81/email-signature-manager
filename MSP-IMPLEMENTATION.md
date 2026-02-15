@@ -184,7 +184,7 @@ CREATE TABLE partner_applications (
 | **Exclaimer** | $0.90/user/mo | $1.45/user/mo | $1.75/user/mo | Custom | 10 |
 | **CodeTwo** | $0.90/user/mo | $0.81/user/mo (500+) | Volume | Quote | 10 |
 | **Rocketseed** | $50/mo min | Per-user | Volume | Quote | 50 |
-| **Siggly** | Free | $0.50/user/mo | $29 + $1/user | Custom | 1 |
+| **Siggly** | Free (full features) | - | $1.50/user/mo (10-user min) | Custom | 1 |
 
 ### MSP Partner Program Comparison
 

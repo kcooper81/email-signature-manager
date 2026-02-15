@@ -327,10 +327,9 @@ const guideSections: GuideSection[] = [
         title: 'Upgrade Plan',
         description: 'Click "Upgrade" to see available plans. You\'ll be redirected to Stripe Checkout.',
         tips: [
-          'Free: 5 users, 1 template, Google only',
-          'Starter ($0.50/user): Unlimited users, 5 templates, Google + Microsoft',
-          'Professional ($29 + $1/user): Unlimited templates, all integrations',
-          'Enterprise: Custom pricing, SSO, API, white-label'
+          'Free: 5 users, 1 template, full feature access (analytics preview only)',
+          'Professional ($1.50/user, 10-user min): Unlimited templates, analytics, MS365, API, priority support',
+          'Enterprise: Custom pricing, dedicated AM, SSO, white-label, SLA'
         ]
       },
       {

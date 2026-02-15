@@ -142,7 +142,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="text-center p-4 bg-blue-100 rounded-lg">
               <div className="text-2xl font-bold">{stats?.planDistribution.starter || 0}</div>
-              <div className="text-sm text-muted-foreground">Starter</div>
+              <div className="text-sm text-muted-foreground">Starter (Legacy)</div>
             </div>
             <div className="text-center p-4 bg-violet-100 rounded-lg">
               <div className="text-2xl font-bold">{stats?.planDistribution.professional || 0}</div>

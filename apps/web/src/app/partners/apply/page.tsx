@@ -193,7 +193,7 @@ export default function PartnerApplyPage() {
             </span>
             <span className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
-              No per-seat minimums
+              10-user minimum ($15/mo)
             </span>
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function PartnerApplyPage() {
             <div className="bg-red-50 border border-red-100 rounded-lg p-6">
               <h3 className="font-semibold text-red-800 mb-3">The Tool Problem</h3>
               <ul className="space-y-2 text-sm text-red-700">
-                <li>• Competitors charge $1-2/user with 10+ user minimums</li>
+                <li>• Competitors charge $2-4/user with annual contracts</li>
                 <li>• Complex setup that requires IT involvement</li>
                 <li>• No white-label option — your clients see their branding</li>
                 <li>• Clunky interfaces that clients complain about</li>
@@ -252,7 +252,7 @@ export default function PartnerApplyPage() {
                 <DollarSign className="h-10 w-10 text-violet-600 mb-4" />
                 <h3 className="font-semibold mb-2">Profitable Pricing</h3>
                 <p className="text-sm text-muted-foreground">
-                  Starting at $0.50/user. No minimums. Earn 15-25% margin depending on tier. Bill clients at your rate, keep the difference.
+                  Starting at $1.50/user. 10-user minimum ($15/mo). Earn 15-25% margin depending on tier. Bill clients at your rate, keep the difference.
                 </p>
               </CardContent>
             </Card>
@@ -406,7 +406,7 @@ export default function PartnerApplyPage() {
           </div>
           
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Base pricing: Free tier available, Starter at $0.50/user/mo, Professional at $29/mo + $1/user
+            Base pricing: Free tier (5 users), Professional at $1.50/user/mo (10-user min), Enterprise custom
           </p>
         </div>
 

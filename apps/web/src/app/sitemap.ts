@@ -7,6 +7,9 @@ import { integrationsPages } from '@/lib/seo-pages/data/integrations';
 import { guidesPages } from '@/lib/seo-pages/data/guides';
 import { comparisonsPages } from '@/lib/seo-pages/data/comparisons';
 import { templatesPages } from '@/lib/seo-pages/data/templates';
+import { emailSignaturesPages } from '@/lib/seo-pages/data/email-signatures';
+import { alternativesPages } from '@/lib/seo-pages/data/alternatives';
+import { platformsPages } from '@/lib/seo-pages/data/platforms';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
@@ -229,6 +232,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { pages: useCasesPages, priority: 0.75, changeFrequency: 'monthly' },
     { pages: templatesPages, priority: 0.75, changeFrequency: 'monthly' },
     { pages: guidesPages, priority: 0.7, changeFrequency: 'monthly' },
+    { pages: emailSignaturesPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: alternativesPages, priority: 0.85, changeFrequency: 'weekly' },
+    { pages: platformsPages, priority: 0.8, changeFrequency: 'monthly' },
   ];
 
   const seoLandingPages: MetadataRoute.Sitemap = seoRouteMap.flatMap(

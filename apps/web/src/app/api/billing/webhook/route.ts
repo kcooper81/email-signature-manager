@@ -339,34 +339,37 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
 function getPlanFromSubscription(subscription: Stripe.Subscription): string {
   // Check all line items in the subscription to determine the plan
   const priceIds = subscription.items.data.map(item => item.price.id);
-  
+
+  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
+  // Legacy price IDs for backward compatibility
   const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
   const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
-  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
 
-  // Check if any price ID matches professional plan
-  if (priceIds.includes(professionalBasePriceId!) || priceIds.includes(professionalPerUserPriceId!)) {
+  // Check if any price ID matches professional plan (new or legacy)
+  if (priceIds.includes(professionalPerUserPriceId!) ||
+      priceIds.includes(professionalBasePriceId!)) {
     return 'professional';
   }
-  
-  // Check if any price ID matches starter plan
+
+  // Legacy starter customers are migrated to professional
   if (priceIds.includes(starterPriceId!)) {
-    return 'starter';
+    return 'professional';
   }
-  
+
   return 'free';
 }
 
 function getPlanFromPriceId(priceId: string | undefined): string {
   if (!priceId) return 'free';
-  
-  const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
-  const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
-  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
 
-  if (priceId === starterPriceId) return 'starter';
-  if (priceId === professionalBasePriceId || priceId === professionalPerUserPriceId) return 'professional';
-  
+  const professionalPerUserPriceId = process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID;
+  const professionalBasePriceId = process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID;
+  const starterPriceId = process.env.STRIPE_STARTER_PRICE_ID;
+
+  if (priceId === professionalPerUserPriceId || priceId === professionalBasePriceId) return 'professional';
+  // Legacy starter customers migrate to professional
+  if (priceId === starterPriceId) return 'professional';
+
   return 'free';
 }
 
@@ -390,7 +393,7 @@ function mapStripeStatus(status: Stripe.Subscription.Status): string {
 function getPlanRank(plan: string): number {
   switch (plan) {
     case 'free': return 0;
-    case 'starter': return 1;
+    case 'starter': return 1; // Legacy, maps to professional
     case 'professional': return 2;
     case 'enterprise': return 3;
     default: return 0;

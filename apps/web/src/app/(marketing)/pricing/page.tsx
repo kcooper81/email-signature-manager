@@ -10,7 +10,7 @@ import { ProfessionalPricingCalculator } from '@/components/pricing/professional
 
 export const metadata = genMeta({
   title: 'Pricing - Email Signature Management',
-  description: 'Simple, transparent pricing for email signature management. Start free, upgrade as you grow. Plans from $0.50/user/month.',
+  description: 'Free to try. One plan for teams. Custom for enterprise. Professional email signatures from $1.50/user/month with a 10-user minimum.',
   keywords: ['pricing', 'email signature pricing', 'signature management cost', 'exclaimer pricing alternative'],
   canonical: '/pricing',
 });
@@ -18,11 +18,15 @@ export const metadata = genMeta({
 const faqs = [
   {
     question: 'Can I try Siggly for free?',
-    answer: `Yes! Our Free plan lets you use Siggly with up to 5 team members and 1 signature template—forever free. Upgrade anytime for more features.`,
+    answer: `Yes! Our Free plan includes full feature access — HubSpot integration, compliance blocks, bulk operations, directory sync, and more — for up to 5 users with 1 template. It's free forever.`,
   },
   {
-    question: 'How does per-user/team member pricing work?',
-    answer: 'You pay based on the number of users/team members in your organization who need email signatures. For example: Starter plan at $0.50 per user means a 10-person team pays $5/month, a 50-person team pays $25/month. Professional plan is $29 base + $1 per user, so a 50-person team pays $79/month ($29 + $50). Everyone on your team gets professional signatures.',
+    question: 'How does per-user pricing work?',
+    answer: 'Professional is $1.50 per user per month with a 10-user minimum ($15/mo). You pay based on the number of users in your organization who need email signatures. For example: 50 users = $75/month. Clean, simple pricing — no base fees, no hidden costs.',
+  },
+  {
+    question: 'What happens when I hit 6 users on the Free plan?',
+    answer: 'The Free plan supports up to 5 users. When you need to add a 6th user, you upgrade to Professional at $1.50/user/month (10-user minimum). All your data, templates, and settings carry over seamlessly.',
   },
   {
     question: 'Can I change plans later?',
@@ -30,15 +34,15 @@ const faqs = [
   },
   {
     question: 'Do you offer annual billing?',
-    answer: 'Yes, we offer a 20% discount for annual billing on all paid plans.',
+    answer: 'Yes, we offer a 20% discount for annual billing on Professional plans.',
   },
   {
     question: 'What payment methods do you accept?',
     answer: 'We accept all major credit cards (Visa, Mastercard, American Express) and can arrange invoicing for Enterprise plans.',
   },
   {
-    question: 'How does Siggly compare to competitors?',
-    answer: 'Siggly offers the same features as Exclaimer, WiseStamp, and CodeTwo at up to 50% lower cost. For example, WiseStamp charges $1/member while our Starter plan is just $0.50/member.',
+    question: 'How does Siggly compare to competitors on price?',
+    answer: 'At $1.50/user/month, Siggly is 25% cheaper than CodeTwo ($2/user), 50% cheaper than Exclaimer ($2–3/user), and 73% cheaper than Siggy.io ($4/user). You get the same enterprise features at a fraction of the cost.',
   },
 ];
 
@@ -59,13 +63,13 @@ export default function PricingPage() {
       <section className="py-20 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold mb-6">
-            Simple, transparent pricing
+            Free to try. One plan for teams. Custom for enterprise.
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-4">
-            Start free, upgrade as you grow. No hidden fees, no surprises.
+            Full feature access on the Free plan. Upgrade when you need more users or templates.
           </p>
           <p className="text-lg text-violet-600 font-medium">
-            Pricing is per team member/user — everyone in your organization gets professional email signatures
+            Still 25-73% cheaper than Exclaimer, CodeTwo, and Siggy.io
           </p>
         </div>
       </section>
@@ -76,27 +80,27 @@ export default function PricingPage() {
           <div className="bg-violet-50 border-2 border-violet-200 rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-center mb-4">Calculate Your Cost</h2>
             <p className="text-center text-gray-600 mb-6">
-              See exactly what you'll pay based on your team size
+              Professional plan — $1.50/user/month, 10-user minimum
             </p>
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="text-sm text-gray-500 mb-2">10 team members</div>
-                <div className="text-3xl font-bold text-violet-600 mb-1">$5/mo</div>
-                <div className="text-xs text-gray-500">with Starter ($0.50/user)</div>
+                <div className="text-sm text-gray-500 mb-2">10 users</div>
+                <div className="text-3xl font-bold text-violet-600 mb-1">$15/mo</div>
+                <div className="text-xs text-gray-500">$1.50 &times; 10 users</div>
               </div>
               <div className="bg-white rounded-xl p-6 shadow-sm border-2 border-violet-500">
-                <div className="text-sm text-gray-500 mb-2">50 team members</div>
-                <div className="text-3xl font-bold text-violet-600 mb-1">$79/mo</div>
-                <div className="text-xs text-gray-500">with Professional ($29 + $1/user)</div>
+                <div className="text-sm text-gray-500 mb-2">50 users</div>
+                <div className="text-3xl font-bold text-violet-600 mb-1">$75/mo</div>
+                <div className="text-xs text-gray-500">vs Exclaimer $100+, Siggy $200</div>
               </div>
               <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="text-sm text-gray-500 mb-2">100 team members</div>
-                <div className="text-3xl font-bold text-violet-600 mb-1">$129/mo</div>
-                <div className="text-xs text-gray-500">with Professional ($29 + $1/user)</div>
+                <div className="text-sm text-gray-500 mb-2">100 users</div>
+                <div className="text-3xl font-bold text-violet-600 mb-1">$150/mo</div>
+                <div className="text-xs text-gray-500">vs Exclaimer $200+, Siggy $400</div>
               </div>
             </div>
             <p className="text-center text-sm text-gray-500 mt-6">
-              Save up to 50% compared to Exclaimer, WiseStamp, and CodeTwo
+              The best value in email signature management — same features, better price
             </p>
           </div>
         </div>
@@ -104,12 +108,12 @@ export default function PricingPage() {
 
       {/* Pricing Grid */}
       <section className="py-12">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-4">Choose Your Plan</h2>
           <p className="text-center text-gray-600 mb-12">
-            All plans include core features. Upgrade for advanced capabilities and priority support.
+            Full feature access on Free. Upgrade for unlimited users, templates, and analytics.
           </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             {PLANS_LIST.map((plan) => (
               <div
                 key={plan.name}
@@ -134,15 +138,6 @@ export default function PricingPage() {
                     <div className="flex items-baseline justify-center gap-1">
                       <span className="text-4xl font-bold">$0</span>
                       <span className="text-gray-500">{plan.period}</span>
-                    </div>
-                  ) : plan.id === 'starter' ? (
-                    <div>
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-4xl font-bold">$0.50</span>
-                        <span className="text-gray-500">/user/mo</span>
-                      </div>
-                      <p className="text-xs text-violet-600 mt-1">50% cheaper than competitors</p>
-                      <p className="text-xs text-gray-400 mt-1">Per team member</p>
                     </div>
                   ) : (
                     <ProfessionalPricingCalculator />

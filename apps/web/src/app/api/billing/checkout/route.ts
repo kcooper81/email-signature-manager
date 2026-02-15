@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     const { planId } = await request.json();
 
-    if (!planId || !['starter', 'professional'].includes(planId)) {
+    if (!planId || !['professional'].includes(planId)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const session = await createCheckoutSession({
       customerId,
-      planId: planId as 'starter' | 'professional',
+      planId: planId as 'professional',
       quantity,
       successUrl: `${baseUrl}/settings/billing?success=true`,
       cancelUrl: `${baseUrl}/settings/billing?canceled=true`,

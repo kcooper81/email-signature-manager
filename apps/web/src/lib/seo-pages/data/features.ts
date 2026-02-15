@@ -439,7 +439,7 @@ export const featuresPages: SEOLandingPageData[] = [
       {
         question: 'How far back does historical data go?',
         answer:
-          'Analytics data is available from the day you start using Siggly. Standard plans retain 12 months of history, and Enterprise plans offer unlimited retention.',
+          'Analytics data is available from the day you start using Siggly. Free and Professional plans retain 12 months of history, and Enterprise plans offer unlimited retention.',
       },
       {
         question: 'Can I share dashboards with people outside my team?',
@@ -1457,6 +1457,597 @@ export const featuresPages: SEOLandingPageData[] = [
       title: 'Secure Your Signature Management Workflow',
       description:
         'Implement granular role-based access control to ensure the right people manage the right signatures with full accountability.',
+    },
+  },
+
+  // ─── HTML Signature Editor ─────────────────────────────────────────
+  {
+    slug: 'html-signature-editor',
+    category: 'features',
+    meta: {
+      title: 'HTML Signature Editor with Live Preview | Siggly',
+      description:
+        'Edit email signature HTML with a full code editor, live preview, and template variables. Test cross-client rendering before deploying to your organization.',
+      keywords: [
+        'HTML signature editor',
+        'email signature code editor',
+        'live preview signatures',
+        'responsive email signature HTML',
+      ],
+      canonical: '/features/html-signature-editor',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Features', url: '/features' },
+      { name: 'HTML Signature Editor', url: '/features/html-signature-editor' },
+    ],
+    hero: {
+      badge: { icon: 'code', text: 'HTML Editor' },
+      title: 'Full Control Over Your Signature HTML',
+      description:
+        'For teams that want pixel-perfect control, the HTML Signature Editor gives you a full code editor with syntax highlighting, template variable insertion, and a real-time preview pane that shows exactly how your signature renders.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '30+', label: 'Email clients tested' },
+      { value: '100%', label: 'HTML & CSS control' },
+      { value: 'Live', label: 'Real-time preview rendering' },
+    ],
+    featuresTitle: 'HTML Editor Capabilities',
+    features: [
+      {
+        icon: 'code',
+        title: 'Syntax-Highlighted Code Editor',
+        description:
+          'Write and edit HTML with full syntax highlighting, auto-completion, and error detection in a professional-grade code editor.',
+      },
+      {
+        icon: 'eye',
+        title: 'Live Preview Pane',
+        description:
+          'See your signature render in real time as you type. Toggle between desktop and mobile views to verify responsive behavior.',
+      },
+      {
+        icon: 'wand-2',
+        title: 'Template Variable Insertion',
+        description:
+          'Insert dynamic variables like {{name}}, {{title}}, and {{phone}} that are replaced with real employee data at deployment time.',
+      },
+      {
+        icon: 'monitor',
+        title: 'Cross-Client Testing',
+        description:
+          'Preview how your signature looks in Gmail, Outlook, Apple Mail, and other popular clients before deploying to your team.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Using the HTML Signature Editor',
+        steps: [
+          {
+            step: '1',
+            title: 'Open the Code Editor',
+            description:
+              'Switch to HTML mode from any template. Paste existing HTML or start from scratch with a clean boilerplate.',
+          },
+          {
+            step: '2',
+            title: 'Write and Preview',
+            description:
+              'Edit your HTML in the left pane while the right pane shows a live, rendered preview. Insert template variables from the sidebar.',
+          },
+          {
+            step: '3',
+            title: 'Test and Deploy',
+            description:
+              'Run the cross-client preview to check rendering across email clients, then deploy to your team with one click.',
+          },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'Editor Features at a Glance',
+        items: [
+          'Full HTML and inline CSS support',
+          'Template variable auto-completion',
+          'Desktop and mobile preview toggle',
+          'Cross-client rendering preview',
+          'Import and export raw HTML',
+          'Version history for every edit',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Our design team needed full HTML control, not just drag-and-drop. The Siggly code editor gave us exactly that, plus live preview so we could iterate without constant test emails.',
+      authorName: 'Liam Novak',
+      authorTitle: 'Front-End Lead, DigitalCraft Agency',
+    },
+    faqs: [
+      {
+        question: 'Can I paste HTML from an external editor?',
+        answer:
+          'Yes. Paste any valid HTML into the code editor. Siggly will validate it and highlight any issues that might affect email client rendering.',
+      },
+      {
+        question: 'Does the editor support inline CSS?',
+        answer:
+          'Yes. Inline CSS is fully supported and recommended for email signatures. The editor can also inline CSS from style blocks automatically.',
+      },
+      {
+        question: 'Are there HTML templates I can start from?',
+        answer:
+          'Siggly includes a library of starter HTML templates. You can also convert any drag-and-drop template to HTML for further customization.',
+      },
+    ],
+    cta: {
+      title: 'Build Pixel-Perfect Signatures in HTML',
+      description:
+        'Take full control of your email signature code with a professional editor, live preview, and cross-client testing.',
+    },
+  },
+
+  // ─── Signature Approval Workflows ──────────────────────────────────
+  {
+    slug: 'signature-approval-workflows',
+    category: 'features',
+    meta: {
+      title: 'Signature Approval Workflows & Compliance Review | Siggly',
+      description:
+        'Set up manager approvals, compliance reviews, and staged rollouts for email signature changes. Maintain an audit trail for every signature update.',
+      keywords: [
+        'signature approval workflow',
+        'email signature compliance',
+        'signature change management',
+        'approval chain signatures',
+      ],
+      canonical: '/features/signature-approval-workflows',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Features', url: '/features' },
+      { name: 'Signature Approval Workflows', url: '/features/signature-approval-workflows' },
+    ],
+    hero: {
+      badge: { icon: 'file-check', text: 'Approval Workflows' },
+      title: 'No Signature Goes Live Without Proper Approval',
+      description:
+        'Define multi-step approval chains so every signature change is reviewed by the right people before deployment. Managers, compliance officers, and brand guardians all get their say.',
+      variant: 'indigo',
+    },
+    featuresTitle: 'Approval Workflow Features',
+    features: [
+      {
+        icon: 'file-check',
+        title: 'Multi-Step Approval Chains',
+        description:
+          'Configure sequential or parallel approval steps. Require manager sign-off first, then compliance review, then brand approval before any signature goes live.',
+      },
+      {
+        icon: 'shield-check',
+        title: 'Compliance Review Gates',
+        description:
+          'Add mandatory compliance review steps for signatures that contain legal disclaimers, regulatory text, or confidentiality notices.',
+      },
+      {
+        icon: 'layers',
+        title: 'Staged Rollouts',
+        description:
+          'Deploy approved signatures to a pilot group first, then roll out to the full organization after validation. Catch issues before they reach everyone.',
+      },
+      {
+        icon: 'file-text',
+        title: 'Full Audit Trail',
+        description:
+          'Every approval, rejection, and modification is logged with timestamps and user identity. Export audit logs for compliance reporting.',
+      },
+      {
+        icon: 'mail',
+        title: 'Email & Slack Notifications',
+        description:
+          'Reviewers receive instant notifications when a signature is pending their approval, with one-click approve or reject actions.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'How Approval Workflows Operate',
+        steps: [
+          {
+            step: '1',
+            title: 'Submit a Change',
+            description:
+              'A template editor or department admin submits a new or modified signature template for approval.',
+          },
+          {
+            step: '2',
+            title: 'Review Chain Begins',
+            description:
+              'Designated reviewers receive a notification and can preview the signature, leave comments, or request changes.',
+          },
+          {
+            step: '3',
+            title: 'Approve and Deploy',
+            description:
+              'Once all required approvals are granted, the signature is either deployed automatically or queued for a staged rollout.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can I set different approval chains for different departments?',
+        answer:
+          'Yes. Each department or team can have its own approval workflow with different reviewers and approval requirements.',
+      },
+      {
+        question: 'What happens if an approver is unavailable?',
+        answer:
+          'You can configure delegate approvers or escalation rules that automatically route pending approvals to a backup reviewer after a configurable timeout.',
+      },
+      {
+        question: 'Can I bypass approval for minor changes?',
+        answer:
+          'Yes. Define which types of changes require approval and which can be deployed immediately. For example, phone number updates might skip review while template redesigns require full approval.',
+      },
+      {
+        question: 'Are approval audit logs exportable?',
+        answer:
+          'Yes. Export audit logs as CSV or PDF for compliance reporting, internal reviews, or regulatory audits.',
+      },
+    ],
+    cta: {
+      title: 'Add Governance to Your Signature Process',
+      description:
+        'Ensure every email signature meets your brand and compliance standards before it reaches a single inbox.',
+    },
+  },
+
+  // ─── Social Media Icons ────────────────────────────────────────────
+  {
+    slug: 'social-media-icons',
+    category: 'features',
+    meta: {
+      title: 'Social Media Icons for Email Signatures | Siggly',
+      description:
+        'Add professionally designed social media icons to email signatures. Support for 30+ platforms with link validation, UTM tracking, and custom icon uploads.',
+      keywords: [
+        'social media icons signatures',
+        'email signature social links',
+        'social media email footer',
+        'signature icon library',
+      ],
+      canonical: '/features/social-media-icons',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Features', url: '/features' },
+      { name: 'Social Media Icons', url: '/features/social-media-icons' },
+    ],
+    hero: {
+      badge: { icon: 'link', text: 'Social Icons' },
+      title: 'Connect Every Email to Your Social Presence',
+      description:
+        'Add polished social media icons to your email signatures with support for LinkedIn, Twitter/X, Instagram, YouTube, and 30+ more platforms. Track clicks and validate links automatically.',
+      variant: 'light',
+    },
+    stats: [
+      { value: '30+', label: 'Social platforms supported' },
+      { value: '5', label: 'Icon style sets included' },
+      { value: '22%', label: 'Average social follower lift' },
+    ],
+    featuresTitle: 'Social Media Icon Features',
+    features: [
+      {
+        icon: 'grid',
+        title: 'Curated Icon Library',
+        description:
+          'Choose from five professionally designed icon sets: filled, outline, rounded, square, and minimal. All sets cover 30+ social platforms.',
+      },
+      {
+        icon: 'upload',
+        title: 'Custom Icon Uploads',
+        description:
+          'Upload your own icons for niche platforms, internal social networks, or branded icon styles that match your design system.',
+      },
+      {
+        icon: 'check-circle',
+        title: 'Link Validation',
+        description:
+          'Siggly checks every social link to ensure it resolves correctly. Broken or redirected URLs are flagged before deployment.',
+      },
+      {
+        icon: 'tag',
+        title: 'UTM Tracking',
+        description:
+          'Automatically append UTM parameters to social links so you can track which signatures and employees drive the most social traffic.',
+      },
+    ],
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Why Social Icons Matter in Signatures',
+        items: [
+          {
+            icon: 'trending-up',
+            title: 'Grow Your Following',
+            description:
+              'Every email becomes a passive invitation to connect on social media. Teams with social icons in signatures see measurable follower growth.',
+          },
+          {
+            icon: 'palette',
+            title: 'Brand-Consistent Styling',
+            description:
+              'Social icons match your brand colors and signature design. No more mismatched icon styles from random internet downloads.',
+          },
+          {
+            icon: 'bar-chart-3',
+            title: 'Click Analytics',
+            description:
+              'See which social platforms get the most clicks from your signatures and adjust your social strategy accordingly.',
+          },
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Social Icon Use Cases',
+        cases: [
+          {
+            title: 'Sales Teams',
+            description:
+              'Link to LinkedIn profiles so prospects can learn more about their sales rep and build trust before a meeting.',
+          },
+          {
+            title: 'Marketing Teams',
+            description:
+              'Drive followers to company social accounts with branded icons that match the latest campaign creative.',
+          },
+          {
+            title: 'Executive Profiles',
+            description:
+              'Link executives to their personal LinkedIn, Twitter/X, or company blog to amplify thought leadership.',
+          },
+        ],
+      },
+    ],
+    cta: {
+      title: 'Add Social Icons to Every Signature',
+      description:
+        'Grow your social presence with every email your team sends. Choose from curated icon sets or upload your own.',
+    },
+  },
+
+  // ─── Legal Disclaimer Management ───────────────────────────────────
+  {
+    slug: 'legal-disclaimer-management',
+    category: 'features',
+    meta: {
+      title: 'Legal Disclaimer Management for Email Signatures | Siggly',
+      description:
+        'Manage jurisdiction-specific email disclaimers with conditional logic and regulatory compliance. Add confidentiality notices and legal footers automatically.',
+      keywords: [
+        'email disclaimer management',
+        'legal disclaimer signatures',
+        'confidentiality notice email',
+        'regulatory email footer',
+      ],
+      canonical: '/features/legal-disclaimer-management',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Features', url: '/features' },
+      { name: 'Legal Disclaimer Management', url: '/features/legal-disclaimer-management' },
+    ],
+    hero: {
+      badge: { icon: 'scale', text: 'Legal Disclaimers' },
+      title: 'Automated Legal Disclaimers for Every Email',
+      description:
+        'Different jurisdictions, industries, and recipients require different legal text. Siggly applies the right disclaimer to the right email automatically using conditional logic and user attributes.',
+      variant: 'dark',
+    },
+    featuresTitle: 'Disclaimer Management Capabilities',
+    features: [
+      {
+        icon: 'scale',
+        title: 'Jurisdiction-Specific Rules',
+        description:
+          'Define disclaimers for specific countries, states, or regions. The correct legal text is applied based on the sender\'s location or entity.',
+      },
+      {
+        icon: 'filter',
+        title: 'Conditional Logic Engine',
+        description:
+          'Apply disclaimers based on department, role, recipient domain, or custom attributes. Only show financial disclaimers when the sender is in the finance team, for example.',
+      },
+      {
+        icon: 'lock',
+        title: 'Confidentiality Notices',
+        description:
+          'Append standard confidentiality notices to every outbound email. Lock the text so employees cannot modify or remove legally required language.',
+      },
+      {
+        icon: 'file-check',
+        title: 'Regulatory Compliance Templates',
+        description:
+          'Pre-built disclaimer templates for GDPR, HIPAA, SOX, and financial services regulations. Customize them to match your legal team\'s requirements.',
+      },
+      {
+        icon: 'edit-3',
+        title: 'Legal Team Self-Service',
+        description:
+          'Give your legal team direct access to edit disclaimer text without involving IT. Changes deploy organization-wide immediately after approval.',
+      },
+    ],
+    sections: [
+      {
+        type: 'checklist',
+        title: 'Supported Disclaimer Scenarios',
+        items: [
+          'GDPR privacy and data processing notices',
+          'Financial services regulatory disclaimers',
+          'Healthcare and HIPAA confidentiality notices',
+          'Attorney-client privilege statements',
+          'Government and public sector compliance text',
+          'Industry-specific insurance liability disclaimers',
+          'Multi-language disclaimer variants',
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'Why Disclaimer Management Matters',
+        paragraphs: [
+          'Email disclaimers are not just legal boilerplate. In regulated industries, missing or incorrect disclaimers can lead to fines, lawsuits, and reputational damage. Yet most organizations manage disclaimers manually, relying on employees to paste the right text into their signatures.',
+          'Siggly eliminates that risk by applying disclaimers automatically based on rules you define. Your legal team maintains the text, your IT team sets the targeting rules, and every email leaves the organization with the correct legal footer. No manual copying, no missed updates, no compliance gaps.',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We operate in six countries with different regulatory requirements. Siggly applies the correct legal disclaimer to each employee automatically based on their entity. Our legal team finally sleeps at night.',
+      authorName: 'Dr. Katarina Hoffman',
+      authorTitle: 'General Counsel, Vantage Financial Group',
+    },
+    faqs: [
+      {
+        question: 'Can different departments have different disclaimers?',
+        answer:
+          'Yes. Use conditional logic to assign disclaimers by department, role, entity, or any custom attribute. Multiple disclaimers can be stacked if needed.',
+      },
+      {
+        question: 'Can employees remove or edit the disclaimer?',
+        answer:
+          'No. Disclaimers managed through Siggly are locked and cannot be modified by end users. Only authorized admins or legal team members can edit disclaimer text.',
+      },
+      {
+        question: 'Do disclaimers work with server-side signature injection?',
+        answer:
+          'Yes. When using server-side injection for Google Workspace or Microsoft 365, disclaimers are appended server-side so they appear on every email, including mobile.',
+      },
+    ],
+    cta: {
+      title: 'Automate Your Email Disclaimers',
+      description:
+        'Ensure every outbound email carries the correct legal text. Set up disclaimer rules once and let Siggly enforce them everywhere.',
+    },
+  },
+
+  // ─── Multi-Brand Support ───────────────────────────────────────────
+  {
+    slug: 'multi-brand-support',
+    category: 'features',
+    meta: {
+      title: 'Multi-Brand Email Signature Management | Siggly',
+      description:
+        'Manage email signatures for multiple brands, subsidiaries, and acquisitions from a single platform. Enforce brand guidelines and switch between brands effortlessly.',
+      keywords: [
+        'multi-brand email signatures',
+        'subsidiary signature management',
+        'brand switching signatures',
+        'acquisition branding email',
+      ],
+      canonical: '/features/multi-brand-support',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Features', url: '/features' },
+      { name: 'Multi-Brand Support', url: '/features/multi-brand-support' },
+    ],
+    hero: {
+      badge: { icon: 'building', text: 'Multi-Brand' },
+      title: 'One Platform, Every Brand',
+      description:
+        'Whether you run multiple subsidiaries, have recently completed an acquisition, or operate distinct product brands, Siggly lets you manage all of their email signatures from a single account with strict brand separation.',
+      variant: 'violet',
+    },
+    stats: [
+      { value: 'Unlimited', label: 'Brands per account' },
+      { value: '100%', label: 'Brand guideline enforcement' },
+      { value: '< 5 min', label: 'To add a new brand' },
+    ],
+    featuresTitle: 'Multi-Brand Management Features',
+    features: [
+      {
+        icon: 'building',
+        title: 'Brand Workspaces',
+        description:
+          'Each brand gets its own isolated workspace with dedicated templates, user assignments, and branding assets. No cross-contamination.',
+      },
+      {
+        icon: 'toggle-left',
+        title: 'Quick Brand Switching',
+        description:
+          'Admins managing multiple brands can switch between brand workspaces instantly from a single dashboard without logging out.',
+      },
+      {
+        icon: 'palette',
+        title: 'Brand Guidelines Enforcement',
+        description:
+          'Upload brand guidelines including approved logos, colors, fonts, and legal text. Templates enforce these rules so no off-brand signatures are possible.',
+      },
+    ],
+    sections: [
+      {
+        type: 'use-cases-grid',
+        title: 'Multi-Brand Scenarios',
+        cases: [
+          {
+            title: 'Subsidiary Management',
+            description:
+              'Parent companies manage subsidiary email signatures centrally while each subsidiary maintains its own brand identity and templates.',
+          },
+          {
+            title: 'Post-Acquisition Branding',
+            description:
+              'Transition acquired company signatures to your brand standards gradually. Run both brands in parallel during the integration period.',
+          },
+          {
+            title: 'Product Brand Separation',
+            description:
+              'Companies with distinct product brands keep each brand\'s email signatures separate while managing them from one account.',
+          },
+          {
+            title: 'Regional Brand Variants',
+            description:
+              'Global companies with region-specific brand adaptations can manage each variant as a distinct brand with shared corporate elements.',
+          },
+        ],
+      },
+      {
+        type: 'how-it-works',
+        title: 'Setting Up Multiple Brands',
+        steps: [
+          {
+            step: '1',
+            title: 'Create Brand Workspaces',
+            description:
+              'Add a new brand workspace for each subsidiary, product brand, or acquisition. Upload logos, colors, and brand assets.',
+          },
+          {
+            step: '2',
+            title: 'Assign Users to Brands',
+            description:
+              'Map employees to their respective brands using directory groups, manual assignment, or domain-based rules.',
+          },
+          {
+            step: '3',
+            title: 'Deploy Per-Brand Signatures',
+            description:
+              'Each brand deploys its own signature templates independently. Corporate admins maintain oversight across all brands.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'After acquiring two companies last year, we needed to manage three sets of email signatures without mixing brands. Siggly made the transition seamless with isolated brand workspaces.',
+      authorName: 'Rebecca Liu',
+      authorTitle: 'Brand Director, Ascend Holdings Group',
+    },
+    cta: {
+      title: 'Manage All Your Brands in One Place',
+      description:
+        'Stop using separate tools for each brand. Siggly gives you unified control with strict brand separation built in.',
     },
   },
 ];

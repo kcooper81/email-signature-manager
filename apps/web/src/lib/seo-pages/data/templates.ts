@@ -2025,4 +2025,1516 @@ export const templatesPages: SEOLandingPageData[] = [
         'Build an email signature that reflects your technical expertise and makes IT support channels easy to find.',
     },
   },
+
+  // ─── Nonprofit ─────────────────────────────────────────────────────
+  {
+    slug: 'nonprofit',
+    category: 'templates',
+    meta: {
+      title: 'Nonprofit Email Signature Template | Siggly',
+      description:
+        'Create mission-driven email signatures for your nonprofit organization. Feature donation links, volunteer calls-to-action, and impact metrics.',
+      keywords: [
+        'nonprofit email signature',
+        'charity email template',
+        'NGO signature design',
+        'nonprofit branding',
+        'donation link signature',
+      ],
+      canonical: '/email-signature-templates/nonprofit',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      { name: 'Nonprofit', url: '/email-signature-templates/nonprofit' },
+    ],
+    hero: {
+      badge: { icon: 'heart', text: 'Template' },
+      title: 'Nonprofit Email Signature Template',
+      description:
+        'Amplify your mission with every email. The nonprofit template features donation buttons, volunteer calls-to-action, and impact statistics that turn routine correspondence into fundraising opportunities.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '25%', label: 'More donation clicks' },
+      { value: '500+', label: 'Nonprofits using it' },
+      { value: '3 min', label: 'Setup time' },
+    ],
+    features: [
+      {
+        icon: 'heart',
+        title: 'Donate Button Integration',
+        description:
+          'A prominent, clickable donation button links directly to your giving page, turning every email into a passive fundraising touchpoint.',
+      },
+      {
+        icon: 'users',
+        title: 'Volunteer CTA Banner',
+        description:
+          'Promote volunteer opportunities, sign-up forms, and upcoming events with a rotating banner area beneath your contact details.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Impact Metrics Display',
+        description:
+          'Showcase key impact numbers like meals served, trees planted, or families housed directly in your signature to reinforce donor confidence.',
+      },
+      {
+        icon: 'award',
+        title: 'Charity Rating Badges',
+        description:
+          'Display GuideStar, Charity Navigator, or BBB Wise Giving Alliance seals to signal financial transparency and organizational accountability.',
+      },
+    ],
+    featuresTitle: 'Features of the Nonprofit Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'Organization logo and mission tagline',
+          'One-click donation button with customizable URL',
+          'Impact statistics row with configurable metrics',
+          'Volunteer sign-up banner area',
+          'Charity rating badges and seals',
+          'Social media icons for community channels',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Executive Directors',
+            description:
+              'Present organizational authority while passively driving donations and volunteer interest with every email sent.',
+          },
+          {
+            title: 'Development Officers',
+            description:
+              'Include giving links and campaign banners that complement your fundraising outreach efforts.',
+          },
+          {
+            title: 'Program Coordinators',
+            description:
+              'Feature impact metrics and event sign-up links relevant to the programs you manage.',
+          },
+          {
+            title: 'Board Members',
+            description:
+              'Represent the organization professionally in external communications with a branded, mission-aligned signature.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'After switching to the Siggly nonprofit template, our year-end giving campaign saw a 30% lift in email-driven donations. The donate button in every signature made all the difference.',
+      authorName: 'Patricia Okonkwo',
+      authorTitle: 'Development Director at Hope Springs Foundation',
+    },
+    faqs: [
+      {
+        question: 'Can I link directly to our donation page?',
+        answer:
+          'Yes. The template includes a prominent donate button that links to any URL you specify, whether it is a PayPal, Classy, or custom donation page.',
+      },
+      {
+        question: 'Can we update impact metrics regularly?',
+        answer:
+          'Yes. Siggly lets you update your impact numbers at any time, and changes propagate to all staff signatures instantly.',
+      },
+      {
+        question: 'Is the template free for nonprofits?',
+        answer:
+          'Siggly offers discounted and free plans for qualifying nonprofit organizations. Contact our team with your 501(c)(3) documentation for details.',
+      },
+      {
+        question: 'Can board members use the template without a company email?',
+        answer:
+          'Yes. Board members can install the signature manually in their personal email client using the HTML code Siggly generates.',
+      },
+    ],
+    cta: {
+      title: 'Amplify Your Mission in Every Email',
+      description:
+        'Turn routine correspondence into fundraising and volunteer recruitment opportunities with the nonprofit template.',
+    },
+  },
+
+  // ─── Healthcare Provider ───────────────────────────────────────────
+  {
+    slug: 'healthcare-provider',
+    category: 'templates',
+    meta: {
+      title: 'Healthcare Provider Email Signature Template | Siggly',
+      description:
+        'HIPAA-aware email signatures for doctors, nurses, and healthcare staff. Display credentials, patient portal links, and appointment scheduling.',
+      keywords: [
+        'healthcare email signature',
+        'doctor email template',
+        'medical signature design',
+        'HIPAA email signature',
+        'patient portal signature',
+      ],
+      canonical: '/email-signature-templates/healthcare-provider',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Healthcare Provider',
+        url: '/email-signature-templates/healthcare-provider',
+      },
+    ],
+    hero: {
+      badge: { icon: 'heart', text: 'Template' },
+      title: 'Healthcare Provider Email Signature Template',
+      description:
+        'Communicate trust and professionalism with a signature built for clinical environments. Display medical credentials, appointment scheduling links, and HIPAA-compliant disclaimers in a clean, authoritative layout.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '700+', label: 'Healthcare providers' },
+      { value: '100%', label: 'HIPAA disclaimer rate' },
+      { value: '4 min', label: 'Average setup' },
+    ],
+    features: [
+      {
+        icon: 'award',
+        title: 'Medical Credential Display',
+        description:
+          'Show MD, DO, NP, PA-C, RN, and board certification details prominently so patients and colleagues can verify your qualifications instantly.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Appointment Scheduling Link',
+        description:
+          'Include a direct link to your patient scheduling portal so recipients can book appointments without leaving their inbox.',
+      },
+      {
+        icon: 'shield',
+        title: 'HIPAA Disclaimer Block',
+        description:
+          'A mandatory, non-removable HIPAA confidentiality notice is appended automatically to every signature to protect patient information.',
+      },
+      {
+        icon: 'link',
+        title: 'Patient Portal Access',
+        description:
+          'Link to your patient portal, telehealth platform, or prescription refill page for convenient one-click access from any email.',
+      },
+      {
+        icon: 'phone',
+        title: 'After-Hours Contact',
+        description:
+          'Display after-hours phone numbers, nurse hotlines, and emergency contact instructions beneath your standard office hours.',
+      },
+    ],
+    featuresTitle: 'Features of the Healthcare Provider Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'Provider name with medical degree and credentials',
+          'Practice or hospital logo placement',
+          'Appointment scheduling button',
+          'Patient portal and telehealth links',
+          'HIPAA confidentiality disclaimer',
+          'After-hours and emergency contact details',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Physicians & Surgeons',
+            description:
+              'Display board certifications, specialty focus, and direct scheduling links for referral and patient communication.',
+          },
+          {
+            title: 'Nurse Practitioners',
+            description:
+              'Feature NP credentials, prescriptive authority details, and clinic contact information.',
+          },
+          {
+            title: 'Practice Administrators',
+            description:
+              'Present the practice brand professionally while including billing, insurance, and patient service contact details.',
+          },
+          {
+            title: 'Telehealth Providers',
+            description:
+              'Include video visit links and virtual care platform access alongside your standard credentials.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can I display board certifications and specialty credentials?',
+        answer:
+          'Yes. The template includes dedicated fields for medical degrees, board certifications, NPI numbers, and specialty designations.',
+      },
+      {
+        question: 'Is the HIPAA disclaimer customizable?',
+        answer:
+          'The disclaimer text is fully customizable but can be locked by administrators so individual providers cannot remove or modify it.',
+      },
+      {
+        question: 'Can I link to a telehealth platform?',
+        answer:
+          'Yes. The template supports links to Doxy.me, Zoom Health, Teladoc, and any other telehealth URL you use for virtual visits.',
+      },
+    ],
+    cta: {
+      title: 'Build Your Healthcare Signature Today',
+      description:
+        'Give patients confidence with a professional, credential-rich email signature built for healthcare providers.',
+    },
+  },
+
+  // ─── Academic ──────────────────────────────────────────────────────
+  {
+    slug: 'academic',
+    category: 'templates',
+    meta: {
+      title: 'Academic Email Signature Template | Siggly',
+      description:
+        'Professional email signatures for professors, researchers, and academic staff. Feature publications, ORCID links, and institutional affiliations.',
+      keywords: [
+        'academic email signature',
+        'professor email template',
+        'researcher signature design',
+        'university faculty signature',
+        'scholarly email branding',
+      ],
+      canonical: '/email-signature-templates/academic',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      { name: 'Academic', url: '/email-signature-templates/academic' },
+    ],
+    hero: {
+      badge: { icon: 'graduation-cap', text: 'Template' },
+      title: 'The Academic Email Signature Template',
+      description:
+        'Designed for scholars and faculty, this template puts your research credentials front and center. Include ORCID links, publication counts, department affiliations, and office hours in a layout that commands scholarly respect.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '1,000+', label: 'Academics using it' },
+      { value: '50+', label: 'Universities represented' },
+      { value: '2 min', label: 'Average setup' },
+      { value: '4.9/5', label: 'User rating' },
+    ],
+    features: [
+      {
+        icon: 'book-open',
+        title: 'Publication & Citation Links',
+        description:
+          'Link to your Google Scholar profile, ResearchGate page, or personal publications list so collaborators can explore your body of work.',
+      },
+      {
+        icon: 'link',
+        title: 'ORCID Integration',
+        description:
+          'Display your ORCID iD badge directly in your signature for unambiguous researcher identification across journals and databases.',
+      },
+      {
+        icon: 'building-2',
+        title: 'Institutional Affiliation',
+        description:
+          'Feature your department, lab, research center, and university branding in a hierarchical layout that reflects academic structure.',
+      },
+    ],
+    featuresTitle: 'Features of the Academic Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'Name with academic title (Prof., Dr., etc.)',
+          'Department and institutional affiliation',
+          'ORCID badge with clickable link',
+          'Google Scholar and ResearchGate links',
+          'Office hours and location details',
+          'University logo and brand colors',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Tenured Faculty',
+            description:
+              'Present your scholarly credentials, lab affiliation, and publication record in every email to students, peers, and journal editors.',
+          },
+          {
+            title: 'Postdoctoral Researchers',
+            description:
+              'Highlight your research focus, ORCID, and current grant affiliations to build your academic reputation.',
+          },
+          {
+            title: 'Graduate Teaching Assistants',
+            description:
+              'Include office hours, course pages, and department contact info for student-facing communications.',
+          },
+          {
+            title: 'Department Chairs',
+            description:
+              'Represent your department with a signature that includes administrative contact details alongside your research profile.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'The ORCID badge in my signature has made it so much easier for collaborators to find my papers. I have gotten two co-authorship invitations that I can trace directly to it.',
+      authorName: 'Dr. Elena Vasquez',
+      authorTitle: 'Associate Professor of Neuroscience, Stanford University',
+    },
+    faqs: [
+      {
+        question: 'Can I include my ORCID iD?',
+        answer:
+          'Yes. The template features a dedicated ORCID badge that displays your 16-digit identifier and links directly to your ORCID profile page.',
+      },
+      {
+        question: 'Can I link to my Google Scholar profile?',
+        answer:
+          'Yes. The template supports links to Google Scholar, ResearchGate, Academia.edu, Semantic Scholar, and personal publication pages.',
+      },
+      {
+        question: 'Is this template suitable for adjunct faculty?',
+        answer:
+          'Absolutely. Adjunct instructors can list their institutional affiliation, course information, and office hours just like full-time faculty.',
+      },
+      {
+        question: 'Can I show my h-index or citation count?',
+        answer:
+          'Yes. You can add custom text fields to display your h-index, total citations, or other scholarly metrics alongside your name and title.',
+      },
+      {
+        question: 'Does the template support multiple affiliations?',
+        answer:
+          'Yes. If you hold joint appointments or visiting positions, the template accommodates multiple departmental and institutional affiliations.',
+      },
+    ],
+    cta: {
+      title: 'Elevate Your Scholarly Correspondence',
+      description:
+        'Present your research credentials and institutional affiliation with clarity in every email you send.',
+    },
+  },
+
+  // ─── Government Employee ──────────────────────────────────────────
+  {
+    slug: 'government-employee',
+    category: 'templates',
+    meta: {
+      title: 'Government Employee Email Signature Template | Siggly',
+      description:
+        'Official email signatures for government workers at federal, state, and local levels. Clean layouts with agency branding and compliance disclaimers.',
+      keywords: [
+        'government email signature',
+        'federal employee signature',
+        'public sector email template',
+        'agency email branding',
+        'government compliance signature',
+      ],
+      canonical: '/email-signature-templates/government-employee',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Government Employee',
+        url: '/email-signature-templates/government-employee',
+      },
+    ],
+    hero: {
+      badge: { icon: 'landmark', text: 'Template' },
+      title: 'Government Employee Email Signature Template',
+      description:
+        'Public servants need email signatures that project authority, transparency, and compliance. This template provides clean, accessible layouts with agency seals, official titles, and mandatory disclosure notices.',
+      variant: 'dark',
+    },
+    features: [
+      {
+        icon: 'landmark',
+        title: 'Agency Seal & Branding',
+        description:
+          'Display your department or agency official seal alongside standardized government branding guidelines for immediate recognition.',
+      },
+      {
+        icon: 'shield-check',
+        title: 'Records Act Disclaimer',
+        description:
+          'Include FOIA notices, public records disclaimers, and retention policy statements that satisfy federal and state record-keeping requirements.',
+      },
+      {
+        icon: 'user-check',
+        title: 'Official Title Hierarchy',
+        description:
+          'Structure your name, GS grade or equivalent, division, bureau, and department in the proper governmental hierarchy.',
+      },
+      {
+        icon: 'eye',
+        title: 'Accessibility Compliance',
+        description:
+          'The template meets Section 508 and WCAG 2.1 AA accessibility standards, ensuring signatures are usable by all constituents.',
+      },
+    ],
+    featuresTitle: 'Features of the Government Template',
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Deploy Official Signatures in Three Steps',
+        steps: [
+          {
+            step: '01',
+            title: 'Upload Agency Assets',
+            description:
+              'Import your department seal, agency logo, and approved brand guidelines into Siggly. Add required disclaimer text to the compliance library.',
+          },
+          {
+            step: '02',
+            title: 'Configure Hierarchy Templates',
+            description:
+              'Build templates that reflect your agency organizational structure with proper title formatting, GS grades, and division identifiers.',
+          },
+          {
+            step: '03',
+            title: 'Deploy Department-Wide',
+            description:
+              'Roll out accessible, compliant signatures to all staff. New employees receive their signature automatically through directory integration.',
+          },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Why Government Agencies Choose Siggly',
+        items: [
+          {
+            icon: 'shield-check',
+            title: 'Regulatory Compliance',
+            description:
+              'Built-in FOIA notices and records act disclaimers ensure every email meets federal and state record-keeping requirements.',
+          },
+          {
+            icon: 'eye',
+            title: 'Section 508 Accessibility',
+            description:
+              'All signature HTML meets WCAG 2.1 AA standards, ensuring constituents with disabilities can access contact information.',
+          },
+          {
+            icon: 'lock',
+            title: 'Centralized Control',
+            description:
+              'Agency administrators control all signature content centrally, preventing unauthorized modifications to official branding.',
+          },
+        ],
+      },
+    ],
+    cta: {
+      title: 'Serve the Public with Professional Email',
+      description:
+        'Give every government email the official, accessible, and compliant signature it requires.',
+    },
+  },
+
+  // ─── Engineering ───────────────────────────────────────────────────
+  {
+    slug: 'engineering',
+    category: 'templates',
+    meta: {
+      title: 'Engineering Email Signature Template | Siggly',
+      description:
+        'Professional email signatures for engineers. Display PE licenses, technical certifications, and project portfolio links in a precision-crafted layout.',
+      keywords: [
+        'engineering email signature',
+        'PE license signature',
+        'engineer email template',
+        'technical signature design',
+        'professional engineer branding',
+      ],
+      canonical: '/email-signature-templates/engineering',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      { name: 'Engineering', url: '/email-signature-templates/engineering' },
+    ],
+    hero: {
+      badge: { icon: 'cog', text: 'Template' },
+      title: 'Engineering Email Signature Template',
+      description:
+        'Precision matters in engineering, and your email signature should reflect that. This template accommodates PE license numbers, discipline-specific certifications, and technical portfolio links in a structured, no-nonsense layout.',
+      variant: 'light',
+    },
+    stats: [
+      { value: '800+', label: 'Engineers using it' },
+      { value: '15+', label: 'Disciplines covered' },
+      { value: '90 sec', label: 'Typical setup' },
+    ],
+    features: [
+      {
+        icon: 'award',
+        title: 'PE License Display',
+        description:
+          'Feature your Professional Engineer license number and state of licensure prominently, making it easy for clients to verify your credentials.',
+      },
+      {
+        icon: 'file-check',
+        title: 'Certification Showcase',
+        description:
+          'List PMP, Six Sigma, FE/EIT, LEED, and other technical certifications beneath your name and title for instant credibility.',
+      },
+      {
+        icon: 'code',
+        title: 'Technical Portfolio Links',
+        description:
+          'Include links to your GitHub, GitLab, or personal portfolio for software engineers, or project galleries for civil, mechanical, and structural disciplines.',
+      },
+      {
+        icon: 'building-2',
+        title: 'Firm & Discipline Branding',
+        description:
+          'Display your engineering firm logo, discipline or practice area, and office location in a structured hierarchy.',
+      },
+      {
+        icon: 'layers',
+        title: 'Multi-License Support',
+        description:
+          'Engineers licensed in multiple states can display all active PE numbers with corresponding jurisdictions in a clean, scannable format.',
+      },
+    ],
+    featuresTitle: 'Features of the Engineering Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'PE license number with state jurisdiction',
+          'Engineering discipline and practice area',
+          'Technical certification badges',
+          'Firm logo and office contact details',
+          'Portfolio or project gallery link',
+          'Professional organization memberships',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Civil Engineers',
+            description:
+              'Display PE licenses, ASCE memberships, and project portfolio links for infrastructure and municipal communications.',
+          },
+          {
+            title: 'Software Engineers',
+            description:
+              'Feature GitHub profiles, tech stack expertise, and relevant certifications in a developer-friendly layout.',
+          },
+          {
+            title: 'Mechanical Engineers',
+            description:
+              'Include ASME memberships, PE credentials, and links to CAD portfolios or published research.',
+          },
+          {
+            title: 'Electrical Engineers',
+            description:
+              'Showcase IEEE affiliations, PE licenses, and specialty area details for power, controls, or electronics.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Having my PE number and LEED AP credential in my signature eliminated the back-and-forth during proposal submissions. Clients verify my qualifications before we even get on a call.',
+      authorName: 'David Moreno, PE, LEED AP',
+      authorTitle: 'Principal Engineer at Clearwater Structural',
+    },
+    faqs: [
+      {
+        question: 'Can I display PE licenses from multiple states?',
+        answer:
+          'Yes. The template supports multiple license entries, each with its own state jurisdiction and license number for engineers holding multi-state registration.',
+      },
+      {
+        question: 'Is this template suitable for software engineers?',
+        answer:
+          'Yes. Software engineers can replace PE fields with GitHub profiles, tech stack details, and relevant certifications like AWS, Azure, or Kubernetes credentials.',
+      },
+      {
+        question: 'Can I include professional society memberships?',
+        answer:
+          'Yes. The template has fields for ASCE, ASME, IEEE, NSPE, and other professional organization memberships and fellow designations.',
+      },
+    ],
+    cta: {
+      title: 'Engineer Your Perfect Email Signature',
+      description:
+        'Display your credentials with the precision and clarity your engineering discipline demands.',
+    },
+  },
+
+  // ─── Customer Support ──────────────────────────────────────────────
+  {
+    slug: 'customer-support',
+    category: 'templates',
+    meta: {
+      title: 'Customer Support Email Signature Template | Siggly',
+      description:
+        'Friendly, helpful email signatures for support teams. Include ticket links, knowledge base access, satisfaction surveys, and escalation paths.',
+      keywords: [
+        'customer support email signature',
+        'help desk signature template',
+        'support agent email design',
+        'customer service branding',
+        'ticket link email signature',
+      ],
+      canonical: '/email-signature-templates/customer-support',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Customer Support',
+        url: '/email-signature-templates/customer-support',
+      },
+    ],
+    hero: {
+      badge: { icon: 'headphones', text: 'Template' },
+      title: 'Customer Support Email Signature Template',
+      description:
+        'Every support email is a chance to build loyalty. This template equips your agents with signatures that include ticket tracking links, knowledge base shortcuts, satisfaction survey prompts, and clear escalation paths.',
+      variant: 'violet',
+    },
+    stats: [
+      { value: '900+', label: 'Support teams' },
+      { value: '40%', label: 'More CSAT responses' },
+      { value: '3 min', label: 'Agent onboarding' },
+    ],
+    features: [
+      {
+        icon: 'headphones',
+        title: 'Ticket & Case Links',
+        description:
+          'Include dynamic ticket tracking URLs and case reference numbers so customers can check resolution status without contacting support again.',
+      },
+      {
+        icon: 'book-open',
+        title: 'Knowledge Base Access',
+        description:
+          'Link to relevant help articles, FAQs, and troubleshooting guides directly in the signature to deflect common follow-up questions.',
+      },
+      {
+        icon: 'star',
+        title: 'CSAT Survey Prompt',
+        description:
+          'Embed a one-click satisfaction survey link in every agent signature to capture real-time feedback on support interactions.',
+      },
+      {
+        icon: 'life-buoy',
+        title: 'Escalation Contact',
+        description:
+          'Display supervisor contact details and escalation procedures so customers know exactly how to reach the next level of support if needed.',
+      },
+    ],
+    featuresTitle: 'Features of the Customer Support Template',
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Set Up Your Support Team Signatures',
+        steps: [
+          {
+            step: '01',
+            title: 'Configure Help Resources',
+            description:
+              'Add your knowledge base URL, ticket portal link, and satisfaction survey endpoint to the template resource fields.',
+          },
+          {
+            step: '02',
+            title: 'Customize Agent Details',
+            description:
+              'Each agent gets their name, team, working hours, and language specialties populated from your directory or help desk platform.',
+          },
+          {
+            step: '03',
+            title: 'Deploy to Your Team',
+            description:
+              'Push the template to all agents at once. New hires automatically receive the signature when added to your support roster.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Adding the CSAT survey link to every agent signature increased our feedback response rate by 40%. We now capture satisfaction data on nearly every resolved ticket.',
+      authorName: 'Angela Brooks',
+      authorTitle: 'VP of Customer Experience at CloudServe',
+    },
+    faqs: [
+      {
+        question: 'Can I include a link to our ticketing system?',
+        answer:
+          'Yes. The template supports links to Zendesk, Freshdesk, Intercom, ServiceNow, and any custom ticket portal via configurable URL fields.',
+      },
+      {
+        question: 'Can different support tiers have different signatures?',
+        answer:
+          'Yes. You can create distinct templates for Tier 1, Tier 2, and specialized support teams with tier-appropriate resources and escalation contacts.',
+      },
+      {
+        question: 'Is the CSAT survey link customizable?',
+        answer:
+          'Yes. You can link to any survey platform, including Typeform, SurveyMonkey, Delighted, or a custom internal survey endpoint.',
+      },
+    ],
+    cta: {
+      title: 'Upgrade Your Support Team Signatures',
+      description:
+        'Help customers help themselves with signatures that connect them to the resources they need.',
+    },
+  },
+
+  // ─── Human Resources ──────────────────────────────────────────────
+  {
+    slug: 'human-resources',
+    category: 'templates',
+    meta: {
+      title: 'Human Resources Email Signature Template | Siggly',
+      description:
+        'Professional HR email signatures with benefits portal links, open position listings, and employee resource access. Built for people teams.',
+      keywords: [
+        'HR email signature',
+        'human resources signature template',
+        'people team email design',
+        'HR branding signature',
+        'benefits portal email link',
+      ],
+      canonical: '/email-signature-templates/human-resources',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Human Resources',
+        url: '/email-signature-templates/human-resources',
+      },
+    ],
+    hero: {
+      badge: { icon: 'users-round', text: 'Template' },
+      title: 'Human Resources Email Signature Template',
+      description:
+        'HR professionals are the face of your company culture. This template provides warm, approachable signatures with quick-access links to benefits portals, career pages, and employee resources that candidates and staff rely on.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '600+', label: 'HR teams using it' },
+      { value: '35%', label: 'More career page clicks' },
+      { value: '5 min', label: 'Department setup' },
+      { value: '98%', label: 'Adoption rate' },
+    ],
+    features: [
+      {
+        icon: 'user-plus',
+        title: 'Career Page Promotion',
+        description:
+          'Feature a clickable banner or link to your careers page in every HR team email, turning routine correspondence into a passive recruiting channel.',
+      },
+      {
+        icon: 'heart',
+        title: 'Benefits Portal Access',
+        description:
+          'Include direct links to your benefits enrollment portal, PTO request system, and employee handbook for one-click access from any email.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Open Enrollment Banners',
+        description:
+          'Promote benefits open enrollment periods, wellness programs, and company events with seasonal banner campaigns in HR signatures.',
+      },
+    ],
+    featuresTitle: 'Features of the Human Resources Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'HR professional name and title',
+          'Company logo and culture tagline',
+          'Benefits portal quick-access link',
+          'Careers page promotion banner',
+          'Employee handbook and policy links',
+          'Confidential communication disclaimer',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Talent Acquisition',
+            description:
+              'Include open roles, career page links, and Glassdoor review badges to enhance your employer brand in every recruiter email.',
+          },
+          {
+            title: 'HR Business Partners',
+            description:
+              'Provide managers and employees with quick links to HR policies, benefits, and employee assistance programs.',
+          },
+          {
+            title: 'Compensation & Benefits',
+            description:
+              'Feature benefits enrollment links, wellness program details, and open enrollment countdown banners.',
+          },
+          {
+            title: 'HR Leadership',
+            description:
+              'Present the people function with authority while including culture-forward messaging and leadership contact details.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'The career page link in our recruiter signatures generated 15% of our qualified applicants last quarter. It is the easiest passive recruiting tool we have ever implemented.',
+      authorName: 'Jordan Sinclair',
+      authorTitle: 'Director of Talent Acquisition at Elevate Partners',
+    },
+    faqs: [
+      {
+        question: 'Can I link to our ATS or careers page?',
+        answer:
+          'Yes. The template supports links to Greenhouse, Lever, Workday, and any custom careers page URL.',
+      },
+      {
+        question: 'Can we promote open enrollment through signatures?',
+        answer:
+          'Yes. Siggly supports time-limited banner campaigns that you can schedule to appear only during enrollment windows.',
+      },
+      {
+        question: 'Is there a confidentiality disclaimer option?',
+        answer:
+          'Yes. The template includes an optional confidentiality notice for sensitive HR communications like offer letters, investigations, and compensation discussions.',
+      },
+      {
+        question: 'Can different HR roles have different signatures?',
+        answer:
+          'Yes. Recruiters, HR business partners, benefits specialists, and HR executives can each have tailored templates with role-specific links and messaging.',
+      },
+    ],
+    cta: {
+      title: 'Put Your People Team on Brand',
+      description:
+        'Give every HR email the warmth, professionalism, and resource access your employees and candidates expect.',
+    },
+  },
+
+  // ─── Financial Services ────────────────────────────────────────────
+  {
+    slug: 'financial-services',
+    category: 'templates',
+    meta: {
+      title: 'Financial Services Email Signature Template | Siggly',
+      description:
+        'Compliant email signatures for financial advisors, bankers, and insurance agents. Display FINRA disclosures, license numbers, and compliance notices.',
+      keywords: [
+        'financial services email signature',
+        'financial advisor signature',
+        'FINRA compliant email',
+        'banking email template',
+        'insurance agent signature',
+      ],
+      canonical: '/email-signature-templates/financial-services',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Financial Services',
+        url: '/email-signature-templates/financial-services',
+      },
+    ],
+    hero: {
+      badge: { icon: 'landmark', text: 'Template' },
+      title: 'Financial Services Email Signature Template',
+      description:
+        'Financial professionals operate under strict regulatory oversight. This template delivers polished signatures with mandatory FINRA disclosures, SEC registration details, state insurance license numbers, and compliance-approved messaging.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '450+', label: 'Financial firms' },
+      { value: '100%', label: 'Disclosure compliance' },
+      { value: '7 min', label: 'Firm-wide rollout' },
+      { value: '55%', label: 'Fewer compliance edits' },
+    ],
+    features: [
+      {
+        icon: 'shield-check',
+        title: 'FINRA & SEC Disclosures',
+        description:
+          'Include mandatory broker-dealer disclosures, SEC registration numbers, and SIPC membership notices that satisfy regulatory examination requirements.',
+      },
+      {
+        icon: 'file-text',
+        title: 'License Number Display',
+        description:
+          'Show Series 7, Series 66, state insurance license numbers, and CRD numbers in a clean, scannable format beneath your name.',
+      },
+      {
+        icon: 'lock',
+        title: 'Compliance-Locked Content',
+        description:
+          'Administrators can lock disclaimer blocks and disclosure language so individual advisors cannot modify compliance-required content.',
+      },
+      {
+        icon: 'scale',
+        title: 'Fair Balance Messaging',
+        description:
+          'Ensure marketing messages in advisor signatures include required risk disclosures and past-performance disclaimers.',
+      },
+    ],
+    featuresTitle: 'Features of the Financial Services Template',
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Why Financial Firms Trust Siggly',
+        items: [
+          {
+            icon: 'shield-check',
+            title: 'Examination-Ready Disclosures',
+            description:
+              'Locked disclaimer blocks ensure FINRA and SEC disclosure language remains intact across every advisor email, even during examinations.',
+          },
+          {
+            icon: 'user-check',
+            title: 'Credential Verification',
+            description:
+              'CRD numbers and license details in every signature make it easy for clients and regulators to verify advisor registration status.',
+          },
+          {
+            icon: 'lock',
+            title: 'Compliance Team Control',
+            description:
+              'Only authorized compliance officers can modify disclosure language, preventing advisors from accidentally removing required content.',
+          },
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Financial Advisors',
+            description:
+              'Display CFP, CFA, and Series license credentials with mandatory FINRA disclosures in every client communication.',
+          },
+          {
+            title: 'Insurance Agents',
+            description:
+              'Include state license numbers, carrier appointments, and product-specific disclosures for compliant outreach.',
+          },
+          {
+            title: 'Commercial Bankers',
+            description:
+              'Present FDIC membership, NMLS numbers, and lending team contact details in a trust-building layout.',
+          },
+          {
+            title: 'Wealth Management Teams',
+            description:
+              'Feature RIA registration, ADV disclosure links, and client portal access for high-net-worth client communications.',
+          },
+        ],
+      },
+    ],
+    cta: {
+      title: 'Compliance-Ready Financial Signatures',
+      description:
+        'Meet FINRA, SEC, and state regulatory requirements with email signatures that protect your firm and impress your clients.',
+    },
+  },
+
+  // ─── Event Planner ────────────────────────────────────────────────
+  {
+    slug: 'event-planner',
+    category: 'templates',
+    meta: {
+      title: 'Event Planner Email Signature Template | Siggly',
+      description:
+        'Eye-catching email signatures for event planners and coordinators. Showcase upcoming events, booking links, and venue partnerships beautifully.',
+      keywords: [
+        'event planner email signature',
+        'event coordinator signature',
+        'wedding planner email template',
+        'event management branding',
+        'booking link signature',
+      ],
+      canonical: '/email-signature-templates/event-planner',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Event Planner',
+        url: '/email-signature-templates/event-planner',
+      },
+    ],
+    hero: {
+      badge: { icon: 'calendar', text: 'Template' },
+      title: 'Event Planner Email Signature Template',
+      description:
+        'First impressions matter in event planning. This template lets you showcase upcoming events, share booking calendars, and display vendor certifications in a signature that is as polished as the events you produce.',
+      variant: 'slate',
+    },
+    features: [
+      {
+        icon: 'calendar',
+        title: 'Booking Calendar Link',
+        description:
+          'Include a direct link to your Calendly, Acuity, or custom booking page so prospects can schedule consultations without any back-and-forth.',
+      },
+      {
+        icon: 'image',
+        title: 'Event Showcase Banner',
+        description:
+          'Feature a rotating banner with photos from your latest events to give recipients an immediate sense of your work quality and style.',
+      },
+      {
+        icon: 'star',
+        title: 'Review & Testimonial Links',
+        description:
+          'Link to your Google Reviews, The Knot, or WeddingWire profiles so potential clients can read verified feedback from past events.',
+      },
+      {
+        icon: 'award',
+        title: 'Certification Badges',
+        description:
+          'Display CMP, CSEP, or CWEP certification badges and preferred vendor status with popular venues and caterers.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'Social Media Showcase',
+        description:
+          'Link to your Instagram, Pinterest, and TikTok profiles where your event photography and behind-the-scenes content live.',
+      },
+    ],
+    featuresTitle: 'Features of the Event Planner Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'Planner name and business logo',
+          'Booking calendar button',
+          'Event showcase banner with photo rotation',
+          'Certification and preferred vendor badges',
+          'Review platform links',
+          'Instagram and Pinterest profile icons',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Wedding Planners',
+            description:
+              'Showcase your portfolio, link to The Knot profile, and make consultation booking effortless for engaged couples.',
+          },
+          {
+            title: 'Corporate Event Managers',
+            description:
+              'Present your CMP credentials and corporate portfolio to procurement teams and executive assistants.',
+          },
+          {
+            title: 'Festival Organizers',
+            description:
+              'Promote upcoming festivals, link to ticket sales, and display sponsor partner logos.',
+          },
+          {
+            title: 'Venue Coordinators',
+            description:
+              'Feature your venue with banner photos, availability calendars, and virtual tour links.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'My consultation bookings increased by 20% after I added the Calendly link and event photos to my signature. Couples tell me they were sold before we even spoke.',
+      authorName: 'Danielle Prescott',
+      authorTitle: 'Owner, Prescott Events & Design',
+    },
+    cta: {
+      title: 'Make Every Email an Invitation',
+      description:
+        'Showcase your events and make booking effortless with a signature designed for planners who set the standard.',
+    },
+  },
+
+  // ─── Photographer ─────────────────────────────────────────────────
+  {
+    slug: 'photographer-template',
+    category: 'templates',
+    meta: {
+      title: 'Photographer Email Signature Template | Siggly',
+      description:
+        'Stunning email signatures for photographers. Feature your best work, link to galleries, and drive bookings with a visually rich signature layout.',
+      keywords: [
+        'photographer email signature',
+        'photography signature template',
+        'portfolio email design',
+        'photographer branding',
+        'gallery link signature',
+      ],
+      canonical: '/email-signature-templates/photographer-template',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      {
+        name: 'Photographer',
+        url: '/email-signature-templates/photographer-template',
+      },
+    ],
+    hero: {
+      badge: { icon: 'image', text: 'Template' },
+      title: 'Photographer Email Signature Template',
+      description:
+        'Let your images do the talking. This template features a hero image area for your best shot, gallery links, and booking integration in a layout that treats your email signature as a mini portfolio.',
+      variant: 'dark',
+    },
+    features: [
+      {
+        icon: 'image',
+        title: 'Hero Image Area',
+        description:
+          'Feature your signature shot or latest work as a full-width banner that gives recipients an instant preview of your photographic style.',
+      },
+      {
+        icon: 'folder-open',
+        title: 'Gallery & Portfolio Links',
+        description:
+          'Link directly to your SmugMug, Pixieset, or personal website galleries so clients can browse your full portfolio from any email.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Session Booking Button',
+        description:
+          'Include a booking link to your scheduling tool so prospective clients can reserve sessions without additional emails.',
+      },
+    ],
+    featuresTitle: 'Features of the Photographer Template',
+    sections: [
+      {
+        type: 'prose',
+        title: 'Why Photographers Need a Great Email Signature',
+        paragraphs: [
+          'As a photographer, your visual brand is everything. Every email you send to clients, vendors, and collaborators is an opportunity to reinforce your artistic identity and drive bookings.',
+          'A generic text signature undermines the visual excellence you promise in your work. The Siggly photographer template transforms your email footer into a mini portfolio piece that showcases your talent before clients even visit your website.',
+          'Whether you shoot weddings, portraits, commercial products, or editorial features, this template adapts to your specialty with customizable galleries, booking links, and social media integration.',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Wedding Photographers',
+            description:
+              'Feature your best couple portraits and link to albums that prospective brides and grooms can share with their planning team.',
+          },
+          {
+            title: 'Commercial Photographers',
+            description:
+              'Showcase product and brand photography with links to client galleries and licensing information.',
+          },
+          {
+            title: 'Portrait Photographers',
+            description:
+              'Display your headshot style with a hero image and link to your booking page for sessions.',
+          },
+          {
+            title: 'Photojournalists',
+            description:
+              'Feature published work, press credentials, and media outlet affiliations alongside your portfolio.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'I switched to the Siggly photographer template and immediately got compliments from clients. One bride told me she chose me over three other photographers because my emails looked the most professional.',
+      authorName: 'Carlos Rivera',
+      authorTitle: 'Owner, Rivera Wedding Photography',
+    },
+    faqs: [
+      {
+        question: 'Can I change the hero image regularly?',
+        answer:
+          'Yes. You can swap your hero banner image at any time through the Siggly dashboard, and the change propagates instantly to all sent emails going forward.',
+      },
+      {
+        question: 'Which gallery platforms are supported?',
+        answer:
+          'The template links to any URL, so it works with SmugMug, Pixieset, ShootProof, Zenfolio, Adobe Portfolio, Squarespace, and custom websites.',
+      },
+      {
+        question: 'Will large images slow down email loading?',
+        answer:
+          'No. Siggly automatically compresses and optimizes images for email delivery, keeping file sizes small without sacrificing visual quality.',
+      },
+    ],
+    cta: {
+      title: 'Picture-Perfect Email Signatures',
+      description:
+        'Transform every email into a portfolio showcase. Build your photographer signature with Siggly.',
+    },
+  },
+
+  // ─── Coach ─────────────────────────────────────────────────────────
+  {
+    slug: 'coach',
+    category: 'templates',
+    meta: {
+      title: 'Coach Email Signature Template | Siggly',
+      description:
+        'Engaging email signatures for life coaches, business coaches, and wellness practitioners. Feature session booking, testimonials, and certification badges.',
+      keywords: [
+        'coach email signature',
+        'life coach signature template',
+        'business coach email design',
+        'coaching certification signature',
+        'session booking signature',
+      ],
+      canonical: '/email-signature-templates/coach',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      { name: 'Coach', url: '/email-signature-templates/coach' },
+    ],
+    hero: {
+      badge: { icon: 'target', text: 'Template' },
+      title: 'Coach Email Signature Template',
+      description:
+        'Your coaching practice thrives on connection and credibility. This template features session booking links, ICF or NBHWC certification badges, client testimonials, and a warm design that invites prospects to take the next step.',
+      variant: 'light',
+    },
+    features: [
+      {
+        icon: 'target',
+        title: 'Session Booking Integration',
+        description:
+          'A prominent booking button links to your Calendly, Acuity, or Practice Better page so clients can schedule discovery calls or follow-up sessions instantly.',
+      },
+      {
+        icon: 'award',
+        title: 'Coaching Certification Badges',
+        description:
+          'Display ICF (ACC, PCC, MCC), NBHWC, and other coaching credentials with official badge imagery to build trust with prospective clients.',
+      },
+      {
+        icon: 'message-square',
+        title: 'Client Testimonial Snippet',
+        description:
+          'Include a rotating short testimonial quote from past clients beneath your contact details to provide social proof in every email.',
+      },
+      {
+        icon: 'play-circle',
+        title: 'Free Resource CTA',
+        description:
+          'Promote your free discovery call, lead magnet, ebook, or webinar with a call-to-action banner that drives prospects into your funnel.',
+      },
+    ],
+    featuresTitle: 'Features of the Coach Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'Coach name, headshot, and tagline',
+          'ICF or NBHWC certification badge',
+          'Session booking button',
+          'Client testimonial snippet area',
+          'Free resource or lead magnet CTA',
+          'Social media and podcast links',
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'How the Coach Template Grows Your Practice',
+        items: [
+          {
+            icon: 'trending-up',
+            title: 'Passive Lead Generation',
+            description:
+              'Every email you send becomes a soft pitch. Booking links and free resource CTAs convert casual contacts into paying clients.',
+          },
+          {
+            icon: 'thumbs-up',
+            title: 'Social Proof at Scale',
+            description:
+              'Rotating testimonials in your signature reinforce your reputation without you having to actively share references.',
+          },
+          {
+            icon: 'sparkles',
+            title: 'Personal Brand Consistency',
+            description:
+              'A polished, branded signature across all your emails creates a cohesive experience that matches your website and social profiles.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Three of my last five clients told me they booked a discovery call because the link was right there in my email. The coach template literally pays for itself.',
+      authorName: 'Samantha Reed, PCC',
+      authorTitle: 'Executive Leadership Coach',
+    },
+    faqs: [
+      {
+        question: 'Can I display my ICF credential badge?',
+        answer:
+          'Yes. The template supports ICF ACC, PCC, and MCC badge images, as well as NBHWC, BCC, and other coaching organization credentials.',
+      },
+      {
+        question: 'Can I include client testimonials in my signature?',
+        answer:
+          'Yes. The template has a testimonial snippet area where you can feature short client quotes. You can rotate them periodically for variety.',
+      },
+      {
+        question: 'Does the template work for group coaching practices?',
+        answer:
+          'Yes. Multi-coach practices can use Siggly to manage individual signatures for each coach while maintaining consistent practice branding across the team.',
+      },
+      {
+        question: 'Can I promote a free ebook or webinar?',
+        answer:
+          'Yes. The CTA banner area supports links to any landing page, whether it is a free ebook download, webinar registration, or assessment tool.',
+      },
+    ],
+    cta: {
+      title: 'Coach Your Email into Shape',
+      description:
+        'Build a signature that reflects your coaching philosophy and turns every email into a client acquisition opportunity.',
+    },
+  },
+
+  // ─── Podcast Host ──────────────────────────────────────────────────
+  {
+    slug: 'podcast-host',
+    category: 'templates',
+    meta: {
+      title: 'Podcast Host Email Signature Template | Siggly',
+      description:
+        'Dynamic email signatures for podcast hosts and producers. Promote episodes, link to listening platforms, and grow your subscriber base from every email.',
+      keywords: [
+        'podcast email signature',
+        'podcast host signature template',
+        'podcaster email design',
+        'episode promotion signature',
+        'listening platform links',
+      ],
+      canonical: '/email-signature-templates/podcast-host',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Templates', url: '/email-signature-templates' },
+      { name: 'Podcast Host', url: '/email-signature-templates/podcast-host' },
+    ],
+    hero: {
+      badge: { icon: 'headphones', text: 'Template' },
+      title: 'Podcast Host Email Signature Template',
+      description:
+        'Every email you send is a chance to gain a new listener. The podcast host template features episode promotion banners, listening platform links, and subscriber CTAs that transform your email footer into a growth engine for your show.',
+      variant: 'violet',
+    },
+    stats: [
+      { value: '300+', label: 'Podcasters using it' },
+      { value: '18%', label: 'Avg subscriber lift' },
+      { value: '2 min', label: 'Setup time' },
+    ],
+    features: [
+      {
+        icon: 'headphones',
+        title: 'Latest Episode Banner',
+        description:
+          'Automatically feature your most recent episode with cover art, title, and a direct play link that updates as you publish new episodes.',
+      },
+      {
+        icon: 'play-circle',
+        title: 'Listening Platform Links',
+        description:
+          'Display Apple Podcasts, Spotify, YouTube, and other platform icons so recipients can subscribe on their preferred app with a single click.',
+      },
+      {
+        icon: 'mail',
+        title: 'Newsletter Subscribe CTA',
+        description:
+          'Include a subscribe button for your podcast newsletter or Substack to capture email addresses and build your audience off-platform.',
+      },
+    ],
+    featuresTitle: 'Features of the Podcast Host Template',
+    sections: [
+      {
+        type: 'checklist',
+        title: "What's Included",
+        items: [
+          'Podcast show name and host name',
+          'Show artwork or headshot',
+          'Latest episode banner with play link',
+          'Apple Podcasts, Spotify, and YouTube icons',
+          'Newsletter subscribe CTA button',
+          'Guest booking or pitch submission link',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who This Template Is For',
+        cases: [
+          {
+            title: 'Independent Podcasters',
+            description:
+              'Grow your listener base organically by promoting your show in every email you send to guests, sponsors, and collaborators.',
+          },
+          {
+            title: 'Network Show Hosts',
+            description:
+              'Maintain personal branding while featuring network affiliation, cross-promotion links, and sponsor acknowledgments.',
+          },
+          {
+            title: 'Podcast Producers',
+            description:
+              'Promote the shows you produce with rotating banners and links to your full production portfolio.',
+          },
+          {
+            title: 'Video Podcasters',
+            description:
+              'Include YouTube and Rumble links alongside audio platforms to drive subscribers across all your content channels.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Every guest I email now sees my latest episode right in the signature. Two guests told me they listened to three episodes before our interview because the link was right there.',
+      authorName: 'Marcus Webb',
+      authorTitle: 'Host, The Growth Playbook Podcast',
+    },
+    cta: {
+      title: 'Amplify Your Podcast from Every Email',
+      description:
+        'Turn your email signature into a listener acquisition channel. Build your podcast host signature with Siggly.',
+    },
+  },
 ];
