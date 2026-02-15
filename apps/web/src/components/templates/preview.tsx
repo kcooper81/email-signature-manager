@@ -16,25 +16,7 @@ import type {
 } from './types';
 import { ComplianceBlockPreview } from './compliance-block';
 import { Mail, Phone, Globe, MapPin, Calendar, Briefcase, User, Building2, Link as LinkIcon } from 'lucide-react';
-
-// Social media icon URLs - using Simple Icons CDN with color parameter
-// Format: https://cdn.simpleicons.org/{icon}/{color}
-const getSocialIconUrl = (platform: string, color: string): string => {
-  // Remove # from hex color for URL
-  const hexColor = color.replace('#', '');
-  
-  const iconMap: Record<string, string> = {
-    linkedin: 'linkedin',
-    twitter: 'x',
-    facebook: 'facebook',
-    instagram: 'instagram',
-    youtube: 'youtube',
-    github: 'github',
-  };
-  
-  const iconName = iconMap[platform];
-  return iconName ? `https://cdn.simpleicons.org/${iconName}/${hexColor}` : '';
-};
+import { getSocialIconUrl } from '@/lib/social-icons';
 
 interface SignaturePreviewProps {
   blocks: SignatureBlock[];
@@ -373,10 +355,10 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
           );
         }
         
-        // Display as icons - use CDN images with custom color for standard platforms
-        const iconUrl = platform.type === 'custom' && platform.icon 
-          ? platform.icon 
-          : getSocialIconUrl(platform.type, iconColor);
+        // Display as icons - use CDN images with brand colors for standard platforms
+        const iconUrl = platform.type === 'custom' && platform.icon
+          ? platform.icon
+          : getSocialIconUrl(platform.type);
         
         if (iconUrl) {
           return (

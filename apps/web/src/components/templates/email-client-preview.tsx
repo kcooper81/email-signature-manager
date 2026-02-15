@@ -3,25 +3,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Mail, Monitor, Smartphone, AlertCircle, ExternalLink, Apple, Moon, Sun } from 'lucide-react';
-
-// Social media icon URLs - using Simple Icons CDN with color parameter
-// Format: https://cdn.simpleicons.org/{icon}/{color}
-const getSocialIconUrl = (platform: string, color: string): string => {
-  // Remove # from hex color for URL
-  const hexColor = color.replace('#', '');
-  
-  const iconMap: Record<string, string> = {
-    linkedin: 'linkedin',
-    twitter: 'x',
-    facebook: 'facebook',
-    instagram: 'instagram',
-    youtube: 'youtube',
-    github: 'github',
-  };
-  
-  const iconName = iconMap[platform];
-  return iconName ? `https://cdn.simpleicons.org/${iconName}/${hexColor}` : '';
-};
+import { getSocialIconUrl } from '@/lib/social-icons';
 
 type EmailClient = 'gmail' | 'outlook' | 'apple-mail';
 
@@ -465,9 +447,9 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
               }
               
               // Display as icons if displayMode is 'icons'
-              const iconUrl = p.type === 'custom' && p.icon 
-                ? p.icon 
-                : getSocialIconUrl(p.type, colorMode === 'dark' ? adaptColor(iconColor) : iconColor);
+              const iconUrl = p.type === 'custom' && p.icon
+                ? p.icon
+                : getSocialIconUrl(p.type);
               
               // If we have an icon, render as image; otherwise fallback to text
               if (iconUrl) {
