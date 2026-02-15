@@ -198,7 +198,7 @@ export default function SettingsPage() {
             .from('organization_settings')
             .select('*')
             .eq('organization_id', userData.organization_id)
-            .single();
+            .maybeSingle();
 
           if (orgSettingsData) {
             setOrgSettings({
