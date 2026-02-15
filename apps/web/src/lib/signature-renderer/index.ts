@@ -297,6 +297,10 @@ function renderSocialBlock(content: any, context: RenderContext): string {
 
   const displayMode = content.displayMode || 'icons';
   const iconSize = content.iconSize || 24;
+  const linkColor = content.iconColor || '#666666';
+  // Adapt link color for dark mode
+  const darkLinkColor = (linkColor === '#666666' || linkColor === '#333333' || linkColor === '#000000') ? '#a0a0a0' : linkColor;
+
   const links = platforms
     .map((p: any) => {
       if (!p.url) return '';
@@ -310,7 +314,7 @@ function renderSocialBlock(content: any, context: RenderContext): string {
 
       // Display as text if displayMode is 'text'
       if (displayMode === 'text') {
-        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #4d52de; text-decoration: none;">${name}</a>`;
+        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 6px; color: ${linkColor}; text-decoration: none;">${name}</a>`;
       }
 
       // Display as icons if displayMode is 'icons'
@@ -322,7 +326,7 @@ function renderSocialBlock(content: any, context: RenderContext): string {
       if (iconUrl) {
         return `<a href="${trackedUrl}" style="display: inline-block; margin: 0 6px; text-decoration: none;" title="${name}"><img src="${iconUrl}" alt="${name}" width="${iconSize}" height="${iconSize}" style="display: block; border: 0;" /></a>`;
       } else {
-        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 8px; color: #4d52de; text-decoration: none;">${name}</a>`;
+        return `<a href="${trackedUrl}" class="social-link" style="margin: 0 6px; color: ${linkColor}; text-decoration: none;">${name}</a>`;
       }
     })
     .filter(Boolean)
@@ -336,7 +340,7 @@ function renderSocialBlock(content: any, context: RenderContext): string {
     </tr>
     <style>
       @media (prefers-color-scheme: dark) {
-        .social-link { color: #66b3ff !important; }
+        .social-link { color: ${darkLinkColor} !important; }
       }
     </style>
   `;

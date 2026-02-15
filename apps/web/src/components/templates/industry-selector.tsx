@@ -19,7 +19,7 @@ export function IndustrySelector({ value, onChange, compact = false }: IndustryS
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        <Label htmlFor="industry" className="text-sm text-gray-600 whitespace-nowrap">Industry:</Label>
+        <Label htmlFor="industry" className="text-sm text-muted-foreground whitespace-nowrap">Industry:</Label>
         <Select
           id="industry"
           value={value}
@@ -33,7 +33,7 @@ export function IndustrySelector({ value, onChange, compact = false }: IndustryS
 
   return (
     <div className="space-y-2">
-      <Label htmlFor="industry" className="text-xs text-gray-500">Industry</Label>
+      <Label htmlFor="industry" className="text-xs text-muted-foreground">Industry</Label>
       <Select
         id="industry"
         value={value}
