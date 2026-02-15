@@ -34,6 +34,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTheme } from '@/components/providers/theme-provider';
 
 interface UserProfile {
   id: string;
@@ -120,7 +121,7 @@ export default function SettingsPage() {
   const [showSessions, setShowSessions] = useState(false);
   
   // Appearance
-  const [theme, setTheme] = useState<'light' | 'dark-blue' | 'charcoal'>('light');
+  const { theme, setTheme: applyAndSaveTheme } = useTheme();
 
   useEffect(() => {
     loadSettings();
@@ -156,10 +157,7 @@ export default function SettingsPage() {
       setDeploymentAlerts(userData.deployment_alerts ?? true);
       setWeeklyDigest(userData.weekly_digest ?? false);
       
-      // Load and apply theme
-      const userTheme = (userData.theme || 'light') as 'light' | 'dark-blue' | 'charcoal';
-      setTheme(userTheme);
-      applyTheme(userTheme);
+      // Theme is managed by ThemeProvider — no local apply needed
 
       // Check 2FA status
       try {
@@ -520,32 +518,8 @@ export default function SettingsPage() {
     }
   };
 
-  const applyTheme = (themeToApply: 'light' | 'dark-blue' | 'charcoal') => {
-    // Remove all theme classes
-    document.documentElement.classList.remove('dark', 'theme-dark-blue', 'theme-charcoal');
-    
-    // Apply selected theme
-    if (themeToApply === 'dark-blue') {
-      document.documentElement.classList.add('theme-dark-blue');
-    } else if (themeToApply === 'charcoal') {
-      document.documentElement.classList.add('theme-charcoal');
-    }
-    // Light theme is default (no class needed)
-  };
-
   const saveTheme = async (newTheme: 'light' | 'dark-blue' | 'charcoal') => {
-    setTheme(newTheme);
-    applyTheme(newTheme);
-
-    // Save to database
-    if (profile) {
-      const supabase = createClient();
-      await supabase
-        .from('users')
-        .update({ theme: newTheme })
-        .eq('id', profile.id);
-    }
-
+    await applyAndSaveTheme(newTheme);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -599,7 +573,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-violet-100 text-violet-900 font-medium dark:bg-violet-900/30 dark:text-violet-300'
+                      ? 'bg-primary/10 text-primary font-medium'
                       : 'text-muted-foreground hover:bg-secondary'
                   }`}
                 >
@@ -656,8 +630,8 @@ export default function SettingsPage() {
                 {/* Personal Links Section */}
                 <div className="space-y-4 pt-4 border-t">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">Personal Links (Optional)</h3>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <h3 className="text-sm font-semibold text-foreground">Personal Links (Optional)</h3>
+                    <p className="text-xs text-muted-foreground mt-1">
                       Add your personal URLs to use in signature templates with placeholders like {'{'}{'{'} calendly_url {'}'}{'}'}
                     </p>
                   </div>
@@ -1056,9 +1030,9 @@ export default function SettingsPage() {
                 </div>
 
                 {saved && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-green-800">
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-start gap-3">
+                    <Check className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-emerald-600">
                       Theme preference saved successfully!
                     </p>
                   </div>
@@ -1077,9 +1051,9 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {passwordSuccess && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-                    <Check className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-green-800">
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-start gap-3">
+                    <Check className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-emerald-600">
                       Password updated successfully!
                     </p>
                   </div>
@@ -1122,9 +1096,9 @@ export default function SettingsPage() {
                       </div>
                       
                       {passwordError && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">
                           <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm text-red-800">{passwordError}</p>
+                          <p className="text-sm text-red-600">{passwordError}</p>
                         </div>
                       )}
                       
@@ -1177,8 +1151,8 @@ export default function SettingsPage() {
 
                   {show2FASetup && (
                     <div className="mt-4 space-y-4 pt-4 border-t">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-sm text-blue-800 mb-3">
+                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                        <p className="text-sm text-blue-600 mb-3">
                           Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
                         </p>
                         {qrCode && (
@@ -1246,7 +1220,7 @@ export default function SettingsPage() {
                                 <p className="text-sm font-medium">
                                   {session.device}
                                   {session.current && (
-                                    <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Current</span>
+                                    <span className="ml-2 text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded">Current</span>
                                   )}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
@@ -1282,14 +1256,14 @@ export default function SettingsPage() {
                       Delete Account
                     </Button>
                   ) : (
-                    <div className="space-y-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="space-y-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
                       <div className="flex items-start gap-3">
                         <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-sm font-medium text-red-900 mb-2">
+                          <p className="text-sm font-medium text-red-600 mb-2">
                             Are you absolutely sure?
                           </p>
-                          <p className="text-sm text-red-800 mb-4">
+                          <p className="text-sm text-red-600 mb-4">
                             This will permanently delete your account, all templates, deployments, and organization data. 
                             This action cannot be undone.
                           </p>
@@ -1297,14 +1271,14 @@ export default function SettingsPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-red-900 mb-2">
-                          Type <span className="font-mono bg-red-100 px-1 rounded">DELETE</span> to confirm
+                        <label className="block text-sm font-medium text-red-600 mb-2">
+                          Type <span className="font-mono bg-red-500/10 px-1 rounded">DELETE</span> to confirm
                         </label>
                         <Input
                           value={deleteConfirmText}
                           onChange={(e) => setDeleteConfirmText(e.target.value)}
                           placeholder="DELETE"
-                          className="border-red-300"
+                          className="border-red-500/30"
                         />
                       </div>
 

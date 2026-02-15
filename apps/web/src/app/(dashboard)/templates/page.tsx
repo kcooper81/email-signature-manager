@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, EmptyState } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
-import { Plus, FileSignature, Pencil, Trash2, Users, Lock } from 'lucide-react';
+import { Plus, FileSignature, Pencil, Trash2, Users, Lock, Grid3X3, List, Calendar, LayoutTemplate } from 'lucide-react';
 import { SignaturePreview } from '@/components/templates/preview';
 import type { SignatureBlock } from '@/components/templates/types';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
@@ -30,6 +30,7 @@ export default function TemplatesPage() {
   const { plan, usage, limits, refresh } = useSubscription();
   const devBypass = usePayGatesBypass();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { currentClientOrg } = useMspContext();
 
   useEffect(() => {
@@ -122,7 +123,7 @@ export default function TemplatesPage() {
       </Link>
       {templateLimitReached ? (
         <Link href="/settings/billing">
-          <Button variant="outline" className="border-violet-300 text-violet-700 hover:bg-violet-50">
+          <Button variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
             <Lock className="mr-2 h-4 w-4" />
             Upgrade to Create More
           </Button>
@@ -146,34 +147,72 @@ export default function TemplatesPage() {
         action={actionButtons}
       />
 
-      {/* Usage indicator */}
-      {limits.maxTemplates !== -1 && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>
-            {templates.length} / {limits.maxTemplates} templates used
-          </span>
-          {templates.length >= limits.maxTemplates && !devBypass && (
-            <Badge variant="secondary" className="text-xs">
-              Limit reached
-            </Badge>
-          )}
+      {/* Usage indicator + view toggle */}
+      <div className="flex items-center justify-between">
+        {limits.maxTemplates !== -1 ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>
+              {templates.length} / {limits.maxTemplates} templates used
+            </span>
+            {templates.length >= limits.maxTemplates && !devBypass && (
+              <Badge variant="secondary" className="text-xs">
+                Limit reached
+              </Badge>
+            )}
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="flex border rounded-md">
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'ghost'}
+            size="sm"
+            className="rounded-r-none"
+            onClick={() => setViewMode('grid')}
+          >
+            <Grid3X3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={viewMode === 'list' ? 'default' : 'ghost'}
+            size="sm"
+            className="rounded-l-none"
+            onClick={() => setViewMode('list')}
+          >
+            <List className="h-4 w-4" />
+          </Button>
         </div>
-      )}
+      </div>
 
       {loading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-5 bg-slate-200 rounded w-1/2" />
-                <div className="h-4 bg-slate-200 rounded w-3/4 mt-2" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-32 bg-slate-200 rounded" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        viewMode === 'grid' ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader>
+                  <div className="h-5 bg-muted rounded w-1/2" />
+                  <div className="h-4 bg-muted rounded w-3/4 mt-2" />
+                </CardHeader>
+                <CardContent>
+                  <div className="h-32 bg-muted rounded" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="animate-pulse">
+            <CardContent className="p-0">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-4 p-4 border-b last:border-0">
+                  <div className="w-24 h-16 bg-muted rounded" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-5 bg-muted rounded w-1/3" />
+                    <div className="h-4 bg-muted rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )
       ) : templates.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="py-6">
@@ -192,7 +231,7 @@ export default function TemplatesPage() {
             />
           </CardContent>
         </Card>
-      ) : (
+      ) : viewMode === 'grid' ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {templates.map((template) => (
             <Card key={template.id} className="group relative">
@@ -247,6 +286,82 @@ export default function TemplatesPage() {
             </Card>
           ))}
         </div>
+      ) : (
+        <Card>
+          <CardContent className="p-0">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left">
+                  <th className="p-4 font-medium w-28">Preview</th>
+                  <th className="p-4 font-medium">Name</th>
+                  <th className="p-4 font-medium hidden md:table-cell">Description</th>
+                  <th className="p-4 font-medium hidden sm:table-cell">Blocks</th>
+                  <th className="p-4 font-medium hidden sm:table-cell">Updated</th>
+                  <th className="p-4 font-medium w-24 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {templates.map((template) => (
+                  <tr key={template.id} className="border-b last:border-0 group hover:bg-muted/50">
+                    <td className="p-4">
+                      <Link href={`/templates/${template.id}`}>
+                        <div className="w-24 h-16 bg-muted rounded overflow-hidden flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all">
+                          {template.blocks && template.blocks.length > 0 ? (
+                            <div className="transform scale-[0.25] origin-top-left w-[400%] h-[400%]">
+                              <SignaturePreview blocks={template.blocks} />
+                            </div>
+                          ) : (
+                            <LayoutTemplate className="h-5 w-5 text-muted-foreground/40" />
+                          )}
+                        </div>
+                      </Link>
+                    </td>
+                    <td className="p-4">
+                      <Link href={`/templates/${template.id}`} className="hover:underline">
+                        <span className="font-medium">{template.name}</span>
+                      </Link>
+                      {template.is_default && (
+                        <Badge variant="info" className="ml-2">Default</Badge>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-0.5 md:hidden">
+                        {template.description || 'No description'}
+                      </p>
+                    </td>
+                    <td className="p-4 text-muted-foreground hidden md:table-cell max-w-[200px]">
+                      <span className="truncate block">{template.description || '—'}</span>
+                    </td>
+                    <td className="p-4 text-muted-foreground hidden sm:table-cell">
+                      {template.blocks?.length || 0} blocks
+                    </td>
+                    <td className="p-4 text-muted-foreground hidden sm:table-cell whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {new Date(template.updated_at).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link href={`/templates/${template.id}`}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive"
+                          onClick={() => handleDeleteClick(template.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       )}
 
       {/* Delete Confirmation Modal */}

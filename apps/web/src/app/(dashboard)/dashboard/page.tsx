@@ -276,7 +276,7 @@ export default async function DashboardPage() {
                 <div key={deployment.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {deployment.status === 'completed' ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     ) : deployment.status === 'failed' ? (
                       <X className="h-4 w-4 text-red-600" />
                     ) : (
