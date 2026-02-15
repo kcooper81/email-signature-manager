@@ -116,7 +116,7 @@ export default function SetupProfilePage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
             Complete Your Profile

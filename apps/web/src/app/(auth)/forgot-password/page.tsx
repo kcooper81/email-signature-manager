@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
             <CheckCircle className="h-16 w-16 text-green-500" />
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md shadow-2xl">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">
           Forgot your password?
