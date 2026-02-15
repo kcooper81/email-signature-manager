@@ -149,9 +149,9 @@ export function TemplateEditor({
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
+      <div className="bg-card border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4 flex-1">
           <Button variant="ghost" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -338,12 +338,12 @@ function SortableBlock({ block, isSelected, onSelect, onDelete }: SortableBlockP
       ref={setNodeRef}
       style={style}
       className={`flex items-center gap-2 p-2 border rounded cursor-pointer transition-colors ${
-        isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+        isSelected ? 'border-primary bg-primary/10' : 'border-border hover:border-muted-foreground/40'
       }`}
       onClick={onSelect}
     >
       <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
-        <GripVertical className="h-4 w-4 text-gray-400" />
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
       </button>
       <div className="flex-1 text-sm capitalize">{block.type.replace('-', ' ')}</div>
       <button
@@ -351,7 +351,7 @@ function SortableBlock({ block, isSelected, onSelect, onDelete }: SortableBlockP
           e.stopPropagation();
           onDelete();
         }}
-        className="text-gray-400 hover:text-red-600"
+        className="text-muted-foreground hover:text-red-600"
       >
         <Trash2 className="h-4 w-4" />
       </button>

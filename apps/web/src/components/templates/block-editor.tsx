@@ -204,9 +204,9 @@ function ImageEditor({
   return (
     <div className="space-y-4">
       {/* Recommended sizes info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-xs font-medium text-blue-800 mb-1">📐 Recommended Logo Sizes</p>
-        <ul className="text-xs text-blue-700 space-y-0.5">
+      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+        <p className="text-xs font-medium text-blue-600 mb-1">📐 Recommended Logo Sizes</p>
+        <ul className="text-xs text-blue-600 space-y-0.5">
           <li>• <strong>Width:</strong> 100-200px (max 300px)</li>
           <li>• <strong>Height:</strong> 40-80px for best fit</li>
           <li>• <strong>Format:</strong> PNG (transparent) or JPG</li>
@@ -219,7 +219,7 @@ function ImageEditor({
         <Label>Upload Image</Label>
         <div
           className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-            dragOver ? 'border-primary bg-primary/5' : 'border-slate-200 hover:border-slate-300'
+            dragOver ? 'border-primary bg-primary/5' : 'border-border hover:border-muted-foreground/40'
           } ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -460,7 +460,7 @@ function SpacerEditor({
           max={100}
         />
       </div>
-      <div className="bg-slate-100 rounded p-2 text-center text-sm text-muted-foreground">
+      <div className="bg-muted rounded p-2 text-center text-sm text-muted-foreground">
         Preview: {content.height}px spacing
       </div>
     </div>
@@ -574,7 +574,7 @@ function ContactInfoEditor({
         </div>
 
         {(content.customFields || []).map((field, index) => (
-          <div key={index} className="p-3 border rounded-lg bg-slate-50 space-y-2">
+          <div key={index} className="p-3 border rounded-lg bg-muted space-y-2">
             <div className="flex gap-2">
               <Input
                 type="text"
@@ -801,7 +801,7 @@ function SocialEditor({
       </div>
 
       {showCustomForm && (
-        <div className="p-3 border rounded-lg bg-slate-50 space-y-3">
+        <div className="p-3 border rounded-lg bg-muted space-y-3">
           <Label className="text-sm font-medium">Add Custom Social Link</Label>
           <div className="space-y-2">
             <Input
@@ -940,7 +940,7 @@ function SocialEditor({
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              All icons will be displayed in this color for a uniform look
+              Color for text links and fallback icons. Standard platform icons use their brand colors.
             </p>
           </div>
         </>
@@ -1002,7 +1002,7 @@ function HtmlEditor({
         <textarea
           value={content.html || ''}
           onChange={(e) => onChange({ html: e.target.value })}
-          className="w-full min-h-[150px] p-3 border rounded-md text-sm font-mono bg-slate-50"
+          className="w-full min-h-[150px] p-3 border rounded-md text-sm font-mono bg-muted"
           placeholder="<table cellpadding='0' cellspacing='0'>&#10;  <tr>&#10;    <td>Your custom HTML here</td>&#10;  </tr>&#10;</table>"
         />
       </div>
@@ -1028,9 +1028,9 @@ function HtmlEditor({
       </div>
 
       {warnings.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-          <p className="text-sm font-medium text-amber-800 mb-1">Compatibility warnings:</p>
-          <ul className="text-xs text-amber-700 space-y-0.5">
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+          <p className="text-sm font-medium text-amber-600 mb-1">Compatibility warnings:</p>
+          <ul className="text-xs text-amber-600 space-y-0.5">
             {warnings.map((warning, i) => (
               <li key={i}>• {warning}</li>
             ))}
@@ -1038,9 +1038,9 @@ function HtmlEditor({
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-xs text-blue-800">
-          <strong>Tips:</strong> Use inline styles, table layouts, and avoid modern CSS. 
+      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+        <p className="text-xs text-blue-600">
+          <strong>Tips:</strong> Use inline styles, table layouts, and avoid modern CSS.
           Test in Gmail and Outlook before deploying.
         </p>
       </div>
@@ -1142,7 +1142,7 @@ function BannerEditor({
           const today = new Date().toISOString().split('T')[0];
           if (content.startDate && today < content.startDate) {
             return (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/15 text-blue-600">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                 Scheduled: starts {content.startDate}
               </div>
@@ -1150,15 +1150,15 @@ function BannerEditor({
           }
           if (content.endDate && today > content.endDate) {
             return (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/15 text-red-600">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
                 Expired: ended {content.endDate}
               </div>
             );
           }
           return (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Currently active
             </div>
           );
@@ -1204,7 +1204,7 @@ function BannerEditor({
           id="trackClicks"
           checked={content.trackClicks ?? true}
           onChange={(e) => onChange({ ...content, trackClicks: e.target.checked })}
-          className="h-4 w-4 rounded border-gray-300"
+          className="h-4 w-4 rounded border-input"
         />
         <Label htmlFor="trackClicks" className="font-normal">Enable click tracking</Label>
       </div>
@@ -1282,9 +1282,9 @@ function BannerEditor({
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <p className="text-xs text-blue-800">
-          <strong>Tip:</strong> Banners with scheduled dates will only appear during the campaign period. 
+      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+        <p className="text-xs text-blue-600">
+          <strong>Tip:</strong> Banners with scheduled dates will only appear during the campaign period.
           Click tracking helps measure ROI.
         </p>
       </div>
@@ -1458,9 +1458,9 @@ function DisclaimerEditor({
         </div>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-        <p className="text-xs text-amber-800">
-          <strong>Note:</strong> Legal disclaimers should be reviewed by your legal team. 
+      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+        <p className="text-xs text-amber-600">
+          <strong>Note:</strong> Legal disclaimers should be reviewed by your legal team.
           These templates are starting points only.
         </p>
       </div>

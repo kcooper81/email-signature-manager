@@ -124,7 +124,7 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
           rows={4}
           className="text-xs"
         />
-        <p className="text-xs text-gray-500 mt-1">Required for legal compliance</p>
+        <p className="text-xs text-muted-foreground mt-1">Required for legal compliance</p>
       </div>
     </>
   );
@@ -185,7 +185,7 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
           rows={4}
           className="text-xs"
         />
-        <p className="text-xs text-gray-500 mt-1">Required for HIPAA compliance</p>
+        <p className="text-xs text-muted-foreground mt-1">Required for HIPAA compliance</p>
       </div>
     </>
   );
@@ -274,7 +274,7 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
           rows={4}
           className="text-xs"
         />
-        <p className="text-xs text-gray-500 mt-1">Required for SEC/FINRA compliance</p>
+        <p className="text-xs text-muted-foreground mt-1">Required for SEC/FINRA compliance</p>
       </div>
     </>
   );
@@ -653,7 +653,7 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded-lg p-3">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
         <Shield className="h-4 w-4 text-blue-600" />
         <span>Compliance fields ensure your signatures meet industry regulations</span>
       </div>
@@ -671,9 +671,9 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
 
       {/* Industry selector for non-general industries - allows changing */}
       {content.industryType !== 'general' && (
-        <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+        <div className="flex items-center justify-between p-2 bg-muted rounded-lg border">
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-violet-600" />
+            <Building2 className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">
               {INDUSTRY_OPTIONS.find(o => o.value === content.industryType)?.label}
               {content.preset && COMPLIANCE_PRESETS[content.industryType]?.[content.preset] && (
@@ -781,7 +781,7 @@ export function ComplianceBlockEditor({ content, onChange }: ComplianceBlockEdit
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium text-sm">{preset.name}</span>
-                            <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">
+                            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
                               {industry.label}
                             </span>
                           </div>
