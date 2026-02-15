@@ -78,7 +78,7 @@ const testimonials = [
 const pricingComparison = [
   { competitor: 'CodeTwo', price: '$2.00/user', siggly: '$1.50/user', savings: '25%' },
   { competitor: 'Exclaimer', price: '$2-3/user', siggly: '$1.50/user', savings: '50%' },
-  { competitor: 'Siggy.io', price: '$4.00/user', siggly: '$1.50/user', savings: '63%' },
+  { competitor: 'WiseStamp', price: '$4.00/user', siggly: '$1.50/user', savings: '63%' },
 ];
 
 export default function SmallBusinessPage() {

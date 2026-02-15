@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     question: 'How does Siggly compare to competitors on price?',
-    answer: 'At $1.50/user/month, Siggly is 25% cheaper than CodeTwo ($2/user), 50% cheaper than Exclaimer ($2–3/user), and 73% cheaper than Siggy.io ($4/user). You get the same enterprise features at a fraction of the cost.',
+    answer: 'At $1.50/user/month, Siggly is 25% cheaper than CodeTwo ($2/user), 50% cheaper than Exclaimer ($2–3/user), and up to 63% cheaper than WiseStamp ($4/user). You get the same enterprise features at a fraction of the cost.',
   },
 ];
 
@@ -69,7 +69,7 @@ export default function PricingPage() {
             Full feature access on the Free plan. One paid plan for teams — no tiers, no confusion.
           </p>
           <p className="text-lg text-violet-600 font-medium">
-            25-73% cheaper than Exclaimer, CodeTwo, and Siggy.io
+            25-73% cheaper than Exclaimer, CodeTwo, and WiseStamp
           </p>
         </div>
       </section>

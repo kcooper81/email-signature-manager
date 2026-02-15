@@ -26,6 +26,11 @@ import {
   ShieldAlert,
   Ban,
   RefreshCw,
+  Wifi,
+  WifiOff,
+  Mail,
+  UserPlus,
+  Network,
 } from 'lucide-react';
 import Link from 'next/link';
 import { PLANS } from '@/lib/billing/plans';
@@ -38,6 +43,19 @@ interface OrgDetails {
   industry: string | null;
   createdAt: string;
   isSuspended: boolean;
+  organizationType: string;
+  partnerTier: string | null;
+  googleWorkspaceConnected: boolean;
+  microsoft365Connected: boolean;
+  hubspotConnected: boolean;
+}
+
+interface PendingInvite {
+  id: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  expiresAt: string | null;
 }
 
 interface Subscription {
@@ -100,6 +118,7 @@ export default function OrgDetailPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
 
   // Change plan state
   const [showPlanModal, setShowPlanModal] = useState(false);
@@ -121,7 +140,7 @@ export default function OrgDetailPage() {
     // Get organization
     const { data: orgData } = await supabase
       .from('organizations')
-      .select('id, name, slug, domain, industry, created_at, is_suspended')
+      .select('id, name, slug, domain, industry, created_at, organization_type, partner_tier, google_workspace_connected, microsoft_365_connected, hubspot_connected')
       .eq('id', orgId)
       .single();
 
@@ -137,7 +156,12 @@ export default function OrgDetailPage() {
       domain: orgData.domain,
       industry: orgData.industry,
       createdAt: orgData.created_at,
-      isSuspended: orgData.is_suspended || false,
+      isSuspended: (orgData as any).is_suspended || false,
+      organizationType: (orgData as any).organization_type || 'standard',
+      partnerTier: (orgData as any).partner_tier || null,
+      googleWorkspaceConnected: (orgData as any).google_workspace_connected || false,
+      microsoft365Connected: (orgData as any).microsoft_365_connected || false,
+      hubspotConnected: (orgData as any).hubspot_connected || false,
     });
 
     // Get subscription
@@ -237,6 +261,24 @@ export default function OrgDetailPage() {
         resourceType: a.resource_type,
         createdAt: a.created_at,
         userEmail: userEmailMap.get(a.user_id) || null,
+      })) || []
+    );
+
+    // Get pending invites
+    const { data: inviteData } = await supabase
+      .from('user_invites')
+      .select('id, email, role, created_at, expires_at')
+      .eq('organization_id', orgId)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    setPendingInvites(
+      inviteData?.map(i => ({
+        id: i.id,
+        email: i.email,
+        role: i.role,
+        createdAt: i.created_at,
+        expiresAt: i.expires_at,
       })) || []
     );
 
@@ -459,6 +501,18 @@ export default function OrgDetailPage() {
                 <span className="text-slate-500">Created:</span>
                 <span className="font-medium">{new Date(org.createdAt).toLocaleDateString()}</span>
               </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Network className="h-4 w-4 text-slate-400" />
+                <span className="text-slate-500">Type:</span>
+                <Badge variant="outline" className="capitalize">
+                  {org.organizationType === 'msp' ? 'MSP Partner' : org.organizationType === 'msp_client' ? 'MSP Client' : 'Standard'}
+                </Badge>
+                {org.partnerTier && (
+                  <Badge className="bg-violet-100 text-violet-700 capitalize ml-1">
+                    {org.partnerTier}
+                  </Badge>
+                )}
+              </div>
             </div>
             {subscription && (
               <div className="space-y-3">
@@ -485,6 +539,31 @@ export default function OrgDetailPage() {
                 )}
               </div>
             )}
+          </div>
+
+          {/* Integration Status */}
+          <div className="mt-4 pt-4 border-t">
+            <h4 className="text-sm font-medium text-slate-700 mb-3">Integrations</h4>
+            <div className="flex flex-wrap gap-3">
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+                org.googleWorkspaceConnected ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {org.googleWorkspaceConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                Google Workspace
+              </div>
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+                org.microsoft365Connected ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {org.microsoft365Connected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                Microsoft 365
+              </div>
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+                org.hubspotConnected ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+              }`}>
+                {org.hubspotConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                HubSpot
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -554,6 +633,38 @@ export default function OrgDetailPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Pending Invites */}
+        {pendingInvites.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserPlus className="h-5 w-5" />
+                Pending Invites
+              </CardTitle>
+              <CardDescription>{pendingInvites.length} pending</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {pendingInvites.map((invite) => (
+                  <div key={invite.id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-slate-400" />
+                      <div>
+                        <p className="text-sm font-medium">{invite.email}</p>
+                        <p className="text-xs text-slate-500">
+                          Invited {new Date(invite.createdAt).toLocaleDateString()}
+                          {invite.expiresAt && ` • Expires ${new Date(invite.expiresAt).toLocaleDateString()}`}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="capitalize">{invite.role}</Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Recent Deployments */}
         <Card>
