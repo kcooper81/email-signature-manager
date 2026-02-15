@@ -10,10 +10,14 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 });
 
 export const STRIPE_PRICE_IDS = {
+  professional_per_user: process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID || '',
+  // Legacy: keep for backward compatibility with existing subscriptions
   starter: process.env.STRIPE_STARTER_PRICE_ID || '',
   professional_base: process.env.STRIPE_PROFESSIONAL_BASE_PRICE_ID || '',
-  professional_per_user: process.env.STRIPE_PROFESSIONAL_PER_USER_PRICE_ID || '',
 };
+
+// Professional plan: $1.50/user/month, 10-user minimum
+export const PROFESSIONAL_MIN_USERS = 10;
 
 export async function createCustomer(email: string, name: string, organizationId: string) {
   return stripe.customers.create({
@@ -35,39 +39,22 @@ export async function createCheckoutSession({
   couponId,
 }: {
   customerId: string;
-  planId: 'starter' | 'professional';
+  planId: 'professional';
   quantity: number;
   successUrl: string;
   cancelUrl: string;
   trialDays?: number;
   couponId?: string;
 }) {
-  // Build line items based on plan
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  // Professional: $1.50/user/month, enforce 10-user minimum
+  const billableUsers = Math.max(PROFESSIONAL_MIN_USERS, quantity);
 
-  if (planId === 'starter') {
-    // Starter: $0.50/member/month (per-user only)
-    lineItems.push({
-      price: STRIPE_PRICE_IDS.starter,
-      quantity,
-    });
-  } else if (planId === 'professional') {
-    // Professional: $29/month base (includes first 10 users) + $1/user/month for users beyond 10
-    lineItems.push({
-      price: STRIPE_PRICE_IDS.professional_base,
-      quantity: 1, // Base fee is always 1
-    });
-    
-    // Only charge per-user fee for users beyond the first 10
-    const PROFESSIONAL_INCLUDED_USERS = 10;
-    const billableUsers = Math.max(0, quantity - PROFESSIONAL_INCLUDED_USERS);
-    if (billableUsers > 0) {
-      lineItems.push({
-        price: STRIPE_PRICE_IDS.professional_per_user,
-        quantity: billableUsers,
-      });
-    }
-  }
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+    {
+      price: STRIPE_PRICE_IDS.professional_per_user,
+      quantity: billableUsers,
+    },
+  ];
 
   return stripe.checkout.sessions.create({
     customer: customerId,
@@ -98,53 +85,46 @@ export async function getSubscription(subscriptionId: string) {
   return stripe.subscriptions.retrieve(subscriptionId);
 }
 
-export const PROFESSIONAL_INCLUDED_USERS = 10;
-
 export async function updateSubscriptionQuantity(subscriptionId: string, quantity: number) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-  
-  // Find the per-user item (for both Starter and Professional)
+
+  // Find the per-user item (handles both new and legacy subscriptions)
+  const perUserItem = subscription.items.data.find(
+    item => item.price.id === STRIPE_PRICE_IDS.professional_per_user
+  );
+  // Legacy: handle old starter subscriptions
   const starterItem = subscription.items.data.find(
     item => item.price.id === STRIPE_PRICE_IDS.starter
   );
-  const professionalPerUserItem = subscription.items.data.find(
-    item => item.price.id === STRIPE_PRICE_IDS.professional_per_user
-  );
-  const professionalBaseItem = subscription.items.data.find(
+  // Legacy: handle old professional base+per-user subscriptions
+  const legacyBaseItem = subscription.items.data.find(
     item => item.price.id === STRIPE_PRICE_IDS.professional_base
   );
 
+  const billableUsers = Math.max(PROFESSIONAL_MIN_USERS, quantity);
   const itemsToUpdate: any[] = [];
 
-  if (starterItem) {
-    // Starter plan: charge for all users
+  if (perUserItem) {
+    // New pricing: just update per-user quantity
+    itemsToUpdate.push({
+      id: perUserItem.id,
+      quantity: billableUsers,
+    });
+  } else if (starterItem) {
+    // Legacy starter: update quantity
     itemsToUpdate.push({
       id: starterItem.id,
-      quantity,
+      quantity: billableUsers,
     });
-  } else if (professionalBaseItem) {
-    // Professional plan: first 10 users included in base, then $1/user
-    const billableUsers = Math.max(0, quantity - PROFESSIONAL_INCLUDED_USERS);
-    
-    if (professionalPerUserItem) {
-      if (billableUsers > 0) {
-        // Update existing per-user item
-        itemsToUpdate.push({
-          id: professionalPerUserItem.id,
-          quantity: billableUsers,
-        });
-      } else {
-        // Remove per-user item if no billable users
-        itemsToUpdate.push({
-          id: professionalPerUserItem.id,
-          deleted: true,
-        });
-      }
-    } else if (billableUsers > 0) {
-      // Add per-user item if needed
+  } else if (legacyBaseItem) {
+    // Legacy professional with base fee: find per-user item
+    const legacyPerUserItem = subscription.items.data.find(
+      item => item.price.id !== STRIPE_PRICE_IDS.professional_base
+    );
+    if (legacyPerUserItem) {
       itemsToUpdate.push({
-        price: STRIPE_PRICE_IDS.professional_per_user,
-        quantity: billableUsers,
+        id: legacyPerUserItem.id,
+        quantity: Math.max(0, quantity - 10), // Legacy: 10 included in base
       });
     }
   } else {
@@ -152,7 +132,7 @@ export async function updateSubscriptionQuantity(subscriptionId: string, quantit
   }
 
   if (itemsToUpdate.length === 0) {
-    return subscription; // No changes needed
+    return subscription;
   }
 
   return stripe.subscriptions.update(subscriptionId, {

@@ -626,7 +626,7 @@ export default function IntegrationsPage() {
                 <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-sm font-medium text-foreground mb-1">Upgrade Required</p>
                 <p className="text-xs text-muted-foreground mb-3">
-                  Microsoft 365 integration is available on Starter plans and above.
+                  Microsoft 365 integration is available on the Professional plan.
                 </p>
                 <Link href="/settings/billing">
                   <Button size="sm">Upgrade Plan</Button>

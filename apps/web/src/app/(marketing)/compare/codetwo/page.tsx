@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 const comparisonData = [
-  { feature: 'Starting Price', siggly: 'Free (5 users)', codetwo: '$1.50/user/mo', winner: 'siggly' },
+  { feature: 'Starting Price', siggly: 'Free (5 users)', codetwo: '$2.00/user/mo', winner: 'siggly' },
   { feature: 'Cloud-Native', siggly: true, codetwo: false, winner: 'siggly' },
   { feature: 'Google Workspace', siggly: true, codetwo: true, winner: 'tie' },
   { feature: 'Microsoft 365', siggly: true, codetwo: true, winner: 'tie' },
@@ -24,7 +24,7 @@ const comparisonData = [
 
 const switchReasons = [
   { icon: Cloud, title: '100% Cloud-Native', description: 'No servers to manage. No software to install. Just sign up and go.' },
-  { icon: DollarSign, title: '67% Lower Cost', description: 'Siggly starts at $0.50/user vs CodeTwo\'s $1.50/user.' },
+  { icon: DollarSign, title: '25% Lower Cost', description: 'Siggly Professional at $1.50/user vs CodeTwo\'s $2.00/user. Plus a generous free tier.' },
   { icon: Zap, title: 'No IT Required', description: 'Marketing and HR teams can manage signatures without IT help.' },
   { icon: Smartphone, title: 'Mobile-First Design', description: 'Signatures that look perfect on every device, including mobile apps.' },
 ];
@@ -53,7 +53,7 @@ export default function CodeTwoComparisonPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">67%</div>
+              <div className="text-4xl font-bold text-green-400 mb-2">25%</div>
               <div className="text-gray-400">Lower cost than CodeTwo</div>
             </div>
             <div>

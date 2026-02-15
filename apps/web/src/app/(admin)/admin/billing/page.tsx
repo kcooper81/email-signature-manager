@@ -162,12 +162,11 @@ export default function SubscriptionsPage() {
       
       let mrr = 0;
       if (sub.status === 'active' || sub.status === 'trialing') {
-        if (sub.plan === 'starter') {
-          mrr = (plan?.pricePerUser || 0) * userCount / 100;
-        } else if (sub.plan === 'professional') {
-          const baseUsers = 10;
-          const extraUsers = Math.max(0, userCount - baseUsers);
-          mrr = (plan?.priceMonthly || 0) + ((plan?.pricePerUser || 0) * extraUsers) / 100;
+        if (sub.plan === 'professional' || sub.plan === 'starter') {
+          // Professional: $1.50/user/month, 10-user minimum
+          // Legacy starter plans are mapped to professional via getPlan()
+          const billableUsers = Math.max(10, userCount);
+          mrr = (plan?.pricePerUser || 0) * billableUsers / 100;
         }
       }
 
@@ -230,8 +229,8 @@ export default function SubscriptionsPage() {
 
   const getPlanBadge = (plan: string) => {
     switch (plan) {
-      case 'starter':
-        return <Badge className="bg-blue-100 text-blue-700">Starter</Badge>;
+      case 'starter': // Legacy plan, shown as Professional
+        return <Badge className="bg-blue-100 text-blue-700">Starter (Legacy)</Badge>;
       case 'professional':
         return <Badge className="bg-violet-100 text-violet-700">Professional</Badge>;
       case 'enterprise':

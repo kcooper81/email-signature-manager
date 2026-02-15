@@ -2124,4 +2124,1441 @@ export const industriesPages: SEOLandingPageData[] = [
         'Turn every consultant email into a business development opportunity. Start your free trial with Siggly.',
     },
   },
+
+  // ─── Agriculture ───────────────────────────────────────────────────
+  {
+    slug: 'agriculture',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Agriculture | Siggly',
+      description:
+        'Professional email signatures for farms, agribusinesses, and agricultural cooperatives. Showcase USDA compliance and supply chain credentials.',
+      keywords: [
+        'agriculture email signatures',
+        'farming email branding',
+        'agribusiness email management',
+        'USDA compliant signatures',
+        'agricultural cooperative email',
+      ],
+      canonical: '/industries/agriculture',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Agriculture', url: '/industries/agriculture' },
+    ],
+    hero: {
+      badge: { icon: 'activity', text: 'Agriculture Solutions' },
+      title: 'Email Signatures That Grow with Your Agricultural Business',
+      description:
+        'From farm-to-table operations to large agribusinesses, Siggly ensures every email conveys professionalism, USDA compliance details, and supply chain credentials across your entire organization.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '200+', label: 'Agricultural businesses' },
+      { value: '100%', label: 'USDA badge support' },
+      { value: '12 min', label: 'Average rollout' },
+      { value: '35%', label: 'Fewer branding errors' },
+    ],
+    features: [
+      {
+        icon: 'shield-check',
+        title: 'USDA Compliance Badges',
+        description:
+          'Automatically include USDA organic certification logos, GAP audit badges, and food safety credentials in every outgoing email.',
+      },
+      {
+        icon: 'truck',
+        title: 'Supply Chain Visibility',
+        description:
+          'Add traceability links and supply chain partner logos so buyers and distributors can verify your sourcing credentials directly from your email.',
+      },
+      {
+        icon: 'map',
+        title: 'Regional Field Office Branding',
+        description:
+          'Manage distinct signatures for field offices, grain elevators, processing plants, and corporate headquarters from a single dashboard.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Seasonal Campaign Banners',
+        description:
+          'Promote harvest schedules, planting season updates, and commodity pricing through rotating signature banners tied to your agricultural calendar.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Precision Ag Integration',
+        description:
+          'Link to precision agriculture dashboards, soil reports, and yield analytics directly in your email footer for data-driven client communications.',
+      },
+    ],
+    featuresTitle: 'Purpose-Built for Agriculture Operations',
+    sections: [
+      {
+        type: 'checklist',
+        title: 'Email Signature Essentials for Agriculture',
+        items: [
+          'USDA organic and GAP certification badges',
+          'Farm or cooperative logo with brand colors',
+          'Traceability and supply chain partner links',
+          'Seasonal promotion banners for harvest and planting',
+          'Regional office and field location identifiers',
+          'Direct phone and scheduling links for buyers',
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'How Siggly Helps Agricultural Businesses',
+        items: [
+          {
+            icon: 'target',
+            title: 'Buyer Confidence',
+            description:
+              'Displaying certifications and traceability links in every email builds trust with wholesale buyers and retail partners.',
+          },
+          {
+            icon: 'refresh-cw',
+            title: 'Seasonal Updates',
+            description:
+              'Swap banners and promotional content across all employees in minutes when seasons change or new products launch.',
+          },
+          {
+            icon: 'users',
+            title: 'Cooperative Management',
+            description:
+              'Manage signatures for co-op members, seasonal workers, and permanent staff with role-based templates that scale.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We added our USDA organic badge and a link to our traceability portal in every signature. Within weeks, two new distributors reached out citing the professionalism of our emails.',
+      authorName: 'Rachel Gutierrez',
+      authorTitle: 'Operations Director, Heartland Organic Farms',
+    },
+    faqs: [
+      {
+        question: 'Can I include USDA or organic certification logos?',
+        answer:
+          'Yes. Siggly supports custom badge uploads so you can display USDA organic, Non-GMO Project, Fair Trade, and other certification marks directly in your signature.',
+      },
+      {
+        question: 'How do I manage signatures for seasonal workers?',
+        answer:
+          'Siggly integrates with your directory or HR system to automatically provision and deprovision signatures as seasonal staff come and go, with no manual effort required.',
+      },
+      {
+        question: 'Can different farm locations have unique signatures?',
+        answer:
+          'Absolutely. You can create location-specific templates that include regional addresses, local phone numbers, and site-specific certifications while enforcing brand consistency.',
+      },
+      {
+        question: 'Does Siggly work for agricultural cooperatives?',
+        answer:
+          'Yes. Cooperatives can manage member signatures centrally, ensuring every grower and partner uses a professionally branded email signature that reflects the co-op identity.',
+      },
+    ],
+    cta: {
+      title: 'Cultivate a Professional Email Presence',
+      description:
+        'Give every email from your agricultural operation the credibility it deserves. Start your free trial with Siggly today.',
+    },
+  },
+
+  // ─── Architecture ──────────────────────────────────────────────────
+  {
+    slug: 'architecture',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Architecture Firms | Siggly',
+      description:
+        'Polished email signatures for architects and design firms. Display AIA credentials, LEED certifications, and link to project portfolios seamlessly.',
+      keywords: [
+        'architecture email signatures',
+        'architect email branding',
+        'AIA email signatures',
+        'LEED architect signature',
+        'design firm email management',
+      ],
+      canonical: '/industries/architecture',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Architecture', url: '/industries/architecture' },
+    ],
+    hero: {
+      badge: { icon: 'building-2', text: 'Architecture Solutions' },
+      title: 'Signature Design as Refined as Your Buildings',
+      description:
+        'Your firm designs structures that stand for decades. Your email signatures should reflect that same attention to detail. Siggly helps architecture firms present AIA credentials, LEED certifications, and portfolio links in every communication.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '250+', label: 'Architecture firms' },
+      { value: '92%', label: 'Credential accuracy' },
+      { value: '10 min', label: 'Firm-wide rollout' },
+    ],
+    features: [
+      {
+        icon: 'award',
+        title: 'AIA Credential Display',
+        description:
+          'Prominently feature AIA membership status, NCARB certification, and state licensure numbers so clients verify your qualifications at a glance.',
+      },
+      {
+        icon: 'file-check',
+        title: 'LEED & Sustainability Badges',
+        description:
+          'Showcase LEED AP, WELL AP, and Living Building Challenge credentials to signal your commitment to sustainable design practices.',
+      },
+      {
+        icon: 'image',
+        title: 'Portfolio Integration',
+        description:
+          'Link directly to your online portfolio, recent project galleries, or Behance profile so prospective clients can explore your work from any email.',
+      },
+      {
+        icon: 'layers',
+        title: 'Studio & Branch Templates',
+        description:
+          'Create unique signature layouts for each studio location or practice area while maintaining firm-wide visual identity standards.',
+      },
+    ],
+    featuresTitle: 'Designed for Architecture Professionals',
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Get Your Firm on Siggly in Three Steps',
+        steps: [
+          {
+            step: '01',
+            title: 'Upload Your Brand Assets',
+            description:
+              'Import your firm logo, brand colors, and preferred typefaces. Add AIA badges and certification marks to your asset library.',
+          },
+          {
+            step: '02',
+            title: 'Design Your Template',
+            description:
+              'Choose a layout that complements your architectural aesthetic. Add credential fields, portfolio links, and project banners.',
+          },
+          {
+            step: '03',
+            title: 'Deploy Across Your Firm',
+            description:
+              'Roll out signatures to principals, project architects, interns, and support staff in a single click. Siggly handles the rest.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Our clients often comment on how polished our emails look. Having our LEED AP credentials and portfolio link in every signature has directly led to new project inquiries.',
+      authorName: 'Steven Nakamura',
+      authorTitle: 'Principal, Nakamura + Reed Architects',
+    },
+    faqs: [
+      {
+        question: 'Can I display my AIA and NCARB credentials?',
+        answer:
+          'Yes. Siggly includes dedicated fields for professional credentials like AIA, NCARB, LEED AP, RA, and state license numbers that appear beneath your name and title.',
+      },
+      {
+        question: 'How do I link to my project portfolio?',
+        answer:
+          'The template includes a customizable portfolio button or banner area where you can link to your website, Behance, Archinect, or any online gallery.',
+      },
+      {
+        question: 'Can different practice areas have distinct signature styles?',
+        answer:
+          'Yes. Siggly lets you create separate templates for residential, commercial, landscape, and interior design teams while enforcing consistent firm branding.',
+      },
+    ],
+    cta: {
+      title: 'Build a Signature Worthy of Your Firm',
+      description:
+        'Present every email with the precision your architecture practice is known for. Try Siggly free.',
+    },
+  },
+
+  // ─── Aviation ──────────────────────────────────────────────────────
+  {
+    slug: 'aviation',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Aviation | Siggly',
+      description:
+        'Standardized email signatures for airlines, MROs, and flight operations. Include FAA credentials, IATA codes, and crew communication details.',
+      keywords: [
+        'aviation email signatures',
+        'airline email branding',
+        'FAA compliant signatures',
+        'flight operations email',
+        'MRO email management',
+      ],
+      canonical: '/industries/aviation',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Aviation', url: '/industries/aviation' },
+    ],
+    hero: {
+      badge: { icon: 'send', text: 'Aviation Solutions' },
+      title: 'Professional Email Signatures for the Aviation Industry',
+      description:
+        'Airlines, MROs, and charter operators rely on clear, credential-rich communication. Siggly gives aviation professionals polished signatures that include FAA certifications, IATA designators, and operational contact hierarchies.',
+      variant: 'light',
+    },
+    stats: [
+      { value: '150+', label: 'Aviation organizations' },
+      { value: '99.5%', label: 'Deployment accuracy' },
+      { value: '8 min', label: 'Fleet-wide rollout' },
+    ],
+    features: [
+      {
+        icon: 'shield-check',
+        title: 'FAA Credential Integration',
+        description:
+          'Display FAA repair station certificates, Part 135/121 operator numbers, and AMT license details in a standardized, verifiable format.',
+      },
+      {
+        icon: 'globe',
+        title: 'IATA & ICAO Code Display',
+        description:
+          'Include your airline designator codes, station identifiers, and SITA addresses so industry contacts can reach you through standard aviation channels.',
+      },
+      {
+        icon: 'users',
+        title: 'Crew & Ground Staff Management',
+        description:
+          'Maintain distinct signature templates for flight crew, maintenance technicians, ground operations, and corporate staff under one unified platform.',
+      },
+    ],
+    featuresTitle: 'Built for Aviation Operations',
+    sections: [
+      {
+        type: 'use-cases-grid',
+        title: 'Siggly Across Aviation Operations',
+        cases: [
+          {
+            title: 'Airlines',
+            description:
+              'Unify signatures across flight ops, customer service, reservations, and corporate communications with airline-specific branding.',
+          },
+          {
+            title: 'MRO Facilities',
+            description:
+              'Display repair station certificates and capabilities lists in technician and sales team signatures.',
+          },
+          {
+            title: 'Charter Operators',
+            description:
+              'Present a premium image with signatures featuring fleet details, operating certificates, and booking links.',
+          },
+          {
+            title: 'Airport Authorities',
+            description:
+              'Standardize communication across terminal operations, security, and administrative divisions.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Standardizing signatures across our flight ops, maintenance, and charter sales teams used to be a nightmare. Siggly deployed branded signatures to 200 employees across three bases in under ten minutes.',
+      authorName: 'Captain Michelle Torres',
+      authorTitle: 'Director of Operations, Pacific Air Charter',
+    },
+    faqs: [
+      {
+        question: 'Can I display FAA certifications in my signature?',
+        answer:
+          'Yes. Siggly supports custom credential fields where you can list FAA repair station numbers, operator certificates, and individual AMT or ATP license details.',
+      },
+      {
+        question: 'How do I manage signatures across multiple bases?',
+        answer:
+          'Siggly allows location-based templates so each base or station has signatures with the correct local address, phone number, and station-specific branding.',
+      },
+      {
+        question: 'Does Siggly support SITA or ARINC contact details?',
+        answer:
+          'Yes. You can add SITA addresses, ARINC identifiers, and AFTN addresses as custom contact fields visible in your signature.',
+      },
+    ],
+    cta: {
+      title: 'Clear for Takeoff with Siggly',
+      description:
+        'Equip your aviation team with email signatures that meet industry standards. Start your free trial now.',
+    },
+  },
+
+  // ─── Biotech ───────────────────────────────────────────────────────
+  {
+    slug: 'biotech',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Biotech Companies | Siggly',
+      description:
+        'Branded email signatures for biotech firms. Display FDA submission credentials, research affiliations, and clinical trial details professionally.',
+      keywords: [
+        'biotech email signatures',
+        'biotechnology email branding',
+        'FDA submission signatures',
+        'clinical trial email',
+        'research collaboration email',
+      ],
+      canonical: '/industries/biotech',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Biotech', url: '/industries/biotech' },
+    ],
+    hero: {
+      badge: { icon: 'activity', text: 'Biotech Solutions' },
+      title: 'Email Signatures Engineered for Biotech Innovation',
+      description:
+        'Biotech professionals communicate with regulators, research partners, and investors daily. Siggly ensures those communications carry the right credentials, affiliations, and compliance details in every signature.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: '100+', label: 'Biotech companies' },
+      { value: '95%', label: 'Compliance accuracy' },
+      { value: '<10 min', label: 'Company-wide setup' },
+      { value: '60%', label: 'Less manual formatting' },
+    ],
+    features: [
+      {
+        icon: 'file-check',
+        title: 'FDA & EMA Credential Fields',
+        description:
+          'Include IND/NDA submission references, EMA authorization numbers, and regulatory contact details that reviewers and partners expect to see.',
+      },
+      {
+        icon: 'users',
+        title: 'Research Collaboration Links',
+        description:
+          'Add ORCID profiles, PubMed author pages, and institutional affiliation links so collaborators can verify your publication record instantly.',
+      },
+      {
+        icon: 'lock',
+        title: 'Confidentiality Disclaimers',
+        description:
+          'Automatically append HIPAA, trade-secret, and proprietary-information disclaimers to signatures used in sensitive communications.',
+      },
+      {
+        icon: 'database',
+        title: 'Clinical Trial Banners',
+        description:
+          'Promote active clinical trials, patient recruitment drives, and ClinicalTrials.gov listings through rotating banner campaigns in employee signatures.',
+      },
+    ],
+    featuresTitle: 'Why Biotech Teams Trust Siggly',
+    featuresDescription:
+      'From pre-clinical research to commercialization, Siggly adapts to every stage of the biotech lifecycle.',
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Accelerate Your Biotech Communications',
+        items: [
+          {
+            icon: 'shield',
+            title: 'Regulatory Readiness',
+            description:
+              'Signatures that include proper disclaimers and credential formatting help your team stay audit-ready at all times.',
+          },
+          {
+            icon: 'link',
+            title: 'Peer Review Visibility',
+            description:
+              'ORCID and PubMed links in signatures make it easy for collaborators and journal editors to find your published research.',
+          },
+          {
+            icon: 'trending-up',
+            title: 'Investor Relations',
+            description:
+              'Pipeline milestone banners and investor deck links in executive signatures keep stakeholders informed passively.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'After deploying Siggly, our regulatory affairs team no longer worries about missing disclaimers. Every email to the FDA includes the proper credential block and confidentiality notice.',
+      authorName: 'Dr. Anita Sharma',
+      authorTitle: 'VP of Regulatory Affairs, Helix Therapeutics',
+    },
+    faqs: [
+      {
+        question: 'Can I include ORCID or PubMed links?',
+        answer:
+          'Yes. Siggly provides dedicated fields for ORCID iDs, PubMed author profiles, Google Scholar pages, and ResearchGate links that appear alongside your contact details.',
+      },
+      {
+        question: 'How do I handle signatures for contract research staff?',
+        answer:
+          'Contract researchers can be added to Siggly with time-limited access. Their signatures are automatically deactivated when their contract period ends.',
+      },
+      {
+        question: 'Can we promote clinical trials through signatures?',
+        answer:
+          'Yes. Siggly supports banner campaigns that link to ClinicalTrials.gov listings, patient recruitment pages, or study information sites. You can target banners to specific departments.',
+      },
+      {
+        question: 'Is Siggly compliant with 21 CFR Part 11?',
+        answer:
+          'Siggly maintains audit trails and access controls that support 21 CFR Part 11 requirements. Consult your compliance team for validation of your specific use case.',
+      },
+    ],
+    cta: {
+      title: 'Advance Your Biotech Email Standards',
+      description:
+        'Ensure every email from your biotech organization carries the right credentials and compliance details. Get started free.',
+    },
+  },
+
+  // ─── Cannabis ──────────────────────────────────────────────────────
+  {
+    slug: 'cannabis',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Cannabis Companies | Siggly',
+      description:
+        'Compliant email signatures for cannabis operators. Display state licenses, seed-to-sale tracking, and regulatory details in every email.',
+      keywords: [
+        'cannabis email signatures',
+        'marijuana business email',
+        'cannabis compliance email',
+        'dispensary email branding',
+        'seed-to-sale email signatures',
+      ],
+      canonical: '/industries/cannabis',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Cannabis', url: '/industries/cannabis' },
+    ],
+    hero: {
+      badge: { icon: 'flag', text: 'Cannabis Solutions' },
+      title: 'Compliant, Professional Email Signatures for Cannabis Operators',
+      description:
+        'The cannabis industry demands meticulous compliance. Siggly helps cultivators, dispensaries, and processors present state license numbers, seed-to-sale credentials, and regulatory notices in every outgoing email.',
+      variant: 'violet',
+    },
+    features: [
+      {
+        icon: 'file-check',
+        title: 'State License Display',
+        description:
+          'Automatically include state cultivation, manufacturing, distribution, or retail license numbers in employee signatures for instant regulatory verification.',
+      },
+      {
+        icon: 'repeat',
+        title: 'Seed-to-Sale Tracking Links',
+        description:
+          'Embed links to your Metrc, BioTrack, or LEAF Data compliance portal so supply chain partners can verify product chain-of-custody.',
+      },
+      {
+        icon: 'shield',
+        title: 'Regulatory Disclaimer Automation',
+        description:
+          'Append state-mandated disclaimers and age-verification notices to every email automatically, reducing compliance risk across your organization.',
+      },
+    ],
+    featuresTitle: 'Compliance-First Signature Management',
+    sections: [
+      {
+        type: 'checklist',
+        title: 'Cannabis Email Signature Must-Haves',
+        items: [
+          'State license number and license type displayed',
+          'Company logo with compliant branding guidelines',
+          'Seed-to-sale tracking portal link',
+          'State-mandated disclaimers appended automatically',
+          'Age-gate or compliance notice for consumer-facing emails',
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Who Uses Siggly in Cannabis',
+        cases: [
+          {
+            title: 'Dispensaries',
+            description:
+              'Display retail license numbers and link to online menus or ordering platforms from budtender and manager signatures.',
+          },
+          {
+            title: 'Cultivators',
+            description:
+              'Include cultivation licenses, facility addresses, and harvest schedule links for distributor communications.',
+          },
+          {
+            title: 'Processors & Manufacturers',
+            description:
+              'Showcase manufacturing licenses, lab testing partner links, and COA access portals in production team signatures.',
+          },
+          {
+            title: 'Multi-State Operators',
+            description:
+              'Manage license-specific signatures across multiple states from one centralized Siggly dashboard.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can I display different state licenses for multi-state operations?',
+        answer:
+          'Yes. Siggly supports location-based templates so each state operation displays the correct license numbers, local addresses, and state-specific disclaimers.',
+      },
+      {
+        question: 'Does Siggly integrate with Metrc or BioTrack?',
+        answer:
+          'Siggly can link to your seed-to-sale tracking portal in signatures. While we do not pull data directly from Metrc or BioTrack, your compliance URLs are always one click away.',
+      },
+      {
+        question: 'Can we add age-verification disclaimers?',
+        answer:
+          'Yes. Siggly supports mandatory disclaimer blocks that are automatically appended to every signature, including age-gate notices required in many cannabis markets.',
+      },
+    ],
+    cta: {
+      title: 'Stay Compliant with Every Email',
+      description:
+        'Give your cannabis operation the professional, license-verified email presence regulators and partners expect.',
+    },
+  },
+
+  // ─── Construction ──────────────────────────────────────────────────
+  {
+    slug: 'construction',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Construction Companies | Siggly',
+      description:
+        'Branded email signatures for general contractors, subcontractors, and construction managers. Highlight OSHA training, bonding status, and project details.',
+      keywords: [
+        'construction email signatures',
+        'contractor email branding',
+        'OSHA compliant email',
+        'construction company signatures',
+        'subcontractor email management',
+      ],
+      canonical: '/industries/construction',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Construction', url: '/industries/construction' },
+    ],
+    hero: {
+      badge: { icon: 'wrench', text: 'Construction Solutions' },
+      title: 'Build Credibility with Every Email Your Construction Team Sends',
+      description:
+        'General contractors, specialty trades, and project managers all benefit from professional email signatures that showcase bonding, OSHA certifications, and licensing. Siggly keeps your entire crew on-brand.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '350+', label: 'Construction firms' },
+      { value: '97%', label: 'Brand compliance rate' },
+      { value: '20 min', label: 'Crew-wide deployment' },
+      { value: '45%', label: 'Fewer manual updates' },
+    ],
+    features: [
+      {
+        icon: 'shield-check',
+        title: 'OSHA & Safety Certifications',
+        description:
+          'Display OSHA 10/30 certifications, EMR ratings, and safety record highlights so owners and GCs can verify your safety credentials instantly.',
+      },
+      {
+        icon: 'credit-card',
+        title: 'Bonding & Insurance Details',
+        description:
+          'Include bonding capacity, insurance carrier information, and certificate-of-insurance request links directly in project manager signatures.',
+      },
+      {
+        icon: 'file-text',
+        title: 'License & Classification Badges',
+        description:
+          'Show contractor license numbers, trade classifications, and DBE/MBE/WBE certifications that matter during bid evaluation.',
+      },
+      {
+        icon: 'building-2',
+        title: 'Project-Specific Signatures',
+        description:
+          'Create temporary signature templates for active projects that include job-site addresses, project numbers, and owner contact information.',
+      },
+      {
+        icon: 'users',
+        title: 'Subcontractor Coordination',
+        description:
+          'Provision branded signatures for subcontractors working under your GC umbrella so all project communication maintains a unified appearance.',
+      },
+    ],
+    featuresTitle: 'Why Construction Professionals Rely on Siggly',
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Deploy Signatures Across Your Crew',
+        steps: [
+          {
+            step: '01',
+            title: 'Add Your Credentials',
+            description:
+              'Upload your logo, license numbers, OSHA certs, and bonding details into Siggly. These become reusable assets for any template.',
+          },
+          {
+            step: '02',
+            title: 'Build Role-Based Templates',
+            description:
+              'Create templates for project managers, estimators, superintendents, and field staff with the credential fields each role needs.',
+          },
+          {
+            step: '03',
+            title: 'Roll Out and Track',
+            description:
+              'Deploy to your team and monitor adoption. Siggly alerts you when certifications expire so you can update signatures proactively.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'GCs started commenting on how professional our bid emails looked. Having our bonding capacity and EMR rating right in the signature saved back-and-forth during prequalification.',
+      authorName: 'Mike Delgado',
+      authorTitle: 'President, Delgado Mechanical Contractors',
+    },
+    faqs: [
+      {
+        question: 'Can I display OSHA certifications in signatures?',
+        answer:
+          'Yes. Siggly supports custom fields for OSHA 10, OSHA 30, and site-specific safety training certifications that appear beneath each employee name and title.',
+      },
+      {
+        question: 'How do I manage signatures for subcontractors?',
+        answer:
+          'Subcontractors can be added with project-limited access. Their signatures use your GC branding and are automatically deactivated when the project closes out.',
+      },
+      {
+        question: 'Can project-specific signatures expire automatically?',
+        answer:
+          'Yes. Siggly supports date-based templates that revert employees to their default company signature when a project reaches its scheduled completion date.',
+      },
+    ],
+    cta: {
+      title: 'Lay the Foundation for Professional Email',
+      description:
+        'Give every project email the credibility your construction firm has earned. Start free with Siggly.',
+    },
+  },
+
+  // ─── Cryptocurrency ────────────────────────────────────────────────
+  {
+    slug: 'cryptocurrency',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Cryptocurrency Companies | Siggly',
+      description:
+        'Professional email signatures for crypto exchanges, DeFi protocols, and blockchain startups. Build trust with compliance badges and wallet verification.',
+      keywords: [
+        'cryptocurrency email signatures',
+        'crypto company email branding',
+        'blockchain email signatures',
+        'DeFi email management',
+        'web3 email branding',
+      ],
+      canonical: '/industries/cryptocurrency',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Cryptocurrency', url: '/industries/cryptocurrency' },
+    ],
+    hero: {
+      badge: { icon: 'link', text: 'Crypto Solutions' },
+      title: 'Trust-Building Email Signatures for the Crypto Industry',
+      description:
+        'In an industry where trust is everything, your email signature is a credibility signal. Siggly helps crypto exchanges, DeFi teams, and blockchain startups present regulatory compliance, verified contacts, and professional branding.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '80+', label: 'Crypto organizations' },
+      { value: '100%', label: 'Anti-phishing support' },
+      { value: '5 min', label: 'Team-wide deployment' },
+    ],
+    features: [
+      {
+        icon: 'shield',
+        title: 'Regulatory Compliance Badges',
+        description:
+          'Display FinCEN MSB registration, state MTL numbers, and international licensing details to demonstrate regulatory standing to partners and users.',
+      },
+      {
+        icon: 'fingerprint',
+        title: 'Anti-Phishing Verification',
+        description:
+          'Include a unique verification phrase or signed hash in your email signature so recipients can confirm emails genuinely originate from your organization.',
+      },
+      {
+        icon: 'key',
+        title: 'Public Key & Wallet Display',
+        description:
+          'Add your company treasury wallet address or PGP public key fingerprint for recipients who need to verify payments or encrypted communications.',
+      },
+      {
+        icon: 'network',
+        title: 'Multi-Chain Branding',
+        description:
+          'Showcase which blockchains your project operates on with chain-specific logos and explorer links for full transparency.',
+      },
+    ],
+    featuresTitle: 'Crypto-Native Signature Features',
+    sections: [
+      {
+        type: 'prose',
+        title: 'Why Email Branding Matters in Crypto',
+        paragraphs: [
+          'Cryptocurrency businesses face unique trust challenges. Phishing attacks, impersonation scams, and regulatory scrutiny make professional email communication essential rather than optional.',
+          'A well-branded email signature that includes licensing details, anti-phishing verification, and official contact channels signals legitimacy to institutional partners, regulators, and retail users alike.',
+          'Siggly helps crypto organizations standardize these trust signals across every team member, from developers and community managers to C-suite executives and compliance officers.',
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'Crypto Email Signature Best Practices',
+        items: [
+          'FinCEN MSB or equivalent regulatory registration displayed',
+          'Anti-phishing verification phrase included',
+          'Official support and security contact channels listed',
+          'Company treasury or donation wallet address linked',
+          'PGP public key fingerprint for encrypted communication',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can I include a wallet address in my signature?',
+        answer:
+          'Yes. Siggly supports custom fields for treasury wallet addresses, ENS domains, and payment links so recipients can verify official payment channels.',
+      },
+      {
+        question: 'How does the anti-phishing feature work?',
+        answer:
+          'You set a unique verification phrase that appears in every team signature. Recipients learn to look for this phrase to confirm the email is genuine and not a spoofed message.',
+      },
+      {
+        question: 'Can we display regulatory licenses from multiple jurisdictions?',
+        answer:
+          'Yes. Siggly supports multi-jurisdiction templates so your US, EU, and APAC teams each display the correct regulatory registrations for their operating region.',
+      },
+    ],
+    cta: {
+      title: 'Build Trust in Every Crypto Communication',
+      description:
+        'Legitimacy starts with professional email. Give your crypto organization verified, branded signatures with Siggly.',
+    },
+  },
+
+  // ─── Cybersecurity ─────────────────────────────────────────────────
+  {
+    slug: 'cybersecurity',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Cybersecurity Firms | Siggly',
+      description:
+        'Secure, professional email signatures for cybersecurity teams. Display SOC 2 compliance, NIST framework alignment, and security certifications.',
+      keywords: [
+        'cybersecurity email signatures',
+        'infosec email branding',
+        'SOC 2 email signatures',
+        'NIST compliant signatures',
+        'security firm email management',
+      ],
+      canonical: '/industries/cybersecurity',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Cybersecurity', url: '/industries/cybersecurity' },
+    ],
+    hero: {
+      badge: { icon: 'shield-check', text: 'Cybersecurity Solutions' },
+      title: 'Email Signatures That Practice What Your Security Firm Preaches',
+      description:
+        'Your firm advises clients on security posture. Your own emails should reflect that expertise. Siggly delivers lean, secure signatures that showcase SOC 2 attestations, NIST alignment, and individual practitioner certifications.',
+      variant: 'slate',
+    },
+    features: [
+      {
+        icon: 'shield',
+        title: 'SOC 2 & ISO 27001 Badges',
+        description:
+          'Display your firm SOC 2 Type II attestation, ISO 27001 certification, and other compliance framework badges directly in email signatures.',
+      },
+      {
+        icon: 'file-check',
+        title: 'Practitioner Certifications',
+        description:
+          'Show CISSP, CISM, CEH, OSCP, and other security certifications alongside employee names so clients see credentialed professionals in every email.',
+      },
+      {
+        icon: 'lock',
+        title: 'Minimal-Footprint HTML',
+        description:
+          'Signatures use lean, script-free HTML with no external resource calls, meeting the strict email security policies your clients expect from a security vendor.',
+      },
+      {
+        icon: 'eye',
+        title: 'Incident Response Contacts',
+        description:
+          'Include 24/7 SOC hotline numbers, incident reporting links, and escalation paths so clients can reach your security operations center from any email.',
+      },
+      {
+        icon: 'fingerprint',
+        title: 'PGP Key Distribution',
+        description:
+          'Link to your public PGP key or keyserver URL directly in your signature, making encrypted communication effortless for security-conscious recipients.',
+      },
+    ],
+    featuresTitle: 'Security-First Signature Design',
+    featuresDescription:
+      'Every feature is built with the security posture your clients expect from their cybersecurity partner.',
+    sections: [
+      {
+        type: 'benefits',
+        title: 'How Siggly Strengthens Your Security Brand',
+        items: [
+          {
+            icon: 'target',
+            title: 'Client Confidence',
+            description:
+              'Compliance badges and practitioner credentials in every email reinforce your authority before meetings even begin.',
+          },
+          {
+            icon: 'code',
+            title: 'Clean HTML Standards',
+            description:
+              'No tracking pixels, external scripts, or bloated markup. Just clean, auditable HTML that passes any email security scan.',
+          },
+          {
+            icon: 'clock',
+            title: 'Rapid Incident Contact',
+            description:
+              'Every signature includes direct links to your SOC, making it easy for clients to report incidents without searching for contact info.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We could not credibly advise clients on email security while our own signatures were inconsistent and bloated. Siggly gave us lean, professional signatures that walk the walk.',
+      authorName: 'James Whitfield',
+      authorTitle: 'CISO, Bastion Security Group',
+    },
+    faqs: [
+      {
+        question: 'Is Siggly itself SOC 2 compliant?',
+        answer:
+          'Siggly maintains SOC 2 Type II compliance with annual audits. We can provide our attestation report to your security team upon request.',
+      },
+      {
+        question: 'Does the signature HTML contain any external calls?',
+        answer:
+          'No. Siggly signatures use inline styles and base64-encoded images by default, with no external scripts, tracking pixels, or third-party resource loads.',
+      },
+      {
+        question: 'Can analysts display their individual security certifications?',
+        answer:
+          'Yes. Each employee signature can list certifications like CISSP, CISM, CEH, OSCP, GIAC, and CompTIA Security+ beneath their name and title.',
+      },
+      {
+        question: 'How do you handle signature deployment security?',
+        answer:
+          'Signatures are deployed via encrypted channels with role-based access controls. Only authorized administrators can modify templates or push updates.',
+      },
+      {
+        question: 'Can we include a PGP public key in the signature?',
+        answer:
+          'Yes. Siggly supports a dedicated PGP key field where you can link to your public key on a keyserver or include the fingerprint directly in the signature.',
+      },
+    ],
+    cta: {
+      title: 'Secure Your Email Signature Strategy',
+      description:
+        'Your cybersecurity firm deserves signatures as rigorous as your threat assessments. Start your free Siggly trial.',
+    },
+  },
+
+  // ─── E-commerce ────────────────────────────────────────────────────
+  {
+    slug: 'ecommerce',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for E-commerce Businesses | Siggly',
+      description:
+        'Drive conversions with branded email signatures for your e-commerce team. Promote sales, link to your storefront, and enhance customer support emails.',
+      keywords: [
+        'ecommerce email signatures',
+        'online store email branding',
+        'Shopify email signatures',
+        'WooCommerce email branding',
+        'e-commerce support signatures',
+      ],
+      canonical: '/industries/ecommerce',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'E-commerce', url: '/industries/ecommerce' },
+    ],
+    hero: {
+      badge: { icon: 'store', text: 'E-commerce Solutions' },
+      title: 'Turn Every Customer Email into a Conversion Opportunity',
+      description:
+        'Your e-commerce team sends hundreds of emails daily to customers, vendors, and partners. Siggly ensures each one drives traffic back to your store with promotional banners, review links, and branded support signatures.',
+      variant: 'light',
+    },
+    stats: [
+      { value: '400+', label: 'E-commerce brands' },
+      { value: '22%', label: 'More repeat purchases' },
+      { value: '<5 min', label: 'Banner swap time' },
+      { value: '3x', label: 'Signature click rate' },
+    ],
+    features: [
+      {
+        icon: 'store',
+        title: 'Storefront Promotion Banners',
+        description:
+          'Feature seasonal sales, new product drops, and coupon codes in rotating signature banners that link directly to your Shopify, WooCommerce, or custom storefront.',
+      },
+      {
+        icon: 'star',
+        title: 'Review & Referral Links',
+        description:
+          'Include Trustpilot, Google Reviews, or referral program links in support team signatures to turn every resolved ticket into a review or referral opportunity.',
+      },
+      {
+        icon: 'headphones',
+        title: 'Support Team Signatures',
+        description:
+          'Give customer support agents branded signatures with order tracking links, return policy pages, and live chat access for seamless post-purchase communication.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Click-Through Analytics',
+        description:
+          'Track which signature banners and links generate the most clicks and conversions. Optimize your signature campaigns with real data.',
+      },
+    ],
+    featuresTitle: 'Signature Features Built for Online Retail',
+    sections: [
+      {
+        type: 'use-cases-grid',
+        title: 'E-commerce Teams That Benefit from Siggly',
+        cases: [
+          {
+            title: 'Customer Support',
+            description:
+              'Branded signatures with order tracking links and return policy pages that resolve customer questions before they are asked.',
+          },
+          {
+            title: 'Marketing Team',
+            description:
+              'Promote flash sales, new arrivals, and loyalty programs in every marketing team email sent to partners and influencers.',
+          },
+          {
+            title: 'Fulfillment & Operations',
+            description:
+              'Include warehouse contact details and shipping partner links for streamlined vendor communication.',
+          },
+          {
+            title: 'Executive Team',
+            description:
+              'Present a polished brand image to investors, wholesale buyers, and strategic partners.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We added a 15%-off coupon banner to our support team signatures. Over three months, it generated over $22,000 in repeat purchases we can directly attribute to those email clicks.',
+      authorName: 'Lisa Cheng',
+      authorTitle: 'Head of E-commerce, Bloom & Basket',
+    },
+    faqs: [
+      {
+        question: 'Can I rotate promotional banners in signatures?',
+        answer:
+          'Yes. Siggly supports banner rotation schedules so you can automatically swap promotions for seasonal sales, product launches, and clearance events.',
+      },
+      {
+        question: 'Does Siggly integrate with Shopify or WooCommerce?',
+        answer:
+          'Siggly links to any e-commerce platform via URL. You can embed storefront links, product page URLs, and cart recovery pages in your signatures.',
+      },
+      {
+        question: 'Can support agents have different signatures than sales?',
+        answer:
+          'Absolutely. Siggly supports department-based templates so support agents show help desk links while sales reps display product catalogs and scheduling tools.',
+      },
+    ],
+    cta: {
+      title: 'Boost Sales from Every Email',
+      description:
+        'Your e-commerce emails are untapped revenue. Let Siggly help you convert every interaction into a storefront visit.',
+    },
+  },
+
+  // ─── Gaming ────────────────────────────────────────────────────────
+  {
+    slug: 'gaming',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Gaming Studios | Siggly',
+      description:
+        'Creative, branded email signatures for game studios, publishers, and esports organizations. Showcase titles, platform partnerships, and community links.',
+      keywords: [
+        'gaming email signatures',
+        'game studio email branding',
+        'esports email signatures',
+        'game publisher email',
+        'gaming industry email management',
+      ],
+      canonical: '/industries/gaming',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Gaming', url: '/industries/gaming' },
+    ],
+    hero: {
+      badge: { icon: 'play-circle', text: 'Gaming Solutions' },
+      title: 'Level Up Your Studio\'s Email Presence',
+      description:
+        'Game studios, publishers, and esports organizations need email signatures as creative as their products. Siggly delivers branded signatures with title showcases, platform badges, and community links that match your studio identity.',
+      variant: 'dark',
+    },
+    features: [
+      {
+        icon: 'play-circle',
+        title: 'Title Showcase Banners',
+        description:
+          'Promote your latest release, upcoming title, or flagship franchise with eye-catching banner art that links to store pages or trailers.',
+      },
+      {
+        icon: 'grid',
+        title: 'Platform Partnership Badges',
+        description:
+          'Display PlayStation, Xbox, Nintendo, Steam, and Epic Games Store partnership logos to signal your multi-platform presence.',
+      },
+      {
+        icon: 'message-circle',
+        title: 'Community Hub Links',
+        description:
+          'Include Discord server invites, Twitch channel links, and subreddit URLs so every email connects recipients to your gaming community.',
+      },
+    ],
+    featuresTitle: 'Signature Features for the Gaming Industry',
+    sections: [
+      {
+        type: 'checklist',
+        title: 'What Gaming Professionals Include in Signatures',
+        items: [
+          'Studio logo with custom art style',
+          'Current or upcoming title banner',
+          'Platform partnership badges',
+          'Discord, Twitch, and social community links',
+          'Press kit and media contact information',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We added our latest game trailer banner to every team signature during launch week. Social impressions from email clicks alone beat our paid campaign by 3x.',
+      authorName: 'Alex Kim',
+      authorTitle: 'Community Director, Ironclad Studios',
+    },
+    faqs: [
+      {
+        question: 'Can I use custom artwork in my email signature?',
+        answer:
+          'Yes. Siggly supports custom banner images, so you can use key art from your latest title or your studio brand art as a signature header or footer.',
+      },
+      {
+        question: 'How do I manage signatures for a large studio?',
+        answer:
+          'Siggly integrates with your directory to automatically assign signatures by department. Artists, engineers, producers, and community managers each get role-appropriate templates.',
+      },
+      {
+        question: 'Can esports teams use Siggly?',
+        answer:
+          'Yes. Esports organizations can create player-specific signatures with team branding, sponsor logos, streaming schedules, and social handles.',
+      },
+      {
+        question: 'Does Siggly work for indie developers?',
+        answer:
+          'Absolutely. Siggly scales from solo indie devs to AAA studios. Free and affordable plans make it accessible for teams of any size.',
+      },
+    ],
+    cta: {
+      title: 'Press Start on Professional Email',
+      description:
+        'Give your gaming studio email signatures that are as polished as the titles you ship. Try Siggly free.',
+    },
+  },
+
+  // ─── Mining ────────────────────────────────────────────────────────
+  {
+    slug: 'mining',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Mining Companies | Siggly',
+      description:
+        'Branded email signatures for mining operations. Display safety protocols, environmental compliance, and mineral rights credentials professionally.',
+      keywords: [
+        'mining email signatures',
+        'mining company email branding',
+        'MSHA compliant signatures',
+        'mineral rights email',
+        'mining safety email management',
+      ],
+      canonical: '/industries/mining',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Mining', url: '/industries/mining' },
+    ],
+    hero: {
+      badge: { icon: 'gauge', text: 'Mining Solutions' },
+      title: 'Professional Email Signatures Forged for Mining Operations',
+      description:
+        'Mining companies operate under intense regulatory scrutiny. Siggly ensures every email from your corporate offices, field sites, and processing facilities carries proper safety credentials, environmental compliance details, and professional branding.',
+      variant: 'violet',
+    },
+    stats: [
+      { value: '75+', label: 'Mining companies' },
+      { value: '100%', label: 'MSHA badge support' },
+      { value: '15 min', label: 'Site-wide deployment' },
+      { value: '50%', label: 'Fewer compliance gaps' },
+    ],
+    features: [
+      {
+        icon: 'shield-check',
+        title: 'MSHA Safety Credentials',
+        description:
+          'Display MSHA training certifications, Part 46/48 compliance status, and safety performance metrics that regulators and partners expect to see.',
+      },
+      {
+        icon: 'activity',
+        title: 'Environmental Compliance Badges',
+        description:
+          'Include EPA permits, NEPA compliance notices, and environmental impact assessment references to demonstrate responsible mining practices.',
+      },
+      {
+        icon: 'map',
+        title: 'Multi-Site Management',
+        description:
+          'Manage unique signatures for each mine site, processing facility, and corporate office with location-specific contact details and permits.',
+      },
+      {
+        icon: 'file-text',
+        title: 'Mineral Rights Documentation',
+        description:
+          'Link to mineral rights registries, claim documentation, and royalty contact information directly from land management team signatures.',
+      },
+    ],
+    featuresTitle: 'Mined for Mining Professionals',
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Why Mining Companies Choose Siggly',
+        items: [
+          {
+            icon: 'shield',
+            title: 'Regulatory Confidence',
+            description:
+              'MSHA and EPA compliance details in every email demonstrate your commitment to safety and environmental responsibility before any meeting.',
+          },
+          {
+            icon: 'building-2',
+            title: 'Multi-Site Coordination',
+            description:
+              'Each mine site gets its own template with local permits, emergency contacts, and site-specific branding while corporate standards remain enforced.',
+          },
+          {
+            icon: 'refresh-cw',
+            title: 'Certification Tracking',
+            description:
+              'Siggly alerts you when safety certifications approach expiration, so signatures always reflect current credential status.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Having our MSHA training status and environmental permits visible in every email streamlined our interactions with regulators. It shows we take compliance seriously.',
+      authorName: 'Tom Bridwell',
+      authorTitle: 'VP of Operations, Ridgeline Mining Corp',
+    },
+    cta: {
+      title: 'Unearth Professional Email Signatures',
+      description:
+        'Give your mining operation branded, compliant signatures that reflect your safety commitment. Start free.',
+    },
+  },
+
+  // ─── Pharmaceuticals ──────────────────────────────────────────────
+  {
+    slug: 'pharmaceuticals',
+    category: 'industries',
+    meta: {
+      title: 'Email Signatures for Pharmaceutical Companies | Siggly',
+      description:
+        'Compliant email signatures for pharma teams. Display FDA approval details, GMP certifications, and drug safety information in every email.',
+      keywords: [
+        'pharmaceutical email signatures',
+        'pharma email branding',
+        'FDA compliant signatures',
+        'GMP email management',
+        'drug safety email signatures',
+      ],
+      canonical: '/industries/pharmaceuticals',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Industries', url: '/industries' },
+      { name: 'Pharmaceuticals', url: '/industries/pharmaceuticals' },
+    ],
+    hero: {
+      badge: { icon: 'heart', text: 'Pharmaceutical Solutions' },
+      title: 'Prescription-Strength Email Signatures for Pharma Professionals',
+      description:
+        'Pharmaceutical companies face stringent communication requirements from the FDA, EMA, and global regulators. Siggly helps your teams maintain GMP-compliant signatures with proper disclaimers, credential displays, and adverse event reporting links.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '120+', label: 'Pharma organizations' },
+      { value: '99%', label: 'Disclaimer compliance' },
+      { value: '<15 min', label: 'Global deployment' },
+    ],
+    features: [
+      {
+        icon: 'file-check',
+        title: 'FDA & EMA Regulatory Fields',
+        description:
+          'Include NDA/ANDA numbers, EMA marketing authorization references, and regulatory affairs contact details that auditors and partners need.',
+      },
+      {
+        icon: 'shield',
+        title: 'GMP Compliance Badges',
+        description:
+          'Display current Good Manufacturing Practice certification status, facility registration numbers, and DEA schedule details where applicable.',
+      },
+      {
+        icon: 'alert-triangle',
+        title: 'Adverse Event Reporting Links',
+        description:
+          'Automatically include MedWatch reporting links and pharmacovigilance contact information in all outward-facing signatures as required by FDA guidance.',
+      },
+      {
+        icon: 'lock',
+        title: 'Promotional Review Compliance',
+        description:
+          'Ensure signatures used by commercial teams comply with OPDP guidelines by restricting unapproved claims and including required fair-balance references.',
+      },
+      {
+        icon: 'globe',
+        title: 'Multi-Market Localization',
+        description:
+          'Manage signature variations for US, EU, APAC, and LATAM markets with region-specific regulatory disclaimers, languages, and local affiliate branding.',
+      },
+    ],
+    featuresTitle: 'Pharma-Grade Signature Management',
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Get Your Pharma Team on Siggly',
+        steps: [
+          {
+            step: '01',
+            title: 'Configure Compliance Rules',
+            description:
+              'Set up mandatory disclaimer blocks, adverse event links, and credential fields that must appear on every signature across your organization.',
+          },
+          {
+            step: '02',
+            title: 'Build Department Templates',
+            description:
+              'Create distinct templates for R&D, regulatory affairs, commercial, medical affairs, and manufacturing teams with role-appropriate content.',
+          },
+          {
+            step: '03',
+            title: 'Deploy with Audit Trail',
+            description:
+              'Push signatures globally with full version history and audit logging to satisfy FDA and EMA inspection requirements.',
+          },
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Pharma Teams Using Siggly',
+        cases: [
+          {
+            title: 'Regulatory Affairs',
+            description:
+              'Signatures with NDA numbers, FDA contact references, and submission tracking links for seamless regulator communication.',
+          },
+          {
+            title: 'Medical Science Liaisons',
+            description:
+              'Credential-rich signatures featuring MD/PharmD degrees, therapeutic area specialties, and publication links.',
+          },
+          {
+            title: 'Commercial & Sales',
+            description:
+              'Compliant promotional signatures with fair-balance language and approved product messaging.',
+          },
+          {
+            title: 'Pharmacovigilance',
+            description:
+              'Signatures with mandatory MedWatch links and adverse event reporting instructions for patient safety compliance.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can Siggly enforce mandatory disclaimers for pharma?',
+        answer:
+          'Yes. Administrators can lock disclaimer blocks so they cannot be removed or edited by individual employees, ensuring every email meets regulatory requirements.',
+      },
+      {
+        question: 'How do you handle promotional review compliance?',
+        answer:
+          'Siggly supports approval workflows where medical-legal-regulatory teams can review and approve signature content before it goes live, preventing unapproved promotional claims.',
+      },
+      {
+        question: 'Can we include adverse event reporting links?',
+        answer:
+          'Yes. MedWatch URLs, pharmacovigilance email addresses, and adverse event phone numbers can be added as mandatory fields that appear on all outward-facing signatures.',
+      },
+      {
+        question: 'Does Siggly maintain an audit trail?',
+        answer:
+          'Yes. Every signature change is logged with timestamps, user attribution, and version snapshots. This audit trail supports FDA 21 CFR Part 11 and EMA Annex 11 inspection readiness.',
+      },
+    ],
+    cta: {
+      title: 'Prescribe Professional Email Standards',
+      description:
+        'Ensure every pharmaceutical email meets regulatory requirements and projects your brand with precision. Try Siggly free.',
+    },
+  },
 ];

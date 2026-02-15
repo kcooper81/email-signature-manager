@@ -59,7 +59,7 @@ export default function BlogPost() {
             <p className="font-semibold text-violet-800 mb-2">Key advantages:</p>
             <ul className="space-y-1 text-sm text-violet-700">
               <li className="flex items-center gap-2"><Check className="h-4 w-4" /> Free tier available</li>
-              <li className="flex items-center gap-2"><Check className="h-4 w-4" /> Per-user pricing starting at $0.50/user/month</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4" /> Simple per-user pricing at $1.50/user/month (Professional)</li>
               <li className="flex items-center gap-2"><Check className="h-4 w-4" /> Google Workspace & Microsoft 365</li>
               <li className="flex items-center gap-2"><Check className="h-4 w-4" /> Modern, intuitive interface</li>
               <li className="flex items-center gap-2"><Check className="h-4 w-4" /> Quick setup (under 15 minutes)</li>
@@ -139,8 +139,8 @@ export default function BlogPost() {
           <p className="text-gray-600 mb-6">For a 50-user organization:</p>
           <ul className="list-disc pl-6 text-gray-600 space-y-2 mb-6">
             <li><strong>Exclaimer:</strong> ~$2,000-4,000/year (varies by plan)</li>
-            <li><strong>Siggly:</strong> Starting at $300/year (Starter plan)</li>
-            <li><strong>Potential savings:</strong> 60-85%</li>
+            <li><strong>Siggly:</strong> Starting at $900/year (50 users at $1.50/user/mo)</li>
+            <li><strong>Potential savings:</strong> 50-75%</li>
           </ul>
 
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 my-12">

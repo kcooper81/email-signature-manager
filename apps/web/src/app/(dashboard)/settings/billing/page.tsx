@@ -393,15 +393,11 @@ export default function BillingPage() {
                 <p className="text-sm text-muted-foreground mt-1">{currentPlan.description}</p>
                 {currentPlan.pricePerUser > 0 && (
                   <div className="mt-2">
-                    {currentPlan.id === 'professional' ? (
-                      <div>
-                        <p className="text-lg font-medium">$29/month base</p>
-                        <p className="text-sm text-muted-foreground">+ $1/user/month</p>
-                      </div>
-                    ) : (
-                      <p className="text-lg font-medium">
-                        {formatPrice(currentPlan.pricePerUser)}/user/month
-                      </p>
+                    <p className="text-lg font-medium">
+                      {formatPrice(currentPlan.pricePerUser)}/user/month
+                    </p>
+                    {currentPlan.id === 'professional' && (
+                      <p className="text-sm text-muted-foreground">10-user minimum ($15/mo)</p>
                     )}
                   </div>
                 )}
@@ -538,7 +534,7 @@ export default function BillingPage() {
               <span>{billingError}</span>
             </div>
           )}
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {Object.values(PLANS).map((plan) => {
               const isCurrentPlan = currentPlan.id === plan.id;
               return (
@@ -560,16 +556,16 @@ export default function BillingPage() {
                       <p className="text-xl sm:text-2xl font-bold">
                         {plan.id === 'enterprise' ? 'Custom' : 'Free'}
                       </p>
-                    ) : plan.id === 'professional' ? (
-                      <div>
-                        <p className="text-xl sm:text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
-                        <p className="text-sm text-muted-foreground">+ $1/user/mo</p>
-                      </div>
                     ) : (
-                      <p className="text-xl sm:text-2xl font-bold">
-                        {formatPrice(plan.pricePerUser)}
-                        <span className="text-sm font-normal text-muted-foreground">/user/mo</span>
-                      </p>
+                      <div>
+                        <p className="text-xl sm:text-2xl font-bold">
+                          {formatPrice(plan.pricePerUser)}
+                          <span className="text-sm font-normal text-muted-foreground">/user/mo</span>
+                        </p>
+                        {plan.id === 'professional' && (
+                          <p className="text-sm text-muted-foreground">10-user minimum</p>
+                        )}
+                      </div>
                     )}
                   </div>
                   <ul className="space-y-2 text-sm mb-4 max-h-64 overflow-y-auto">

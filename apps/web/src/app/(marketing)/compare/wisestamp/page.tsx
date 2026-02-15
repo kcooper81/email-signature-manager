@@ -29,7 +29,7 @@ const comparisonData = [
 const switchReasons = [
   { icon: Users, title: 'Built for teams', description: 'WiseStamp is designed for individuals. Siggly is purpose-built for team management.' },
   { icon: Zap, title: 'Centralized deployment', description: 'Deploy to entire organization in 60 seconds. No browser extensions needed.' },
-  { icon: DollarSign, title: 'Better team pricing', description: 'Save 90% with team plans vs WiseStamp\'s per-user pricing.' },
+  { icon: DollarSign, title: 'Better team pricing', description: 'Save 75% with Siggly at $1.50/user vs WiseStamp\'s $6/user.' },
   { icon: Sparkles, title: 'IT admin controls', description: 'Department rules, scheduled updates, and compliance features WiseStamp lacks.' },
 ];
 
@@ -68,7 +68,7 @@ export default function WiseStampComparisonPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">90%</div>
+              <div className="text-4xl font-bold text-green-400 mb-2">75%</div>
               <div className="text-gray-400">Lower cost for teams</div>
             </div>
             <div>
@@ -194,10 +194,10 @@ export default function WiseStampComparisonPage() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-violet-50 border-2 border-violet-500 rounded-2xl p-8">
               <div className="text-violet-600 font-semibold mb-2">Siggly</div>
-              <div className="text-4xl font-bold mb-4">$0.50<span className="text-lg font-normal text-gray-500">/user/mo</span></div>
+              <div className="text-4xl font-bold mb-4">$1.50<span className="text-lg font-normal text-gray-500">/user/mo</span></div>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Free plan for up to 5 users</li>
-                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> All team management features</li>
+                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Everything unlocked — no base fee</li>
                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Centralized deployment</li>
                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> No per-user setup needed</li>
               </ul>
@@ -214,7 +214,7 @@ export default function WiseStampComparisonPage() {
             </div>
           </div>
           <p className="text-center text-sm text-gray-500 mt-6">
-            For a 50-person team: Siggly = $25/mo vs WiseStamp = $300/mo. Save $3,300/year.
+            For a 50-person team: Siggly = $75/mo vs WiseStamp = $300/mo. Save $2,700/year.
           </p>
         </div>
       </section>
