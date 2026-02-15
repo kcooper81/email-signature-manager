@@ -10,6 +10,7 @@ import type {
   ContactInfoBlockContent,
   ButtonBlockContent,
   SocialBlockContent,
+  BannerBlockContent,
   DisclaimerBlockContent,
   ComplianceBlockContent,
   HtmlBlockContent,
@@ -99,6 +100,8 @@ function renderBlock(
       return renderButtonBlock(block.content as ButtonBlockContent, replacePlaceholders);
     case 'social':
       return renderSocialBlock(block.content as SocialBlockContent);
+    case 'banner':
+      return renderBannerBlock(block.content as BannerBlockContent);
     case 'disclaimer':
       return renderDisclaimerBlock(block.content as DisclaimerBlockContent);
     case 'compliance':
@@ -400,6 +403,67 @@ function renderSocialBlock(content: SocialBlockContent): React.ReactNode {
       })}
     </div>
   );
+}
+
+function renderBannerBlock(content: BannerBlockContent): React.ReactNode {
+  if (!content.src) {
+    return (
+      <div
+        style={{
+          width: content.width || 600,
+          height: 80,
+          backgroundColor: '#f1f5f9',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 4,
+          marginBottom: 8,
+        }}
+      >
+        <span style={{ color: '#94a3b8', fontSize: 12 }}>No banner image</span>
+      </div>
+    );
+  }
+
+  // Check scheduling
+  const today = new Date().toISOString().split('T')[0];
+  if (content.startDate && today < content.startDate) {
+    return (
+      <div style={{ fontSize: 11, color: '#3b82f6', fontStyle: 'italic', marginTop: 8 }}>
+        Banner scheduled: starts {content.startDate}
+      </div>
+    );
+  }
+  if (content.endDate && today > content.endDate) {
+    return (
+      <div style={{ fontSize: 11, color: '#ef4444', fontStyle: 'italic', marginTop: 8 }}>
+        Banner expired: ended {content.endDate}
+      </div>
+    );
+  }
+
+  const img = (
+    <img
+      src={content.src}
+      alt={content.alt || 'Banner'}
+      style={{
+        width: content.width || 600,
+        display: 'block',
+        maxWidth: '100%',
+        marginBottom: 8,
+      }}
+    />
+  );
+
+  if (content.link) {
+    return (
+      <a href={content.link} target="_blank" rel="noopener noreferrer">
+        {img}
+      </a>
+    );
+  }
+
+  return img;
 }
 
 function renderDisclaimerBlock(content: DisclaimerBlockContent): React.ReactNode {

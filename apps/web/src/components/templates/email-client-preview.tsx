@@ -314,23 +314,26 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
     case 'image':
       if (!content.src) return null;
       const imgWidth = isMobile ? Math.min(content.width, 300) : content.width;
+      const imgEl = (
+        <img
+          src={content.src}
+          alt={content.alt || ''}
+          width={imgWidth}
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            height: 'auto',
+            borderRadius: isOutlook ? 0 : undefined,
+            margin: isOutlook ? '4px 0' : undefined,
+          }}
+        />
+      );
       return (
         <tr>
           <td style={{ padding: isOutlook ? '8px 0' : '4px 0' }}>
-            <img 
-              src={content.src} 
-              alt={content.alt || ''} 
-              width={imgWidth}
-              style={{ 
-                display: 'block', 
-                maxWidth: '100%',
-                height: 'auto',
-                // Outlook strips border-radius completely
-                borderRadius: isOutlook ? 0 : undefined,
-                // Outlook adds extra spacing around images
-                margin: isOutlook ? '4px 0' : undefined,
-              }} 
-            />
+            {content.link ? (
+              <a href={content.link} target="_blank" rel="noopener noreferrer">{imgEl}</a>
+            ) : imgEl}
           </td>
         </tr>
       );
@@ -388,7 +391,15 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
       if (content.phone) items.push(content.phone);
       if (content.website) items.push(content.website);
       if (content.address) items.push(content.address);
-      
+      // Include custom fields
+      if (content.customFields && Array.isArray(content.customFields)) {
+        for (const field of content.customFields) {
+          if (field.value) {
+            items.push(field.label ? `${field.label}: ${field.value}` : field.value);
+          }
+        }
+      }
+
       if (items.length === 0) return null;
       
       return (
@@ -546,19 +557,24 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
 
     case 'banner':
       if (!content.src) return null;
+      const bannerImg = (
+        <img
+          src={content.src}
+          alt={content.alt || 'Banner'}
+          width={content.width}
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            borderRadius: isOutlook ? 0 : undefined,
+          }}
+        />
+      );
       return (
         <tr>
           <td style={{ padding: '8px 0' }}>
-            <img 
-              src={content.src} 
-              alt={content.alt || 'Banner'} 
-              width={content.width}
-              style={{ 
-                display: 'block', 
-                maxWidth: '100%',
-                borderRadius: isOutlook ? 0 : undefined,
-              }} 
-            />
+            {content.link ? (
+              <a href={content.link} target="_blank" rel="noopener noreferrer">{bannerImg}</a>
+            ) : bannerImg}
           </td>
         </tr>
       );
