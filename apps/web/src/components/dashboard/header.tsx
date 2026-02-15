@@ -37,7 +37,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
     .toUpperCase() || user.email?.[0]?.toUpperCase() || 'U';
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-900 backdrop-blur-sm shadow-md">
+    <header className="sticky top-0 z-50 border-b border-border bg-card backdrop-blur-sm shadow-md">
       <div className="flex h-14 items-center justify-between px-3 sm:px-4 md:px-6">
         {/* Logo - uses custom branding for MSP white-label */}
         <Link href="/dashboard" className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
                 className="h-7 w-auto sm:h-8 object-contain"
               />
               {branding.companyName && (
-                <span className="font-semibold text-base sm:text-lg text-white">
+                <span className="font-semibold text-base sm:text-lg text-foreground">
                   {branding.companyName}
                 </span>
               )}
@@ -63,7 +63,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
                 height={32}
                 className="h-7 w-auto sm:h-8"
               />
-              <span className="font-semibold text-base sm:text-lg text-white">Siggly</span>
+              <span className="font-semibold text-base sm:text-lg text-foreground">Siggly</span>
             </>
           )}
         </Link>
@@ -73,10 +73,10 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
           {/* User menu */}
           <div className="flex items-center gap-2">
             <div className="text-right hidden md:block">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-foreground">
                 {user.user_metadata?.first_name} {user.user_metadata?.last_name}
               </p>
-              <p className="text-xs text-gray-300">{user.email}</p>
+              <p className="text-xs text-muted-foreground">{user.email}</p>
             </div>
             <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center text-xs font-medium">
               {initials}
@@ -86,7 +86,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
           {/* Admin link - only visible to admins */}
           {isAdmin && (
             <Link href="/admin" className="hidden sm:block">
-              <Button variant="ghost" size="icon" className="text-amber-400 hover:text-amber-300 hover:bg-slate-800" title="Admin Panel">
+              <Button variant="ghost" size="icon" className="text-amber-400 hover:text-amber-300 hover:bg-secondary" title="Admin Panel">
                 <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
@@ -94,7 +94,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
 
           {/* Settings */}
           <Link href="/settings" className="hidden sm:block">
-            <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-slate-800">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-secondary">
               <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </Link>
@@ -105,7 +105,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
             size="icon"
             onClick={handleSignOut}
             disabled={loading}
-            className="text-gray-300 hover:text-white hover:bg-slate-800 hidden sm:flex"
+            className="text-muted-foreground hover:text-foreground hover:bg-secondary hidden sm:flex"
           >
             <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>

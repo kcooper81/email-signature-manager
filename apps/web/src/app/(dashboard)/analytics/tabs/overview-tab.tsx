@@ -26,13 +26,13 @@ export function OverviewTab({ data }: OverviewTabProps) {
     : 0;
 
   const getHealthColor = (score: number) => {
-    if (score >= 80) return 'text-green-600 bg-green-100';
-    if (score >= 60) return 'text-amber-600 bg-amber-100';
-    return 'text-red-600 bg-red-100';
+    if (score >= 80) return 'text-emerald-500 bg-emerald-500/10';
+    if (score >= 60) return 'text-amber-600 bg-amber-500/10';
+    return 'text-red-600 bg-red-500/10';
   };
 
   const getAdoptionColor = (rate: number) => {
-    if (rate >= 80) return 'bg-green-500';
+    if (rate >= 80) return 'bg-emerald-500';
     if (rate >= 50) return 'bg-amber-500';
     return 'bg-red-500';
   };
@@ -60,7 +60,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card className="md:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Target className="h-4 w-4 text-violet-600" />
+              <Target className="h-4 w-4 text-primary" />
               Team Adoption
             </CardTitle>
           </CardHeader>
@@ -68,7 +68,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-bold">{data.adoptionRate}%</span>
               {data.adoptionChange !== 0 && (
-                <span className={`text-sm flex items-center ${data.adoptionChange > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`text-sm flex items-center ${data.adoptionChange > 0 ? 'text-emerald-500' : 'text-red-600'}`}>
                   {data.adoptionChange > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {Math.abs(data.adoptionChange)}%
                 </span>
@@ -90,7 +90,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card className="md:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Rocket className="h-4 w-4 text-violet-600" />
+              <Rocket className="h-4 w-4 text-primary" />
               Deployment Activity
             </CardTitle>
           </CardHeader>
@@ -98,23 +98,23 @@ export function OverviewTab({ data }: OverviewTabProps) {
             <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-bold">{data.totalDeployments}</span>
               {data.deploymentsChange !== 0 && (
-                <span className={`text-sm flex items-center ${data.deploymentsChange > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`text-sm flex items-center ${data.deploymentsChange > 0 ? 'text-emerald-500' : 'text-red-600'}`}>
                   {data.deploymentsChange > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {Math.abs(data.deploymentsChange)}% vs prev
                 </span>
               )}
             </div>
             <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-3">
-              <div className="text-center p-2 bg-green-50 rounded">
-                <p className="text-lg font-semibold text-green-700">{data.successfulDeployments}</p>
-                <p className="text-xs text-green-600">Successful</p>
+              <div className="text-center p-2 bg-emerald-500/10 rounded">
+                <p className="text-lg font-semibold text-emerald-500">{data.successfulDeployments}</p>
+                <p className="text-xs text-emerald-500">Successful</p>
               </div>
-              <div className="text-center p-2 bg-red-50 rounded">
-                <p className="text-lg font-semibold text-red-700">{data.failedDeployments}</p>
+              <div className="text-center p-2 bg-red-500/10 rounded">
+                <p className="text-lg font-semibold text-red-600">{data.failedDeployments}</p>
                 <p className="text-xs text-red-600">Failed</p>
               </div>
-              <div className="text-center p-2 bg-amber-50 rounded">
-                <p className="text-lg font-semibold text-amber-700">{data.pendingDeployments}</p>
+              <div className="text-center p-2 bg-amber-500/10 rounded">
+                <p className="text-lg font-semibold text-amber-600">{data.pendingDeployments}</p>
                 <p className="text-xs text-amber-600">Pending</p>
               </div>
             </div>
@@ -124,13 +124,13 @@ export function OverviewTab({ data }: OverviewTabProps) {
 
       {/* Actionable Insights */}
       {data.complianceIssues > 0 && (
-        <Card className="border-amber-200 bg-amber-50/50">
+        <Card className="border-amber-500/20 bg-amber-500/10">
           <CardContent className="py-4">
             <div className="flex items-start gap-3">
               <Lightbulb className="h-5 w-5 text-amber-600 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-semibold text-amber-900">Recommendations</h4>
-                <ul className="mt-2 space-y-1 text-sm text-amber-800">
+                <h4 className="font-semibold text-amber-600">Recommendations</h4>
+                <ul className="mt-2 space-y-1 text-sm text-amber-600">
                   {data.totalUsers - data.usersWithSignatures > 0 && (
                     <li className="flex items-center gap-2">
                       <span className="w-1.5 h-1.5 bg-amber-600 rounded-full" />
@@ -152,7 +152,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
                 </ul>
               </div>
               <Link href="/deployments">
-                <Button size="sm" variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-100">
+                <Button size="sm" variant="outline" className="border-amber-500/20 text-amber-600 hover:bg-amber-500/10">
                   <Zap className="h-4 w-4 mr-1" />
                   Deploy Now
                 </Button>
@@ -167,8 +167,8 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Users className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-xl sm:text-2xl font-bold">{data.totalUsers}</p>
@@ -180,8 +180,8 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
               </div>
               <div>
                 <p className="text-xl sm:text-2xl font-bold">{data.usersWithSignatures}</p>
@@ -193,7 +193,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="p-2 bg-blue-500/15 rounded-lg">
                 <FileSignature className="h-5 w-5 text-blue-600" />
               </div>
               <div>
@@ -206,7 +206,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
+              <div className="p-2 bg-amber-500/10 rounded-lg">
                 <Shield className="h-5 w-5 text-amber-600" />
               </div>
               <div>

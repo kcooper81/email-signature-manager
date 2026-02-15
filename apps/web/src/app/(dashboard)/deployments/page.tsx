@@ -403,7 +403,7 @@ export default function DeploymentsPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle2 className="h-5 w-5 text-green-600" />;
+        return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
       case 'failed':
         return <XCircle className="h-5 w-5 text-red-600" />;
       case 'running':
@@ -448,8 +448,8 @@ export default function DeploymentsPage() {
             </button>
             
             <div className="mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <PartyPopper className="h-10 w-10 text-green-600" />
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <PartyPopper className="h-10 w-10 text-emerald-500" />
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
                 Signatures Deployed!
@@ -463,7 +463,7 @@ export default function DeploymentsPage() {
               <div className="bg-muted rounded-lg p-4 mb-6">
                 <div className="flex justify-center gap-8">
                   <div>
-                    <div className="text-2xl sm:text-3xl font-bold text-green-600">
+                    <div className="text-2xl sm:text-3xl font-bold text-emerald-500">
                       {deploymentResult.successCount}
                     </div>
                     <div className="text-xs sm:text-sm text-muted-foreground">Successful</div>
@@ -537,7 +537,7 @@ export default function DeploymentsPage() {
                       >
                         {copiedId === sig.userId ? (
                           <>
-                            <Check className="mr-2 h-4 w-4 text-green-600" />
+                            <Check className="mr-2 h-4 w-4 text-emerald-500" />
                             Copied!
                           </>
                         ) : (
@@ -556,7 +556,7 @@ export default function DeploymentsPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="bg-slate-50 border rounded p-3 max-h-32 overflow-auto">
+                  <div className="bg-muted border rounded p-3 max-h-32 overflow-auto">
                     <div dangerouslySetInnerHTML={{ __html: sig.html }} />
                   </div>
                 </div>
@@ -594,14 +594,14 @@ export default function DeploymentsPage() {
 
       {/* Connection warning with manual option */}
       {!hasEmailProvider && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-amber-800 font-medium">
+              <p className="text-amber-600 font-medium">
                 No email provider connected
               </p>
-              <p className="text-amber-700 text-sm mt-1">
+              <p className="text-amber-600 text-sm mt-1">
                 Connect Google Workspace or Microsoft 365 to auto-deploy signatures, or copy them manually.
               </p>
             </div>
@@ -637,16 +637,16 @@ export default function DeploymentsPage() {
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
                     step === s.num 
-                      ? 'bg-violet-600 text-white shadow-lg ring-4 ring-violet-100' 
-                      : step > s.num 
+                      ? 'bg-primary text-primary-foreground shadow-lg ring-4 ring-primary/20'
+                      : step > s.num
                       ? 'bg-emerald-500 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-400 border-2 border-gray-200'
+                      : 'bg-muted text-muted-foreground border-2 border-border'
                   }`}>
                     {step > s.num ? <CheckCircle2 className="h-5 w-5" /> : s.num}
                   </div>
                   <div className="hidden sm:block">
                     <p className={`text-sm font-medium ${
-                      step === s.num ? 'text-violet-600' : step > s.num ? 'text-emerald-600' : 'text-gray-400'
+                      step === s.num ? 'text-primary' : step > s.num ? 'text-emerald-600' : 'text-muted-foreground'
                     }`}>
                       {s.label}
                     </p>
@@ -655,7 +655,7 @@ export default function DeploymentsPage() {
                 {idx < 2 && (
                   <div className="flex-1 mx-4">
                     <div className={`h-1 rounded-full transition-all ${
-                      step > s.num ? 'bg-emerald-500' : 'bg-gray-200'
+                      step > s.num ? 'bg-emerald-500' : 'bg-muted'
                     }`} />
                   </div>
                 )}
@@ -686,9 +686,9 @@ export default function DeploymentsPage() {
                     <label
                       key={template.id}
                       className={`flex flex-col p-4 border-2 rounded-lg cursor-pointer transition-all shadow-sm ${
-                        selectedTemplate === template.id 
-                          ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' 
-                          : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
+                        selectedTemplate === template.id
+                          ? 'border-primary bg-primary/10 shadow-md ring-2 ring-primary/20'
+                          : 'border-border hover:border-primary/30 hover:bg-secondary hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-start gap-3 mb-3">
@@ -708,7 +708,7 @@ export default function DeploymentsPage() {
                         </div>
                       </div>
                       {/* Template preview */}
-                      <div className="bg-white border rounded overflow-hidden" style={{ maxHeight: '200px' }}>
+                      <div className="bg-card border rounded overflow-hidden" style={{ maxHeight: '200px' }}>
                         <div className="scale-50 origin-top-left" style={{ width: '200%', height: '200%' }}>
                           <SignaturePreview blocks={template.blocks || []} />
                         </div>
@@ -758,7 +758,7 @@ export default function DeploymentsPage() {
                 <button
                   onClick={() => { setDeployTarget('me'); setSelectedUsers([]); }}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
-                    deployTarget === 'me' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
+                    deployTarget === 'me' ? 'border-primary bg-primary/10 shadow-md ring-2 ring-primary/20' : 'border-border hover:border-primary/30 hover:bg-secondary hover:shadow-md'
                   }`}
                 >
                   <UserIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
@@ -768,7 +768,7 @@ export default function DeploymentsPage() {
                 <button
                   onClick={() => setDeployTarget('selected')}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
-                    deployTarget === 'selected' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
+                    deployTarget === 'selected' ? 'border-primary bg-primary/10 shadow-md ring-2 ring-primary/20' : 'border-border hover:border-primary/30 hover:bg-secondary hover:shadow-md'
                   }`}
                   disabled={users.length === 0}
                 >
@@ -779,7 +779,7 @@ export default function DeploymentsPage() {
                 <button
                   onClick={() => { setDeployTarget('all'); setSelectedUsers([]); }}
                   className={`p-4 border-2 rounded-lg text-center transition-all shadow-sm ${
-                    deployTarget === 'all' ? 'border-violet-500 bg-violet-50 shadow-md ring-2 ring-violet-200' : 'border-gray-200 hover:border-violet-300 hover:bg-secondary hover:shadow-md'
+                    deployTarget === 'all' ? 'border-primary bg-primary/10 shadow-md ring-2 ring-primary/20' : 'border-border hover:border-primary/30 hover:bg-secondary hover:shadow-md'
                   }`}
                   disabled={users.length === 0}
                 >
@@ -792,7 +792,7 @@ export default function DeploymentsPage() {
               {/* User selection panel */}
               {deployTarget === 'selected' && (
                 <div className="border rounded-lg">
-                  <div className="p-3 border-b bg-slate-50 space-y-3">
+                  <div className="p-3 border-b bg-muted space-y-3">
                     {/* Search and filter row */}
                     <div className="flex gap-3">
                       <div className="flex-1 relative">
@@ -946,8 +946,8 @@ export default function DeploymentsPage() {
                 </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                <p className="text-sm text-amber-600">
                   <strong>Note:</strong> This will update the email signature for {getTargetSummary().toLowerCase()}. 
                   The change will take effect immediately.
                 </p>
@@ -1025,7 +1025,7 @@ export default function DeploymentsPage() {
                           </p>
                         </div>
                         {deployment.failed_count > 0 && (
-                          <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                          <span className="text-xs bg-red-500/10 text-red-600 px-2 py-1 rounded">
                             {deployment.failed_count} failed
                           </span>
                         )}
@@ -1124,8 +1124,8 @@ export default function DeploymentsPage() {
                             <tr key={user.id} className="border-b last:border-b-0 hover:bg-secondary/50 transition-colors">
                               <td className="p-3">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center">
-                                    <span className="text-sm font-medium text-violet-600">
+                                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span className="text-sm font-medium text-primary">
                                       {(user.first_name?.[0] || user.email[0]).toUpperCase()}
                                     </span>
                                   </div>
@@ -1140,7 +1140,7 @@ export default function DeploymentsPage() {
                               <td className="p-3 text-sm">{user.department || '-'}</td>
                               <td className="p-3 text-sm">
                                 {userHistory?.template?.name ? (
-                                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-violet-50 text-violet-700 rounded text-xs font-medium">
+                                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
                                     <FileSignature className="h-3 w-3" />
                                     {userHistory.template.name}
                                   </span>
@@ -1162,18 +1162,18 @@ export default function DeploymentsPage() {
                               <td className="p-3">
                                 {userHistory ? (
                                   userHistory.status === 'success' ? (
-                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-1 rounded">
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">
                                       <CheckCircle2 className="h-3 w-3" />
                                       Deployed
                                     </span>
                                   ) : (
-                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 px-2 py-1 rounded">
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 bg-red-500/10 px-2 py-1 rounded">
                                       <XCircle className="h-3 w-3" />
                                       Failed
                                     </span>
                                   )
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                  <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
                                     <Clock className="h-3 w-3" />
                                     Not deployed
                                   </span>

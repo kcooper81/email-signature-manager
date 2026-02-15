@@ -289,7 +289,7 @@ export default function BillingPage() {
                 href={tab.href}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
                   tab.id === 'billing'
-                    ? 'bg-violet-100 text-violet-900 font-medium'
+                    ? 'bg-primary/10 text-primary font-medium'
                     : 'text-muted-foreground hover:bg-secondary'
                 }`}
               >
@@ -317,12 +317,12 @@ export default function BillingPage() {
 
       {/* Syncing Banner */}
       {isSyncing && (
-        <Card className="bg-blue-50 border-blue-200">
+        <Card className="bg-blue-500/10 border-blue-500/20">
           <CardContent className="p-4 flex items-center gap-3">
             <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
             <div>
-              <p className="font-medium text-blue-900">Syncing your subscription...</p>
-              <p className="text-sm text-blue-700">
+              <p className="font-medium text-blue-600">Syncing your subscription...</p>
+              <p className="text-sm text-blue-600">
                 Please wait while we confirm your purchase with Stripe.
               </p>
             </div>
@@ -332,12 +332,12 @@ export default function BillingPage() {
 
       
       {isPastDue && (
-        <Card className="bg-red-50 border-red-200">
+        <Card className="bg-red-500/10 border-red-500/20">
           <CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-red-600" />
             <div>
-              <p className="font-medium text-red-900">Payment past due</p>
-              <p className="text-sm text-red-700">
+              <p className="font-medium text-red-600">Payment past due</p>
+              <p className="text-sm text-red-600">
                 Please update your payment method to avoid service interruption.
               </p>
             </div>
@@ -349,12 +349,12 @@ export default function BillingPage() {
       )}
 
       {isCanceled && (
-        <Card className="bg-amber-50 border-amber-200">
+        <Card className="bg-amber-500/10 border-amber-500/20">
           <CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-600" />
             <div>
-              <p className="font-medium text-amber-900">Subscription canceled</p>
-              <p className="text-sm text-amber-700">
+              <p className="font-medium text-amber-600">Subscription canceled</p>
+              <p className="text-sm text-amber-600">
                 Your subscription will end on {subscription?.current_period_end 
                   ? new Date(subscription.current_period_end).toLocaleDateString() 
                   : 'the end of the billing period'}.
@@ -454,7 +454,7 @@ export default function BillingPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {billingError && (
-              <div className="p-3 text-sm bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start gap-2">
+              <div className="p-3 text-sm bg-red-500/10 border border-red-500/20 text-red-600 rounded-md flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>{billingError}</span>
               </div>
@@ -529,7 +529,7 @@ export default function BillingPage() {
         </CardHeader>
         <CardContent>
           {billingError && (
-            <div className="mb-4 p-3 text-sm bg-red-50 border border-red-200 text-red-700 rounded-md flex items-start gap-2">
+            <div className="mb-4 p-3 text-sm bg-red-500/10 border border-red-500/20 text-red-600 rounded-md flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>{billingError}</span>
             </div>
@@ -541,8 +541,8 @@ export default function BillingPage() {
                 <div
                   key={plan.id}
                   className={`relative p-4 border rounded-lg ${
-                    plan.popular ? 'border-violet-300 bg-violet-50/50' : ''
-                  } ${isCurrentPlan ? 'ring-2 ring-violet-600' : ''}`}
+                    plan.popular ? 'border-primary/30 bg-primary/5' : ''
+                  } ${isCurrentPlan ? 'ring-2 ring-primary' : ''}`}
                 >
                   {plan.popular && (
                     <Badge className="absolute -top-2 left-1/2 -translate-x-1/2" variant="default">
@@ -572,7 +572,7 @@ export default function BillingPage() {
                     {(expandedPlans.has(plan.id) ? plan.featureList : plan.featureList.slice(0, 8)).map((feature) => (
                       <li key={feature.text} className="flex items-center gap-2">
                         {feature.included ? (
-                          <Check className="h-4 w-4 text-green-600 shrink-0" />
+                          <Check className="h-4 w-4 text-emerald-500 shrink-0" />
                         ) : (
                           <X className="h-4 w-4 text-muted-foreground/40 shrink-0" />
                         )}
@@ -593,7 +593,7 @@ export default function BillingPage() {
                             }
                             setExpandedPlans(newExpanded);
                           }}
-                          className="text-xs text-violet-600 hover:text-violet-700 font-medium pl-6"
+                          className="text-xs text-primary hover:text-primary font-medium pl-6"
                         >
                           {expandedPlans.has(plan.id) 
                             ? '− Show less' 

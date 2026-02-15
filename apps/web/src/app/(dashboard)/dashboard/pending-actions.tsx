@@ -85,19 +85,19 @@ export function PendingActionsWidget({
   const hasActions = actions.length > 0;
 
   return (
-    <Card className={hasActions ? 'border-amber-200' : ''}>
+    <Card className={hasActions ? 'border-amber-500/20' : ''}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
-            <Zap className={`h-4 w-4 ${hasActions ? 'text-amber-600' : 'text-green-600'}`} />
+            <Zap className={`h-4 w-4 ${hasActions ? 'text-amber-600' : 'text-emerald-500'}`} />
             Pending Actions
           </CardTitle>
           {hasActions ? (
-            <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-medium text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full">
               {actions.length} item{actions.length > 1 ? 's' : ''}
             </span>
           ) : (
-            <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
               All clear
             </span>
           )}
@@ -111,10 +111,10 @@ export function PendingActionsWidget({
                 key={index}
                 className={`flex items-start gap-3 p-3 rounded-lg ${
                   action.type === 'error'
-                    ? 'bg-red-50'
+                    ? 'bg-red-500/10'
                     : action.type === 'warning'
-                    ? 'bg-amber-50'
-                    : 'bg-blue-50'
+                    ? 'bg-amber-500/10'
+                    : 'bg-blue-500/10'
                 }`}
               >
                 <div className="mt-0.5">{action.icon}</div>
@@ -139,10 +139,10 @@ export function PendingActionsWidget({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-6 text-center">
-            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-3">
-              <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
             </div>
-            <p className="text-sm font-medium text-green-700">You're all caught up!</p>
+            <p className="text-sm font-medium text-emerald-500">You're all caught up!</p>
             <p className="text-xs text-muted-foreground mt-1">
               No pending actions at this time
             </p>

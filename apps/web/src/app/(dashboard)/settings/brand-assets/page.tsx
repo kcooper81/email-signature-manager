@@ -14,6 +14,9 @@ import {
   Loader2,
   ArrowLeft,
   FileImage,
+  Pencil,
+  Check,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -73,6 +76,12 @@ export default function BrandAssetsPage() {
   const [dragOver, setDragOver] = useState(false);
   const [orgId, setOrgId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{ display_name: string; category: string; description: string }>({
+    display_name: '',
+    category: 'uncategorized',
+    description: '',
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -183,6 +192,43 @@ export default function BrandAssetsPage() {
     await supabase.from('brand_assets').delete().eq('id', asset.id);
 
     setAssets((prev) => prev.filter((a) => a.id !== asset.id));
+  };
+
+  const startEditing = (asset: BrandAsset) => {
+    setEditingId(asset.id);
+    setEditForm({
+      display_name: asset.display_name,
+      category: asset.category,
+      description: asset.description || '',
+    });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    const supabase = createClient();
+
+    await supabase
+      .from('brand_assets')
+      .update({
+        display_name: editForm.display_name,
+        category: editForm.category,
+        description: editForm.description || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', editingId);
+
+    setAssets((prev) =>
+      prev.map((a) =>
+        a.id === editingId
+          ? { ...a, display_name: editForm.display_name, category: editForm.category, description: editForm.description || null }
+          : a
+      )
+    );
+    setEditingId(null);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -330,7 +376,14 @@ export default function BrandAssetsPage() {
                   alt={asset.display_name}
                   className="max-w-full max-h-full object-contain"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); startEditing(asset); }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="destructive"
                     size="sm"
@@ -340,16 +393,53 @@ export default function BrandAssetsPage() {
                   </Button>
                 </div>
               </div>
-              <CardContent className="p-3">
-                <p className="text-sm font-medium truncate">{asset.display_name}</p>
-                <div className="flex items-center justify-between mt-1">
-                  <Badge variant="secondary" className="text-xs capitalize">{asset.category}</Badge>
-                  <span className="text-xs text-muted-foreground">{formatFileSize(asset.file_size)}</span>
-                </div>
-                {asset.width && asset.height && (
-                  <p className="text-xs text-muted-foreground mt-1">{asset.width} x {asset.height}</p>
-                )}
-              </CardContent>
+              {editingId === asset.id ? (
+                <CardContent className="p-3 space-y-2">
+                  <Input
+                    value={editForm.display_name}
+                    onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+                    placeholder="Display name"
+                    className="h-8 text-sm"
+                  />
+                  <select
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm"
+                  >
+                    {CATEGORIES.filter((c) => c !== 'all').map((cat) => (
+                      <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                    ))}
+                  </select>
+                  <Input
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    placeholder="Description (optional)"
+                    className="h-8 text-sm"
+                  />
+                  <div className="flex gap-1">
+                    <Button size="sm" className="h-7 flex-1" onClick={saveEdit}>
+                      <Check className="h-3 w-3 mr-1" /> Save
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-7" onClick={cancelEditing}>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              ) : (
+                <CardContent className="p-3">
+                  <p className="text-sm font-medium truncate">{asset.display_name}</p>
+                  <div className="flex items-center justify-between mt-1">
+                    <Badge variant="secondary" className="text-xs capitalize">{asset.category}</Badge>
+                    <span className="text-xs text-muted-foreground">{formatFileSize(asset.file_size)}</span>
+                  </div>
+                  {asset.description && (
+                    <p className="text-xs text-muted-foreground mt-1 truncate">{asset.description}</p>
+                  )}
+                  {asset.width && asset.height && (
+                    <p className="text-xs text-muted-foreground mt-1">{asset.width} x {asset.height}</p>
+                  )}
+                </CardContent>
+              )}
             </Card>
           ))}
         </div>
@@ -380,9 +470,31 @@ export default function BrandAssetsPage() {
                         />
                       </div>
                     </td>
-                    <td className="p-3 font-medium">{asset.display_name}</td>
+                    <td className="p-3 font-medium">
+                      {editingId === asset.id ? (
+                        <Input
+                          value={editForm.display_name}
+                          onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
+                          className="h-7 text-sm"
+                        />
+                      ) : (
+                        asset.display_name
+                      )}
+                    </td>
                     <td className="p-3">
-                      <Badge variant="secondary" className="capitalize">{asset.category}</Badge>
+                      {editingId === asset.id ? (
+                        <select
+                          value={editForm.category}
+                          onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                          className="h-7 rounded-md border border-input bg-background px-2 text-sm"
+                        >
+                          {CATEGORIES.filter((c) => c !== 'all').map((cat) => (
+                            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <Badge variant="secondary" className="capitalize">{asset.category}</Badge>
+                      )}
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {asset.width && asset.height ? `${asset.width} x ${asset.height}` : '-'}
@@ -390,14 +502,32 @@ export default function BrandAssetsPage() {
                     <td className="p-3 text-muted-foreground">{formatFileSize(asset.file_size)}</td>
                     <td className="p-3 text-right">{asset.usage_count}</td>
                     <td className="p-3">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive"
-                        onClick={() => handleDelete(asset)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        {editingId === asset.id ? (
+                          <>
+                            <Button variant="ghost" size="sm" onClick={saveEdit}>
+                              <Check className="h-4 w-4 text-emerald-500" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={cancelEditing}>
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button variant="ghost" size="sm" onClick={() => startEditing(asset)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive"
+                              onClick={() => handleDelete(asset)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

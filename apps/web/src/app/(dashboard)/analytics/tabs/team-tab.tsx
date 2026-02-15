@@ -31,7 +31,7 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
   const [filterStatus, setFilterStatus] = useState<'all' | 'deployed' | 'pending'>('all');
 
   const getAdoptionColor = (rate: number) => {
-    if (rate >= 80) return 'bg-green-500';
+    if (rate >= 80) return 'bg-emerald-500';
     if (rate >= 50) return 'bg-amber-500';
     return 'bg-red-500';
   };
@@ -87,8 +87,8 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Users className="h-5 w-5 text-violet-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{data.totalUsers}</p>
@@ -100,11 +100,11 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <UserCheck className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <UserCheck className="h-5 w-5 text-emerald-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-600">{deployedCount}</p>
+                <p className="text-2xl font-bold text-emerald-500">{deployedCount}</p>
                 <p className="text-sm text-muted-foreground">With Signatures</p>
               </div>
             </div>
@@ -113,7 +113,7 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
+              <div className="p-2 bg-amber-500/10 rounded-lg">
                 <UserX className="h-5 w-5 text-amber-600" />
               </div>
               <div>
@@ -129,7 +129,7 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-violet-600" />
+            <Building2 className="h-5 w-5 text-primary" />
             Adoption by Department
           </CardTitle>
           <CardDescription>
@@ -168,7 +168,7 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-violet-600" />
+                <Mail className="h-5 w-5 text-primary" />
                 Employee Signature Status
               </CardTitle>
               <CardDescription>
@@ -183,7 +183,7 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
                   placeholder="Search employees..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-4 py-2 text-sm border rounded-lg w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="pl-9 pr-4 py-2 text-sm border rounded-lg w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
@@ -197,7 +197,7 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
                 onClick={() => setFilterStatus(status)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                   filterStatus === status
-                    ? 'bg-violet-100 text-violet-700'
+                    ? 'bg-primary/10 text-primary'
                     : 'text-muted-foreground hover:bg-muted'
                 }`}
               >
@@ -272,12 +272,12 @@ export function TeamTab({ data, employeeData }: TeamTabProps) {
                       </td>
                       <td className="py-3 px-2">
                         {employee.hasSignature ? (
-                          <Badge className="bg-green-100 text-green-700 border-green-200">
+                          <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
                             <CheckCircle2 className="h-3 w-3 mr-1" />
                             Deployed
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-amber-600 border-amber-200">
+                          <Badge variant="outline" className="text-amber-600 border-amber-500/20">
                             <XCircle className="h-3 w-3 mr-1" />
                             Pending
                           </Badge>

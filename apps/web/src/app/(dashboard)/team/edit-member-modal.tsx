@@ -70,11 +70,11 @@ export function EditMemberModal({
       <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto">
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-3">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-red-800">Delete this team member?</p>
+                <p className="font-medium text-red-600">Delete this team member?</p>
                 <p className="text-sm text-red-600 mt-1">
                   This will permanently remove {memberName || memberEmail} from your team. This action cannot be undone.
                 </p>
@@ -106,7 +106,7 @@ export function EditMemberModal({
         {/* Basic Information */}
         <div className="space-y-4">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Basic Information</h3>
+            <h3 className="text-sm font-semibold text-foreground">Basic Information</h3>
             {isSyncedUser && (
               <p className="text-xs text-amber-600 mt-1">
                 Name, title, and department are managed by your identity provider and will sync automatically.
@@ -132,7 +132,7 @@ export function EditMemberModal({
                   type="email"
                   value={memberEmail}
                   disabled
-                  className="bg-gray-50"
+                  className="bg-muted"
                 />
                 <span className="text-xs text-muted-foreground whitespace-nowrap">Synced user</span>
               </div>
@@ -148,7 +148,7 @@ export function EditMemberModal({
                 onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
                 placeholder="John"
                 disabled={isSyncedUser}
-                className={isSyncedUser ? 'bg-gray-50' : ''}
+                className={isSyncedUser ? 'bg-muted' : ''}
               />
             </div>
             <div className="space-y-2">
@@ -159,7 +159,7 @@ export function EditMemberModal({
                 onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
                 placeholder="Doe"
                 disabled={isSyncedUser}
-                className={isSyncedUser ? 'bg-gray-50' : ''}
+                className={isSyncedUser ? 'bg-muted' : ''}
               />
             </div>
           </div>
@@ -171,7 +171,7 @@ export function EditMemberModal({
               onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
               placeholder="Software Engineer"
               disabled={isSyncedUser}
-              className={isSyncedUser ? 'bg-gray-50' : ''}
+              className={isSyncedUser ? 'bg-muted' : ''}
             />
           </div>
           <div className="space-y-2">
@@ -182,7 +182,7 @@ export function EditMemberModal({
               onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
               placeholder="Engineering"
               disabled={isSyncedUser}
-              className={isSyncedUser ? 'bg-gray-50' : ''}
+              className={isSyncedUser ? 'bg-muted' : ''}
             />
           </div>
         </div>
@@ -190,8 +190,8 @@ export function EditMemberModal({
         {/* Personal Links */}
         <div className="space-y-4 pt-4 border-t">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Personal Links (Optional)</h3>
-            <p className="text-xs text-gray-500 mt-1">
+            <h3 className="text-sm font-semibold text-foreground">Personal Links (Optional)</h3>
+            <p className="text-xs text-muted-foreground mt-1">
               These links can be used in signature templates with placeholders like {'{'}{'{'} calendly_url {'}'}{'}'}
             </p>
           </div>
@@ -289,18 +289,18 @@ export function EditMemberModal({
         {orgCalendarEnabled && (
           <div className="space-y-4 pt-4 border-t">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 Google Calendar Integration
               </h3>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Configure calendar integration for out-of-office banners and booking links
               </p>
             </div>
             
             <div className="flex items-center justify-between p-3 rounded-lg border">
               <div className="flex items-center gap-3">
-                <Calendar className={`h-4 w-4 ${editForm.google_calendar_enabled ? 'text-emerald-600' : 'text-gray-400'}`} />
+                <Calendar className={`h-4 w-4 ${editForm.google_calendar_enabled ? 'text-emerald-600' : 'text-muted-foreground'}`} />
                 <div>
                   <p className="font-medium text-sm">Enable Calendar Integration</p>
                   <p className="text-xs text-muted-foreground">
@@ -320,7 +320,7 @@ export function EditMemberModal({
               <>
                 <div className="flex items-center justify-between p-3 rounded-lg border">
                   <div className="flex items-center gap-3">
-                    <AlertTriangle className={`h-4 w-4 ${editForm.ooo_banner_enabled ? 'text-amber-500' : 'text-gray-400'}`} />
+                    <AlertTriangle className={`h-4 w-4 ${editForm.ooo_banner_enabled ? 'text-amber-500' : 'text-muted-foreground'}`} />
                     <div>
                       <p className="font-medium text-sm">Out-of-Office Banners</p>
                       <p className="text-xs text-muted-foreground">
@@ -373,8 +373,8 @@ export function EditMemberModal({
         {/* Self-Manage Portal Access */}
         <div className="space-y-4 pt-4 border-t">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Portal Access</h3>
-            <p className="text-xs text-gray-500 mt-1">
+            <h3 className="text-sm font-semibold text-foreground">Portal Access</h3>
+            <p className="text-xs text-muted-foreground mt-1">
               Control whether this employee can access the self-manage portal
             </p>
           </div>
@@ -406,7 +406,7 @@ export function EditMemberModal({
         <Button 
           variant="ghost" 
           onClick={() => setShowDeleteConfirm(true)}
-          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="text-red-600 hover:text-red-700 hover:bg-red-500/10"
           disabled={updating || deleting}
         >
           <Trash2 className="mr-2 h-4 w-4" />

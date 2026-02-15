@@ -94,14 +94,14 @@ export function GettingStartedCard({
   return (
     <Card className="overflow-hidden">
       {/* Header */}
-      <CardHeader className="py-4 bg-gradient-to-r from-violet-50 to-blue-50 border-b">
+      <CardHeader className="py-4 bg-gradient-to-r from-primary/5 to-blue-500/5 border-b">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <CardTitle className="text-base font-semibold text-foreground">
                 Getting Started
               </CardTitle>
-              <span className="text-xs font-medium text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                 {completedSteps}/{totalSteps}
               </span>
             </div>
@@ -111,7 +111,7 @@ export function GettingStartedCard({
                   (window as any).Supademo.open(SUPADEMO_ID);
                 }
               }}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700 bg-white border border-violet-200 hover:border-violet-300 px-2.5 py-1 rounded-full transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary bg-card border border-primary/20 hover:border-primary/30 px-2.5 py-1 rounded-full transition-colors"
             >
               <Play className="h-3 w-3" />
               Watch tour
@@ -184,8 +184,8 @@ function StepItem({ step, stepNumber }: { step: Step; stepNumber: number }) {
     <div
       className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 ${
         step.completed
-          ? 'bg-emerald-50 border-emerald-200'
-          : 'bg-card border hover:border-violet-300 hover:shadow-sm cursor-pointer'
+          ? 'bg-emerald-500/10 border-emerald-500/20'
+          : 'bg-card border hover:border-primary/30 hover:shadow-sm cursor-pointer'
       }`}
     >
       {/* Icon */}
@@ -205,7 +205,7 @@ function StepItem({ step, stepNumber }: { step: Step; stepNumber: number }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${step.completed ? 'text-emerald-700' : 'text-foreground'}`}>
+        <p className={`text-sm font-medium ${step.completed ? 'text-emerald-600' : 'text-foreground'}`}>
           {step.title}
         </p>
         <p className="text-xs text-muted-foreground truncate">{step.description}</p>
@@ -213,7 +213,7 @@ function StepItem({ step, stepNumber }: { step: Step; stepNumber: number }) {
 
       {/* Step number */}
       {!step.completed && (
-        <div className="shrink-0 h-6 w-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-xs font-semibold">
+        <div className="shrink-0 h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold">
           {stepNumber}
         </div>
       )}
