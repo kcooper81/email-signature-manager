@@ -35,76 +35,61 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 ## Pricing Tiers
 
 ### Free Plan
-**Price:** $0 forever  
-**Target:** Individuals and small teams trying out Siggly
+**Price:** $0 forever
+**Target:** Individuals and small teams getting full access to Siggly
 
 **Limits:**
 - **Max Templates:** 1
 - **Max Users:** 5
-- **Analytics:** ❌ No
-- **Custom Branding:** ❌ No
+- **Analytics:** 7-day preview only (upgrade for full history)
+- **Custom Branding:** ✅ Yes
 - **Priority Support:** ❌ No
-- **API Access:** ❌ No
+- **API Access:** ✅ Yes
 - **SSO:** ❌ No
-- **Remove Watermark:** ❌ No
+- **Remove Watermark:** ✅ Yes
 
 **Integrations:**
 - **Google Workspace:** ✅ Yes
-- **Microsoft 365:** ❌ No
-- **HubSpot CRM:** ❌ No
+- **Microsoft 365:** ❌ No (Professional+)
+- **HubSpot CRM:** ✅ Yes
+- **Scheduled Deployments:** ✅ Yes
 
 **Features Included:**
 - ✅ Up to 5 users
 - ✅ 1 signature template
 - ✅ Visual drag-and-drop editor
 - ✅ Google Workspace integration
-- ✅ Auto-sync user directory
+- ✅ HubSpot CRM integration
+- ✅ Auto-sync user directory (Google + HubSpot)
+- ✅ Directory sync
 - ✅ One-click deployment
+- ✅ Scheduled deployments
+- ✅ Bulk operations
 - ✅ Mobile-responsive signatures
 - ✅ Industry compliance blocks (Legal, Healthcare, Finance, Real Estate)
 - ✅ Disclaimer templates
 - ✅ Email support
 - ✅ Manual signature copy (for non-integrated users)
-
----
-
-### Starter Plan
-**Price:** $0.50/user/month  
-**Target:** Growing teams needing more templates and integrations
-
-**Limits:**
-- **Max Templates:** 5
-- **Max Users:** Unlimited (-1)
-- **Analytics:** ✅ Yes
-- **Custom Branding:** ✅ Yes
-- **Priority Support:** ❌ No
-- **API Access:** ❌ No
-- **SSO:** ❌ No
-- **Remove Watermark:** ✅ Yes
-
-**Integrations:**
-- **Google Workspace:** ✅ Yes
-- **Microsoft 365:** ✅ Yes
-- **HubSpot CRM:** ❌ No
-
-**Additional Features:**
-- ✅ Unlimited users ($0.50/user/month)
-- ✅ 5 signature templates
-- ✅ Analytics dashboard
-- ✅ Microsoft 365 integration
+- ✅ API access
 - ✅ Custom branding
 - ✅ Remove watermark
+- ⚠️ Analytics: 7-day preview (upgrade for full history)
+
+**Gated to Professional:**
+- ❌ Microsoft 365 integration
+- ❌ Full analytics (beyond 7-day preview)
+- ❌ Multiple templates (limited to 1)
 
 ---
 
 ### Professional Plan
-**Price:** $29/month (includes 10 users) + $1/user/month for additional users  
-**Target:** Professional teams with advanced needs
+**Price:** $1.50/user/month (10-user minimum = $15/month)
+**Target:** Growing and professional teams needing MS365, full analytics, and multiple templates
 
 **Limits:**
 - **Max Templates:** Unlimited (-1)
 - **Max Users:** Unlimited (-1)
-- **Analytics:** ✅ Yes
+- **Analytics:** ✅ Full analytics
 - **Custom Branding:** ✅ Yes
 - **Priority Support:** ✅ Yes
 - **API Access:** ✅ Yes
@@ -117,19 +102,26 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **HubSpot CRM:** ✅ Yes
 - **Scheduled Deployments:** ✅ Yes
 
-**Additional Features:**
-- ✅ First 10 users included, then $1/user/month
+**Everything Unlocked:**
+- ✅ Unlimited users ($1.50/user/month, 10-user minimum)
 - ✅ Unlimited templates
+- ✅ Microsoft 365 integration
+- ✅ Full analytics dashboard
 - ✅ HubSpot CRM integration
 - ✅ Advanced analytics
 - ✅ API access
 - ✅ Scheduled deployments
+- ✅ Bulk operations
+- ✅ Directory sync
+- ✅ Compliance blocks
 - ✅ Priority support
+- ✅ Custom branding
+- ✅ Remove watermark
 
 ---
 
 ### Enterprise Plan
-**Price:** Custom pricing  
+**Price:** Custom pricing
 **Target:** Large organizations with custom requirements
 
 **Limits:**
@@ -149,9 +141,8 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - **HubSpot CRM:** ✅ Yes
 - **Scheduled Deployments:** ✅ Yes
 
-**Additional Features:**
-- ✅ Unlimited users (custom pricing)
-- ✅ Unlimited templates
+**Additional Features (beyond Professional):**
+- ✅ Everything in Professional
 - ✅ SSO (Single Sign-On)
 - ✅ White label
 - ✅ Dedicated account manager
@@ -200,9 +191,9 @@ getPlan() Function (Backend)
 ## Complete Pay Gate List
 
 ### 1. Template Creation Limit
-**Location:** `/templates` page  
-**Type:** Usage Limit  
-**Check:** `canCreateTemplate()`  
+**Location:** `/templates` page
+**Type:** Usage Limit
+**Check:** `canCreateTemplate()`
 **Enforcement:**
 - Disables "New Template" button when limit reached
 - Shows "Upgrade to Create More" button
@@ -210,16 +201,15 @@ getPlan() Function (Backend)
 
 **Limits:**
 - Free: 1 template
-- Starter: 5 templates
 - Professional: Unlimited
 - Enterprise: Unlimited
 
 ---
 
 ### 2. Team Member Addition Limit
-**Location:** `/team` page  
-**Type:** Usage Limit  
-**Check:** `canAddTeamMember()`  
+**Location:** `/team` page
+**Type:** Usage Limit
+**Check:** `canAddTeamMember()`
 **Enforcement:**
 - Prevents manual "Add Member" action
 - Shows upgrade prompt
@@ -227,7 +217,6 @@ getPlan() Function (Backend)
 
 **Limits:**
 - Free: 5 users
-- Starter: Unlimited
 - Professional: Unlimited
 - Enterprise: Unlimited
 
@@ -284,68 +273,66 @@ getPlan() Function (Backend)
 
 ---
 
-### 6. Analytics Access
-**Location:** `/analytics` page  
-**Type:** Feature Gate  
-**Check:** `canAccess('analytics')`  
+### 6. Analytics Access (Full)
+**Location:** `/analytics` page
+**Type:** Feature Gate
+**Check:** `canAccess('analytics')`
 **Enforcement:**
-- Shows locked state with upgrade prompt
-- Hides analytics data
-- Displays "Upgrade to unlock" message
+- Free plan: Shows 7-day analytics preview with upgrade prompt for full history
+- Shows "Upgrade to unlock full analytics" message
 
-**Requirement:** Starter plan or higher
+**Note:** Free plan users get a 7-day analytics preview. Full analytics history requires Professional plan or higher.
+
+**Requirement:** Professional plan or higher (for full analytics)
 
 ---
 
 ### 7. Microsoft 365 Integration Access
-**Location:** `/integrations` page  
-**Type:** Feature Gate  
-**Check:** `microsoft365` feature flag  
+**Location:** `/integrations` page
+**Type:** Feature Gate
+**Check:** `microsoft365` feature flag
 **Enforcement:**
 - Shows "Upgrade Required" on Free plan
 - Connect button disabled
 - Upgrade prompt displayed
 
-**Requirement:** Starter plan or higher
+**Requirement:** Professional plan or higher
 
 ---
 
 ### 8. HubSpot CRM Integration Access
-**Location:** `/integrations` page  
-**Type:** Feature Gate  
-**Check:** `hubspotCRM` feature flag  
+**Location:** `/integrations` page
+**Type:** Feature Gate
+**Check:** `hubspotCRM` feature flag
 **Enforcement:**
-- Shows "Upgrade Required" on Free and Starter plans
-- Connect button disabled
-- Upgrade prompt displayed
+- Available on all plans (Free, Professional, Enterprise)
+- Connect button enabled for all users
 
-**Requirement:** Professional plan or higher
+**Requirement:** None (available on Free plan and above)
 
 ---
 
 ### 9. Scheduled Deployments
-**Location:** Deployment settings  
-**Type:** Feature Gate  
-**Check:** `canAccess('scheduledDeployments')`  
+**Location:** Deployment settings
+**Type:** Feature Gate
+**Check:** `canAccess('scheduledDeployments')`
 **Enforcement:**
-- `<FeatureGate feature="scheduledDeployments">`
-- Shows upgrade prompt
-- Feature hidden/disabled
+- Available on all plans (Free, Professional, Enterprise)
+- No upgrade prompt needed
 
-**Requirement:** Professional plan or higher
+**Requirement:** None (available on Free plan and above)
 
 ---
 
 ### 10. API Access
-**Location:** API endpoints & settings  
-**Type:** Feature Gate  
-**Check:** `canAccess('apiAccess')`  
+**Location:** API endpoints & settings
+**Type:** Feature Gate
+**Check:** `canAccess('apiAccess')`
 **Enforcement:**
-- API endpoints check plan
-- API keys disabled
-- Shows upgrade prompt
+- Available on all plans (Free, Professional, Enterprise)
+- API keys enabled for all users
 
-**Requirement:** Professional plan or higher
+**Requirement:** None (available on Free plan and above)
 
 ---
 
@@ -430,7 +417,9 @@ const getDevBypassEnabled = () => {
 4. **Test free plan limits:**
    - Try creating 2nd template (should block)
    - Try adding 6th user (should block)
-   - Try accessing analytics (should block)
+   - Try accessing full analytics (should show 7-day preview only)
+   - Try connecting Microsoft 365 (should block)
+   - Verify HubSpot, bulk ops, compliance blocks, directory sync, scheduled deployments all work on Free
 5. **Test sync limits:**
    - Sync more than 5 users (should partial sync or block)
    - Check error messages are clear
@@ -463,10 +452,16 @@ const getDevBypassEnabled = () => {
 **User Experience:** Error message "Your Free plan allows up to 5 users. Please upgrade."
 
 ### Scenario 4: Feature Access Denied
-**User Action:** Tries to access Analytics page on Free plan  
-**System Check:** `canAccess('analytics')` returns false  
-**Result:** Shows locked state with upgrade prompt  
-**User Experience:** Sees "Upgrade to Starter to unlock Analytics"
+**User Action:** Tries to access full Analytics on Free plan
+**System Check:** `canAccess('analytics')` returns false for full access
+**Result:** Shows 7-day analytics preview with upgrade prompt for full history
+**User Experience:** Sees "Upgrade to Professional to unlock full Analytics"
+
+### Scenario 5: Free Plan Feature Access
+**User Action:** Tries to use HubSpot, bulk ops, compliance blocks, directory sync, or scheduled deployments on Free plan
+**System Check:** These features are available on all plans
+**Result:** Features work normally
+**User Experience:** Full access to these features with no upgrade prompts
 
 ---
 
@@ -547,5 +542,5 @@ const getDevBypassEnabled = () => {
 
 ---
 
-*Last Updated: February 5, 2026*  
-*Version: 1.1*
+*Last Updated: February 15, 2026*
+*Version: 2.0 - Major pricing restructure: Starter plan removed, Free plan expanded, Professional simplified to $1.50/user/month*

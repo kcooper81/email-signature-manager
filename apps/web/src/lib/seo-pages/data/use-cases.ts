@@ -1958,4 +1958,969 @@ export const useCasesPages: SEOLandingPageData[] = [
         'Equip your partner network with professional co-branded email signatures. Protect your brand while amplifying reach through every partner email.',
     },
   },
+
+  // 11. Mergers & Acquisitions
+  {
+    slug: 'mergers-acquisitions',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Mergers & Acquisitions | Siggly',
+      description:
+        'Unify email signatures during mergers and acquisitions. Manage dual-brand transitions, legal entity changes, and day-one integration seamlessly.',
+      keywords: [
+        'merger email signatures',
+        'acquisition brand unification',
+        'M&A email branding',
+        'corporate merger signatures',
+      ],
+      canonical: '/use-cases/mergers-acquisitions',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Mergers & Acquisitions', url: '/use-cases/mergers-acquisitions' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'M&A' },
+      title: 'Seamless Signature Transitions for Mergers and Acquisitions',
+      description:
+        'When two companies become one, email signatures are among the most visible touchpoints that need to change. Siggly helps you manage dual-brand transitions, legal entity updates, and day-one integration without disrupting communications.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: 'Day 1', label: 'Brand unification ready at close' },
+      { value: '100%', label: 'Employee coverage during transition' },
+      { value: '2x', label: 'Faster integration vs manual methods' },
+    ],
+    featuresTitle: 'M&A Signature Management Capabilities',
+    features: [
+      {
+        icon: 'arrow-left-right',
+        title: 'Dual-Brand Transition Support',
+        description:
+          'Run both legacy and new brand signatures simultaneously during the transition period, giving you full control over the timing of each switch.',
+      },
+      {
+        icon: 'building-2',
+        title: 'Legal Entity Management',
+        description:
+          'Update legal entity names, registration numbers, and disclaimers across all acquired employees signatures in a single operation.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Phased Brand Migration',
+        description:
+          'Roll out the new unified brand in stages, department by department or region by region, with rollback capability at every step.',
+      },
+      {
+        icon: 'users',
+        title: 'Multi-Tenant Directory Sync',
+        description:
+          'Sync employee data from multiple directories during integration, consolidating into a single signature management platform.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Managing Signatures Through an Acquisition',
+        steps: [
+          {
+            step: '1',
+            title: 'Import the Acquired Workforce',
+            description:
+              'Connect to the acquired company directory and import all employees into Siggly. Map their existing roles and departments to your organizational structure.',
+          },
+          {
+            step: '2',
+            title: 'Deploy Interim Signatures',
+            description:
+              'Create transitional signatures that may feature both brands or a combined entity name, ensuring legal compliance from the moment the deal closes.',
+          },
+          {
+            step: '3',
+            title: 'Execute the Final Brand Switch',
+            description:
+              'When the transition period ends, push the unified brand signature to all employees in one coordinated deployment.',
+          },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Why Signature Management Matters in M&A',
+        items: [
+          {
+            icon: 'shield-check',
+            title: 'Legal Compliance from Day One',
+            description:
+              'Ensure every email from the acquired company carries the correct legal entity name and disclaimers immediately after close.',
+          },
+          {
+            icon: 'eye',
+            title: 'Unified Brand Perception',
+            description:
+              'Clients and partners see a cohesive brand in every email, reinforcing confidence in the merged organization.',
+          },
+          {
+            icon: 'clock',
+            title: 'Accelerated Integration Timeline',
+            description:
+              'Eliminate weeks of manual IT work by deploying signature changes to thousands of employees in minutes.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'When we acquired a 300-person company, Siggly let us update every signature to our brand on day one of the integration. The acquired team felt like part of the family immediately.',
+      authorName: 'Catherine Moreau',
+      authorTitle: 'VP of Corporate Development, Stratos Holdings',
+    },
+    faqs: [
+      {
+        question: 'Can I run two brands simultaneously during a merger transition?',
+        answer:
+          'Yes. Siggly supports multiple active templates so you can run legacy and new brand signatures side by side until you are ready for full unification.',
+      },
+      {
+        question: 'How quickly can I update signatures after a deal closes?',
+        answer:
+          'With templates pre-staged in Siggly, you can deploy updated signatures to the entire acquired workforce within minutes of the official close.',
+      },
+      {
+        question: 'What about employees in different countries with different legal requirements?',
+        answer:
+          'Use region-based assignments to include jurisdiction-specific legal entity names, disclaimers, and regulatory notices in each signature.',
+      },
+      {
+        question: 'Can I import employees from a different email platform?',
+        answer:
+          'Siggly integrates with Google Workspace, Microsoft 365, and generic LDAP directories. You can import employees from any major email platform.',
+      },
+    ],
+    cta: {
+      title: 'Simplify Your Next Merger Integration',
+      description:
+        'Pre-stage signature templates, sync multiple directories, and execute brand unification across your entire combined workforce on day one.',
+    },
+  },
+
+  // 12. Franchise Management
+  {
+    slug: 'franchise-management',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Franchise Management | Siggly',
+      description:
+        'Maintain franchise brand compliance with centrally managed email signatures. Enforce corporate-approved templates while allowing localized franchise details.',
+      keywords: [
+        'franchise email signatures',
+        'franchisee branding',
+        'franchise compliance',
+        'franchise email management',
+      ],
+      canonical: '/use-cases/franchise-management',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Franchise Management', url: '/use-cases/franchise-management' },
+    ],
+    hero: {
+      badge: { icon: 'store', text: 'Franchise' },
+      title: 'Brand-Compliant Email Signatures Across Every Franchise Location',
+      description:
+        'Franchisees represent your brand in every email they send. Siggly gives corporate teams the tools to enforce brand standards while letting each location customize permitted fields like address and phone number.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '100%', label: 'Franchisee brand compliance' },
+      { value: '5min', label: 'To onboard a new franchise location' },
+      { value: '0', label: 'Off-brand signatures in the field' },
+    ],
+    featuresTitle: 'Franchise Signature Management Features',
+    features: [
+      {
+        icon: 'lock',
+        title: 'Corporate-Approved Templates',
+        description:
+          'Design templates at the corporate level with locked brand elements. Franchisees cannot alter logos, colors, or layout.',
+      },
+      {
+        icon: 'map',
+        title: 'Localized Signatures',
+        description:
+          'Allow each franchise location to include their own address, phone number, and local team details within the approved template structure.',
+      },
+      {
+        icon: 'grid',
+        title: 'Territory Management',
+        description:
+          'Organize franchisees by territory or region and deploy territory-specific campaigns or promotions through their signatures.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Compliance Monitoring',
+        description:
+          'Track which franchise locations are using approved signatures and identify any that have fallen out of compliance.',
+      },
+      {
+        icon: 'user-check',
+        title: 'Self-Service Franchise Portal',
+        description:
+          'Give franchisees a simple portal where they enter their local details and receive a ready-to-use, brand-compliant signature instantly.',
+      },
+    ],
+    sections: [
+      {
+        type: 'use-cases-grid',
+        title: 'Franchise Signature Scenarios',
+        cases: [
+          {
+            title: 'New Location Onboarding',
+            description:
+              'When a new franchisee signs on, provide them with a branded signature in minutes through the self-service portal.',
+          },
+          {
+            title: 'National Promotion Campaigns',
+            description:
+              'Deploy a promotional banner across every franchise location email signature simultaneously for coordinated marketing.',
+          },
+          {
+            title: 'Regional Compliance Variations',
+            description:
+              'Apply different legal disclaimers or regulatory notices based on the state or country where each franchise operates.',
+          },
+          {
+            title: 'Franchise Rebranding',
+            description:
+              'When the corporate brand evolves, push updated signatures to all franchise locations in one coordinated rollout.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Managing email signatures across 120 franchise locations used to be impossible. With Siggly, every location has a perfect, on-brand signature and we can push promotions to all of them at once.',
+      authorName: 'Kevin Marsh',
+      authorTitle: 'Director of Franchise Operations, BrightClean Services',
+    },
+    faqs: [
+      {
+        question: 'Can franchisees edit their own signatures?',
+        answer:
+          'Franchisees can update permitted fields like their name, phone number, and address through a self-service portal. Brand elements remain locked by corporate.',
+      },
+      {
+        question: 'How do I onboard a new franchise location?',
+        answer:
+          'Invite the franchisee to the self-service portal. They fill in their location details and receive a brand-compliant signature instantly. No IT involvement required.',
+      },
+      {
+        question: 'Can I run different promotions for different franchise regions?',
+        answer:
+          'Yes. Assign signature banners by territory so different regions can promote location-specific offers while maintaining corporate brand standards.',
+      },
+    ],
+    cta: {
+      title: 'Take Control of Franchise Signatures',
+      description:
+        'Enforce brand compliance across every franchise location while empowering franchisees to manage their own details through a simple portal.',
+    },
+  },
+
+  // 13. Talent Acquisition
+  {
+    slug: 'talent-acquisition',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Talent Acquisition | Siggly',
+      description:
+        'Strengthen your employer brand with recruiting-focused email signatures. Add job posting links, career page CTAs, and employer brand messaging to every recruiter email.',
+      keywords: [
+        'recruiting email signatures',
+        'employer branding email',
+        'talent acquisition signatures',
+        'recruitment email marketing',
+      ],
+      canonical: '/use-cases/talent-acquisition',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Talent Acquisition', url: '/use-cases/talent-acquisition' },
+    ],
+    hero: {
+      badge: { icon: 'briefcase', text: 'Recruiting' },
+      title: 'Turn Every Recruiter Email into an Employer Brand Touchpoint',
+      description:
+        'Your recruiting team sends hundreds of emails to candidates every week. With Siggly, each of those emails reinforces your employer brand and drives candidates to open roles, career pages, and company culture content.',
+      variant: 'violet',
+    },
+    featuresTitle: 'Recruiting Signature Features',
+    features: [
+      {
+        icon: 'briefcase',
+        title: 'Job Posting Links',
+        description:
+          'Add dynamic links to current open positions directly in recruiter signatures. Update job listings without touching individual signatures.',
+      },
+      {
+        icon: 'star',
+        title: 'Employer Brand Showcase',
+        description:
+          'Include award badges, Glassdoor ratings, and employer value proposition messaging to attract top talent with every email.',
+      },
+      {
+        icon: 'link',
+        title: 'Career Page CTAs',
+        description:
+          'Drive candidates to your careers page with a prominent call-to-action banner that updates as your hiring needs change.',
+      },
+      {
+        icon: 'heart',
+        title: 'Culture and Values Messaging',
+        description:
+          'Showcase your company culture through signature banners featuring team photos, diversity commitments, or employee testimonials.',
+      },
+    ],
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Why Recruiting Teams Need Branded Signatures',
+        items: [
+          {
+            icon: 'trending-up',
+            title: 'Higher Candidate Engagement',
+            description:
+              'Candidates who see a professional, branded signature are more likely to open follow-up emails and engage with your recruiting process.',
+          },
+          {
+            icon: 'target',
+            title: 'Passive Candidate Reach',
+            description:
+              'Every email your team sends, even non-recruiting correspondence, becomes an opportunity to attract passive candidates through career links.',
+          },
+          {
+            icon: 'award',
+            title: 'Competitive Differentiation',
+            description:
+              'A polished recruiter email with employer brand elements sets you apart from competitors still using plain-text signatures.',
+          },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'Recruiter Signature Best Practices',
+        items: [
+          'Include a direct link to your careers page',
+          'Add current open roles or a featured position link',
+          'Display employer awards or recognition badges',
+          'Use a professional headshot to build personal connection',
+          'Include links to LinkedIn and company social profiles',
+          'Update banner messaging to reflect current hiring campaigns',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can I link to specific job postings in recruiter signatures?',
+        answer:
+          'Yes. Add dynamic links to individual job listings or your careers page. Update the linked positions centrally without editing each recruiter signature.',
+      },
+      {
+        question: 'How do I highlight employer awards in signatures?',
+        answer:
+          'Add award badges or banner images to your signature template. Siggly supports image hosting and ensures badges display correctly across all email clients.',
+      },
+      {
+        question: 'Can non-recruiting employees also promote open roles?',
+        answer:
+          'Absolutely. Deploy a hiring banner across the entire organization so every employee email helps attract candidates to your open positions.',
+      },
+      {
+        question: 'How do I measure the impact of recruiter signatures?',
+        answer:
+          'Siggly tracks clicks on career page links, job posting buttons, and banner CTAs so you can measure exactly how much candidate traffic your signatures generate.',
+      },
+      {
+        question: 'Can I run seasonal hiring campaigns through signatures?',
+        answer:
+          'Yes. Schedule campaign banners to activate and expire on specific dates, aligning signature messaging with your seasonal recruitment calendar.',
+      },
+    ],
+    cta: {
+      title: 'Elevate Your Recruiting Emails',
+      description:
+        'Equip your talent acquisition team with signatures that promote your employer brand and drive candidates to open roles with every email.',
+    },
+  },
+
+  // 14. Internal Communications
+  {
+    slug: 'internal-communications',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Internal Communications | Siggly',
+      description:
+        'Use email signatures for internal branding and communication. Promote org-wide announcements, department identification, and intranet links to every employee.',
+      keywords: [
+        'internal email signatures',
+        'employee communication signatures',
+        'internal branding email',
+        'intranet link signatures',
+      ],
+      canonical: '/use-cases/internal-communications',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Internal Communications', url: '/use-cases/internal-communications' },
+    ],
+    hero: {
+      badge: { icon: 'message-square', text: 'Internal Comms' },
+      title: 'Leverage Email Signatures for Internal Communications',
+      description:
+        'Email signatures are not just for external contacts. Use them to reinforce internal branding, promote company announcements, and make it easy for employees to find the resources they need.',
+      variant: 'slate',
+    },
+    features: [
+      {
+        icon: 'inbox',
+        title: 'Org-Wide Announcements',
+        description:
+          'Push company-wide announcements through signature banners so every internal email reinforces important messages like open enrollment or policy changes.',
+      },
+      {
+        icon: 'users-round',
+        title: 'Department Identification',
+        description:
+          'Help employees identify who they are emailing with clear department labels and team identifiers in every internal signature.',
+      },
+      {
+        icon: 'link',
+        title: 'Intranet and Resource Links',
+        description:
+          'Include quick links to your intranet, HR portal, IT helpdesk, or knowledge base directly in employee signatures for easy access.',
+      },
+    ],
+    sections: [
+      {
+        type: 'use-cases-grid',
+        title: 'Internal Signature Use Cases',
+        cases: [
+          {
+            title: 'Open Enrollment Reminders',
+            description:
+              'Add a benefits enrollment deadline banner to every employee signature during enrollment season.',
+          },
+          {
+            title: 'Safety and Compliance Reminders',
+            description:
+              'Promote workplace safety initiatives or compliance training deadlines through persistent signature messaging.',
+          },
+          {
+            title: 'Employee Recognition',
+            description:
+              'Highlight employee of the month, team achievements, or anniversary milestones in signature banners.',
+          },
+          {
+            title: 'IT Service Desk Promotion',
+            description:
+              'Include a direct link to your IT ticketing system so employees can get help without searching for the URL.',
+          },
+          {
+            title: 'Company Events',
+            description:
+              'Promote upcoming town halls, team outings, or volunteer opportunities through time-limited signature banners.',
+          },
+        ],
+      },
+      {
+        type: 'how-it-works',
+        title: 'Setting Up Internal Signatures',
+        steps: [
+          {
+            step: '1',
+            title: 'Create Internal Templates',
+            description:
+              'Design signature templates specifically for internal use with department identifiers, intranet links, and announcement banner slots.',
+          },
+          {
+            step: '2',
+            title: 'Assign by Department or Role',
+            description:
+              'Deploy different internal signature templates to different departments so each team has relevant links and contact information.',
+          },
+          {
+            step: '3',
+            title: 'Rotate Announcement Banners',
+            description:
+              'Schedule and rotate internal announcement banners to keep messaging fresh and aligned with your communications calendar.',
+          },
+        ],
+      },
+    ],
+    cta: {
+      title: 'Transform Internal Email Communication',
+      description:
+        'Turn every internal email into a communication channel. Promote announcements, resources, and team identity through employee signatures.',
+    },
+  },
+
+  // 15. Customer Retention
+  {
+    slug: 'customer-retention',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Customer Retention | Siggly',
+      description:
+        'Boost customer retention with strategic email signatures. Promote NPS surveys, loyalty programs, and renewal reminders in every client-facing email.',
+      keywords: [
+        'customer retention email',
+        'loyalty program signatures',
+        'renewal reminder email',
+        'NPS survey signatures',
+      ],
+      canonical: '/use-cases/customer-retention',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Customer Retention', url: '/use-cases/customer-retention' },
+    ],
+    hero: {
+      badge: { icon: 'heart', text: 'Retention' },
+      title: 'Drive Customer Retention Through Every Email',
+      description:
+        'Your customer-facing teams send thousands of emails per week. Each one is an opportunity to strengthen relationships, gather feedback, and remind customers of the value you deliver. Siggly makes it automatic.',
+      variant: 'light',
+    },
+    stats: [
+      { value: '5-25x', label: 'Cheaper to retain than acquire' },
+      { value: '67%', label: 'Of churn is preventable' },
+      { value: '10%+', label: 'NPS response lift from signature prompts' },
+    ],
+    featuresTitle: 'Retention-Focused Signature Features',
+    features: [
+      {
+        icon: 'star',
+        title: 'NPS Survey Links',
+        description:
+          'Embed a persistent link to your NPS or CSAT survey in account manager signatures to continuously collect customer sentiment data.',
+      },
+      {
+        icon: 'credit-card',
+        title: 'Renewal Reminders',
+        description:
+          'Add renewal deadline banners to customer success team signatures as contract end dates approach, keeping renewals top of mind.',
+      },
+      {
+        icon: 'award',
+        title: 'Loyalty Program Promotion',
+        description:
+          'Promote your loyalty or rewards program through signature banners that link directly to enrollment or redemption pages.',
+      },
+      {
+        icon: 'user-check',
+        title: 'Account Manager Branding',
+        description:
+          'Give each account manager a personalized, professional signature that reinforces their role as a trusted point of contact.',
+      },
+    ],
+    sections: [
+      {
+        type: 'benefits',
+        title: 'Why Signatures Matter for Retention',
+        items: [
+          {
+            icon: 'message-circle',
+            title: 'Continuous Feedback Loop',
+            description:
+              'Every email is a chance to ask for feedback. Signature-embedded survey links generate a steady stream of customer sentiment data.',
+          },
+          {
+            icon: 'repeat',
+            title: 'Proactive Renewal Engagement',
+            description:
+              'Signature banners reminding customers of upcoming renewals reduce last-minute churn and give your team more time to address concerns.',
+          },
+          {
+            icon: 'thumbs-up',
+            title: 'Relationship Reinforcement',
+            description:
+              'A polished, personalized account manager signature signals professionalism and care, reinforcing trust with every interaction.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Adding NPS survey links to our account manager signatures increased our response rate by 18%. We now have a constant pulse on customer satisfaction without sending separate survey emails.',
+      authorName: 'Sarah Lindgren',
+      authorTitle: 'Head of Customer Success, Apex SaaS',
+    },
+    faqs: [
+      {
+        question: 'Can I add renewal deadline dates to individual signatures?',
+        answer:
+          'Yes. Use dynamic fields or targeted banner campaigns to show renewal-specific messaging to customer-facing teams as contract dates approach.',
+      },
+      {
+        question: 'How do I embed an NPS survey link in a signature?',
+        answer:
+          'Add a clickable button or text link to your NPS survey tool in the signature template. Siggly tracks clicks so you can measure engagement.',
+      },
+      {
+        question: 'Can different account managers have different banners?',
+        answer:
+          'Yes. Assign banners by team, territory, or individual to ensure each account manager signature carries the most relevant retention messaging.',
+      },
+    ],
+    cta: {
+      title: 'Retain More Customers with Every Email',
+      description:
+        'Embed renewal reminders, feedback surveys, and loyalty promotions in your team signatures to reduce churn and strengthen relationships.',
+    },
+  },
+
+  // 16. Product Launches
+  {
+    slug: 'product-launches',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Product Launches | Siggly',
+      description:
+        'Amplify product launches through employee email signatures. Deploy launch banners, countdown timers, and product page CTAs across your entire organization.',
+      keywords: [
+        'product launch email',
+        'launch campaign signatures',
+        'product announcement email',
+        'email banner campaigns',
+      ],
+      canonical: '/use-cases/product-launches',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Product Launches', url: '/use-cases/product-launches' },
+    ],
+    hero: {
+      badge: { icon: 'rocket', text: 'Product Launch' },
+      title: 'Amplify Every Product Launch Through Email Signatures',
+      description:
+        'Your employees send thousands of emails during launch week. Siggly turns every one of those emails into a launch promotion, driving awareness and traffic to your new product without any extra effort from your team.',
+      variant: 'indigo',
+    },
+    featuresTitle: 'Launch Campaign Signature Tools',
+    features: [
+      {
+        icon: 'image',
+        title: 'Launch Banners',
+        description:
+          'Deploy eye-catching launch banners across every employee signature the moment your product goes live. Remove them just as easily when the campaign ends.',
+      },
+      {
+        icon: 'timer',
+        title: 'Countdown Messaging',
+        description:
+          'Build anticipation before launch day with countdown-themed banners that create urgency and excitement in every email.',
+      },
+      {
+        icon: 'mouse-pointer-click',
+        title: 'Product Page CTAs',
+        description:
+          'Link signature banners directly to your product page, landing page, or demo booking form to capture interest at the moment of highest excitement.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Phased Campaign Scheduling',
+        description:
+          'Schedule pre-launch, launch day, and post-launch signature campaigns in advance so messaging evolves automatically through each phase.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Campaign Performance Analytics',
+        description:
+          'Track banner impressions, click-through rates, and downstream conversions to measure exactly how much traffic your signatures drove.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Running a Launch Campaign Through Signatures',
+        steps: [
+          {
+            step: '1',
+            title: 'Design Your Launch Banner',
+            description:
+              'Create a banner featuring your new product with a clear CTA. Upload it to Siggly and link it to your product page or demo form.',
+          },
+          {
+            step: '2',
+            title: 'Schedule the Campaign Phases',
+            description:
+              'Set up pre-launch teaser, launch day announcement, and post-launch follow-up banners with automatic activation and expiration dates.',
+          },
+          {
+            step: '3',
+            title: 'Deploy Across the Organization',
+            description:
+              'Push the campaign to all employees or target specific teams like sales and marketing who have the most customer-facing email volume.',
+          },
+          {
+            step: '4',
+            title: 'Monitor and Optimize',
+            description:
+              'Track banner clicks and conversions in real time. Swap underperforming banners mid-campaign to maximize results.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Our last product launch generated 3,400 clicks from email signature banners alone. That was more traffic than our paid social campaign, and it cost us nothing beyond our Siggly subscription.',
+      authorName: 'Natalie Park',
+      authorTitle: 'Product Marketing Manager, Vantage Software',
+    },
+    faqs: [
+      {
+        question: 'How quickly can I deploy a launch banner to all employees?',
+        answer:
+          'Banners deploy within minutes. Upload your banner image, set the link and target audience, and Siggly pushes it to every signature immediately.',
+      },
+      {
+        question: 'Can I target launch banners to specific teams?',
+        answer:
+          'Yes. Deploy banners to your entire organization or target specific departments like sales, marketing, or customer success.',
+      },
+      {
+        question: 'Do launch banners automatically expire?',
+        answer:
+          'Yes. Set an expiration date when you create the campaign. Siggly automatically removes the banner when the campaign ends.',
+      },
+    ],
+    cta: {
+      title: 'Launch Louder with Signature Campaigns',
+      description:
+        'Turn every employee email into a product launch channel. Deploy banners, track clicks, and measure the impact on your next launch.',
+    },
+  },
+
+  // 17. Sustainability Messaging
+  {
+    slug: 'sustainability-messaging',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Sustainability Messaging | Siggly',
+      description:
+        'Communicate your sustainability commitments through email signatures. Share ESG credentials, carbon footprint data, and green initiatives with every email.',
+      keywords: [
+        'sustainability email signature',
+        'ESG email branding',
+        'green messaging email',
+        'carbon footprint signatures',
+      ],
+      canonical: '/use-cases/sustainability-messaging',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Sustainability Messaging', url: '/use-cases/sustainability-messaging' },
+    ],
+    hero: {
+      badge: { icon: 'heart', text: 'Sustainability' },
+      title: 'Share Your Sustainability Story in Every Email',
+      description:
+        'Stakeholders, customers, and partners increasingly evaluate companies on their environmental commitments. Use email signatures to communicate your green credentials, ESG progress, and sustainability initiatives in every message.',
+      variant: 'emerald',
+    },
+    features: [
+      {
+        icon: 'globe',
+        title: 'ESG Credential Links',
+        description:
+          'Link to your ESG report, sustainability page, or carbon neutrality certification directly from every employee email signature.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Carbon Footprint Transparency',
+        description:
+          'Include a concise carbon footprint metric or reduction target in your signature to demonstrate accountability and progress.',
+      },
+      {
+        icon: 'file-text',
+        title: 'Paperless Messaging',
+        description:
+          'Add a gentle reminder to think before printing, reinforcing your organization commitment to reducing waste.',
+      },
+      {
+        icon: 'award',
+        title: 'Green Certification Badges',
+        description:
+          'Display recognized sustainability certifications like B Corp, ISO 14001, or carbon neutral badges in your signature.',
+      },
+    ],
+    sections: [
+      {
+        type: 'checklist',
+        title: 'Sustainability Signature Best Practices',
+        items: [
+          'Link to your latest ESG or sustainability report',
+          'Display relevant green certifications or badges',
+          'Include a brief paperless or environmental message',
+          'Keep sustainability messaging concise and factual',
+          'Update metrics annually to reflect current data',
+          'Avoid greenwashing by backing claims with verifiable data',
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'Why Sustainability Messaging Belongs in Email Signatures',
+        paragraphs: [
+          'Email signatures reach every person your organization communicates with, making them one of the most efficient channels for sharing sustainability commitments. Unlike social media posts or annual reports that reach limited audiences, signature messaging is embedded in daily business communications.',
+          'Customers and investors are paying closer attention to environmental claims. A signature that links to your ESG report or displays a verified certification builds credibility. The key is to keep messaging factual and substantiated. A simple line like "Carbon neutral since 2023" with a link to your offset verification carries more weight than generic green slogans.',
+        ],
+      },
+    ],
+    cta: {
+      title: 'Amplify Your Green Message',
+      description:
+        'Embed sustainability credentials, ESG links, and green messaging in every employee email signature to demonstrate your environmental commitment.',
+    },
+  },
+
+  // 18. Crisis Communication
+  {
+    slug: 'crisis-communication',
+    category: 'use-cases',
+    meta: {
+      title: 'Email Signatures for Crisis Communication | Siggly',
+      description:
+        'Update email signatures instantly during a crisis. Deploy emergency contacts, status page links, and temporary messaging across your entire organization in minutes.',
+      keywords: [
+        'crisis communication email',
+        'emergency email signatures',
+        'rapid signature updates',
+        'crisis messaging email',
+      ],
+      canonical: '/use-cases/crisis-communication',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Use Cases', url: '/use-cases' },
+      { name: 'Crisis Communication', url: '/use-cases/crisis-communication' },
+    ],
+    hero: {
+      badge: { icon: 'alert-triangle', text: 'Crisis Response' },
+      title: 'Rapid Signature Updates for Crisis Communication',
+      description:
+        'When a crisis hits, every outgoing email should carry the right message. Siggly lets you deploy emergency contact information, status page links, and temporary messaging to your entire workforce in minutes, not days.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: '<5min', label: 'To deploy an emergency signature update' },
+      { value: '100%', label: 'Employee coverage instantly' },
+      { value: '1-click', label: 'Rollback to normal signatures' },
+    ],
+    featuresTitle: 'Crisis Signature Capabilities',
+    features: [
+      {
+        icon: 'zap',
+        title: 'Instant Organization-Wide Updates',
+        description:
+          'Push a new signature or emergency banner to every employee in your organization within minutes of a crisis event.',
+      },
+      {
+        icon: 'phone',
+        title: 'Emergency Contact Information',
+        description:
+          'Add crisis hotline numbers, emergency contact details, or support team information to every outgoing email automatically.',
+      },
+      {
+        icon: 'link',
+        title: 'Status Page Links',
+        description:
+          'Include a link to your status page or incident update portal so recipients always know where to find the latest information.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Deploying Crisis Signatures',
+        steps: [
+          {
+            step: '1',
+            title: 'Activate the Crisis Template',
+            description:
+              'Select a pre-built crisis signature template or create one on the fly with the relevant emergency messaging and contact details.',
+          },
+          {
+            step: '2',
+            title: 'Deploy to All Employees',
+            description:
+              'Push the crisis signature to your entire organization or specific teams in a single action. Deployment completes in minutes.',
+          },
+          {
+            step: '3',
+            title: 'Restore Normal Signatures',
+            description:
+              'When the crisis is resolved, revert to standard signatures with one click. Previous templates are preserved and ready to reactivate.',
+          },
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Crisis Scenarios Where Signatures Help',
+        cases: [
+          {
+            title: 'Service Outage',
+            description:
+              'Add a status page link and estimated resolution time to every email so customers know you are aware and working on the issue.',
+          },
+          {
+            title: 'Data Breach Notification',
+            description:
+              'Include a link to your breach notification page and security team contact details for affected customers.',
+          },
+          {
+            title: 'Natural Disaster Response',
+            description:
+              'Share emergency contact numbers, office closure information, and donation or support links with external contacts.',
+          },
+          {
+            title: 'Product Recall',
+            description:
+              'Direct recipients to your recall information page and customer support line through a prominent signature banner.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How fast can I deploy a crisis signature update?',
+        answer:
+          'Within minutes. If you have a pre-built crisis template, you can activate it in a single click and it deploys across your organization immediately.',
+      },
+      {
+        question: 'Should I pre-build crisis signature templates?',
+        answer:
+          'Yes. Having pre-approved crisis templates ready to activate saves critical time when an incident occurs. Prepare templates for your most likely scenarios.',
+      },
+      {
+        question: 'Can I revert to normal signatures after the crisis?',
+        answer:
+          'Absolutely. Siggly preserves your standard templates so you can revert with one click once the situation is resolved.',
+      },
+      {
+        question: 'Can I deploy crisis messaging to only affected teams?',
+        answer:
+          'Yes. Target specific departments, regions, or teams with crisis messaging while the rest of the organization continues with standard signatures.',
+      },
+    ],
+    cta: {
+      title: 'Be Ready for Any Crisis',
+      description:
+        'Pre-build crisis templates and deploy emergency signature updates across your entire organization in minutes when it matters most.',
+    },
+  },
 ];

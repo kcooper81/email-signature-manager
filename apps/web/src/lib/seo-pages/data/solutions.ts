@@ -1409,4 +1409,605 @@ export const solutionsPages: SEOLandingPageData[] = [
         'Unify your global email identity across every region, language, and brand. Contact our enterprise team or start a free trial today.',
     },
   },
+
+  // ─── Executive Leadership ──────────────────────────────────────────
+  {
+    slug: 'executive-leadership',
+    category: 'solutions',
+    meta: {
+      title: 'Email Signatures for Executive Leadership | Siggly',
+      description:
+        'Craft polished email signatures for C-suite executives and board members. Reinforce authority, link investor relations, and maintain executive brand consistency.',
+      keywords: [
+        'executive email signature',
+        'C-suite branding',
+        'leadership email signature',
+        'board member signature',
+      ],
+      canonical: '/for/executive-leadership',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/for' },
+      { name: 'Executive Leadership', url: '/for/executive-leadership' },
+    ],
+    hero: {
+      badge: { icon: 'award', text: 'Executive Signatures' },
+      title: 'Email Signatures That Reflect Leadership Authority',
+      description:
+        'Your executives send hundreds of emails a week. Ensure every one carries a polished, on-brand signature with direct links to investor relations, company news, and social profiles.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: '100%', label: 'C-suite brand compliance' },
+      { value: '< 2 min', label: 'Executive signature setup' },
+      { value: '3x', label: 'More clicks on leadership CTAs' },
+    ],
+    featuresTitle: 'Purpose-Built for the C-Suite',
+    features: [
+      {
+        icon: 'award',
+        title: 'Authority-Signal Design',
+        description:
+          'Templates designed specifically for senior leaders with prominent titles, credentials, and professional headshots.',
+      },
+      {
+        icon: 'link',
+        title: 'Investor & Press Links',
+        description:
+          'Add direct links to investor relations pages, annual reports, press kits, and company announcements directly in the signature.',
+      },
+      {
+        icon: 'shield',
+        title: 'Locked-Down Templates',
+        description:
+          'Executives get polished signatures that cannot be accidentally modified. Only authorized admins can update executive templates.',
+      },
+      {
+        icon: 'smartphone',
+        title: 'Mobile-Optimized',
+        description:
+          'Executive signatures render perfectly on mobile devices, maintaining the professional impression no matter how the email is read.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Board Meeting Banners',
+        description:
+          'Attach time-sensitive banners for board meetings, earnings calls, or shareholder events that appear and disappear automatically.',
+      },
+    ],
+    sections: [
+      {
+        type: 'use-cases-grid',
+        title: 'Executive Signature Use Cases',
+        cases: [
+          {
+            title: 'CEO Communications',
+            description:
+              'Ensure the CEO\'s signature links to the latest company blog, investor deck, or keynote recording for maximum thought leadership impact.',
+          },
+          {
+            title: 'Board Member Outreach',
+            description:
+              'Provide board members with standardized signatures that align with corporate branding while including their advisory credentials.',
+          },
+          {
+            title: 'Investor Relations',
+            description:
+              'Link directly to SEC filings, quarterly reports, or IR contact pages so investors can access critical information from any email.',
+          },
+          {
+            title: 'Executive Recruiting',
+            description:
+              'When executives send recruiting outreach, their signatures serve as a mini-pitch for the company with culture and career links.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Our CEO was adamant that every executive email should look impeccable. Siggly gave us locked-down templates that even the most tech-averse board member could not accidentally break.',
+      authorName: 'Margaret Chen',
+      authorTitle: 'Chief of Staff, Meridian Capital Partners',
+    },
+    faqs: [
+      {
+        question: 'Can executives have different templates than the rest of the company?',
+        answer:
+          'Absolutely. You can create dedicated templates for different leadership tiers: C-suite, VP, Director, and board members each get distinct designs.',
+      },
+      {
+        question: 'Can I include professional headshots in executive signatures?',
+        answer:
+          'Yes. Siggly supports embedded headshots with automatic resizing and optimization for all email clients, including Outlook and Gmail.',
+      },
+      {
+        question: 'How do you handle executive assistants who send on behalf of leaders?',
+        answer:
+          'Siggly supports delegate sending. When an EA sends on behalf of an executive, the executive\'s branded signature is applied automatically.',
+      },
+    ],
+    cta: {
+      title: 'Elevate Your Executive Email Presence',
+      description:
+        'Give your leadership team email signatures that command attention and reinforce your brand at the highest level.',
+    },
+  },
+
+  // ─── Product Teams ─────────────────────────────────────────────────
+  {
+    slug: 'product-teams',
+    category: 'solutions',
+    meta: {
+      title: 'Email Signatures for Product Teams | Siggly',
+      description:
+        'Equip product managers and engineers with signatures that promote launches, gather feedback, and link to roadmaps. Drive product adoption from every email.',
+      keywords: [
+        'product team email signature',
+        'product launch signature',
+        'product manager branding',
+        'feedback collection signatures',
+      ],
+      canonical: '/for/product-teams',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/for' },
+      { name: 'Product Teams', url: '/for/product-teams' },
+    ],
+    hero: {
+      badge: { icon: 'rocket', text: 'Product Teams' },
+      title: 'Every Product Email Is a Launch Opportunity',
+      description:
+        'Product teams send hundreds of emails to users, stakeholders, and partners. Siggly lets you embed launch announcements, feedback links, and changelog URLs in every signature.',
+      variant: 'indigo',
+    },
+    featuresTitle: 'Signature Features for Product Teams',
+    features: [
+      {
+        icon: 'rocket',
+        title: 'Launch Campaign Banners',
+        description:
+          'Announce new features, beta programs, and product launches with time-bound banners that rotate automatically based on your release schedule.',
+      },
+      {
+        icon: 'message-circle',
+        title: 'Feedback Collection Links',
+        description:
+          'Add direct links to feedback forms, NPS surveys, or feature request boards so every email becomes a channel for user input.',
+      },
+      {
+        icon: 'file-text',
+        title: 'Changelog & Roadmap Links',
+        description:
+          'Keep customers informed by linking to your public changelog or roadmap directly from your product team\'s email signatures.',
+      },
+      {
+        icon: 'target',
+        title: 'Product-Specific Templates',
+        description:
+          'Create different signature templates for each product line, ensuring team members represent the right product branding in every email.',
+      },
+    ],
+    sections: [
+      {
+        type: 'benefits',
+        title: 'How Product Teams Benefit',
+        items: [
+          {
+            icon: 'trending-up',
+            title: 'Increased Feature Adoption',
+            description:
+              'Signature banners announcing new features drive users to try them, increasing adoption rates without extra marketing spend.',
+          },
+          {
+            icon: 'message-square',
+            title: 'More User Feedback',
+            description:
+              'Direct feedback links in signatures make it effortless for users and partners to share their thoughts on your product.',
+          },
+          {
+            icon: 'bar-chart-3',
+            title: 'Measurable Impact',
+            description:
+              'Track which product launch banners generate the most clicks and correlate them with feature adoption metrics.',
+          },
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'Why Product Teams Need Branded Signatures',
+        paragraphs: [
+          'Product managers and engineers communicate with external users, partners, and internal stakeholders constantly. Each email is an opportunity to drive awareness of new features, collect valuable feedback, and reinforce the product brand.',
+          'With Siggly, product teams can rotate launch banners tied to their release calendar, embed links to feedback tools like Canny or ProductBoard, and ensure that every team member represents the product professionally, even in casual email threads.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can I schedule banners to match our product release calendar?',
+        answer:
+          'Yes. Set start and end dates for each banner so they automatically appear on launch day and disappear after the promotion period ends.',
+      },
+      {
+        question: 'Do you support multiple product lines with different branding?',
+        answer:
+          'Absolutely. Create separate templates per product line with distinct logos, colors, and links. Assign them to team members based on their product assignment.',
+      },
+      {
+        question: 'Can I link to external feedback tools like Canny or Productboard?',
+        answer:
+          'Yes. Add any URL to your signature links, including Canny, Productboard, Typeform, Google Forms, or any other feedback collection tool.',
+      },
+      {
+        question: 'How do engineers typically react to managed email signatures?',
+        answer:
+          'Engineers appreciate that Siggly handles it for them automatically. There is nothing to configure locally, and the signature does not interfere with their workflow.',
+      },
+    ],
+    cta: {
+      title: 'Launch Better with Every Email',
+      description:
+        'Turn your product team\'s emails into a growth channel. Connect Siggly and start promoting features from every signature.',
+    },
+  },
+
+  // ─── Support Teams ─────────────────────────────────────────────────
+  {
+    slug: 'support-teams',
+    category: 'solutions',
+    meta: {
+      title: 'Email Signatures for Customer Support Teams | Siggly',
+      description:
+        'Give support agents professional signatures with CSAT survey links, knowledge base shortcuts, and ticket system integration for better customer experience.',
+      keywords: [
+        'support team email signature',
+        'customer service signatures',
+        'CSAT survey signature',
+        'help desk email signatures',
+      ],
+      canonical: '/for/support-teams',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/for' },
+      { name: 'Support Teams', url: '/for/support-teams' },
+    ],
+    hero: {
+      badge: { icon: 'headphones', text: 'Support Teams' },
+      title: 'Professional Support Starts with Every Email',
+      description:
+        'Your support agents send more emails than anyone in the company. Equip them with branded signatures that include satisfaction surveys, knowledge base links, and escalation paths.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '40%', label: 'Higher CSAT response rates' },
+      { value: '25%', label: 'Fewer repeat tickets via KB links' },
+      { value: '100%', label: 'Agent brand consistency' },
+    ],
+    featuresTitle: 'Built for High-Volume Support Communication',
+    features: [
+      {
+        icon: 'thumbs-up',
+        title: 'CSAT Survey Links',
+        description:
+          'Embed one-click satisfaction survey links in every support email so customers can rate their experience instantly.',
+      },
+      {
+        icon: 'book-open',
+        title: 'Knowledge Base Shortcuts',
+        description:
+          'Include quick links to your help center, documentation, or FAQ pages so customers can self-serve for common issues.',
+      },
+      {
+        icon: 'headphones',
+        title: 'Escalation Contact Info',
+        description:
+          'Signatures can include manager contact details or escalation phone numbers for customers who need additional help.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Getting Your Support Team Set Up',
+        steps: [
+          {
+            step: '1',
+            title: 'Design a Support Template',
+            description:
+              'Create a signature template with your support team branding, CSAT link, and knowledge base URL using the drag-and-drop editor.',
+          },
+          {
+            step: '2',
+            title: 'Connect Your Help Desk',
+            description:
+              'Integrate with Zendesk, Freshdesk, Intercom, or any ticket system that supports email signatures.',
+          },
+          {
+            step: '3',
+            title: 'Deploy to All Agents',
+            description:
+              'Push the template to every support agent at once. New hires get the signature automatically through directory sync.',
+          },
+        ],
+      },
+      {
+        type: 'use-cases-grid',
+        title: 'Support Signature Scenarios',
+        cases: [
+          {
+            title: 'Post-Resolution Surveys',
+            description:
+              'After resolving a ticket, the agent signature includes a one-click CSAT survey link so customers can rate the interaction.',
+          },
+          {
+            title: 'Onboarding Guidance',
+            description:
+              'Customer onboarding specialists include links to getting-started guides, video tutorials, and scheduled training sessions.',
+          },
+          {
+            title: 'VIP Escalation Paths',
+            description:
+              'Signatures for VIP support tiers include direct phone numbers and dedicated account manager contact details.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'Adding CSAT survey links to our agent signatures doubled our response rate within the first month. Customers click the rating right from the email instead of ignoring a separate follow-up.',
+      authorName: 'Priya Kapoor',
+      authorTitle: 'VP of Customer Success, CloudReach Solutions',
+    },
+    cta: {
+      title: 'Elevate Your Support Experience',
+      description:
+        'Give every support email a professional, helpful signature that drives satisfaction and reduces repeat tickets.',
+    },
+  },
+
+  // ─── Creative Agencies ─────────────────────────────────────────────
+  {
+    slug: 'creative-agencies',
+    category: 'solutions',
+    meta: {
+      title: 'Email Signatures for Creative Agencies | Siggly',
+      description:
+        'Manage email signatures across multiple clients and brands. White-label options, portfolio links, and versatile design templates for creative agencies.',
+      keywords: [
+        'creative agency email signature',
+        'agency branding signatures',
+        'multi-client signatures',
+        'white label email signatures',
+      ],
+      canonical: '/for/creative-agencies',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/for' },
+      { name: 'Creative Agencies', url: '/for/creative-agencies' },
+    ],
+    hero: {
+      badge: { icon: 'palette', text: 'Creative Agencies' },
+      title: 'Signatures as Creative as Your Agency',
+      description:
+        'Creative agencies juggle multiple brands daily. Siggly lets you manage distinct email signatures for every client engagement, showcase your portfolio, and white-label the entire experience.',
+      variant: 'violet',
+    },
+    featuresTitle: 'Designed for Multi-Brand Agency Life',
+    features: [
+      {
+        icon: 'palette',
+        title: 'Multi-Client Brand Switching',
+        description:
+          'Create and manage signature templates for each client project. Team members can switch between client signatures based on who they are emailing.',
+      },
+      {
+        icon: 'eye',
+        title: 'Portfolio Showcasing',
+        description:
+          'Embed portfolio links, case study thumbnails, or Dribbble/Behance profiles in your agency signatures to keep your work visible in every email.',
+      },
+      {
+        icon: 'image',
+        title: 'White-Label Options',
+        description:
+          'Remove Siggly branding entirely and present signature management under your own agency brand when offering it as a service to clients.',
+      },
+      {
+        icon: 'wand-2',
+        title: 'Design-Forward Templates',
+        description:
+          'Access templates that prioritize visual impact and creative expression while maintaining cross-client email compatibility.',
+      },
+      {
+        icon: 'layers',
+        title: 'Brand Guidelines Enforcement',
+        description:
+          'Lock down fonts, colors, and layouts per client brand so team members cannot accidentally mix up client branding in signatures.',
+      },
+    ],
+    sections: [
+      {
+        type: 'checklist',
+        title: 'What Agencies Get with Siggly',
+        items: [
+          'Unlimited client brand templates',
+          'White-label admin portal',
+          'Portfolio and case study signature links',
+          'Per-client brand guideline enforcement',
+          'Client-facing signature management (optional)',
+          'Bulk onboarding for freelancers and contractors',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We work with eight clients at any given time. Siggly lets our designers switch between client signatures in seconds and ensures nobody accidentally sends an email with the wrong brand.',
+      authorName: 'Dylan Park',
+      authorTitle: 'Creative Director, Outline Studio',
+    },
+    faqs: [
+      {
+        question: 'Can freelancers and contractors get agency-managed signatures?',
+        answer:
+          'Yes. Add contractors to your Siggly account and assign them client-specific templates. Remove their access when the engagement ends.',
+      },
+      {
+        question: 'Is there a limit to how many client brands I can manage?',
+        answer:
+          'No. Siggly supports unlimited brands and templates. Each client can have multiple signature variations for different teams or campaigns.',
+      },
+      {
+        question: 'Can clients manage their own signatures through our white-label portal?',
+        answer:
+          'Yes. With white-label enabled, you can give clients limited access to view or edit their own team signatures under your agency branding.',
+      },
+      {
+        question: 'Do you support animated banners or GIFs in signatures?',
+        answer:
+          'Siggly supports static images for maximum email client compatibility. Animated GIFs work in many clients but may fall back to the first frame in Outlook.',
+      },
+    ],
+    cta: {
+      title: 'Manage Every Client Brand from One Platform',
+      description:
+        'Stop juggling signature files in shared drives. Siggly gives your agency a single hub for every client signature.',
+    },
+  },
+
+  // ─── Franchisors ───────────────────────────────────────────────────
+  {
+    slug: 'franchisors',
+    category: 'solutions',
+    meta: {
+      title: 'Email Signatures for Franchisors & Multi-Location Brands | Siggly',
+      description:
+        'Centralize email signature management across franchise locations. Enforce corporate branding, allow territory-specific details, and maintain franchise compliance.',
+      keywords: [
+        'franchise email signatures',
+        'multi-location signature management',
+        'franchisor branding',
+        'franchise compliance signatures',
+      ],
+      canonical: '/for/franchisors',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Solutions', url: '/for' },
+      { name: 'Franchisors', url: '/for/franchisors' },
+    ],
+    hero: {
+      badge: { icon: 'store', text: 'Franchise Solutions' },
+      title: 'Consistent Branding Across Every Franchise Location',
+      description:
+        'Franchisors need corporate brand control without stifling local flexibility. Siggly lets you enforce brand standards while allowing franchisees to customize location-specific details like address, phone, and local promotions.',
+      variant: 'light',
+    },
+    stats: [
+      { value: '100%', label: 'Brand compliance across locations' },
+      { value: '500+', label: 'Locations manageable per account' },
+      { value: '< 10 min', label: 'New franchisee onboarding' },
+      { value: '0', label: 'Off-brand signatures' },
+    ],
+    featuresTitle: 'Franchise Signature Management Features',
+    features: [
+      {
+        icon: 'building-2',
+        title: 'Multi-Location Templates',
+        description:
+          'Create a master template with locked brand elements and dynamic fields for location name, address, phone, and local manager details.',
+      },
+      {
+        icon: 'lock',
+        title: 'Corporate Brand Lock',
+        description:
+          'Logo, fonts, colors, and layout are locked at the corporate level. Franchisees can only edit the fields you allow.',
+      },
+      {
+        icon: 'map',
+        title: 'Territory-Specific Content',
+        description:
+          'Assign region-specific promotions, disclaimers, or store hours to signatures based on franchise territory or market.',
+      },
+      {
+        icon: 'eye',
+        title: 'Corporate Oversight Dashboard',
+        description:
+          'View signature compliance across every franchise location from a centralized dashboard. Identify non-compliant locations instantly.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'Getting Your Franchise Network on Siggly',
+        steps: [
+          {
+            step: '1',
+            title: 'Design the Corporate Template',
+            description:
+              'Create a master signature template with your franchise brand elements locked in place and dynamic fields for location-specific details.',
+          },
+          {
+            step: '2',
+            title: 'Invite Franchise Locations',
+            description:
+              'Add franchisee admins to Siggly. They can fill in their location details within the boundaries you define.',
+          },
+          {
+            step: '3',
+            title: 'Monitor Compliance',
+            description:
+              'Use the corporate dashboard to ensure every location maintains brand standards. Flag and fix issues from one screen.',
+          },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Benefits for Franchise Organizations',
+        items: [
+          {
+            icon: 'shield-check',
+            title: 'Brand Protection',
+            description:
+              'Prevent franchisees from using off-brand logos, colors, or messaging in their email signatures while still allowing local personalization.',
+          },
+          {
+            icon: 'gauge',
+            title: 'Scalable Onboarding',
+            description:
+              'Onboard new franchise locations in minutes instead of days. The template is ready; they just fill in their local details.',
+          },
+          {
+            icon: 'bar-chart-3',
+            title: 'Network-Wide Analytics',
+            description:
+              'Track signature engagement across your entire franchise network to identify which locations drive the most customer interaction.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Can franchisees manage their own team signatures?',
+        answer:
+          'Yes. Franchisee admins can add their local staff and assign the corporate-approved template. They can edit allowed fields like phone, address, and local hours but cannot change brand elements.',
+      },
+      {
+        question: 'How do you handle franchise acquisitions or closures?',
+        answer:
+          'When a location is acquired or closed, you can transfer or deactivate all associated signatures from the corporate dashboard in a single action.',
+      },
+      {
+        question: 'Is there a limit to the number of franchise locations?',
+        answer:
+          'No. Siggly scales to any number of locations. Our enterprise plan includes dedicated support for franchise networks with 100+ locations.',
+      },
+    ],
+    cta: {
+      title: 'Unify Your Franchise Email Identity',
+      description:
+        'Give every franchise location a professional, on-brand email signature while keeping corporate oversight and control.',
+    },
+  },
 ];

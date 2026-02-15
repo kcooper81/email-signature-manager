@@ -477,11 +477,11 @@ export default function AnalyticsPage() {
               <Link href="/settings/billing">
                 <Button size="lg">
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Upgrade to Starter
+                  Upgrade to Professional
                 </Button>
               </Link>
               <p className="text-xs text-muted-foreground mt-3">
-                Available on Starter plan and above
+                Available on the Professional plan
               </p>
             </div>
           </CardContent>

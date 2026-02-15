@@ -17,23 +17,23 @@ const comparisonData = [
   { feature: 'Campaign Banners', siggly: true, siggyio: true, winner: 'tie' },
   { feature: 'Department Templates', siggly: true, siggyio: true, winner: 'tie' },
   { feature: 'Analytics Dashboard', siggly: true, siggyio: true, winner: 'tie' },
-  { feature: 'Per-User Pricing', siggly: '$0.50/user', siggyio: '$4/user', winner: 'siggly' },
-  { feature: 'Unlimited Templates', siggly: 'Professional+', siggyio: 'Enterprise only', winner: 'siggly' },
-  { feature: 'API Access', siggly: 'Professional+', siggyio: 'Enterprise only', winner: 'siggly' },
+  { feature: 'Per-User Pricing', siggly: '$1.50/user', siggyio: '$4/user', winner: 'siggly' },
+  { feature: 'Unlimited Templates', siggly: 'Professional', siggyio: 'Enterprise only', winner: 'siggly' },
+  { feature: 'API Access', siggly: 'Professional', siggyio: 'Enterprise only', winner: 'siggly' },
 ];
 
 const switchReasons = [
-  { icon: DollarSign, title: '87% Lower Cost', description: 'Siggly starts at $0.50/user vs Siggy.io\'s $4/user. Same features, fraction of the price.' },
+  { icon: DollarSign, title: '63% Lower Cost', description: 'Siggly Professional at $1.50/user vs Siggy.io\'s $4/user. Same features, fraction of the price.' },
   { icon: Users, title: 'Free for Small Teams', description: 'Up to 5 users free forever. Siggy.io has no free tier.' },
   { icon: Zap, title: 'Faster Setup', description: 'Connect and deploy in under 5 minutes with our streamlined onboarding.' },
   { icon: BarChart3, title: 'Better Analytics', description: 'Detailed engagement metrics and ROI tracking included in lower tiers.' },
 ];
 
 const pricingComparison = [
-  { teamSize: '10 users', siggly: '$5/mo', siggyio: '$40/mo', savings: '$420/year' },
-  { teamSize: '50 users', siggly: '$25/mo', siggyio: '$200/mo', savings: '$2,100/year' },
-  { teamSize: '100 users', siggly: '$50/mo', siggyio: '$400/mo', savings: '$4,200/year' },
-  { teamSize: '500 users', siggly: '$250/mo', siggyio: '$2,000/mo', savings: '$21,000/year' },
+  { teamSize: '10 users', siggly: '$15/mo', siggyio: '$40/mo', savings: '$300/year' },
+  { teamSize: '50 users', siggly: '$75/mo', siggyio: '$200/mo', savings: '$1,500/year' },
+  { teamSize: '100 users', siggly: '$150/mo', siggyio: '$400/mo', savings: '$3,000/year' },
+  { teamSize: '500 users', siggly: '$750/mo', siggyio: '$2,000/mo', savings: '$15,000/year' },
 ];
 
 export default function SiggyComparisonPage() {
@@ -44,8 +44,8 @@ export default function SiggyComparisonPage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6">Siggly vs Siggy.io</h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Looking for a Siggy.io alternative? Siggly offers the same powerful features 
-            at up to 87% lower cost, plus a free tier for small teams.
+            Looking for a Siggy.io alternative? Siggly offers the same powerful features
+            at up to 63% lower cost, plus a free tier for small teams.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
@@ -63,7 +63,7 @@ export default function SiggyComparisonPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">87%</div>
+              <div className="text-4xl font-bold text-green-400 mb-2">63%</div>
               <div className="text-gray-400">Lower cost than Siggy.io</div>
             </div>
             <div>
@@ -71,7 +71,7 @@ export default function SiggyComparisonPage() {
               <div className="text-gray-400">Plan for up to 5 users</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-green-400 mb-2">$21K</div>
+              <div className="text-4xl font-bold text-green-400 mb-2">$15K</div>
               <div className="text-gray-400">Annual savings (500 users)</div>
             </div>
           </div>

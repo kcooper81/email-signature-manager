@@ -254,7 +254,7 @@ export default function RealEstateIndustryPage() {
               <p className="text-orange-100">Mobile-responsive signatures</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold mb-2">$0.50</div>
+              <div className="text-4xl font-bold mb-2">$1.50</div>
               <p className="text-orange-100">Per agent per month</p>
             </div>
           </div>

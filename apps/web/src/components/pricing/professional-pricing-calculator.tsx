@@ -4,25 +4,26 @@ import { useState } from 'react';
 
 export function ProfessionalPricingCalculator() {
   const [teamSize, setTeamSize] = useState(10);
-  // $29 base includes first 10 users, then $1/user for users beyond 10
-  const totalPrice = teamSize <= 10 ? 29 : 29 + (teamSize - 10);
+  // $1.50/user/month, 10-user minimum
+  const billableUsers = Math.max(10, teamSize);
+  const totalPrice = (billableUsers * 1.5).toFixed(2).replace(/\.00$/, '');
 
   return (
     <div>
       <div className="flex items-baseline justify-center gap-1">
-        <span className="text-4xl font-bold">$29</span>
-        <span className="text-gray-500">/mo</span>
+        <span className="text-4xl font-bold">$1.50</span>
+        <span className="text-gray-500">/user/mo</span>
       </div>
-      <p className="text-xs text-gray-500 mt-1">for up to 10 users, then $1/user</p>
-      
+      <p className="text-xs text-gray-500 mt-1">10-user minimum ($15/mo)</p>
+
       {/* Quick Calculator */}
       <div className="mt-4 p-3 bg-violet-50 rounded-lg border border-violet-200">
         <p className="text-xs font-medium text-violet-900 mb-2">Quick calculator:</p>
         <div className="space-y-2">
           <input
             type="range"
-            min="1"
-            max="100"
+            min="10"
+            max="200"
             value={teamSize}
             onChange={(e) => setTeamSize(parseInt(e.target.value))}
             className="w-full h-2 bg-violet-200 rounded-lg appearance-none cursor-pointer accent-violet-600"

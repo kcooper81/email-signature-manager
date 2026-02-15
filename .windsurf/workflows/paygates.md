@@ -36,6 +36,7 @@ description: How to add or modify plan-based feature gates and limits
 ## Testing
 
 1. Turn OFF "Bypass Pay Gates (Dev)" toggle
-2. Test as Free plan user
-3. Test as Starter plan user
-4. Verify upgrade prompts appear correctly
+2. Test as Free plan user (verify HubSpot, bulk ops, compliance blocks, directory sync, and scheduled deployments are accessible)
+3. Test as Professional plan user (verify MS365, full analytics, and multiple templates are unlocked)
+4. Verify upgrade prompts appear only for gated features: analytics (full), MS365, multiple templates
+5. Verify NO upgrade prompts for: HubSpot, bulk ops, compliance blocks, directory sync, scheduled deployments, API access

@@ -1,11 +1,9 @@
 # Stripe Payment Setup Guide
 
 ## Issue Fixed
-The webhook wasn't recognizing professional plan subscriptions because it was looking for a single `STRIPE_PROFESSIONAL_PRICE_ID`, but professional plans use TWO price IDs:
-- Base fee: `STRIPE_PROFESSIONAL_BASE_PRICE_ID`
-- Per-user fee: `STRIPE_PROFESSIONAL_PER_USER_PRICE_ID`
+The webhook previously looked for a base fee + per-user fee for professional plans. With the pricing simplification, Professional now uses a single per-user price ID (`STRIPE_PROFESSIONAL_PRICE_ID`). The Starter plan has been removed entirely.
 
-**Fixed:** Webhook now checks all line items in a subscription to correctly identify the plan.
+**Current:** Professional plan uses a single per-user price at $1.50/user/month with a 10-user minimum.
 
 ---
 
@@ -25,9 +23,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...  # ⚠️ Get this from Stripe webhook settings
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 
 # Stripe Price IDs (create these in Stripe Dashboard)
-STRIPE_STARTER_PRICE_ID=price_...
-STRIPE_PROFESSIONAL_BASE_PRICE_ID=price_...
-STRIPE_PROFESSIONAL_PER_USER_PRICE_ID=price_...
+STRIPE_PROFESSIONAL_PRICE_ID=price_...  # $1.50/user/month per-seat price
 
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000  # or your production URL
@@ -39,21 +35,14 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # or your production URL
 
 ### 1. Create Products and Prices in Stripe
 
-**Starter Plan:**
-- Product: "Starter Plan"
-- Price: $0.50/user/month (recurring, per-seat)
-- Copy the Price ID → `STRIPE_STARTER_PRICE_ID`
+**Professional Plan (single per-user price):**
+- Product: "Professional Plan"
+  - Price: $1.50/user/month (recurring, per-seat)
+  - Copy the Price ID → `STRIPE_PROFESSIONAL_PRICE_ID`
 
-**Professional Plan (requires 2 prices):**
-- Product: "Professional Plan - Base"
-  - Price: $29/month (recurring, flat fee) - **includes first 10 users**
-  - Copy the Price ID → `STRIPE_PROFESSIONAL_BASE_PRICE_ID`
-  
-- Product: "Professional Plan - Per User"
-  - Price: $1/user/month (recurring, per-seat) - **only charged for users beyond 10**
-  - Copy the Price ID → `STRIPE_PROFESSIONAL_PER_USER_PRICE_ID`
+> **Note:** Professional plan has a 10-user minimum ($15/month). The code enforces `max(10, totalUsers)` as the seat quantity. There is no base fee -- pricing is purely per-user.
 
-> **Note:** The code automatically calculates billable users as `max(0, totalUsers - 10)`. For teams of 10 or fewer, only the $29 base fee is charged.
+**No Starter Plan:** The Starter plan has been removed. Users go directly from Free to Professional.
 
 ### 2. Configure Webhook
 
@@ -159,7 +148,7 @@ ngrok http 3000
    -- In Supabase SQL Editor
    SELECT * FROM subscriptions WHERE organization_id = 'your-org-id';
    ```
-   - Verify `plan` column updated to 'starter' or 'professional'
+   - Verify `plan` column updated to 'professional'
    - Verify `status` is 'active' or 'trialing'
 
 5. **Refresh the page:**

@@ -11,7 +11,7 @@ import { PLANS } from '@/lib/billing/plans';
 
 interface UpgradePromptProps {
   feature: string;
-  requiredPlan: 'starter' | 'professional' | 'enterprise';
+  requiredPlan: 'professional' | 'enterprise';
   title?: string;
   description?: string;
   inline?: boolean;
@@ -99,7 +99,7 @@ export function UpgradePrompt({
             </Button>
           </Link>
           <Badge variant="secondary" className="text-xs">
-            From ${plan.pricePerUser / 100}/member/mo
+            From ${plan.pricePerUser / 100}/user/mo
           </Badge>
         </div>
       </CardContent>
@@ -115,20 +115,14 @@ interface FeatureGateProps {
 
 // SINGLE SOURCE OF TRUTH: All feature requirements
 // Update this when plan features change
-// Note: Free plan features (googleWorkspace) don't need gating
+// Note: Free plan features (googleWorkspace, hubspotCRM, scheduledDeployments, customBranding, removeWatermark) don't need gating
 const featureRequirements = {
-  // Starter plan features
-  analytics: 'starter',
-  microsoft365: 'starter',
-  customBranding: 'starter',
-  removeWatermark: 'starter',
-  
   // Professional plan features
-  hubspotCRM: 'professional',
-  scheduledDeployments: 'professional',
+  analytics: 'professional',
+  microsoft365: 'professional',
   apiAccess: 'professional',
   prioritySupport: 'professional',
-  
+
   // Enterprise plan features
   sso: 'enterprise',
   whiteLabel: 'enterprise',
@@ -138,14 +132,12 @@ const featureRequirements = {
 export const limitRequirements = {
   templates: {
     free: 1,
-    starter: 5,
     professional: -1, // unlimited
     enterprise: -1,
   },
   teamMembers: {
     free: 5,
-    starter: -1, // unlimited
-    professional: -1,
+    professional: -1, // unlimited
     enterprise: -1,
   },
 } as const;
@@ -207,7 +199,7 @@ export function LimitGate({ type, children, fallback }: LimitGateProps) {
   return (
     <UpgradePrompt
       feature={`More ${limitInfo.name}`}
-      requiredPlan="starter"
+      requiredPlan="professional"
       title={`${limitInfo.name.charAt(0).toUpperCase() + limitInfo.name.slice(1)} limit reached`}
       description={`You've used ${limitInfo.current} of ${limitInfo.max} ${limitInfo.name} on the ${plan.name} plan. Upgrade to add more.`}
     />

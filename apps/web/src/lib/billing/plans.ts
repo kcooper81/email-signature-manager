@@ -20,10 +20,10 @@ export interface PlanFeatureDisplay {
 }
 
 export interface Plan {
-  id: 'free' | 'starter' | 'professional' | 'enterprise';
+  id: 'free' | 'professional' | 'enterprise';
   name: string;
   description: string;
-  priceMonthly: number; // Monthly price in dollars (flat rate, not per user for display)
+  priceMonthly: number;
   pricePerUser: number; // Per-user price in cents for billing
   period: string;
   features: PlanFeatures;
@@ -38,7 +38,7 @@ export const PLANS: Record<string, Plan> = {
   free: {
     id: 'free',
     name: 'Free',
-    description: 'Perfect for trying out Siggly',
+    description: 'Full-featured for small teams',
     priceMonthly: 0,
     pricePerUser: 0,
     period: 'forever',
@@ -48,15 +48,15 @@ export const PLANS: Record<string, Plan> = {
       maxTemplates: 1,
       maxUsers: 5,
       analytics: false,
-      customBranding: false,
+      customBranding: true,
       prioritySupport: false,
       apiAccess: false,
       sso: false,
-      removeWatermark: false,
+      removeWatermark: true,
       googleWorkspace: true,
       microsoft365: false,
-      hubspotCRM: false,
-      scheduledDeployments: false,
+      hubspotCRM: true,
+      scheduledDeployments: true,
       whiteLabel: false,
     },
     featureList: [
@@ -64,68 +64,27 @@ export const PLANS: Record<string, Plan> = {
       { text: '1 signature template', included: true },
       { text: 'Visual drag-and-drop editor', included: true },
       { text: 'Google Workspace integration', included: true },
+      { text: 'HubSpot CRM integration', included: true },
+      { text: 'Industry compliance blocks', included: true },
+      { text: 'Bulk operations', included: true },
+      { text: 'Directory sync', included: true },
+      { text: 'One-click deployment', included: true },
+      { text: 'Scheduled deployments', included: true },
+      { text: 'Mobile-responsive signatures', included: true },
+      { text: 'Analytics (7-day preview)', included: true },
       { text: 'Microsoft 365 integration', included: false },
-      { text: 'Auto-sync user directory', included: true },
-      { text: 'One-click deployment', included: true },
-      { text: 'Mobile-responsive signatures', included: true },
-      { text: 'Industry compliance blocks (Legal, Healthcare, Finance, Real Estate)', included: true },
-      { text: 'Disclaimer templates', included: true },
-      { text: 'Email support', included: true },
-      { text: 'HubSpot CRM integration', included: false },
-      { text: 'Multiple templates', included: false },
-      { text: 'Bulk operations', included: false },
-      { text: 'Priority support', included: false },
-    ],
-  },
-  starter: {
-    id: 'starter',
-    name: 'Starter',
-    description: 'For small teams getting started',
-    priceMonthly: 5, // Base price display
-    pricePerUser: 50, // $0.50/team member/month - cheaper than WiseStamp's $1
-    period: '/team member/mo',
-    cta: 'Upgrade',
-    ctaLink: '/signup',
-    features: {
-      maxTemplates: 5,
-      maxUsers: -1, // Unlimited with per-user pricing
-      analytics: true,
-      customBranding: true,
-      prioritySupport: false,
-      apiAccess: false,
-      sso: false,
-      removeWatermark: true,
-      googleWorkspace: true,
-      microsoft365: true,
-      hubspotCRM: false,
-      scheduledDeployments: false,
-      whiteLabel: false,
-    },
-    featureList: [
-      { text: 'Unlimited users ($0.50/user/month)', included: true },
-      { text: '5 signature templates', included: true },
-      { text: 'Visual drag-and-drop editor', included: true },
-      { text: 'Google Workspace integration', included: true },
-      { text: 'Microsoft 365 integration', included: true },
-      { text: 'Auto-sync user directory', included: true },
-      { text: 'One-click deployment', included: true },
-      { text: 'Mobile-responsive signatures', included: true },
-      { text: 'Industry compliance blocks (Legal, Healthcare, Finance, Real Estate)', included: true },
-      { text: 'Disclaimer templates', included: true },
-      { text: 'Email support', included: true },
-      { text: 'HubSpot CRM integration', included: false },
-      { text: 'Bulk operations', included: false },
       { text: 'Unlimited templates', included: false },
+      { text: 'Full analytics & reporting', included: false },
       { text: 'Priority support', included: false },
     ],
   },
   professional: {
     id: 'professional',
     name: 'Professional',
-    description: 'For growing organizations',
-    priceMonthly: 29, // Base price
-    pricePerUser: 100, // $1/team member/month - same as WiseStamp but more features
-    period: '/mo + $1/member',
+    description: 'One plan, everything included',
+    priceMonthly: 15, // 10-user minimum at $1.50/user
+    pricePerUser: 150, // $1.50/user/month in cents
+    period: '/user/mo',
     cta: 'Upgrade',
     ctaLink: '/signup',
     popular: true,
@@ -145,28 +104,26 @@ export const PLANS: Record<string, Plan> = {
       whiteLabel: false,
     },
     featureList: [
-      { text: 'Up to 10 users included, then $1/user/month', included: true },
+      { text: 'Unlimited users ($1.50/user/mo)', included: true },
+      { text: '10-user minimum ($15/mo)', included: true },
       { text: 'Unlimited signature templates', included: true },
-      { text: 'Visual drag-and-drop editor', included: true },
-      { text: 'Google Workspace integration', included: true },
+      { text: 'Full analytics & reporting', included: true },
       { text: 'Microsoft 365 integration', included: true },
+      { text: 'Google Workspace integration', included: true },
       { text: 'HubSpot CRM integration', included: true },
-      { text: 'Auto-sync user directory', included: true },
-      { text: 'One-click deployment', included: true },
+      { text: 'API access', included: true },
       { text: 'Bulk operations', included: true },
-      { text: 'Mobile-responsive signatures', included: true },
-      { text: 'Industry compliance blocks (Legal, Healthcare, Finance, Real Estate)', included: true },
-      { text: 'Disclaimer templates', included: true },
-      { text: 'Department-based templates', included: true },
-      { text: 'Priority email support', included: true },
+      { text: 'Directory sync', included: true },
+      { text: 'Priority support', included: true },
+      { text: 'Scheduled deployments', included: true },
       { text: 'SSO/SAML', included: false },
-      { text: 'API access', included: false },
+      { text: 'White-label options', included: false },
     ],
   },
   enterprise: {
     id: 'enterprise',
     name: 'Enterprise',
-    description: 'For large organizations',
+    description: 'Custom solutions for large organizations',
     priceMonthly: 0, // Custom
     pricePerUser: 0,
     period: '',
@@ -188,17 +145,14 @@ export const PLANS: Record<string, Plan> = {
       whiteLabel: true,
     },
     featureList: [
-      { text: 'Unlimited users (custom pricing)', included: true },
-      { text: 'Unlimited signature templates', included: true },
       { text: 'Everything in Professional, plus:', included: true },
       { text: 'Dedicated account manager', included: true },
-      { text: 'Priority support', included: true },
       { text: 'Custom integrations', included: true },
-      { text: 'Custom contract terms', included: true },
-      { text: 'Volume discounts available', included: true },
       { text: 'SSO/SAML authentication', included: true },
-      { text: 'API access', included: true },
       { text: 'White-label options', included: true },
+      { text: 'Custom contract terms', included: true },
+      { text: 'SLA guarantees', included: true },
+      { text: 'Volume discounts', included: true },
     ],
   },
 };
@@ -208,6 +162,8 @@ export const PLANS_LIST = Object.values(PLANS);
 
 
 export function getPlan(planId: string): Plan {
+  // Migrate legacy 'starter' plans to 'professional'
+  if (planId === 'starter') return PLANS.professional;
   return PLANS[planId] || PLANS.free;
 }
 

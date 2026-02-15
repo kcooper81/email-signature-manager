@@ -1027,4 +1027,270 @@ export const comparisonsPages: SEOLandingPageData[] = [
         'Unify your email signature management across every platform. Start your free trial and see the Siggly difference.',
     },
   },
+
+  // ---------------------------------------------------------------------------
+  // SigParser
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'sigparser',
+    category: 'comparisons',
+    meta: {
+      title: 'Siggly vs SigParser - Signature Management vs Parsing | Siggly',
+      description:
+        'Understand the difference between Siggly and SigParser. One manages signatures, the other parses them. See why teams that need both choose Siggly first.',
+      keywords: [
+        'Siggly vs SigParser',
+        'SigParser alternative',
+        'email signature management vs parsing',
+        'signature data enrichment',
+      ],
+      canonical: '/compare/sigparser',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Compare', url: '/compare' },
+      { name: 'Siggly vs SigParser', url: '/compare/sigparser' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Comparison' },
+      title: 'Siggly vs SigParser: Managing Signatures, Not Just Reading Them',
+      description:
+        'SigParser extracts contact data from existing email signatures. Siggly creates, manages, and deploys professional signatures across your entire organization. They solve different problems, and here is why you need Siggly.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: 'Create', label: 'Siggly builds and manages signatures' },
+      { value: 'Parse', label: 'SigParser only reads existing ones' },
+      { value: '100%', label: 'Coverage for creation + deployment' },
+    ],
+    featuresTitle: 'Why Signature Management Beats Parsing Alone',
+    features: [
+      {
+        icon: 'edit-3',
+        title: 'Create, Not Just Read',
+        description:
+          'Siggly lets you design, deploy, and manage email signatures. SigParser can only extract data from signatures that already exist.',
+      },
+      {
+        icon: 'users',
+        title: 'Organization-Wide Deployment',
+        description:
+          'Deploy branded signatures to your entire team through Google Workspace or Microsoft 365. SigParser has no deployment capability.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Campaign Analytics',
+        description:
+          'Track clicks, impressions, and engagement on signature banners and links. SigParser offers no outbound analytics.',
+      },
+      {
+        icon: 'image',
+        title: 'Banner Campaigns',
+        description:
+          'Run promotional banner campaigns through employee signatures. SigParser is focused on inbound data extraction, not outbound marketing.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Siggly vs SigParser: Feature Comparison',
+        competitor: 'SigParser',
+        rows: [
+          { feature: 'Create and design email signatures', siggly: true, competitor: false },
+          { feature: 'Deploy signatures to Google Workspace / M365', siggly: true, competitor: false },
+          { feature: 'Extract contact data from inbound signatures', siggly: false, competitor: true },
+          { feature: 'Banner campaign management', siggly: true, competitor: false },
+          { feature: 'Click and impression analytics', siggly: true, competitor: false },
+          { feature: 'Template editor (drag-and-drop & HTML)', siggly: true, competitor: false },
+          { feature: 'Role-based access control', siggly: true, competitor: false },
+          { feature: 'Directory sync (Azure AD, Google, Okta)', siggly: true, competitor: false },
+          { feature: 'Email parsing and data enrichment', siggly: false, competitor: true },
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'Different Tools for Different Jobs',
+        paragraphs: [
+          'SigParser and Siggly are not direct competitors. SigParser is a data extraction tool that reads inbound email signatures and pulls out contact information like names, titles, phone numbers, and social links. It is useful for CRM enrichment and contact database building.',
+          'Siggly, on the other hand, is a signature management platform. It helps you create professional email signatures, deploy them across your organization, run banner campaigns, and track engagement. If you need to control what your outbound signatures look like, Siggly is the right choice.',
+          'Some organizations use both tools: Siggly to manage their own outbound signatures and SigParser to extract data from signatures they receive. But if you can only invest in one, Siggly delivers direct brand and marketing value from every email your team sends.',
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We initially looked at SigParser, but realized it only reads signatures, it does not help us create or manage our own. Siggly was exactly what we needed for brand-consistent outbound signatures.',
+      authorName: 'Nathan Brooks',
+      authorTitle: 'Revenue Operations Manager, Summit Growth Partners',
+    },
+    faqs: [
+      {
+        question: 'Can I use Siggly and SigParser together?',
+        answer:
+          'Yes. Siggly manages your outbound signatures while SigParser can parse inbound signatures for CRM enrichment. They complement each other without overlap.',
+      },
+      {
+        question: 'Does Siggly extract data from incoming emails?',
+        answer:
+          'No. Siggly is focused on creating, managing, and deploying your organization\'s outbound email signatures. For inbound parsing, you would need a separate tool like SigParser.',
+      },
+      {
+        question: 'Is SigParser a good alternative to Siggly?',
+        answer:
+          'They solve different problems. SigParser is for extracting contact data from emails you receive. Siggly is for managing the signatures your team sends. They are not interchangeable.',
+      },
+    ],
+    cta: {
+      title: 'Manage Your Signatures, Not Just Parse Them',
+      description:
+        'Take control of your outbound email signatures with Siggly. Design, deploy, and measure, all from one platform.',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // Templafy
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'templafy',
+    category: 'comparisons',
+    meta: {
+      title: 'Siggly vs Templafy - Email Signature Comparison | Siggly',
+      description:
+        'Compare Siggly to Templafy for email signature management. Get dedicated signature tools without enterprise document management overhead or pricing.',
+      keywords: [
+        'Siggly vs Templafy',
+        'Templafy alternative',
+        'Templafy email signatures',
+        'enterprise signature management',
+      ],
+      canonical: '/compare/templafy',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Compare', url: '/compare' },
+      { name: 'Siggly vs Templafy', url: '/compare/templafy' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Comparison' },
+      title: 'Siggly vs Templafy',
+      description:
+        'Templafy is an enterprise document and template management platform where email signatures are a small add-on feature. Siggly is purpose-built for email signature management, delivering deeper functionality at a fraction of the cost.',
+      variant: 'slate',
+    },
+    featuresTitle: 'Why Choose a Dedicated Signature Platform',
+    features: [
+      {
+        icon: 'target',
+        title: 'Purpose-Built for Signatures',
+        description:
+          'Siggly focuses exclusively on email signatures. Every feature, from the template editor to analytics, is designed specifically for signature management.',
+      },
+      {
+        icon: 'dollar-sign',
+        title: 'Accessible Pricing',
+        description:
+          'Templafy requires expensive enterprise contracts for their full platform. Siggly offers transparent, per-user pricing with a free tier and no long-term commitments.',
+      },
+      {
+        icon: 'zap',
+        title: 'Faster Time to Value',
+        description:
+          'Deploy signatures in minutes, not weeks. Templafy implementations often require lengthy professional services engagements.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Superior Signature Analytics',
+        description:
+          'Track clicks, impressions, and campaign performance with depth that Templafy\'s generic analytics cannot match.',
+      },
+      {
+        icon: 'image',
+        title: 'Advanced Banner Campaigns',
+        description:
+          'Run targeted, scheduled, and A/B-tested banner campaigns through signatures. Templafy offers basic banner support without analytics.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Feature Comparison: Siggly vs Templafy',
+        competitor: 'Templafy',
+        rows: [
+          { feature: 'Dedicated email signature platform', siggly: true, competitor: false },
+          { feature: 'Drag-and-drop signature editor', siggly: true, competitor: 'Basic' },
+          { feature: 'HTML code editor', siggly: true, competitor: false },
+          { feature: 'Banner campaigns with scheduling', siggly: true, competitor: 'Limited' },
+          { feature: 'Click and impression analytics', siggly: true, competitor: 'Limited' },
+          { feature: 'A/B testing for banners', siggly: true, competitor: false },
+          { feature: 'Google Workspace integration', siggly: true, competitor: true },
+          { feature: 'Microsoft 365 integration', siggly: true, competitor: true },
+          { feature: 'Free plan available', siggly: true, competitor: false },
+          { feature: 'Document template management', siggly: false, competitor: true },
+          { feature: 'Setup time under 10 minutes', siggly: true, competitor: false },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Advantages of Choosing Siggly Over Templafy',
+        items: [
+          {
+            icon: 'credit-card',
+            title: 'Predictable, Lower Cost',
+            description:
+              'No enterprise sales calls, no custom quotes, no multi-year lock-ins. Siggly pricing is published, per-user, and includes a generous free tier.',
+          },
+          {
+            icon: 'rocket',
+            title: 'Deploy in Minutes',
+            description:
+              'Templafy implementations can take weeks with professional services. Siggly connects to your directory and deploys signatures the same day.',
+          },
+          {
+            icon: 'sparkles',
+            title: 'Deeper Signature Features',
+            description:
+              'Because Siggly focuses solely on signatures, you get features like cross-client preview, A/B banner testing, and granular targeting that Templafy does not prioritize.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We evaluated Templafy but could not justify the cost when we only needed email signatures. Siggly gave us better signature features at a tenth of the price, and we were live in an afternoon.',
+      authorName: 'Henrik Johansson',
+      authorTitle: 'IT Director, Nordic Financial Services',
+    },
+    faqs: [
+      {
+        question: 'Is Templafy overkill if I only need email signatures?',
+        answer:
+          'For most teams, yes. Templafy is designed for enterprise-wide document and template management. If your primary need is email signatures, Siggly gives you better tools at a lower cost.',
+      },
+      {
+        question: 'Can I migrate from Templafy to Siggly?',
+        answer:
+          'Yes. Export your signature templates as HTML from Templafy and import them directly into Siggly. Our team can assist with migration for larger organizations.',
+      },
+      {
+        question: 'Does Siggly integrate with the same identity providers as Templafy?',
+        answer:
+          'Yes. Siggly supports Azure AD, Google Workspace, Okta, OneLogin, and SAML/SCIM for user provisioning, just like Templafy.',
+      },
+      {
+        question: 'What if I also need document template management?',
+        answer:
+          'Siggly focuses on email signatures. If you also need document template management, you could use Templafy for documents and Siggly for signatures, often at a lower combined cost than Templafy alone.',
+      },
+      {
+        question: 'How does Siggly pricing compare to Templafy?',
+        answer:
+          'Templafy does not publish pricing and typically requires a custom enterprise quote. Siggly offers transparent per-user pricing starting with a free plan, making it accessible to teams of any size.',
+      },
+    ],
+    cta: {
+      title: 'Get Dedicated Signature Management Without the Enterprise Tax',
+      description:
+        'Siggly delivers more signature features than Templafy at a fraction of the price. Start free and upgrade as you grow.',
+    },
+  },
 ];
