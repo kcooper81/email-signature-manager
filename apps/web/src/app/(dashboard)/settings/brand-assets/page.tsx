@@ -12,11 +12,17 @@ import {
   List,
   Image as ImageIcon,
   Loader2,
-  ArrowLeft,
   FileImage,
   Pencil,
   Check,
   X,
+  User,
+  Building2,
+  Bell,
+  Shield,
+  Palette,
+  CreditCard,
+  Monitor,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -256,17 +262,48 @@ export default function BrandAssetsPage() {
     );
   }
 
+  const settingsTabs = [
+    { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
+    { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
+    { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
+    { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
+    { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
+    { id: 'appearance', label: 'Appearance', icon: Monitor, href: '/settings' },
+    { id: 'security', label: 'Security', icon: Shield, href: '/settings' },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href="/settings">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Settings
-          </Button>
-        </Link>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <p className="text-muted-foreground mt-2">
+          Manage your account and preferences
+        </p>
       </div>
 
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar */}
+        <div className="w-full lg:w-56 shrink-0">
+          <nav className="space-y-1 lg:sticky lg:top-6">
+            {settingsTabs.map((tab) => (
+              <Link
+                key={tab.id}
+                href={tab.href}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
+                  tab.id === 'brand-assets'
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-secondary'
+                }`}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 space-y-6">
       <PageHeader
         title="Brand Assets"
         description="Upload and manage images for use across your email signatures"
@@ -536,6 +573,8 @@ export default function BrandAssetsPage() {
           </CardContent>
         </Card>
       )}
+        </div>
+      </div>
     </div>
   );
 }
