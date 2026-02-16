@@ -8,6 +8,10 @@ const publicRoutes = [
   '/pricing', '/features', '/about', '/contact', '/demo',
   '/blog', '/terms', '/privacy', '/help', '/compare', '/for',
   '/tools', '/use-cases', '/google-workspace', '/microsoft-365',
+  '/industries', '/integrations', '/alternatives', '/platforms',
+  '/email-signature-templates', '/email-signatures', '/guides',
+  '/glossary', '/migrate-from', '/examples', '/case-studies',
+  '/checklists', '/compliance', '/careers', '/security',
 ];
 
 // Routes that authenticated users should NOT see (redirect to dashboard)
@@ -108,6 +112,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
