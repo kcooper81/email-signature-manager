@@ -75,10 +75,27 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - ✅ Remove watermark
 - ⚠️ Analytics: 7-day preview (upgrade for full history)
 
+**Disclaimer Engine (Limited):**
+- ✅ Up to 2 disclaimer templates
+- ✅ 1 disclaimer rule
+- ❌ Custom HTML editor (Professional+)
+- ❌ Regulatory presets (Professional+)
+- ❌ Disclaimer audit trail (Professional+)
+
 **Gated to Professional:**
 - ❌ Microsoft 365 integration
 - ❌ Full analytics (beyond 7-day preview)
 - ❌ Multiple templates (limited to 1)
+- ❌ HR sync & directory integration
+- ❌ Admin approval workflows
+- ❌ Profile completeness analytics (per-user)
+- ❌ Unlimited disclaimer templates & rules
+
+**Gated to Enterprise:**
+- ❌ Lifecycle automation (0 workflows on Free)
+- ❌ Brand governance
+- ❌ MSP cascade (disclaimers, lifecycle)
+- ❌ Multi-language disclaimers
 
 ---
 
@@ -118,6 +135,32 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - ✅ Custom branding
 - ✅ Remove watermark
 
+**Disclaimer Engine (Full):**
+- ✅ Unlimited disclaimer templates
+- ✅ Unlimited disclaimer rules
+- ✅ Custom HTML editor
+- ✅ Regulatory presets (HIPAA, GDPR, etc.)
+- ✅ Disclaimer audit trail
+- ❌ MSP cascade (Enterprise)
+- ❌ Multi-language disclaimers (Enterprise)
+
+**HR Sync & Directory Integration:**
+- ✅ HR integrations (BambooHR, Workday, etc.)
+- ✅ Admin approval workflows
+- ✅ Profile completeness analytics (per-user)
+- ❌ Realtime sync (Enterprise)
+- ❌ MSP-managed sync (Enterprise)
+
+**Lifecycle Automation:**
+- ✅ Up to 5 lifecycle workflows
+- ❌ Webhook actions (Enterprise)
+- ❌ MSP cascade (Enterprise)
+
+**Gated to Enterprise:**
+- ❌ Brand governance
+- ❌ SSO
+- ❌ White label
+
 ---
 
 ### Enterprise Plan
@@ -150,6 +193,26 @@ This document outlines all pricing tiers, feature limits, and pay gate implement
 - ✅ SLA guarantee
 - ✅ Advanced security features
 
+**Disclaimer Engine (Enterprise):**
+- ✅ Everything in Professional disclaimers
+- ✅ MSP cascade (cascade disclaimers to MSP clients)
+- ✅ Multi-language disclaimers (non-English locales)
+
+**HR Sync (Enterprise):**
+- ✅ Everything in Professional HR sync
+- ✅ Realtime sync schedule type
+- ✅ MSP-managed sync
+
+**Lifecycle Automation (Enterprise):**
+- ✅ Unlimited lifecycle workflows
+- ✅ Webhook actions in workflows
+- ✅ MSP cascade (cascade workflows to MSP clients)
+
+**Brand Governance (Enterprise Only):**
+- ✅ Brand Hub
+- ✅ Brand Guidelines management
+- ✅ Brand Audit (per-user compliance)
+
 ---
 
 ## Pay Gate Architecture
@@ -160,17 +223,23 @@ All pay gates use a **shared architecture** to ensure consistency:
 ```
 plans.ts (Source of Truth)
     ↓
-useSubscription() Hook (Frontend)
-getPlan() Function (Backend)
+├─ useSubscription() Hook (Frontend)
+├─ getPlan() Function (Backend - existing routes)
+├─ plan-guard.ts (Backend - new expansion routes)
+│  ├─ getOrgPlan() — resolves org subscription
+│  ├─ checkFeature() — boolean feature check
+│  ├─ checkLimit() — numeric limit check
+│  ├─ planDenied() — 403 response helper
+│  └─ limitDenied() — 403 response helper
+├─ field-allowlists.ts (Backend - PUT security)
+│  └─ pickAllowed() — strips unauthorized fields
     ↓
 ├─ UI Components
 │  ├─ <UpgradePrompt>
-│  ├─ <FeatureGate>
+│  ├─ <FeatureGate> (13 new features added)
 │  └─ <LimitGate>
 │
-└─ API Endpoints
-   ├─ Sync Routes
-   └─ Feature Routes
+└─ API Endpoints (35+ routes now gated)
 ```
 
 ### Shared Components
@@ -185,6 +254,10 @@ getPlan() Function (Backend)
 - `getPlan(planId)` - Returns plan configuration
 - `canAccessFeature()` - Checks feature access
 - `isWithinLimit()` - Checks usage limits
+- `getOrgPlan()` - Resolves org subscription to plan (plan-guard.ts)
+- `checkFeature()` - Boolean feature check with 403 helper (plan-guard.ts)
+- `checkLimit()` - Numeric limit check with 403 helper (plan-guard.ts)
+- `pickAllowed()` - Strips unauthorized fields from PUT bodies (field-allowlists.ts)
 
 ---
 
@@ -350,15 +423,88 @@ getPlan() Function (Backend)
 ---
 
 ### 12. White Label
-**Location:** Branding settings  
-**Type:** Feature Gate  
-**Check:** `canAccess('whiteLabel')`  
+**Location:** Branding settings
+**Type:** Feature Gate
+**Check:** `canAccess('whiteLabel')`
 **Enforcement:**
 - Branding removal disabled
 - Shows upgrade prompt
 - Feature unavailable
 
 **Requirement:** Enterprise plan only
+
+---
+
+### 13. Disclaimer Engine
+**Location:** `/settings/disclaimers` page, `/api/disclaimers/` routes
+**Type:** Multiple gates (Usage Limits + Feature Gates)
+
+**Sub-Gates:**
+
+| Feature Key | Free | Professional | Enterprise | Description |
+|-------------|------|-------------|------------|-------------|
+| `maxDisclaimerTemplates` | 2 | Unlimited | Unlimited | Number of disclaimer templates |
+| `maxDisclaimerRules` | 1 | Unlimited | Unlimited | Number of disclaimer rules |
+| `disclaimerHtmlEditor` | ❌ | ✅ | ✅ | Custom HTML in disclaimer templates |
+| `disclaimerRegulatoryPresets` | ❌ | ✅ | ✅ | Regulatory preset templates (HIPAA, GDPR, etc.) |
+| `disclaimerAuditTrail` | ❌ | ✅ | ✅ | View disclaimer deployment history |
+| `disclaimerMspCascade` | ❌ | ❌ | ✅ | Cascade disclaimers to MSP clients |
+| `disclaimerMultiLanguage` | ❌ | ❌ | ✅ | Non-English disclaimer locales |
+
+**Backend Enforcement:** All POST routes check limits, PUT routes use field allowlists (no raw body spread)
+**Frontend:** Presets and Audit tabs locked on disclaimers page for Free users
+
+---
+
+### 14. HR Sync & Directory Integration
+**Location:** `/settings/hr-sync` page, `/api/hr-sync/` routes
+**Type:** Multiple gates (Feature Gates)
+
+**Sub-Gates:**
+
+| Feature Key | Free | Professional | Enterprise | Description |
+|-------------|------|-------------|------------|-------------|
+| `hrIntegrations` | ❌ | ✅ | ✅ | Base gate — blocks Free from ALL HR sync routes |
+| `hrRealtimeSync` | ❌ | ❌ | ✅ | Realtime sync schedule type |
+| `hrMspManaged` | ❌ | ❌ | ✅ | MSP-managed sync |
+| `selfServiceAdminApproval` | ❌ | ✅ | ✅ | Admin approval workflows for profile changes |
+| `profileCompletenessAnalytics` | ❌ | ✅ | ✅ | Per-user completeness details (Free gets aggregate only) |
+
+**Backend Enforcement:** Every HR sync route checks `hrIntegrations` first. Config PUT uses field allowlist.
+**Frontend:** HR Sync page wrapped with FeatureGate for `hrIntegrations`
+
+---
+
+### 15. Lifecycle Automation
+**Location:** `/settings/automation` page, `/api/lifecycle/` routes
+**Type:** Usage Limit + Feature Gates
+
+**Sub-Gates:**
+
+| Feature Key | Free | Professional | Enterprise | Description |
+|-------------|------|-------------|------------|-------------|
+| `maxLifecycleWorkflows` | 0 | 5 | Unlimited | Number of lifecycle workflows |
+| `lifecycleWebhooks` | ❌ | ❌ | ✅ | Webhook actions in workflows |
+| `lifecycleMspCascade` | ❌ | ❌ | ✅ | Cascade workflows to MSP clients |
+
+**Backend Enforcement:** All lifecycle routes check `maxLifecycleWorkflows`. Workflow POST checks limit count. Webhook actions blocked at both API and workflow-runner level. Workflow test route validates testUserId belongs to same org.
+**Frontend:** Automation page wrapped with FeatureGate for `maxLifecycleWorkflows`
+
+---
+
+### 16. Brand Governance
+**Location:** `/brand` pages, `/api/brand/` routes
+**Type:** Feature Gate
+**Check:** `checkFeature('brandGovernance')`
+
+**Sub-Gates:**
+
+| Feature Key | Free | Professional | Enterprise | Description |
+|-------------|------|-------------|------------|-------------|
+| `brandGovernance` | ❌ | ❌ | ✅ | Gates ALL brand routes |
+
+**Backend Enforcement:** All 7 brand API routes check `brandGovernance`. The `brand/audit/[userId]` route has role check (admin/owner) and validates userId belongs to same org.
+**Frontend:** Brand Hub, Guidelines, and Audit pages all wrapped with FeatureGate for `brandGovernance`
 
 ---
 
@@ -481,6 +627,21 @@ const getDevBypassEnabled = () => {
 - **Google Sync:** `src/app/api/integrations/google/sync/route.ts`
 - **HubSpot Sync:** `src/app/api/integrations/hubspot/sync/route.ts`
 
+### Platform Expansion (v3.0)
+- **Plan Guard:** `src/lib/billing/plan-guard.ts`
+- **Field Allowlists:** `src/lib/api/field-allowlists.ts`
+- **Disclaimers Routes:** `src/app/api/disclaimers/`
+- **HR Sync Routes:** `src/app/api/hr-sync/`
+- **Lifecycle Routes:** `src/app/api/lifecycle/`
+- **Brand Routes:** `src/app/api/brand/`
+- **Profile Routes:** `src/app/api/profile/`
+- **Cron Route:** `src/app/api/cron/hr-sync/`
+- **Disclaimers Page:** `src/app/(dashboard)/settings/disclaimers/`
+- **HR Sync Page:** `src/app/(dashboard)/settings/hr-sync/`
+- **Automation Page:** `src/app/(dashboard)/settings/automation/`
+- **Brand Pages:** `src/app/(dashboard)/brand/`
+- **Validation Rules Page:** `src/app/(dashboard)/settings/validation-rules/`
+
 ---
 
 ## Maintenance Notes
@@ -524,6 +685,34 @@ const getDevBypassEnabled = () => {
 
 ---
 
+## Security Fixes (v3.0)
+
+### PUT Route Field Allowlists
+All PUT routes in the platform expansion use `pickAllowed()` from `field-allowlists.ts` instead of spreading the raw request body (`...body`). This prevents users from injecting unauthorized fields (e.g., setting `orgId`, `planOverride`, or other protected fields) through API requests.
+
+### Webhook SSRF Prevention
+Lifecycle automation webhook actions include SSRF (Server-Side Request Forgery) protection:
+- Private IP address blocking (10.x, 172.16-31.x, 192.168.x, 127.x)
+- Localhost blocking (localhost, 0.0.0.0, ::1)
+- 10-second timeout on all outbound webhook requests
+- Blocked URLs return a clear error without making the request
+
+### Cron Route Authentication
+The cron route (`/api/cron/hr-sync/`) now returns HTTP 500 when the `CRON_SECRET` environment variable is unset. Previously, an unset secret would skip authentication entirely, allowing unauthenticated access to the cron endpoint.
+
+### Brand Audit User Validation
+The `brand/audit/[userId]` route validates that:
+- The requesting user has admin or owner role
+- The target `userId` belongs to the same organization as the requester
+- This prevents cross-org data access through the audit endpoint
+
+### Lifecycle Workflow Test Validation
+The `lifecycle/workflows/[id]/test` route validates that:
+- The `testUserId` provided in the request belongs to the same organization
+- This prevents testing workflows against users in other organizations
+
+---
+
 ## Support & Troubleshooting
 
 ### Common Issues
@@ -542,5 +731,5 @@ const getDevBypassEnabled = () => {
 
 ---
 
-*Last Updated: February 15, 2026*
-*Version: 2.0 - Major pricing restructure: Starter plan removed, Free plan expanded, Professional simplified to $1.50/user/month*
+*Last Updated: February 16, 2026*
+*Version: 3.0 - Platform expansion: Disclaimer engine, HR sync, lifecycle automation, brand governance with 13 new feature gates and security hardening*
