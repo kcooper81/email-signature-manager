@@ -534,10 +534,10 @@ export default function IntegrationsPage() {
                     </span>
                   )}
                 </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="default" 
-                    size="sm" 
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
                     onClick={syncGoogle}
                     disabled={syncing === 'google'}
                   >
@@ -640,10 +640,10 @@ export default function IntegrationsPage() {
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 text-xs text-blue-600">
                   <strong>Note:</strong> Signatures deploy to Outlook Web only. Desktop users can copy their signature from Outlook Web or use the Copy button in the editor.
                 </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="default" 
-                    size="sm" 
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
                     onClick={syncMicrosoft}
                     disabled={syncing === 'microsoft'}
                   >
@@ -784,10 +784,10 @@ export default function IntegrationsPage() {
                   </div>
                 )}
 
-                <div className="flex gap-2">
-                  <Button 
-                    variant="default" 
-                    size="sm" 
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
                     onClick={syncHubSpot}
                     disabled={syncing === 'hubspot'}
                   >
@@ -920,10 +920,10 @@ export default function IntegrationsPage() {
                   <strong>Usage:</strong> Use <code className="bg-blue-500/15 px-1 rounded">{'{{calendly_link}}'}</code> in your signature templates to insert your scheduling link.
                 </div>
 
-                <div className="flex gap-2">
-                  <Button 
-                    variant="default" 
-                    size="sm" 
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="default"
+                    size="sm"
                     onClick={refreshCalendlyMetadata}
                     disabled={refreshingCalendly}
                   >

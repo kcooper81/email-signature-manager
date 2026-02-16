@@ -89,7 +89,7 @@ export function DashboardNav() {
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
+        className="lg:hidden fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 mb-[env(safe-area-inset-bottom)]"
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
       >
         {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -158,6 +158,8 @@ export function DashboardNav() {
             </button>
           )}
         </div>
+        {/* Safe area bottom padding for iOS */}
+        <div className="pb-[env(safe-area-inset-bottom)]" />
       </nav>
 
       {/* Desktop Sidebar */}

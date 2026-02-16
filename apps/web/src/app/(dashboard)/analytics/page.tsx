@@ -500,7 +500,7 @@ export default function AnalyticsPage() {
       {!hasFullAnalytics && (
         <Card className="border-violet-200 bg-gradient-to-r from-violet-50 to-white">
           <CardContent className="py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <Sparkles className="h-5 w-5 text-violet-600" />
                 <div>
@@ -508,7 +508,7 @@ export default function AnalyticsPage() {
                   <p className="text-xs text-muted-foreground">Upgrade to Professional for 30-day and 90-day reporting</p>
                 </div>
               </div>
-              <Link href="/settings/billing">
+              <Link href="/settings/billing" className="shrink-0">
                 <Button size="sm" variant="default">Upgrade</Button>
               </Link>
             </div>
