@@ -120,8 +120,8 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We replaced our expensive display ad spend with signature banners and saw a 40% increase in webinar registrations within the first month.',
-      authorName: 'Rachel Kim',
-      authorTitle: 'VP of Marketing, Cloudbridge Solutions',
+      authorName: 'Fatima El-Amin',
+      authorTitle: 'VP of Marketing, Strata Ventures',
     },
     faqs: [
       {
@@ -259,7 +259,7 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Click tracking showed us that our case study links got 5x more clicks than generic website links. We restructured every signature around that insight.',
-      authorName: 'David Park',
+      authorName: 'David Alcantara',
       authorTitle: 'Director of Growth, Nexgen Analytics',
     },
     faqs: [
@@ -417,8 +417,8 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'The analytics dashboard paid for itself in the first week. We discovered our sales team signatures were generating more leads than our paid LinkedIn campaign.',
-      authorName: 'Sarah Chen',
-      authorTitle: 'Marketing Director, Vantage Group',
+      authorName: 'Beatrice Ndaba',
+      authorTitle: 'Marketing Director, Halcyon Analytics',
     },
     faqs: [
       {
@@ -556,7 +556,7 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our design team was blown away by how easy the template builder is. We created five department-specific signatures in under an hour and they all look perfect in every email client.',
-      authorName: 'Michael Torres',
+      authorName: 'Michael Oduya',
       authorTitle: 'Brand Manager, Elevate Digital',
     },
     faqs: [
@@ -701,8 +701,8 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We have 2,000 employees across 12 offices. Before Siggly, updating signatures after org changes was a nightmare. Now directory sync handles everything automatically.',
-      authorName: 'James Liu',
-      authorTitle: 'IT Director, Meridian Financial',
+      authorName: 'Esteban Vega',
+      authorTitle: 'IT Director, Sagebrush Capital',
     },
     faqs: [
       {
@@ -1131,8 +1131,8 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We scheduled our rebrand signature rollout for midnight on launch day. Every employee woke up with the new branding. Zero tickets to IT, zero confusion.',
-      authorName: 'Chris Okafor',
-      authorTitle: 'CTO, BrightPath Technologies',
+      authorName: 'Tariq Mansour',
+      authorTitle: 'CTO, Ironwood Systems',
     },
     faqs: [
       {
@@ -1260,7 +1260,7 @@ export const featuresPages: SEOLandingPageData[] = [
       quote:
         'A team member accidentally deleted our legal disclaimer from the signature. With versioning, we spotted the change in the audit log and rolled back in 10 seconds flat.',
       authorName: 'Patricia Hernandez',
-      authorTitle: 'IT Operations Manager, Summit Healthcare',
+      authorTitle: 'IT Operations Manager, Crestwood Healthcare',
     },
     faqs: [
       {
@@ -1423,8 +1423,8 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'RBAC was the deciding factor for us. We needed marketing to own their banners, IT to manage deployments, and legal to control disclaimers. Siggly made that possible without any conflicts.',
-      authorName: 'Robert Chang',
-      authorTitle: 'CISO, Pinnacle Enterprises',
+      authorName: 'Jun-Seo Park',
+      authorTitle: 'CISO, Basalt Cybersecurity',
     },
     faqs: [
       {
@@ -1905,8 +1905,8 @@ export const featuresPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We operate in six countries with different regulatory requirements. Siggly applies the correct legal disclaimer to each employee automatically based on their entity. Our legal team finally sleeps at night.',
-      authorName: 'Dr. Katarina Hoffman',
-      authorTitle: 'General Counsel, Vantage Financial Group',
+      authorName: 'Dr. Linnea Forsberg',
+      authorTitle: 'General Counsel, Whitmore Fiduciary',
     },
     faqs: [
       {

@@ -102,8 +102,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'After connecting Siggly to Salesforce, our reps stopped wasting time fixing signatures manually. Every email they send now has accurate titles and direct dial numbers pulled straight from the CRM.',
-      authorName: 'Rachel Simmons',
-      authorTitle: 'VP of Sales Operations, Clearpath Solutions',
+      authorName: 'Nadia Petrova',
+      authorTitle: 'VP of Sales Operations, Falconridge Pipeline Group',
     },
     faqs: [
       {
@@ -228,8 +228,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our marketing team lives in Slack. Being able to approve signature changes right from a Slack notification cut our turnaround from days to minutes.',
-      authorName: 'David Kim',
-      authorTitle: 'Marketing Director, NovaBridge Inc.',
+      authorName: 'Rohan Patel',
+      authorTitle: 'Marketing Director, Canopy Digital',
     },
     faqs: [
       {
@@ -362,8 +362,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Okta is the backbone of our identity infrastructure. With the Siggly integration, new hires get a branded signature the same day they are provisioned in Okta. Zero manual work.',
-      authorName: 'Priya Naidu',
-      authorTitle: 'IT Security Manager, Helix Financial',
+      authorName: 'Chidinma Eze',
+      authorTitle: 'IT Security Manager, Cobalt Fintech',
     },
     faqs: [
       {
@@ -497,7 +497,7 @@ export const integrationsPages: SEOLandingPageData[] = [
       quote:
         'We manage over 8,000 users across three Azure AD tenants. Siggly is the only tool that let us centralize signature management and push updates to everyone in under an hour.',
       authorName: 'Marcus Hensley',
-      authorTitle: 'Director of IT, Apex Global Logistics',
+      authorTitle: 'Director of IT, Compass Global Logistics',
     },
     faqs: [
       {
@@ -635,7 +635,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We switched 400 Gmail users to Siggly-managed signatures in a single afternoon. The Google Workspace integration is seamless and our branding team finally has full control.',
-      authorName: 'Emily Torres',
+      authorName: 'Emily Sato',
       authorTitle: 'Brand Manager, Greenleaf Education',
     },
     faqs: [
@@ -890,8 +890,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Pipedrive is our single source of truth for sales data. Now our email signatures pull directly from it, and every rep has an accurate, professional signature without any manual effort.',
-      authorName: 'Sarah Johansson',
-      authorTitle: 'Head of Sales, Pinnacle SaaS',
+      authorName: 'Sarah Holmberg',
+      authorTitle: 'Head of Sales, Trident SaaS',
     },
     faqs: [
       {
@@ -1145,8 +1145,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We went from mismatched support signatures to a unified, professional look overnight. The Zendesk integration was effortless and our CSAT scores actually improved.',
-      authorName: 'James Whitfield',
-      authorTitle: 'Support Operations Manager, Relay Systems',
+      authorName: 'Kenji Watanabe',
+      authorTitle: 'Support Operations Manager, Foxglove Systems',
     },
     faqs: [
       {
@@ -1533,8 +1533,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our brand team already tracked everything in Jira, so the Siggly integration was a natural fit. Now signature updates go through the same approval process as every other brand asset.',
-      authorName: 'Aisha Patel',
-      authorTitle: 'Brand Operations Lead, Meridian Digital',
+      authorName: 'Gabriela Reyes',
+      authorTitle: 'Brand Operations Lead, Astra Platforms',
     },
     faqs: [
       {
@@ -1817,6 +1817,12 @@ export const integrationsPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We track everything in Notion, so having signatures auto-update from our team database was a game-changer. No more chasing people down for title changes.',
+      authorName: 'Marina Castellanos',
+      authorTitle: 'Operations Manager, Driftwood Labs',
+    },
     faqs: [
       {
         question: 'Which Notion property types are supported?',
@@ -1924,7 +1930,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We needed signature management that fit inside our ServiceNow governance model. Siggly was the only vendor that integrated natively with our ITSM workflows.',
-      authorName: 'Patricia Gomez',
+      authorName: 'Valentina Gomez',
       authorTitle: 'IT Service Manager, ClearPoint Health',
     },
     faqs: [
@@ -2066,6 +2072,12 @@ export const integrationsPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Connecting Rippling to Siggly cut our new-hire signature setup from two days to zero. By the time someone opens their laptop on day one, their email signature is already live.',
+      authorName: 'Leila Adeyemi',
+      authorTitle: 'People Ops Lead, Tidewater Collective',
+    },
     cta: {
       title: 'Automate Signatures with Rippling',
       description:
@@ -2165,7 +2177,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We have 80 contractors across 12 countries on Deel. Siggly gave every single one of them a branded signature within an hour of connecting the integration.',
-      authorName: 'Sophie Lindgren',
+      authorName: 'Sophie Bergstrom',
       authorTitle: 'Head of People, Waveform Analytics',
     },
     faqs: [
@@ -2278,6 +2290,12 @@ export const integrationsPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our Berlin and Amsterdam offices run entirely on Personio. Once we connected it to Siggly, signature updates became invisible -- everything just stays in sync.',
+      authorName: 'Henrik Brauer',
+      authorTitle: 'IT Manager, Windmill Finserv',
+    },
     faqs: [
       {
         question: 'Is the Personio integration GDPR compliant?',
@@ -2393,8 +2411,8 @@ export const integrationsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'JumpCloud is our directory for everything. Having Siggly pull user data and group memberships from JumpCloud means we never have to manage signature data separately.',
-      authorName: 'Carlos Rivera',
-      authorTitle: 'IT Director, Apex Logistics',
+      authorName: 'Dmitri Volkov',
+      authorTitle: 'IT Director, Northpoint Freight',
     },
     faqs: [
       {
@@ -2520,7 +2538,7 @@ export const integrationsPages: SEOLandingPageData[] = [
       quote:
         'We standardized on OneLogin for SSO across all our apps. Adding Siggly to our OneLogin portal meant zero new passwords and instant SCIM provisioning for 200 employees.',
       authorName: 'Tomoko Arai',
-      authorTitle: 'Security Engineer, BrightSignal Technologies',
+      authorTitle: 'Security Engineer, BrightSignal Corp',
     },
     cta: {
       title: 'Add Siggly to Your OneLogin Portal',
