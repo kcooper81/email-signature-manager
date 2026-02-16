@@ -149,7 +149,7 @@ export function TemplateEditor({
   return (
     <div className="min-h-screen bg-muted">
       {/* Header */}
-      <div className="bg-card border-b px-6 py-4 flex items-center justify-between">
+      <div className="bg-card border-b px-3 sm:px-6 py-4 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-4 flex-1">
           <Button variant="ghost" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -188,7 +188,7 @@ export function TemplateEditor({
       </div>
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="p-3 sm:p-4 lg:p-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left + Center Area */}
           <div className="lg:col-span-6 space-y-4 lg:space-y-6">
@@ -210,7 +210,7 @@ export function TemplateEditor({
               {addBlockExpanded && (
                 <CardContent className="space-y-4">
                   {/* Block Type Buttons - Grid layout */}
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {BLOCK_TYPES.map((blockType) => (
                       <Button
                         key={blockType.type}

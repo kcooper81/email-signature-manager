@@ -252,7 +252,7 @@ export default function BrandingSettingsPage() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full lg:w-56 shrink-0">
-          <nav className="space-y-1 lg:sticky lg:top-6">
+          <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:sticky lg:top-6">
             {settingsTabs.map((tab) => (
               <Link
                 key={tab.id}
