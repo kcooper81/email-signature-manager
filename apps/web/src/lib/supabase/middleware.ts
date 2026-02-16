@@ -11,11 +11,11 @@ export async function updateSession(request: NextRequest) {
   // Check if Supabase env vars are configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  
+
   if (!supabaseUrl || !supabaseAnonKey) {
     // Return response without auth check if Supabase is not configured
     console.warn('Supabase environment variables not configured');
-    return response;
+    return { response, user: null };
   }
 
   const supabase = createServerClient(
@@ -64,7 +64,7 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  return response;
+  return { response, user };
 }

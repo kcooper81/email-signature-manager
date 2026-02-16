@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -15,15 +15,42 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Mail, Loader2, Chrome, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Mail, Loader2, Chrome, CheckCircle, ArrowLeft, Shield } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get('next') || '/dashboard';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaCode, setMfaCode] = useState('');
+  const [mfaLoading, setMfaLoading] = useState(false);
+
+  // Check for existing session on mount (cross-tab detection)
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Already signed in, redirect to dashboard
+          window.location.href = nextUrl;
+          return;
+        }
+      } catch {
+        // No session, show login form
+      }
+      setCheckingSession(false);
+    };
+    checkSession();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +59,7 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -45,18 +72,77 @@ export default function LoginPage() {
 
       // Get the session to ensure cookies are set
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         setError('Failed to establish session');
         setLoading(false);
         return;
       }
 
-      // Redirect to dashboard - the dashboard layout will handle role-based redirects
-      window.location.href = '/dashboard';
+      // Check if MFA is required (user has TOTP enrolled)
+      try {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        if (factors && factors.totp && factors.totp.length > 0) {
+          // MFA is enrolled - require verification before proceeding
+          const verifiedFactor = factors.totp.find(f => f.status === 'verified');
+          if (verifiedFactor) {
+            setMfaFactorId(verifiedFactor.id);
+            setMfaRequired(true);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {
+        // MFA not available, continue without it
+      }
+
+      // No MFA required, redirect to dashboard
+      window.location.href = nextUrl;
     } catch (err) {
       setError('An unexpected error occurred');
       setLoading(false);
+    }
+  };
+
+  const handleMfaVerify = async () => {
+    if (!mfaCode || mfaCode.length !== 6 || !mfaFactorId) return;
+
+    setMfaLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+
+      // Create challenge
+      const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
+        factorId: mfaFactorId,
+      });
+
+      if (challengeError || !challenge) {
+        setError('Failed to create MFA challenge. Please try again.');
+        setMfaLoading(false);
+        return;
+      }
+
+      // Verify the code
+      const { error: verifyError } = await supabase.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: challenge.id,
+        code: mfaCode,
+      });
+
+      if (verifyError) {
+        setError('Invalid verification code. Please try again.');
+        setMfaCode('');
+        setMfaLoading(false);
+        return;
+      }
+
+      // MFA verified, redirect to dashboard
+      window.location.href = nextUrl;
+    } catch {
+      setError('Verification failed. Please try again.');
+      setMfaLoading(false);
     }
   };
 
@@ -114,6 +200,96 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // Session check loading state
+  if (checkingSession) {
+    return (
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // MFA verification step
+  if (mfaRequired) {
+    return (
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <Shield className="h-16 w-16 text-violet-500" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-center">
+            Two-Factor Authentication
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter the 6-digit code from your authenticator app
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && (
+            <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
+              {error}
+            </div>
+          )}
+          <div className="space-y-2">
+            <Label htmlFor="mfaCode">Verification Code</Label>
+            <Input
+              id="mfaCode"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              placeholder="000000"
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              maxLength={6}
+              autoFocus
+              disabled={mfaLoading}
+              className="text-center text-2xl tracking-widest"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && mfaCode.length === 6) {
+                  handleMfaVerify();
+                }
+              }}
+            />
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <Button
+            onClick={handleMfaVerify}
+            className="w-full"
+            disabled={mfaLoading || mfaCode.length !== 6}
+          >
+            {mfaLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Verifying...
+              </>
+            ) : (
+              'Verify'
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full"
+            onClick={() => {
+              setMfaRequired(false);
+              setMfaCode('');
+              setMfaFactorId(null);
+              setError(null);
+              // Sign out the partial session
+              const supabase = createClient();
+              supabase.auth.signOut();
+            }}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to login
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
 
   // Magic link sent success state
   if (magicLinkSent) {
@@ -277,5 +453,21 @@ export default function LoginPage() {
         </CardFooter>
       </form>
     </Card>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <Card className="w-full max-w-md shadow-2xl">
+          <CardContent className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </CardContent>
+        </Card>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
