@@ -595,9 +595,9 @@ export default function DeploymentsPage() {
       {/* Connection warning with manual option */}
       {!hasEmailProvider && (
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0" />
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="text-amber-600 font-medium">
                 No email provider connected
               </p>
@@ -605,7 +605,7 @@ export default function DeploymentsPage() {
                 Connect Google Workspace or Microsoft 365 to auto-deploy signatures, or copy them manually.
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
               <Link href="/integrations">
                 <Button variant="outline" size="sm">
                   Connect Provider
@@ -644,11 +644,12 @@ export default function DeploymentsPage() {
                   }`}>
                     {step > s.num ? <CheckCircle2 className="h-5 w-5" /> : s.num}
                   </div>
-                  <div className="hidden sm:block">
-                    <p className={`text-sm font-medium ${
+                  <div>
+                    <p className={`text-xs sm:text-sm font-medium ${
                       step === s.num ? 'text-primary' : step > s.num ? 'text-emerald-600' : 'text-muted-foreground'
                     }`}>
-                      {s.label}
+                      <span className="hidden sm:inline">{s.label}</span>
+                      <span className="sm:hidden">{s.label.split(' ')[0]}</span>
                     </p>
                   </div>
                 </div>
@@ -857,7 +858,7 @@ export default function DeploymentsPage() {
                         )}
                       </p>
                     ) : (
-                      <table className="w-full min-w-[1000px]">
+                      <table className="w-full min-w-[600px]">
                         <thead className="bg-muted/50 border-b sticky top-0">
                           <tr>
                             <th className="w-12 p-2 text-left">
@@ -871,10 +872,10 @@ export default function DeploymentsPage() {
                             <th className="p-2 text-left text-xs font-medium">Name</th>
                             <th className="p-2 text-left text-xs font-medium">Email</th>
                             <th className="p-2 text-left text-xs font-medium">Department</th>
-                            <th className="p-2 text-left text-xs font-medium">Company</th>
-                            <th className="p-2 text-left text-xs font-medium">Office</th>
-                            <th className="p-2 text-left text-xs font-medium">Title</th>
-                            <th className="p-2 text-left text-xs font-medium">Added</th>
+                            <th className="p-2 text-left text-xs font-medium hidden md:table-cell">Company</th>
+                            <th className="p-2 text-left text-xs font-medium hidden md:table-cell">Office</th>
+                            <th className="p-2 text-left text-xs font-medium hidden md:table-cell">Title</th>
+                            <th className="p-2 text-left text-xs font-medium hidden md:table-cell">Added</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -895,10 +896,10 @@ export default function DeploymentsPage() {
                               </td>
                               <td className="p-2 text-sm text-muted-foreground">{user.email}</td>
                               <td className="p-2 text-sm">{user.department || '-'}</td>
-                              <td className="p-2 text-sm">{user.company || '-'}</td>
-                              <td className="p-2 text-sm text-muted-foreground">{user.office_location || '-'}</td>
-                              <td className="p-2 text-sm text-muted-foreground">{user.title || '-'}</td>
-                              <td className="p-2 text-sm text-muted-foreground">
+                              <td className="p-2 text-sm hidden md:table-cell">{user.company || '-'}</td>
+                              <td className="p-2 text-sm text-muted-foreground hidden md:table-cell">{user.office_location || '-'}</td>
+                              <td className="p-2 text-sm text-muted-foreground hidden md:table-cell">{user.title || '-'}</td>
+                              <td className="p-2 text-sm text-muted-foreground hidden md:table-cell">
                                 {new Date(user.created_at).toLocaleDateString()}
                               </td>
                             </tr>
@@ -1015,7 +1016,7 @@ export default function DeploymentsPage() {
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2 sm:gap-6 flex-wrap">
                         <div className="text-right">
                           <p className="text-sm font-medium">
                             {getStatusText(deployment.status)}
@@ -1095,14 +1096,14 @@ export default function DeploymentsPage() {
             ) : (
               <div className="border rounded-lg">
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[800px]">
+                  <table className="w-full min-w-[500px]">
                     <thead className="bg-muted/50 border-b">
                       <tr>
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground">Team Member</th>
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground">Email</th>
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground">Department</th>
-                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Current Signature</th>
-                        <th className="p-3 text-left text-xs font-medium text-muted-foreground">Last Deployed</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell">Current Signature</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell">Last Deployed</th>
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground">Status</th>
                       </tr>
                     </thead>
@@ -1138,7 +1139,7 @@ export default function DeploymentsPage() {
                               </td>
                               <td className="p-3 text-sm text-muted-foreground">{user.email}</td>
                               <td className="p-3 text-sm">{user.department || '-'}</td>
-                              <td className="p-3 text-sm">
+                              <td className="p-3 text-sm hidden sm:table-cell">
                                 {userHistory?.template?.name ? (
                                   <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
                                     <FileSignature className="h-3 w-3" />
@@ -1148,8 +1149,8 @@ export default function DeploymentsPage() {
                                   <span className="text-muted-foreground">No signature</span>
                                 )}
                               </td>
-                              <td className="p-3 text-sm text-muted-foreground">
-                                {userHistory?.deployed_at 
+                              <td className="p-3 text-sm text-muted-foreground hidden sm:table-cell">
+                                {userHistory?.deployed_at
                                   ? new Date(userHistory.deployed_at).toLocaleDateString('en-US', {
                                       month: 'short',
                                       day: 'numeric',

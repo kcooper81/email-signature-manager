@@ -18,6 +18,7 @@ interface DashboardHeaderProps {
 export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { branding, mspOrgId } = useBranding();
 
   const handleSignOut = async () => {
@@ -75,7 +76,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
         </Link>
 
         {/* Right side */}
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 relative">
           {/* User menu */}
           <div className="flex items-center gap-2">
             <div className="text-right hidden md:block">
@@ -84,10 +85,43 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
               </p>
               <p className="text-xs text-gray-300">{user.email}</p>
             </div>
-            <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center text-xs font-medium">
+            <button
+              className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-gradient-to-br from-primary to-accent text-white flex items-center justify-center text-xs font-medium sm:pointer-events-none"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
               {initials}
-            </div>
+            </button>
           </div>
+
+          {/* Mobile user dropdown */}
+          {mobileMenuOpen && (
+            <div className="absolute top-full right-2 mt-1 w-48 bg-card border rounded-lg shadow-lg py-1 sm:hidden z-50">
+              <div className="px-3 py-2 border-b">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {user.user_metadata?.first_name} {user.user_metadata?.last_name}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              </div>
+              {isAdmin && (
+                <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-amber-400 hover:bg-secondary">
+                  <Shield className="h-4 w-4" />
+                  Admin Panel
+                </Link>
+              )}
+              <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary">
+                <Settings className="h-4 w-4" />
+                Settings
+              </Link>
+              <button
+                onClick={() => { setMobileMenuOpen(false); handleSignOut(); }}
+                disabled={loading}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-secondary w-full text-left"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
+          )}
 
           {/* Admin link - only visible to admins */}
           {isAdmin && (

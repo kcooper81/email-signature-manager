@@ -556,7 +556,7 @@ export default function SettingsPage() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar */}
         <div className="w-full lg:w-56 shrink-0">
-          <nav className="space-y-1 lg:sticky lg:top-6">
+          <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:sticky lg:top-6">
           {tabs.map((tab) => (
               tab.href ? (
                 <Link
@@ -837,7 +837,7 @@ export default function SettingsPage() {
 
                     {orgSettings.allow_employee_self_manage && (
                       <>
-                        <div className="flex items-center justify-between p-4 rounded-lg border ml-4">
+                        <div className="flex items-center justify-between p-4 rounded-lg border ml-0 sm:ml-4">
                           <div className="flex items-center gap-3">
                             <Link2 className="h-4 w-4 text-muted-foreground" />
                             <div>
@@ -853,7 +853,7 @@ export default function SettingsPage() {
                           />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-lg border ml-4">
+                        <div className="flex items-center justify-between p-4 rounded-lg border ml-0 sm:ml-4">
                           <div className="flex items-center gap-3">
                             <CalendarClock className="h-4 w-4 text-muted-foreground" />
                             <div>
@@ -869,7 +869,7 @@ export default function SettingsPage() {
                           />
                         </div>
 
-                        <div className="flex items-center justify-between p-4 rounded-lg border ml-4">
+                        <div className="flex items-center justify-between p-4 rounded-lg border ml-0 sm:ml-4">
                           <div className="flex items-center gap-3">
                             <Palmtree className="h-4 w-4 text-muted-foreground" />
                             <div>

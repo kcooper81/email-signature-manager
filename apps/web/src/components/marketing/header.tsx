@@ -81,7 +81,7 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
               Solutions
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
-            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-6">
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[600px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 p-6">
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <div className="text-xs font-semibold text-gray-500 uppercase mb-3">By Team</div>

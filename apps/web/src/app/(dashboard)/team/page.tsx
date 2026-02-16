@@ -925,7 +925,7 @@ export default function TeamMembersPage() {
             <span className="text-sm font-medium text-primary">
               {selectedMembers.size} member{selectedMembers.size !== 1 ? 's' : ''} selected
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button onClick={inviteMembers} variant="outline" size="sm" disabled={inviting}>
                 {inviting ? (
                   <>
@@ -934,14 +934,14 @@ export default function TeamMembersPage() {
                   </>
                 ) : (
                   <>
-                    <Mail className="mr-2 h-4 w-4" />
-                    Invite to Self-Manage
+                    <Mail className="sm:mr-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Invite to Self-Manage</span>
                   </>
                 )}
               </Button>
               <Button onClick={() => setShowShareModal(true)} size="sm">
-                <FileSignature className="mr-2 h-4 w-4" />
-                Share Signatures
+                <FileSignature className="sm:mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Share Signatures</span>
               </Button>
               <Button
                 variant="ghost"
@@ -1068,7 +1068,7 @@ export default function TeamMembersPage() {
           ) : (
             <div className="border rounded-lg">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[1200px]">
+                <table className="w-full min-w-[600px]">
                 <thead className="bg-muted/50 border-b">
                   <tr>
                     <th className="w-12 p-3 text-left">
@@ -1095,7 +1095,7 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'name' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
-                    <th className="p-3 text-left">
+                    <th className="p-3 text-left hidden md:table-cell">
                       <button
                         onClick={() => {
                           if (sortField === 'email') {
@@ -1127,7 +1127,7 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'department' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
-                    <th className="p-3 text-left">
+                    <th className="p-3 text-left hidden md:table-cell">
                       <button
                         onClick={() => {
                           if (sortField === 'company') {
@@ -1143,7 +1143,7 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'company' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
-                    <th className="p-3 text-left">
+                    <th className="p-3 text-left hidden md:table-cell">
                       <button
                         onClick={() => {
                           if (sortField === 'office_location') {
@@ -1159,7 +1159,7 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'office_location' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
-                    <th className="p-3 text-left">
+                    <th className="p-3 text-left hidden lg:table-cell">
                       <button
                         onClick={() => {
                           if (sortField === 'title') {
@@ -1175,7 +1175,7 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'title' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
-                    <th className="p-3 text-left">
+                    <th className="p-3 text-left hidden md:table-cell">
                       <button
                         onClick={() => {
                           if (sortField === 'created_at') {
@@ -1191,7 +1191,7 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'created_at' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
-                    <th className="p-3 text-left">
+                    <th className="p-3 text-left hidden md:table-cell">
                       <button
                         onClick={() => {
                           if (sortField === 'source') {
@@ -1241,26 +1241,29 @@ export default function TeamMembersPage() {
                       </td>
                       <td className="p-3">
                         <div className="flex items-center gap-3">
-                          <Avatar 
+                          <Avatar
                             alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
                             fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
                           />
-                          <span className="font-medium">
-                            {emp.first_name && emp.last_name 
-                              ? `${emp.first_name} ${emp.last_name}`
-                              : emp.email}
-                          </span>
+                          <div>
+                            <span className="font-medium">
+                              {emp.first_name && emp.last_name
+                                ? `${emp.first_name} ${emp.last_name}`
+                                : emp.email}
+                            </span>
+                            <p className="text-xs text-muted-foreground md:hidden">{emp.email}</p>
+                          </div>
                         </div>
                       </td>
-                      <td className="p-3 text-sm text-muted-foreground">{emp.email}</td>
+                      <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{emp.email}</td>
                       <td className="p-3 text-sm">{emp.department || '-'}</td>
-                      <td className="p-3 text-sm">{emp.company || '-'}</td>
-                      <td className="p-3 text-sm text-muted-foreground">{emp.office_location || '-'}</td>
-                      <td className="p-3 text-sm text-muted-foreground">{emp.title || '-'}</td>
-                      <td className="p-3 text-sm text-muted-foreground">
+                      <td className="p-3 text-sm hidden md:table-cell">{emp.company || '-'}</td>
+                      <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{emp.office_location || '-'}</td>
+                      <td className="p-3 text-sm text-muted-foreground hidden lg:table-cell">{emp.title || '-'}</td>
+                      <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">
                         {new Date(emp.created_at).toLocaleDateString()}
                       </td>
-                      <td className="p-3">
+                      <td className="p-3 hidden md:table-cell">
                         <Badge variant={emp.source === 'google' || emp.source === 'microsoft' || emp.source === 'hubspot' ? 'info' : 'outline'} className="text-xs">
                           {emp.source === 'google' || emp.source === 'microsoft' || emp.source === 'hubspot' ? (
                             <><Cloud className="h-3 w-3 mr-1" />Synced</>

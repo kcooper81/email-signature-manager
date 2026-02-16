@@ -286,8 +286,8 @@ export default async function DashboardPage() {
                     ) : (
                       <Activity className="h-4 w-4 text-amber-600" />
                     )}
-                    <div>
-                      <p className="text-sm font-medium">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
                         {deployment.template?.name || 'Deployment'}
                       </p>
                       <p className="text-xs text-muted-foreground">

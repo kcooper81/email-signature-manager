@@ -114,7 +114,7 @@ export default function TemplatesPage() {
   const templateLimitReached = !canCreate;
 
   const actionButtons = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap">
       <Link href="/templates/assignments">
         <Button variant="outline">
           <Users className="mr-2 h-4 w-4" />
@@ -185,7 +185,7 @@ export default function TemplatesPage() {
 
       {loading ? (
         viewMode === 'grid' ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
@@ -232,7 +232,7 @@ export default function TemplatesPage() {
           </CardContent>
         </Card>
       ) : viewMode === 'grid' ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {templates.map((template) => (
             <Card key={template.id} className="group relative">
               <CardHeader>
@@ -248,7 +248,7 @@ export default function TemplatesPage() {
                       {template.description || 'No description'}
                     </CardDescription>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <Link href={`/templates/${template.id}`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />
@@ -340,7 +340,7 @@ export default function TemplatesPage() {
                       </div>
                     </td>
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <Link href={`/templates/${template.id}`}>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Pencil className="h-4 w-4" />

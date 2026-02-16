@@ -61,8 +61,8 @@ export default function PricingPage() {
 
       {/* Hero */}
       <section className="py-20 bg-gradient-to-b from-violet-50 to-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold mb-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
             Free forever. Simple pricing when you grow.
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-4">
@@ -76,7 +76,7 @@ export default function PricingPage() {
 
       {/* Pricing Grid */}
       <section className="py-12">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <h2 className="text-3xl font-bold text-center mb-4">Choose Your Plan</h2>
           <p className="text-center text-gray-600 mb-12">
             Everything included on Free. Upgrade when your team outgrows 5 users.
@@ -142,7 +142,7 @@ export default function PricingPage() {
 
       {/* FAQ */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
           <div className="space-y-6">
             {faqs.map((faq) => (
