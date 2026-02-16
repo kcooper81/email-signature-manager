@@ -111,8 +111,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Siggly helped us standardize signatures across 12 plants in 4 countries. Our procurement and sales teams finally look like they belong to the same company.',
-      authorName: 'David Kowalski',
-      authorTitle: 'IT Director, Precision Parts Manufacturing',
+      authorName: 'Grant Hollister',
+      authorTitle: 'IT Director, Anvil Forge Industries',
     },
     faqs: [
       {
@@ -250,8 +250,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'During our holiday campaign, we added promotional banners to every store employee\'s signature. We saw a measurable increase in online traffic directly from email clicks.',
-      authorName: 'Sarah Chen',
-      authorTitle: 'Marketing Director, Urban Threads Retail',
+      authorName: 'Maya Robinson',
+      authorTitle: 'Marketing Director, Ember & Oak Retail',
     },
     faqs: [
       {
@@ -390,8 +390,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We connected Siggly to our Google Workspace directory and every new engineer gets a perfectly branded signature on day one. It eliminated an entire onboarding step.',
-      authorName: 'Marcus Rivera',
-      authorTitle: 'VP of Engineering, CloudSync Technologies',
+      authorName: 'Arjun Kapoor',
+      authorTitle: 'VP of Engineering, Zenith Cloud Labs',
     },
     faqs: [
       {
@@ -905,8 +905,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Managing email signatures across our upstream, midstream, and downstream divisions used to be a nightmare. Siggly unified everything in a day.',
-      authorName: 'James Thornton',
-      authorTitle: 'IT Manager, Meridian Energy Group',
+      authorName: 'Connor Walsh',
+      authorTitle: 'IT Manager, Granite Peak Energy',
     },
     faqs: [
       {
@@ -1022,7 +1022,7 @@ export const industriesPages: SEOLandingPageData[] = [
       quote:
         'With agents across 12 states, keeping license numbers and disclaimers current was a constant headache. Siggly automated the entire process and eliminated our compliance risk.',
       authorName: 'Karen Mitchell',
-      authorTitle: 'Compliance Director, Pinnacle Insurance Group',
+      authorTitle: 'Compliance Director, Broadmoor Insurance Group',
     },
     faqs: [
       {
@@ -1156,7 +1156,7 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We manage over 8,000 email signatures across our consumer, enterprise, and wholesale divisions. Siggly made it possible to keep everyone on-brand without a dedicated team.',
-      authorName: 'Lisa Chang',
+      authorName: 'Renata Chang',
       authorTitle: 'Brand Director, NexGen Telecom',
     },
     faqs: [
@@ -1276,7 +1276,7 @@ export const industriesPages: SEOLandingPageData[] = [
       quote:
         'Our customer service team fields hundreds of shipment inquiry emails daily. Having tracking links right in our signatures reduced follow-up calls significantly.',
       authorName: 'Mike Patterson',
-      authorTitle: 'Operations Director, Continental Freight Solutions',
+      authorTitle: 'Operations Director, Continental Freight Lines',
     },
     faqs: [
       {
@@ -1549,8 +1549,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Every time we drop a new show, we update all employee signatures with the key art and premiere date. It turns our 200-person team into a promotional powerhouse.',
-      authorName: 'Chris Nakamura',
-      authorTitle: 'VP of Marketing, Horizon Media Group',
+      authorName: 'Chris Hargrove',
+      authorTitle: 'VP of Marketing, Prism Entertainment Group',
     },
     faqs: [
       {
@@ -2088,8 +2088,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We added links to our latest industry report in every consultant\'s signature. Within a month, whitepaper downloads doubled and we traced three new engagements back to those clicks.',
-      authorName: 'Daniel Park',
-      authorTitle: 'Partner, Apex Strategy Consulting',
+      authorName: 'Soren Lindqvist',
+      authorTitle: 'Partner, Altimeter Strategy Group',
     },
     faqs: [
       {
@@ -2469,7 +2469,7 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Standardizing signatures across our flight ops, maintenance, and charter sales teams used to be a nightmare. Siggly deployed branded signatures to 200 employees across three bases in under ten minutes.',
-      authorName: 'Captain Michelle Torres',
+      authorName: 'Captain Diana Salazar',
       authorTitle: 'Director of Operations, Pacific Air Charter',
     },
     faqs: [
@@ -2710,6 +2710,12 @@ export const industriesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Operating in four states means four different license numbers and disclaimer requirements. Siggly lets us manage all of them from one dashboard without a single compliance slip.',
+      authorName: 'Jordan Whitaker',
+      authorTitle: 'Compliance Director, Verdant Leaf Holdings',
+    },
     faqs: [
       {
         question: 'Can I display different state licenses for multi-state operations?',
@@ -2941,6 +2947,12 @@ export const industriesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Phishing is the number one threat in crypto. Adding our verification phrase and FinCEN registration to every team signature cut impersonation reports by over 60 percent.',
+      authorName: 'Anya Petrov',
+      authorTitle: 'Head of Security, ChainVault Exchange',
+    },
     faqs: [
       {
         question: 'Can I include a wallet address in my signature?',
@@ -3058,8 +3070,8 @@ export const industriesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We could not credibly advise clients on email security while our own signatures were inconsistent and bloated. Siggly gave us lean, professional signatures that walk the walk.',
-      authorName: 'James Whitfield',
-      authorTitle: 'CISO, Bastion Security Group',
+      authorName: 'Felix Andersen',
+      authorTitle: 'CISO, Rampart Cyber Defense',
     },
     faqs: [
       {
@@ -3405,7 +3417,7 @@ export const industriesPages: SEOLandingPageData[] = [
       quote:
         'Having our MSHA training status and environmental permits visible in every email streamlined our interactions with regulators. It shows we take compliance seriously.',
       authorName: 'Tom Bridwell',
-      authorTitle: 'VP of Operations, Ridgeline Mining Corp',
+      authorTitle: 'VP of Operations, Copperhead Mining Corp',
     },
     cta: {
       title: 'Unearth Professional Email Signatures',
@@ -3533,6 +3545,12 @@ export const industriesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'During our last FDA inspection, auditors asked how we enforce adverse event links in employee emails. We showed them Siggly and they were impressed that every signature was automatically compliant.',
+      authorName: 'Dr. Naveen Gupta',
+      authorTitle: 'VP of Pharmacovigilance, Alder Biosciences',
+    },
     faqs: [
       {
         question: 'Can Siggly enforce mandatory disclaimers for pharma?',

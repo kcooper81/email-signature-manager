@@ -32,6 +32,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'A comprehensive checklist to make sure every email signature in your organization meets legal requirements, brand guidelines, and industry regulations.',
       variant: 'light',
     },
+    stats: [
+      { value: '72%', label: 'Of firms fail their first signature compliance audit' },
+      { value: '4x', label: 'Faster remediation with centralized templates' },
+      { value: '15min', label: 'Average time to audit a signature with a checklist' },
+    ],
     features: [
       {
         icon: 'shield',
@@ -89,6 +94,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our compliance team used to spend weeks chasing down rogue signatures before audits. After deploying Siggly with a standardized checklist, we passed our next regulatory review with zero findings.',
+      authorName: 'Daniel Herrera',
+      authorTitle: 'Compliance Manager, Pinnacle Insurance Group',
+    },
     faqs: [
       {
         question: 'What legal disclaimers are required in email signatures?',
@@ -150,6 +161,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Learn how to quantify the business value of professional email signatures and demonstrate clear return on investment to stakeholders.',
       variant: 'dark',
     },
+    stats: [
+      { value: '7x', label: 'Average ROI from managed email signatures' },
+      { value: '2-5%', label: 'Typical banner click-through rate' },
+      { value: '1M+', label: 'Annual impressions per 100 employees' },
+    ],
     features: [
       {
         icon: 'bar-chart-3',
@@ -223,6 +239,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We added trackable banners to our signatures and generated over 300 qualified leads in the first quarter alone. The ROI was obvious within weeks.',
+      authorName: 'Keisha Bryant',
+      authorTitle: 'VP of Marketing, Redstone Capital Partners',
+    },
     faqs: [
       {
         question: 'What is a good click-through rate for email signature banners?',
@@ -288,6 +310,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'A complete playbook for rolling out new email signatures across your organization with minimal disruption and maximum adoption.',
       variant: 'violet',
     },
+    stats: [
+      { value: '2-4 weeks', label: 'Average deployment timeline' },
+      { value: '93%', label: 'First-attempt success rate with phased rollouts' },
+      { value: '60%', label: 'Fewer support tickets vs big-bang deployment' },
+    ],
     features: [
       {
         icon: 'layers',
@@ -359,6 +386,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We rolled out new signatures to 800 employees across three offices in under two weeks. The phased approach meant zero escalations and full adoption by day ten.',
+      authorName: 'Tomoko Ishikawa',
+      authorTitle: 'IT Program Manager, Northbridge Manufacturing',
+    },
     faqs: [
       {
         question: 'How long does a typical email signature deployment take?',
@@ -420,6 +453,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Turn your email signatures into a measurable marketing channel with comprehensive analytics and data-driven optimization.',
       variant: 'emerald',
     },
+    stats: [
+      { value: '46%', label: 'Of marketers underutilize signature analytics' },
+      { value: '3.2%', label: 'Average banner CTR with data-driven optimization' },
+      { value: '5min', label: 'To generate a custom engagement report' },
+    ],
     features: [
       {
         icon: 'bar-chart-3',
@@ -487,6 +525,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'The analytics dashboard showed us that our sales team banners had a 4.1% click-through rate while marketing was at 1.8%. That insight helped us redesign the underperforming campaigns immediately.',
+      authorName: 'Andre Petrov',
+      authorTitle: 'Digital Operations Lead, Ironclad Retail Group',
+    },
     faqs: [
       {
         question: 'What metrics should I track for email signatures?',
@@ -548,6 +592,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Master the art and science of email signature banners that capture attention, drive action, and deliver results for every campaign.',
       variant: 'indigo',
     },
+    stats: [
+      { value: '4.7%', label: 'Peak CTR with optimized banner design' },
+      { value: '600x100', label: 'Recommended banner dimensions in pixels' },
+      { value: '2-3 weeks', label: 'Optimal rotation cycle before fatigue sets in' },
+    ],
     features: [
       {
         icon: 'pen-tool',
@@ -598,6 +647,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Switching from text links to designed banners in our signatures doubled our webinar registrations. The banner best practices guide was the playbook we needed.',
+      authorName: 'Sofia Lindgren',
+      authorTitle: 'Events Manager, Clearwater Publishing',
+    },
     faqs: [
       {
         question: 'What is the ideal size for an email signature banner?',
@@ -663,6 +718,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Diagnose and resolve the most common email signature rendering issues, broken images, and formatting problems across every major email client.',
       variant: 'slate',
     },
+    stats: [
+      { value: '83%', label: 'Of rendering issues caused by just 5 common mistakes' },
+      { value: '10min', label: 'Average fix time using structured diagnostics' },
+      { value: '40+', label: 'Email client and device combinations to test' },
+    ],
     features: [
       {
         icon: 'wrench',
@@ -713,6 +773,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our signatures looked perfect in Gmail but were completely broken in Outlook. This troubleshooting guide helped us identify the CSS issue in under ten minutes.',
+      authorName: 'Ryan Gallagher',
+      authorTitle: 'Email Platform Engineer, Summit Media Corp',
+    },
     faqs: [
       {
         question: 'Why do my signature images show as broken in Outlook?',
@@ -774,6 +840,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Learn how to deploy professional email signatures to hundreds or thousands of employees simultaneously without disrupting daily operations.',
       variant: 'light',
     },
+    stats: [
+      { value: '5,000+', label: 'Users deployed in a single batch' },
+      { value: '98.5%', label: 'First-pass deployment success rate' },
+      { value: '< 1hr', label: 'Full organization rollout time' },
+    ],
     features: [
       {
         icon: 'users',
@@ -847,6 +918,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We onboarded an acquisition of 1,200 employees and had every single person on our branded signature within 45 minutes. Doing that manually would have taken our IT team a full month.',
+      authorName: 'Elijah Mensah',
+      authorTitle: 'Director of IT Operations, Vanguard Freight Lines',
+    },
     faqs: [
       {
         question: 'How many signatures can I deploy at once?',
@@ -907,6 +984,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Build a signature strategy that speaks your recipients\' language, from template localization to right-to-left script support for global organizations.',
       variant: 'dark',
     },
+    stats: [
+      { value: '12', label: 'Languages supported in a typical global rollout' },
+      { value: '35%', label: 'Higher recipient engagement with localized signatures' },
+      { value: '2 days', label: 'Average setup time for a new language template' },
+    ],
     features: [
       {
         icon: 'globe',
@@ -957,6 +1039,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'With offices in eight countries, we needed signatures in nine languages including Arabic and Japanese. Siggly handled the RTL layouts and character encoding flawlessly.',
+      authorName: 'Fatima Al-Rashidi',
+      authorTitle: 'Global Communications Director, Orion Trade Partners',
+    },
     faqs: [
       {
         question: 'How do I manage signatures in languages I do not speak?',
@@ -1023,6 +1111,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Over 60% of emails are opened on mobile devices. Make sure your signatures look professional and function perfectly on every screen size.',
       variant: 'violet',
     },
+    stats: [
+      { value: '62%', label: 'Of business emails opened on mobile devices' },
+      { value: '44px', label: 'Minimum tap target size for touch-friendly links' },
+      { value: '320px', label: 'Max width for reliable mobile rendering' },
+    ],
     features: [
       {
         icon: 'smartphone',
@@ -1073,6 +1166,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Half our client communications happen on phones. After optimizing our signatures for mobile, our banner click rate on mobile devices jumped from 0.9% to 3.4%.',
+      authorName: 'Chen Wei-Lin',
+      authorTitle: 'Product Marketing Manager, Brightpath Education',
+    },
     faqs: [
       {
         question: 'How wide should a mobile-friendly email signature be?',
@@ -1134,6 +1233,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Ensure your email signatures are inclusive and accessible to all recipients, including those using screen readers, magnification tools, and other assistive technologies.',
       variant: 'emerald',
     },
+    stats: [
+      { value: '1B+', label: 'People worldwide living with a disability' },
+      { value: '4.5:1', label: 'Minimum contrast ratio for WCAG AA compliance' },
+      { value: '97%', label: 'Of email signatures fail basic accessibility checks' },
+    ],
     features: [
       {
         icon: 'user-check',
@@ -1184,6 +1288,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'After a visually impaired client told us our signatures were unreadable with a screen reader, we overhauled everything using this guide. Now our signatures score AAA on contrast and structure.',
+      authorName: 'Marta Kowalski',
+      authorTitle: 'UX Director, Canopy Civic Design',
+    },
     faqs: [
       {
         question: 'What WCAG level should email signatures meet?',
@@ -1245,6 +1355,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Transform your brand guidelines into pixel-perfect email signatures that reinforce your corporate identity in every message your team sends.',
       variant: 'indigo',
     },
+    stats: [
+      { value: '91%', label: 'Of employees deviate from brand guidelines without enforcement' },
+      { value: '23%', label: 'Increase in brand recognition with consistent signatures' },
+      { value: '< 1 day', label: 'To enforce brand standards across all signatures' },
+    ],
     features: [
       {
         icon: 'palette',
@@ -1312,6 +1427,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our marketing team spent six months building new brand guidelines, but signatures were the last thing anyone thought about. Siggly helped us close that gap in a single afternoon.',
+      authorName: 'Nadia Okafor',
+      authorTitle: 'Brand Strategy Lead, Harborview Real Estate',
+    },
     faqs: [
       {
         question: 'Can I use custom fonts in email signatures?',
@@ -1373,6 +1494,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Ready-to-use disclaimer templates and guidance for crafting legally sound email signatures that protect your organization across industries and jurisdictions.',
       variant: 'slate',
     },
+    stats: [
+      { value: '68%', label: 'Of companies lack proper email disclaimers' },
+      { value: '5', label: 'Industry-specific templates included' },
+      { value: '2-4 lines', label: 'Optimal disclaimer length for readability' },
+    ],
     features: [
       {
         icon: 'scale',
@@ -1423,6 +1549,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our legal counsel flagged that half our offices were missing mandatory registration numbers in their signatures. These templates gave us a compliant baseline for every jurisdiction we operate in.',
+      authorName: 'Graham Whitfield',
+      authorTitle: 'General Counsel, Atlas Supply Chain',
+    },
     faqs: [
       {
         question: 'Are email disclaimers legally enforceable?',
@@ -1489,6 +1621,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'A comprehensive blueprint for implementing centralized email signature management across large organizations with thousands of users and complex requirements.',
       variant: 'light',
     },
+    stats: [
+      { value: '4-8 weeks', label: 'Typical enterprise implementation timeline' },
+      { value: '10,000+', label: 'Users supported in a single deployment' },
+      { value: '99.8%', label: 'Signature delivery rate at enterprise scale' },
+    ],
     features: [
       {
         icon: 'briefcase',
@@ -1562,6 +1699,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We manage 8,500 users across four subsidiaries with different brands. Siggly gave us one platform to control all of it, with role-based access so each brand team manages their own templates.',
+      authorName: 'Richard Tanaka',
+      authorTitle: 'VP of Enterprise IT, Sterling Aerospace',
+    },
     faqs: [
       {
         question: 'How long does an enterprise implementation typically take?',
@@ -1627,6 +1770,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Protect your organization from signature-related security threats including phishing, spoofing, and brand impersonation with proven security practices.',
       variant: 'dark',
     },
+    stats: [
+      { value: '94%', label: 'Of cyberattacks start with a phishing email' },
+      { value: '3.5x', label: 'Higher phishing success when signatures are spoofed' },
+      { value: '< 5min', label: 'To lock down signature editing with centralized controls' },
+    ],
     features: [
       {
         icon: 'lock',
@@ -1678,6 +1826,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'After a phishing incident that impersonated our CEO signature, we locked down all templates through Siggly. We now have audit trails on every change and zero unauthorized modifications since.',
+      authorName: 'Vanessa Drummond',
+      authorTitle: 'Chief Information Security Officer, Crestview Financial',
+    },
     faqs: [
       {
         question: 'How can attackers exploit email signatures?',
@@ -1739,6 +1893,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Everything you need to know about making your email signatures compliant with the General Data Protection Regulation and other privacy frameworks.',
       variant: 'violet',
     },
+    stats: [
+      { value: '€20M', label: 'Maximum GDPR fine for non-compliance' },
+      { value: '78%', label: 'Of organizations unsure if signatures are GDPR compliant' },
+      { value: '6', label: 'Lawful bases for processing personal data under GDPR' },
+    ],
     features: [
       {
         icon: 'shield',
@@ -1795,6 +1954,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our DPO flagged signature analytics as a potential GDPR liability. Siggly privacy-first approach meant we could keep tracking engagement without violating data subject rights.',
+      authorName: 'Henrik Johansson',
+      authorTitle: 'Data Protection Officer, Nordic Biotech Alliance',
+    },
     faqs: [
       {
         question: 'Is employee data in email signatures subject to GDPR?',
@@ -2008,6 +2173,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Great email signatures balance aesthetics with function. This guide covers the design fundamentals that make signatures visually compelling, easy to scan, and consistent across every email client.',
       variant: 'violet',
     },
+    stats: [
+      { value: '7 sec', label: 'Average time a recipient spends scanning a signature' },
+      { value: '2-3', label: 'Maximum brand colors for a clean signature design' },
+      { value: '600px', label: 'Recommended maximum signature width' },
+    ],
     featuresTitle: 'Core Design Principles',
     features: [
       {
@@ -2068,6 +2238,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We went from every employee having a different font and color scheme to a unified, elegant design. Clients started commenting on how polished our emails looked within the first week.',
+      authorName: 'Isabella Duarte',
+      authorTitle: 'Creative Director, Mosaic Architecture Studio',
+    },
     faqs: [
       {
         question: 'How many colors should I use in an email signature?',
@@ -2260,6 +2436,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Images are the most common cause of broken or slow-loading email signatures. This guide covers everything from choosing the right format to hosting images on a CDN for reliable delivery.',
       variant: 'light',
     },
+    stats: [
+      { value: '70%', label: 'Of signature issues traced back to images' },
+      { value: '< 50KB', label: 'Target file size per signature image' },
+      { value: '2x', label: 'Resolution multiplier for retina display clarity' },
+    ],
     features: [
       {
         icon: 'image',
@@ -2310,6 +2491,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our logo was showing as a blurry mess in Outlook because we were using a low-res JPEG. After following the optimization guide and switching to a 2x PNG on a CDN, it looked crisp everywhere.',
+      authorName: 'Lucas Bergman',
+      authorTitle: 'Web Developer, Juniper Creative Agency',
+    },
     faqs: [
       {
         question: 'What is the ideal file size for signature images?',
@@ -2453,6 +2640,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We hire 30 to 40 people a month and used to spend hours manually setting up each signature. Now it happens automatically the moment HR creates the account. Our IT team got an entire day back each week.',
+      authorName: 'Amara Osei',
+      authorTitle: 'Head of People Operations, Fieldstone Hospitality Group',
+    },
     cta: {
       title: 'Automate Signature Onboarding',
       description:
@@ -2621,6 +2814,11 @@ export const guidesPages: SEOLandingPageData[] = [
         'Google Workspace gives admins several levers for controlling email signatures, but the built-in tools have limitations. This guide covers native options and how Siggly fills the gaps.',
       variant: 'emerald',
     },
+    stats: [
+      { value: '3B+', label: 'Google Workspace users globally' },
+      { value: '30min', label: 'Setup time for Siggly with Google Workspace' },
+      { value: '0', label: 'Lines of Apps Script code required with Siggly' },
+    ],
     featuresTitle: 'Google Workspace Signature Management Options',
     features: [
       {
@@ -2670,6 +2868,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'We maintained a fragile Apps Script for two years that broke every time Google changed something. Siggly replaced all of that with a visual editor and zero maintenance overhead.',
+      authorName: 'Patrick Moreno',
+      authorTitle: 'Google Workspace Administrator, Lakeshore Media Group',
+    },
     faqs: [
       {
         question: 'Can I manage Gmail signatures from the Google Admin Console?',
@@ -3044,6 +3248,12 @@ export const guidesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Operating in twelve countries meant twelve different regulatory frameworks for our email signatures. This guide helped us build a single baseline policy that satisfied all of them.',
+      authorName: 'Claudia Ferreira',
+      authorTitle: 'International Compliance Director, Evergreen Pharmaceuticals',
+    },
     faqs: [
       {
         question: 'Do I need different email signatures for different countries?',

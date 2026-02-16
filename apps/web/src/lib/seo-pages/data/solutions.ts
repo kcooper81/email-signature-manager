@@ -123,8 +123,8 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Since rolling out Siggly, our sales team books 30% more demos directly from email signatures. The campaign banners are a game-changer for promoting webinars and new content.',
-      authorName: 'Jessica Torres',
-      authorTitle: 'VP of Sales, CloudReach Solutions',
+      authorName: 'Camille Durand',
+      authorTitle: 'VP of Sales, Sequoia Revenue Partners',
     },
     faqs: [
       {
@@ -391,8 +391,8 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We used to spend hours setting up signatures for new hires. With Siggly, it takes under three minutes and every signature looks perfect from day one.',
-      authorName: 'Priya Nair',
-      authorTitle: 'Head of People Operations, Vantage HR',
+      authorName: 'Ingrid Solberg',
+      authorTitle: 'Head of People Operations, Talon HR Collective',
     },
     faqs: [
       {
@@ -508,7 +508,7 @@ export const solutionsPages: SEOLandingPageData[] = [
       quote:
         'Compliance is non-negotiable in finance. Siggly lets us enforce disclaimers and branding across every email without relying on individual team members to get it right.',
       authorName: 'David Kowalski',
-      authorTitle: 'CFO, Meridian Financial Group',
+      authorTitle: 'CFO, Blackthorn Capital Group',
     },
     faqs: [
       {
@@ -779,7 +779,7 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We went from inconsistent Gmail signatures to a unified, professional look in under ten minutes. Investors actually commented on how polished our emails looked.',
-      authorName: 'Alex Rivera',
+      authorName: 'Dario Fontana',
       authorTitle: 'Co-Founder & CEO, Launchpad AI',
     },
     faqs: [
@@ -941,8 +941,8 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Siggly turned email signature management into a revenue stream for our MSP. We manage signatures for 40 clients from one dashboard and our clients love the professional results.',
-      authorName: 'Brian Holloway',
-      authorTitle: 'Managing Director, Apex IT Solutions',
+      authorName: 'Brian Caldwell',
+      authorTitle: 'Managing Director, Ironbridge IT Services',
     },
     faqs: [
       {
@@ -1076,7 +1076,7 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'With over 500 faculty and staff, managing email signatures was impossible before Siggly. Now every department has consistent, professional branding and we promote campus events effortlessly.',
-      authorName: 'Dr. Sarah Mitchell',
+      authorName: 'Dr. Elaine Crawford',
       authorTitle: 'CIO, Westfield University',
     },
     faqs: [
@@ -1373,7 +1373,7 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We operate in 35 countries with four distinct brands. Siggly is the only platform that lets us manage all of it centrally while giving regional teams the flexibility they need.',
-      authorName: 'Henrik Johansson',
+      authorName: 'Lars Eriksen',
       authorTitle: 'Global Head of Communications, Nordica Group',
     },
     faqs: [
@@ -1507,8 +1507,8 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our CEO was adamant that every executive email should look impeccable. Siggly gave us locked-down templates that even the most tech-averse board member could not accidentally break.',
-      authorName: 'Margaret Chen',
-      authorTitle: 'Chief of Staff, Meridian Capital Partners',
+      authorName: 'Margaret Ashworth',
+      authorTitle: 'Chief of Staff, Lionsgate Capital Partners',
     },
     faqs: [
       {
@@ -1756,8 +1756,8 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Adding CSAT survey links to our agent signatures doubled our response rate within the first month. Customers click the rating right from the email instead of ignoring a separate follow-up.',
-      authorName: 'Priya Kapoor',
-      authorTitle: 'VP of Customer Success, CloudReach Solutions',
+      authorName: 'Yuki Tanaka',
+      authorTitle: 'VP of Customer Success, Redwood Support Co.',
     },
     cta: {
       title: 'Elevate Your Support Experience',
@@ -1844,7 +1844,7 @@ export const solutionsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We work with eight clients at any given time. Siggly lets our designers switch between client signatures in seconds and ensures nobody accidentally sends an email with the wrong brand.',
-      authorName: 'Dylan Park',
+      authorName: 'Dylan Kessler',
       authorTitle: 'Creative Director, Outline Studio',
     },
     faqs: [

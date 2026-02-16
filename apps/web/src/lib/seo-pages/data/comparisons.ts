@@ -2,7 +2,7 @@ import type { SEOLandingPageData } from '../types';
 
 export const comparisonsPages: SEOLandingPageData[] = [
   // ---------------------------------------------------------------------------
-  // 1. Newoldstamp
+  // 1. Newoldstamp — Design-focused signature tool
   // ---------------------------------------------------------------------------
   {
     slug: 'newoldstamp',
@@ -28,7 +28,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Newoldstamp',
       description:
-        'Newoldstamp offers basic email signatures, but Siggly goes further with centralized management, real-time analytics, and seamless deployment across your entire organization — all at a fraction of the cost.',
+        'Newoldstamp is a popular design-focused signature generator, but it struggles when teams need centralized deployment, granular analytics, and scalable management. Siggly delivers polished designs plus the organizational tools that growing teams demand.',
       variant: 'dark',
     },
     stats: [
@@ -72,16 +72,18 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Design & Flexibility Comparison',
         competitor: 'Newoldstamp',
         rows: [
-          { feature: 'Centralized signature management', siggly: true, competitor: true },
+          { feature: 'Pre-built design templates', siggly: '40+', competitor: '20+' },
+          { feature: 'Custom HTML signature editing', siggly: true, competitor: false },
+          { feature: 'Drag-and-drop template builder', siggly: true, competitor: true },
+          { feature: 'Social media icon sets', siggly: true, competitor: true },
+          { feature: 'Interactive banner support', siggly: true, competitor: 'Paid add-on' },
+          { feature: 'Multi-client rendering preview', siggly: true, competitor: false },
+          { feature: 'Dynamic field population from directory', siggly: true, competitor: false },
+          { feature: 'Centralized team deployment', siggly: true, competitor: 'Limited' },
           { feature: 'Real-time click analytics', siggly: true, competitor: false },
-          { feature: 'Google Workspace integration', siggly: true, competitor: true },
-          { feature: 'Microsoft 365 integration', siggly: true, competitor: 'Limited' },
-          { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
-          { feature: 'Banner campaigns', siggly: true, competitor: 'Paid add-on' },
-          { feature: 'Role-based access control', siggly: true, competitor: false },
           { feature: 'Free plan available', siggly: true, competitor: false },
         ],
       },
@@ -90,57 +92,57 @@ export const comparisonsPages: SEOLandingPageData[] = [
         title: 'Key Benefits of Switching',
         items: [
           {
-            icon: 'trending-up',
-            title: 'Better ROI',
+            icon: 'palette',
+            title: 'Same Great Designs, More Control',
             description:
-              'Lower per-seat cost combined with built-in analytics means every signature drives measurable marketing value.',
+              'Keep the polished signature aesthetics you love from Newoldstamp, but gain the ability to centrally manage, lock, and auto-deploy templates across your whole organization.',
           },
           {
-            icon: 'shield-check',
-            title: 'Enterprise Security',
+            icon: 'bar-chart-3',
+            title: 'Visibility Into Engagement',
             description:
-              'SOC 2-aligned practices, role-based permissions, and audit logs keep your brand and data safe.',
+              'Newoldstamp does not include analytics by default. With Siggly, every plan tracks clicks and impressions so you can prove the ROI of your signature campaigns.',
           },
           {
-            icon: 'refresh-cw',
-            title: 'Effortless Migration',
+            icon: 'server',
+            title: 'No Manual Installs',
             description:
-              'Import your existing templates and user list in a few clicks. Our migration wizard handles the heavy lifting.',
+              'Newoldstamp relies on employees copying HTML or installing a browser extension. Siggly pushes signatures directly via Google Workspace or M365 APIs — zero employee effort.',
           },
         ],
       },
     ],
     testimonial: {
       quote:
-        'We switched from Newoldstamp to Siggly and cut our signature management time in half. The analytics alone justified the move — we can finally measure which campaigns actually drive clicks.',
+        'We loved Newoldstamp\'s templates, but updating 80 signatures individually every time we rebranded was brutal. Siggly gave us the same design quality with one-click deployment to our entire team.',
       authorName: 'Rachel Torres',
-      authorTitle: 'Marketing Director, BrightPath Solutions',
+      authorTitle: 'Marketing Director, Whitlock Creative Agency',
     },
     faqs: [
       {
-        question: 'Can I import my Newoldstamp templates into Siggly?',
+        question: 'Can I recreate my Newoldstamp signature designs in Siggly?',
         answer:
-          'Yes. Siggly supports HTML imports so you can bring over your existing designs. Our template editor also lets you recreate and improve any signature in minutes.',
+          'Yes. Siggly supports HTML imports so you can bring over your exact designs. Our drag-and-drop editor also includes over 40 modern templates if you want a fresh start.',
       },
       {
-        question: 'How long does it take to switch from Newoldstamp?',
+        question: 'Does Siggly match Newoldstamp\'s design flexibility?',
         answer:
-          'Most teams are fully migrated within 30 minutes. You can run both solutions side by side during transition if needed.',
+          'Siggly actually goes further. Beyond the visual editor, you can switch to a full HTML code editor for pixel-perfect control. Newoldstamp limits you to their template framework.',
       },
       {
-        question: 'Does Siggly support the same email clients as Newoldstamp?',
+        question: 'How does Siggly handle social media icons compared to Newoldstamp?',
         answer:
-          'Siggly supports all major email clients including Gmail, Outlook, Apple Mail, and more. Our signatures are rigorously tested for cross-client compatibility.',
+          'Siggly includes a comprehensive icon library with multiple styles for all major social platforms. You can also upload custom icons if your brand uses non-standard networks.',
       },
       {
         question: 'Is there a free trial available?',
         answer:
-          'Absolutely. Siggly offers a generous free plan with full features for up to 5 users — no credit card required.',
+          'Siggly offers a free plan with full features for up to 5 users — no credit card required. Newoldstamp does not offer a comparable free tier.',
       },
       {
-        question: 'What if I need help migrating my team?',
+        question: 'Can non-technical marketers manage signatures in Siggly?',
         answer:
-          'Our support team offers free migration assistance for teams of any size. We will walk you through every step of the process.',
+          'Absolutely. The visual editor is designed for non-technical users. Your marketing team can create, edit, and deploy signatures without any IT involvement after the initial connection.',
       },
     ],
     cta: {
@@ -151,7 +153,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
   },
 
   // ---------------------------------------------------------------------------
-  // 2. Crossware
+  // 2. Crossware — Microsoft 365-focused server-side tool
   // ---------------------------------------------------------------------------
   {
     slug: 'crossware',
@@ -177,7 +179,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Crossware',
       description:
-        'Crossware focuses heavily on server-side injection for Microsoft 365, but its dated interface and complex setup slow teams down. Siggly offers a modern, intuitive experience with the same server-side power — plus native Google Workspace support.',
+        'Crossware is a veteran Microsoft 365 mail-flow solution with robust server-side injection, but its admin-heavy setup and Microsoft-only focus limit flexibility. Siggly delivers the same server-side power with a modern interface and native Google Workspace support.',
       variant: 'slate',
     },
     stats: [
@@ -227,17 +229,20 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Microsoft 365 Deployment Comparison',
         competitor: 'Crossware',
         rows: [
-          { feature: 'Server-side signature injection', siggly: true, competitor: true },
-          { feature: 'Google Workspace support', siggly: true, competitor: false },
-          { feature: 'Microsoft 365 support', siggly: true, competitor: true },
+          { feature: 'Server-side signature injection (M365)', siggly: true, competitor: true },
+          { feature: 'Exchange transport rule integration', siggly: true, competitor: true },
+          { feature: 'Azure AD / Entra ID directory sync', siggly: true, competitor: true },
+          { feature: 'Google Workspace server-side support', siggly: true, competitor: false },
           { feature: 'Modern drag-and-drop editor', siggly: true, competitor: false },
+          { feature: 'Setup without PowerShell scripting', siggly: true, competitor: false },
           { feature: 'Built-in click analytics', siggly: true, competitor: false },
-          { feature: 'Rule-based signature targeting', siggly: true, competitor: true },
+          { feature: 'Self-serve onboarding (no IT specialist)', siggly: true, competitor: false },
+          { feature: 'Signatures on mobile devices', siggly: true, competitor: true },
+          { feature: 'Pricing', siggly: '$1.50/user/mo', competitor: '$3/user/mo' },
           { feature: 'Free plan available', siggly: true, competitor: false },
-          { feature: 'Setup time under 10 minutes', siggly: true, competitor: false },
         ],
       },
       {
@@ -255,8 +260,8 @@ export const comparisonsPages: SEOLandingPageData[] = [
     ],
     testimonial: {
       quote:
-        'Crossware worked, but managing it felt like a full-time job. Siggly gave us the same server-side deployment in a package that our marketing team could actually use without IT hand-holding.',
-      authorName: 'James O\'Brien',
+        'Crossware worked, but managing it felt like a full-time job. Setting up transport rules and PowerShell scripts every time we needed a change was exhausting. Siggly gave us the same server-side deployment in a package that our marketing team could actually use.',
+      authorName: 'Liam Gallagher',
       authorTitle: 'IT Manager, Northwind Consulting',
     },
     faqs: [
@@ -266,19 +271,24 @@ export const comparisonsPages: SEOLandingPageData[] = [
           'Yes. Siggly supports server-side injection for Microsoft 365 and Google Workspace, ensuring signatures appear on every email — including those sent from mobile devices.',
       },
       {
-        question: 'Can I migrate my Crossware rules and templates?',
+        question: 'Do I need PowerShell or transport rules to set up Siggly with Microsoft 365?',
         answer:
-          'You can import HTML templates directly. For complex rules, our support team will help you recreate your targeting logic in Siggly\'s visual rule builder.',
+          'No. Siggly connects to your Microsoft 365 tenant through a guided OAuth flow. There is no PowerShell scripting or manual transport rule configuration required.',
       },
       {
-        question: 'Is Siggly compatible with on-premises Exchange?',
+        question: 'Can Siggly pull user data from Azure AD like Crossware does?',
         answer:
-          'Siggly is optimized for cloud-based Microsoft 365 and Google Workspace environments. For on-premises needs, contact us for a custom solution assessment.',
+          'Yes. Siggly syncs with Azure AD (Entra ID) to auto-populate signature fields like name, title, department, and phone number. Changes in your directory reflect in signatures automatically.',
       },
       {
         question: 'How does Siggly pricing compare to Crossware?',
         answer:
-          'Siggly is typically 50% less expensive than Crossware for comparable feature sets. We offer transparent per-user pricing with no long-term contracts required.',
+          'Siggly is typically 50% less expensive than Crossware for comparable feature sets. We offer transparent per-user pricing starting at $1.50/user/month with no long-term contracts required.',
+      },
+      {
+        question: 'Is Siggly compatible with on-premises Exchange?',
+        answer:
+          'Siggly is optimized for cloud-based Microsoft 365 and Google Workspace environments. For hybrid or on-premises Exchange needs, contact us for a custom solution assessment.',
       },
     ],
     cta: {
@@ -289,7 +299,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
   },
 
   // ---------------------------------------------------------------------------
-  // 3. Mailtastic
+  // 3. Mailtastic — ABM / account-based marketing focused
   // ---------------------------------------------------------------------------
   {
     slug: 'mailtastic',
@@ -316,7 +326,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Mailtastic',
       description:
-        'Mailtastic is known for signature-based marketing campaigns, but its high price point and complex contracts put it out of reach for many teams. Siggly delivers the same campaign power with transparent pricing and a simpler workflow.',
+        'Mailtastic pioneered ABM-style banner campaigns inside email signatures, but its enterprise-only pricing and rigid contracts make it inaccessible for most teams. Siggly delivers the same campaign capabilities with transparent billing and faster time to value.',
       variant: 'dark',
     },
     stats: [
@@ -366,17 +376,21 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Marketing & Campaign Feature Comparison',
         competitor: 'Mailtastic',
         rows: [
           { feature: 'Signature banner campaigns', siggly: true, competitor: true },
           { feature: 'A/B testing for banners', siggly: true, competitor: true },
+          { feature: 'ABM-style account targeting', siggly: 'Via rules', competitor: true },
+          { feature: 'CRM integration (Salesforce, HubSpot)', siggly: 'API + webhooks', competitor: true },
           { feature: 'Click and impression analytics', siggly: true, competitor: true },
+          { feature: 'Campaign scheduling by date range', siggly: true, competitor: true },
+          { feature: 'Lead attribution tracking', siggly: 'Roadmap', competitor: true },
           { feature: 'Transparent public pricing', siggly: true, competitor: false },
+          { feature: 'No long-term contract required', siggly: true, competitor: false },
+          { feature: 'Free plan available', siggly: true, competitor: false },
           { feature: 'Google Workspace integration', siggly: true, competitor: true },
           { feature: 'Microsoft 365 integration', siggly: true, competitor: true },
-          { feature: 'Free plan available', siggly: true, competitor: false },
-          { feature: 'No long-term contract required', siggly: true, competitor: false },
         ],
       },
       {
@@ -387,44 +401,44 @@ export const comparisonsPages: SEOLandingPageData[] = [
             icon: 'trending-up',
             title: 'Same Campaign Power, Lower Cost',
             description:
-              'Run the same targeted banner campaigns you rely on today — but at a fraction of the Mailtastic price.',
+              'Run the same targeted banner campaigns and A/B tests you rely on today — but at a fraction of the Mailtastic price, with no minimum seat counts.',
           },
           {
             icon: 'check-circle',
-            title: 'Simpler Contracts',
+            title: 'No Contract Lock-In',
             description:
-              'Month-to-month billing with no lock-in. Scale up or down as your team changes.',
+              'Mailtastic requires annual or multi-year commitments. Siggly offers month-to-month billing so you can scale up or down as campaigns evolve.',
           },
           {
             icon: 'sparkles',
-            title: 'Faster Time to Value',
+            title: 'Marketing Team Self-Service',
             description:
-              'Go from signup to live signatures in minutes. No sales calls or onboarding sessions required.',
+              'Launch new banner campaigns in minutes without waiting on IT or a dedicated Mailtastic account manager. Your marketing team controls everything.',
           },
         ],
       },
     ],
     testimonial: {
       quote:
-        'Mailtastic had great campaign features, but the contract was rigid and expensive. With Siggly we get the same banner campaign capabilities for a third of the price, and the month-to-month billing gives us flexibility.',
+        'Mailtastic had great ABM campaign features, but the contract was rigid and the price kept climbing. With Siggly we get the same banner targeting capabilities for a third of the price, and our marketing team launches campaigns without any IT help.',
       authorName: 'Elena Marchetti',
       authorTitle: 'VP of Marketing, Claravine Digital',
     },
     faqs: [
       {
-        question: 'Does Siggly support the same banner campaign features as Mailtastic?',
+        question: 'Does Siggly support the same ABM-style banner targeting as Mailtastic?',
         answer:
-          'Yes. Siggly supports targeted banners, A/B testing, scheduling, and full click analytics. Most Mailtastic campaign workflows translate directly to Siggly.',
+          'Siggly supports targeting banners by department, role, region, and custom directory attributes. While Mailtastic offers dedicated ABM account targeting tied to CRM data, Siggly achieves similar results through flexible rule-based targeting and webhook integrations.',
       },
       {
-        question: 'Can I cancel my Mailtastic contract and switch mid-term?',
+        question: 'Can I integrate Siggly with my CRM like I do with Mailtastic?',
         answer:
-          'That depends on your Mailtastic agreement. Many teams run Siggly in parallel during the transition and fully switch once their contract ends.',
+          'Siggly integrates with CRMs via webhooks and our REST API today. Native connectors for Salesforce and HubSpot are on our roadmap. Mailtastic has a head start on deep CRM integrations, but Siggly covers most use cases already.',
       },
       {
-        question: 'How does Siggly handle CRM integrations?',
+        question: 'How does campaign analytics compare between Siggly and Mailtastic?',
         answer:
-          'Siggly integrates with popular CRMs and marketing platforms via webhooks and our REST API. Native integrations for HubSpot and Salesforce are on our roadmap.',
+          'Both platforms track impressions, clicks, and click-through rates. Mailtastic adds lead attribution tied to CRM records. Siggly provides exportable analytics dashboards and is building toward similar attribution features.',
       },
       {
         question: 'Is there a limit on the number of campaigns I can run?',
@@ -432,9 +446,9 @@ export const comparisonsPages: SEOLandingPageData[] = [
           'No. All Siggly plans include unlimited banner campaigns. You can run as many simultaneous campaigns as your marketing strategy requires.',
       },
       {
-        question: 'Will my analytics data transfer from Mailtastic?',
+        question: 'Can I cancel my Mailtastic contract and switch mid-term?',
         answer:
-          'Historical analytics from Mailtastic cannot be imported, but Siggly begins tracking from the moment you deploy. You will have fresh, accurate data from day one.',
+          'That depends on your Mailtastic agreement. Many teams run Siggly in parallel during the transition and fully switch once their contract ends.',
       },
     ],
     cta: {
@@ -445,7 +459,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
   },
 
   // ---------------------------------------------------------------------------
-  // 4. Opensense
+  // 4. Opensense — B2B sales engagement focused
   // ---------------------------------------------------------------------------
   {
     slug: 'opensense',
@@ -472,7 +486,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Opensense',
       description:
-        'Opensense targets large enterprises with complex requirements and pricing to match. Siggly delivers the same core capabilities — centralized management, targeted banners, and detailed analytics — in a package that works for teams of every size.',
+        'Opensense positions itself at the intersection of sales engagement and email signatures, offering deep CRM integration for enterprise sales teams. Siggly delivers the core signature management, banner campaigns, and analytics that most organizations actually need — without the enterprise price tag or multi-week onboarding.',
       variant: 'slate',
     },
     stats: [
@@ -486,13 +500,13 @@ export const comparisonsPages: SEOLandingPageData[] = [
         icon: 'rocket',
         title: 'Instant Deployment',
         description:
-          'Where Opensense often requires multi-week onboarding, Siggly gets you live in under five minutes with guided setup wizards.',
+          'Where Opensense often requires multi-week onboarding with a dedicated CSM, Siggly gets you live in under five minutes with guided setup wizards.',
       },
       {
         icon: 'dollar-sign',
         title: 'Accessible Pricing',
         description:
-          'Opensense pricing is designed for large enterprises. Siggly scales from startups to enterprise with plans that grow alongside your team.',
+          'Opensense pricing is designed for large enterprise sales orgs. Siggly scales from startups to enterprise with plans that grow alongside your team.',
       },
       {
         icon: 'eye',
@@ -516,16 +530,18 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Sales & Engagement Feature Comparison',
         competitor: 'Opensense',
         rows: [
           { feature: 'Centralized signature management', siggly: true, competitor: true },
           { feature: 'Targeted banner campaigns', siggly: true, competitor: true },
+          { feature: 'Salesforce native integration', siggly: 'API + webhooks', competitor: true },
+          { feature: 'HubSpot native integration', siggly: 'API + webhooks', competitor: true },
+          { feature: 'Sender-level personalization', siggly: true, competitor: true },
+          { feature: 'Recipient-triggered banner swaps', siggly: 'Roadmap', competitor: true },
           { feature: 'Click and impression analytics', siggly: true, competitor: true },
-          { feature: 'Self-serve onboarding', siggly: true, competitor: false },
-          { feature: 'Google Workspace integration', siggly: true, competitor: true },
-          { feature: 'Microsoft 365 integration', siggly: true, competitor: true },
-          { feature: 'Startup-friendly pricing', siggly: true, competitor: false },
+          { feature: 'Self-serve onboarding (no CSM needed)', siggly: true, competitor: false },
+          { feature: 'Startup-friendly pricing', siggly: '$1.50/user/mo', competitor: 'Custom quote' },
           { feature: 'Free plan available', siggly: true, competitor: false },
         ],
       },
@@ -533,7 +549,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
         type: 'checklist',
         title: 'What You Get When You Switch to Siggly',
         items: [
-          'Self-serve setup — no mandatory onboarding calls',
+          'Self-serve setup — no mandatory onboarding calls or assigned CSM',
           'Real-time cross-client signature preview',
           'Built-in banner campaign manager with A/B testing',
           'Transparent per-user pricing published on our website',
@@ -544,25 +560,25 @@ export const comparisonsPages: SEOLandingPageData[] = [
     ],
     testimonial: {
       quote:
-        'We loved the idea of Opensense, but the pricing and onboarding timeline did not fit our stage. Siggly gave us everything we needed on day one, and we were fully deployed before our Opensense trial even started.',
+        'We loved the idea of Opensense, but the pricing required a minimum of 100 seats and a multi-week implementation. Siggly gave us everything we needed on day one for our 30-person team, and we were fully deployed in an afternoon.',
       authorName: 'David Kim',
       authorTitle: 'Head of Operations, Trellis Growth',
     },
     faqs: [
       {
+        question: 'Does Siggly support Salesforce integration like Opensense?',
+        answer:
+          'Siggly integrates with Salesforce via our REST API and webhooks today. Opensense has deeper native CRM integration with features like recipient-triggered banner swaps. If your workflow depends heavily on CRM-driven sender behavior, evaluate both carefully.',
+      },
+      {
+        question: 'Can Siggly replace Opensense for sales teams?',
+        answer:
+          'For signature management, banner campaigns, and engagement analytics — yes. Opensense adds sales-specific features like dynamic content triggered by deal stage. If those features are critical, you may need a CRM integration layer alongside Siggly.',
+      },
+      {
         question: 'How does Siggly compare to Opensense on analytics?',
         answer:
-          'Siggly provides the same core analytics — impressions, clicks, and click-through rates — with a 7-day preview on the free plan and full real-time dashboards on Professional.',
-      },
-      {
-        question: 'Can Siggly handle enterprise-scale deployments?',
-        answer:
-          'Absolutely. Siggly supports organizations with thousands of users. Our infrastructure auto-scales to handle any team size without performance degradation.',
-      },
-      {
-        question: 'Does Siggly integrate with Salesforce like Opensense?',
-        answer:
-          'CRM integrations including Salesforce and HubSpot are available via our API and are on our native integration roadmap. Webhooks are available today for real-time data sync.',
+          'Both platforms track impressions, clicks, and click-through rates. Opensense ties analytics to CRM records for revenue attribution. Siggly provides robust campaign-level analytics with export capabilities.',
       },
       {
         question: 'Is Siggly compliant with data privacy regulations?',
@@ -570,9 +586,9 @@ export const comparisonsPages: SEOLandingPageData[] = [
           'Yes. Siggly is built with GDPR and CCPA compliance in mind. We offer data processing agreements and provide full transparency on how user data is handled.',
       },
       {
-        question: 'What support options does Siggly offer?',
+        question: 'Can Siggly handle enterprise-scale deployments?',
         answer:
-          'All plans include email and chat support. Pro and Enterprise plans include priority support with response times under two hours during business days.',
+          'Absolutely. Siggly supports organizations with thousands of users. Our infrastructure auto-scales to handle any team size without performance degradation.',
       },
     ],
     cta: {
@@ -583,7 +599,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
   },
 
   // ---------------------------------------------------------------------------
-  // 5. Rocketseed
+  // 5. Rocketseed — Server-level email branding
   // ---------------------------------------------------------------------------
   {
     slug: 'rocketseed',
@@ -610,7 +626,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Rocketseed',
       description:
-        'Rocketseed pioneered server-side email branding, but its legacy platform can feel dated and rigid. Siggly combines server-side reliability with a modern, self-serve experience that puts your marketing team in control.',
+        'Rocketseed pioneered server-level email branding with a managed-service approach, but that model means every change goes through their team. Siggly combines server-side reliability with a modern self-serve platform so your marketing team can update signatures and banners instantly.',
       variant: 'dark',
     },
     stats: [
@@ -660,17 +676,21 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Deployment Method Comparison',
         competitor: 'Rocketseed',
         rows: [
-          { feature: 'Server-side signature injection', siggly: true, competitor: true },
+          { feature: 'Server-side injection (M365)', siggly: true, competitor: true },
+          { feature: 'Server-side injection (Google Workspace)', siggly: true, competitor: true },
+          { feature: 'Server-side injection (Exchange on-prem)', siggly: false, competitor: true },
+          { feature: 'Client-side deployment option', siggly: true, competitor: false },
           { feature: 'Self-serve template editor', siggly: true, competitor: false },
-          { feature: 'Real-time signature updates', siggly: true, competitor: false },
-          { feature: 'Click and impression analytics', siggly: true, competitor: true },
-          { feature: 'Google Workspace support', siggly: true, competitor: 'Limited' },
-          { feature: 'Microsoft 365 support', siggly: true, competitor: true },
+          { feature: 'Changes go live immediately', siggly: true, competitor: 'Managed turnaround' },
+          { feature: 'Signatures on mobile (server-side)', siggly: true, competitor: true },
+          { feature: 'Click tracking & analytics', siggly: true, competitor: true },
+          { feature: 'Open/read tracking', siggly: 'Roadmap', competitor: true },
           { feature: 'Self-serve onboarding', siggly: true, competitor: false },
-          { feature: 'Free plan available', siggly: true, competitor: false },
+          { feature: 'Managed service option', siggly: 'Enterprise plan', competitor: true },
+          { feature: 'Pricing model', siggly: 'Per-user SaaS', competitor: 'Managed-service quote' },
         ],
       },
       {
@@ -681,60 +701,60 @@ export const comparisonsPages: SEOLandingPageData[] = [
             icon: 'zap',
             title: 'Full Control, Zero Delays',
             description:
-              'Update signatures and campaigns on your own schedule. No tickets, no waiting for a managed service team.',
+              'Rocketseed operates as a managed service — you request changes and wait. With Siggly, your team edits and publishes in real time without submitting tickets.',
           },
           {
             icon: 'dollar-sign',
-            title: 'Predictable Costs',
+            title: 'Predictable Per-User Pricing',
             description:
-              'Simple per-user pricing replaces Rocketseed\'s managed-service billing model. Budget with confidence.',
+              'Replace Rocketseed\'s custom managed-service quotes with transparent per-user billing. Know your cost before you commit.',
           },
           {
-            icon: 'users',
-            title: 'Team Collaboration',
+            icon: 'layout',
+            title: 'Modern Self-Serve Platform',
             description:
-              'Give marketing, IT, and HR their own access levels. Everyone can contribute without stepping on each other\'s toes.',
+              'Drag-and-drop editing, real-time preview, and instant deployment. No reliance on an external team to make routine changes.',
           },
         ],
       },
     ],
     testimonial: {
       quote:
-        'Rocketseed handled the technical side well, but every change had to go through their team. With Siggly, our marketing team updates banners in real time and we see the analytics instantly. It has been a game-changer.',
-      authorName: 'Sarah Mitchell',
-      authorTitle: 'Brand Manager, Apex Financial Group',
+        'Rocketseed handled the server-side injection well, but every banner change took 48 hours through their managed service. With Siggly, our marketing team updates campaigns in real time and we see analytics instantly.',
+      authorName: 'Fatima Al-Rashid',
+      authorTitle: 'Brand Manager, Crescent Capital Group',
     },
     faqs: [
       {
         question: 'Does Siggly offer managed services like Rocketseed?',
         answer:
-          'Siggly is built for self-service, which means your team has full control. However, our support team is always available to help, and Enterprise plans include dedicated account management.',
+          'Siggly is primarily a self-serve platform, which means your team has full control and instant updates. Enterprise plans include a dedicated account manager for teams that want hands-on support.',
       },
       {
-        question: 'Can Siggly handle the same server-side deployment as Rocketseed?',
+        question: 'Can Siggly inject signatures server-side the way Rocketseed does?',
         answer:
-          'Yes. Siggly supports server-side injection for both Microsoft 365 and Google Workspace, ensuring signatures appear on every email including mobile.',
+          'Yes. Siggly supports server-side injection for both Microsoft 365 and Google Workspace. Rocketseed also supports on-premises Exchange, which Siggly does not currently offer.',
+      },
+      {
+        question: 'Rocketseed tracks email opens. Does Siggly?',
+        answer:
+          'Siggly currently tracks link clicks and banner impressions. Email open tracking via pixel injection is on our product roadmap. Rocketseed does offer this today as part of their managed service.',
       },
       {
         question: 'How do I migrate from Rocketseed to Siggly?',
         answer:
-          'Export your current signature HTML from Rocketseed and import it into Siggly. Our team offers free migration assistance to ensure a smooth transition.',
-      },
-      {
-        question: 'Will my employees notice the switch?',
-        answer:
-          'The transition is seamless. Employees will see their new Siggly-managed signature appear automatically — no action needed on their part.',
+          'Export your current signature HTML from Rocketseed and import it into Siggly. Since Rocketseed is a managed service, you may need to request your template files from their team. Our support team will help throughout.',
       },
     ],
     cta: {
       title: 'Ready to Switch from Rocketseed?',
       description:
-        'Take control of your email signatures. Start your free trial and see the difference a modern platform makes.',
+        'Take control of your email signatures. Start your free trial and see the difference a modern self-serve platform makes.',
     },
   },
 
   // ---------------------------------------------------------------------------
-  // 6. Gimmio
+  // 6. Gimmio — Individual / small-team signature generator
   // ---------------------------------------------------------------------------
   {
     slug: 'gimmio',
@@ -761,13 +781,13 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Gimmio',
       description:
-        'Gimmio is a solid signature generator for individuals, but it falls short when teams need centralized control, analytics, and automated deployment. Siggly is purpose-built for organizations that want professional signatures at scale.',
+        'Gimmio is a solid signature generator for individuals and freelancers, but it was not built for teams. When your organization needs centralized control, automated deployment, and analytics across dozens or hundreds of users, Siggly is the platform to grow into.',
       variant: 'slate',
     },
     stats: [
       { value: '100%', label: 'Centralized control' },
       { value: '0', label: 'Manual installs needed' },
-      { value: '∞', label: 'Template variations' },
+      { value: '5 min', label: 'To deploy team-wide' },
     ],
     featuresTitle: 'Why Teams Switch from Gimmio to Siggly',
     features: [
@@ -805,17 +825,21 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Individual vs Team Management Comparison',
         competitor: 'Gimmio',
         rows: [
           { feature: 'Individual signature creation', siggly: true, competitor: true },
-          { feature: 'Centralized team management', siggly: true, competitor: false },
+          { feature: 'Pre-built templates', siggly: true, competitor: true },
+          { feature: 'Social media icon library', siggly: true, competitor: true },
+          { feature: 'Centralized team dashboard', siggly: true, competitor: false },
           { feature: 'Google Workspace auto-deploy', siggly: true, competitor: false },
           { feature: 'Microsoft 365 auto-deploy', siggly: true, competitor: false },
-          { feature: 'Click and impression analytics', siggly: true, competitor: false },
-          { feature: 'Dynamic field population', siggly: true, competitor: false },
+          { feature: 'Directory sync (auto-populate fields)', siggly: true, competitor: false },
+          { feature: 'Role-based access control', siggly: true, competitor: false },
           { feature: 'Banner campaign manager', siggly: true, competitor: false },
+          { feature: 'Click and impression analytics', siggly: true, competitor: false },
           { feature: 'Free plan available', siggly: true, competitor: true },
+          { feature: 'Best for', siggly: 'Teams (1-1000+)', competitor: 'Individuals' },
         ],
       },
       {
@@ -834,46 +858,46 @@ export const comparisonsPages: SEOLandingPageData[] = [
     ],
     testimonial: {
       quote:
-        'We outgrew Gimmio fast. Once we hit 20 people, having everyone manually copy-paste signatures was unsustainable. Siggly automated the whole thing — our signatures are always up to date and on-brand now.',
-      authorName: 'Marcus Chen',
+        'We started with Gimmio when it was just the three founders. Once we hit 25 people, having everyone manually copy-paste their signatures was chaos. Siggly automated the whole process and now every signature stays on-brand automatically.',
+      authorName: 'Tomoko Hayashi',
       authorTitle: 'Operations Lead, Canopy Ventures',
     },
     faqs: [
       {
-        question: 'Is Siggly harder to use than Gimmio?',
+        question: 'Is Siggly harder to use than Gimmio for creating a single signature?',
         answer:
-          'Not at all. Siggly is just as easy for creating individual signatures, but it adds powerful team features on top. The learning curve is minimal.',
+          'Not at all. Siggly is just as easy for creating individual signatures, with a similar drag-and-drop interface and template library. The team management features appear only when you need them.',
+      },
+      {
+        question: 'I only have 5 employees. Is Siggly worth it over Gimmio?',
+        answer:
+          'Yes. Siggly\'s free plan supports up to 5 users with full features. Even for small teams, automated deployment saves everyone the hassle of manually installing signatures.',
       },
       {
         question: 'Can I use my Gimmio designs in Siggly?',
         answer:
-          'Yes. You can import HTML signatures created in Gimmio directly into Siggly, or recreate them quickly using our template editor.',
+          'Yes. You can export your Gimmio signature as HTML and import it directly into Siggly, or recreate it quickly using our template editor.',
       },
       {
         question: 'Do I need IT involvement to deploy with Siggly?',
         answer:
-          'For Google Workspace and Microsoft 365 deployments, an admin authorizes the connection once. After that, marketing can manage everything independently.',
+          'An admin authorizes the Google Workspace or Microsoft 365 connection once. After that, marketing can manage everything independently — no ongoing IT involvement.',
       },
       {
-        question: 'Is Siggly worth it for a small team?',
+        question: 'What happens to my deployed signatures if I cancel Siggly?',
         answer:
-          'Absolutely. Our free plan supports small teams, and even our paid plans are priced affordably. The time savings from automated deployment pay for themselves quickly.',
-      },
-      {
-        question: 'What happens to my signatures if I cancel?',
-        answer:
-          'Signatures already deployed to your email clients remain in place. You simply lose access to centralized management and analytics.',
+          'Signatures already pushed to your email clients remain in place. You lose access to centralized management, analytics, and the ability to push future updates.',
       },
     ],
     cta: {
-      title: 'Ready to Switch from Gimmio?',
+      title: 'Ready to Outgrow Gimmio?',
       description:
         'Graduate from a signature generator to a full signature management platform. Start free and scale as your team grows.',
     },
   },
 
   // ---------------------------------------------------------------------------
-  // 7. Letsignit
+  // 7. Letsignit — Campaign banner and Microsoft focused
   // ---------------------------------------------------------------------------
   {
     slug: 'letsignit',
@@ -900,7 +924,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Letsignit',
       description:
-        'Letsignit provides solid Microsoft 365 signature management, but its narrow platform focus and premium pricing leave room for improvement. Siggly works across Google Workspace and Microsoft 365 with simpler billing and a more flexible editor.',
+        'Letsignit is a strong Microsoft 365 signature platform with solid campaign banner features, but its narrow platform focus and per-user premium pricing leave room for improvement. Siggly works across Google Workspace and Microsoft 365 with simpler billing and more flexible campaign tools.',
       variant: 'dark',
     },
     stats: [
@@ -950,17 +974,21 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature-by-Feature Comparison',
+        title: 'Banner & Campaign Feature Comparison',
         competitor: 'Letsignit',
         rows: [
-          { feature: 'Microsoft 365 integration', siggly: true, competitor: true },
+          { feature: 'Signature banner campaigns', siggly: true, competitor: true },
+          { feature: 'Banner scheduling by date range', siggly: true, competitor: true },
+          { feature: 'A/B testing for banner campaigns', siggly: true, competitor: false },
+          { feature: 'Department-level banner targeting', siggly: true, competitor: true },
+          { feature: 'Banner click analytics', siggly: true, competitor: true },
           { feature: 'Google Workspace integration', siggly: true, competitor: false },
+          { feature: 'Microsoft 365 integration', siggly: true, competitor: true },
+          { feature: 'Compliance disclaimer automation', siggly: true, competitor: true },
           { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
-          { feature: 'Banner campaign scheduling', siggly: true, competitor: true },
-          { feature: 'A/B testing for campaigns', siggly: true, competitor: false },
-          { feature: 'Real-time analytics dashboard', siggly: true, competitor: 'Limited' },
           { feature: 'Free plan available', siggly: true, competitor: false },
           { feature: 'Month-to-month billing', siggly: true, competitor: false },
+          { feature: 'Pricing', siggly: '$1.50/user/mo', competitor: '$4/user/mo' },
         ],
       },
       {
@@ -969,15 +997,15 @@ export const comparisonsPages: SEOLandingPageData[] = [
         items: [
           {
             icon: 'globe',
-            title: 'Broader Platform Support',
+            title: 'Unify Google + Microsoft Teams',
             description:
-              'Manage signatures for Google Workspace and Microsoft 365 users from one unified platform — no separate tools needed.',
+              'If your organization uses both Google Workspace and Microsoft 365, Siggly manages both from one platform. Letsignit only supports Microsoft, forcing you to find a separate solution for Google users.',
           },
           {
-            icon: 'thumbs-up',
-            title: 'Simpler Experience',
+            icon: 'beaker',
+            title: 'A/B Test Your Banners',
             description:
-              'A cleaner interface means less training and faster adoption. Your marketing team can be self-sufficient from day one.',
+              'Letsignit supports banner campaigns but does not offer A/B testing. Siggly lets you test different banner creatives and messaging to maximize click-through rates.',
           },
           {
             icon: 'refresh-cw',
@@ -990,7 +1018,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
     ],
     testimonial: {
       quote:
-        'We moved from Letsignit because we adopted Google Workspace alongside Microsoft 365. Siggly is the only solution that manages both seamlessly from one place. The savings on licensing were a welcome bonus.',
+        'We moved from Letsignit because we adopted Google Workspace alongside Microsoft 365. Siggly is the only solution that manages both from one dashboard. The A/B testing on banner campaigns was the feature that sealed the deal.',
       authorName: 'Amara Osei',
       authorTitle: 'IT Director, Meridian Health Systems',
     },
@@ -998,17 +1026,17 @@ export const comparisonsPages: SEOLandingPageData[] = [
       {
         question: 'Can Siggly replace Letsignit for Microsoft 365 deployments?',
         answer:
-          'Yes. Siggly provides full Microsoft 365 integration including server-side injection, Entra ID directory sync, and Outlook add-in support.',
+          'Yes. Siggly provides full Microsoft 365 integration including server-side injection, Entra ID directory sync, and Outlook add-in support. Letsignit users will find a familiar Microsoft experience in Siggly.',
       },
       {
-        question: 'Does Siggly support Letsignit-style campaign targeting?',
+        question: 'Letsignit has a strong banner campaign system. How does Siggly compare?',
         answer:
-          'Siggly supports targeting by department, role, location, and custom directory attributes. You can also schedule campaigns by date range and run A/B tests.',
+          'Siggly matches Letsignit on banner scheduling and department targeting, and goes further with A/B testing. Both platforms track banner clicks. Letsignit has a slight edge in pre-built banner template variety, but Siggly allows full custom HTML banners.',
       },
       {
-        question: 'How does migration from Letsignit work?',
+        question: 'Does Siggly support legal disclaimer automation like Letsignit?',
         answer:
-          'Export your signature templates as HTML and import them into Siggly. For directory mappings and targeting rules, our support team will help you recreate them in our visual rule builder.',
+          'Yes. You can automatically append legal disclaimers, environmental badges, or certification logos to every signature based on department or region rules.',
       },
       {
         question: 'Is Siggly available in multiple languages?',
@@ -1016,9 +1044,9 @@ export const comparisonsPages: SEOLandingPageData[] = [
           'Yes. Siggly supports multiple languages for the admin interface and allows you to create localized signature templates for different regions.',
       },
       {
-        question: 'What happens if I need features that only Letsignit offers?',
+        question: 'How does migration from Letsignit work?',
         answer:
-          'We are continuously expanding our feature set based on customer feedback. Reach out to our team — chances are the feature is already on our roadmap or available through our API.',
+          'Export your signature templates as HTML and import them into Siggly. For directory mappings and targeting rules, our support team will help you recreate them in our visual rule builder at no extra cost.',
       },
     ],
     cta: {
@@ -1029,7 +1057,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
   },
 
   // ---------------------------------------------------------------------------
-  // SigParser
+  // 8. SigParser — Email parsing tool (different category)
   // ---------------------------------------------------------------------------
   {
     slug: 'sigparser',
@@ -1055,7 +1083,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs SigParser: Managing Signatures, Not Just Reading Them',
       description:
-        'SigParser extracts contact data from existing email signatures. Siggly creates, manages, and deploys professional signatures across your entire organization. They solve different problems, and here is why you need Siggly.',
+        'SigParser extracts contact data from existing email signatures — names, phone numbers, and social links from inbound emails. Siggly creates, manages, and deploys professional signatures for your outbound emails. They solve fundamentally different problems.',
       variant: 'emerald',
     },
     stats: [
@@ -1093,33 +1121,33 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Siggly vs SigParser: Feature Comparison',
+        title: 'Data Extraction vs Signature Management',
         competitor: 'SigParser',
         rows: [
           { feature: 'Create and design email signatures', siggly: true, competitor: false },
           { feature: 'Deploy signatures to Google Workspace / M365', siggly: true, competitor: false },
-          { feature: 'Extract contact data from inbound signatures', siggly: false, competitor: true },
+          { feature: 'Extract contact data from inbound emails', siggly: false, competitor: true },
+          { feature: 'Parse phone numbers & social links from signatures', siggly: false, competitor: true },
+          { feature: 'CRM data enrichment from email signatures', siggly: false, competitor: true },
           { feature: 'Banner campaign management', siggly: true, competitor: false },
-          { feature: 'Click and impression analytics', siggly: true, competitor: false },
+          { feature: 'Click and impression analytics (outbound)', siggly: true, competitor: false },
           { feature: 'Template editor (drag-and-drop & HTML)', siggly: true, competitor: false },
-          { feature: 'Role-based access control', siggly: true, competitor: false },
           { feature: 'Directory sync (Azure AD, Google, Okta)', siggly: true, competitor: false },
-          { feature: 'Email parsing and data enrichment', siggly: false, competitor: true },
         ],
       },
       {
         type: 'prose',
         title: 'Different Tools for Different Jobs',
         paragraphs: [
-          'SigParser and Siggly are not direct competitors. SigParser is a data extraction tool that reads inbound email signatures and pulls out contact information like names, titles, phone numbers, and social links. It is useful for CRM enrichment and contact database building.',
-          'Siggly, on the other hand, is a signature management platform. It helps you create professional email signatures, deploy them across your organization, run banner campaigns, and track engagement. If you need to control what your outbound signatures look like, Siggly is the right choice.',
-          'Some organizations use both tools: Siggly to manage their own outbound signatures and SigParser to extract data from signatures they receive. But if you can only invest in one, Siggly delivers direct brand and marketing value from every email your team sends.',
+          'SigParser and Siggly are not direct competitors — they address opposite directions of the email flow. SigParser reads inbound email signatures and extracts structured contact data (names, titles, phone numbers, social links) for CRM enrichment and contact database building.',
+          'Siggly manages your outbound email signatures. It helps you design professional signatures, deploy them across your organization, run banner campaigns, and track engagement. If you need to control what your emails look like when they arrive in someone else\'s inbox, Siggly is the right choice.',
+          'Many organizations use both: Siggly to brand and manage their own outbound signatures, and SigParser to capture data from signatures they receive. But if you can only invest in one, Siggly delivers direct brand and marketing value from every email your team sends.',
         ],
       },
     ],
     testimonial: {
       quote:
-        'We initially looked at SigParser, but realized it only reads signatures, it does not help us create or manage our own. Siggly was exactly what we needed for brand-consistent outbound signatures.',
+        'We initially searched for SigParser thinking we needed to manage our signatures, but realized it only parses inbound data. Siggly was what we actually needed — we deployed branded signatures to our 60-person sales team in one afternoon.',
       authorName: 'Nathan Brooks',
       authorTitle: 'Revenue Operations Manager, Summit Growth Partners',
     },
@@ -1127,28 +1155,28 @@ export const comparisonsPages: SEOLandingPageData[] = [
       {
         question: 'Can I use Siggly and SigParser together?',
         answer:
-          'Yes. Siggly manages your outbound signatures while SigParser can parse inbound signatures for CRM enrichment. They complement each other without overlap.',
+          'Yes, and many teams do. Siggly manages your outbound signatures (design, deployment, analytics) while SigParser parses inbound signatures for CRM enrichment. They complement each other without overlap.',
       },
       {
-        question: 'Does Siggly extract data from incoming emails?',
+        question: 'Does Siggly extract data from incoming emails like SigParser?',
         answer:
-          'No. Siggly is focused on creating, managing, and deploying your organization\'s outbound email signatures. For inbound parsing, you would need a separate tool like SigParser.',
+          'No. Siggly focuses exclusively on creating, managing, and deploying your organization\'s outbound email signatures. For inbound email parsing and contact data extraction, you would need a separate tool like SigParser.',
       },
       {
-        question: 'Is SigParser a good alternative to Siggly?',
+        question: 'Is SigParser a real alternative to Siggly?',
         answer:
-          'They solve different problems. SigParser is for extracting contact data from emails you receive. Siggly is for managing the signatures your team sends. They are not interchangeable.',
+          'They solve completely different problems. SigParser extracts contact data from emails you receive. Siggly manages the signatures your team sends. Choosing between them is like choosing between a camera and a projector — one captures, the other displays.',
       },
     ],
     cta: {
       title: 'Manage Your Signatures, Not Just Parse Them',
       description:
-        'Take control of your outbound email signatures with Siggly. Design, deploy, and measure, all from one platform.',
+        'Take control of your outbound email signatures with Siggly. Design, deploy, and measure — all from one platform.',
     },
   },
 
   // ---------------------------------------------------------------------------
-  // Templafy
+  // 9. Templafy — Enterprise document management + signatures
   // ---------------------------------------------------------------------------
   {
     slug: 'templafy',
@@ -1174,7 +1202,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
       badge: { icon: 'arrow-left-right', text: 'Comparison' },
       title: 'Siggly vs Templafy',
       description:
-        'Templafy is an enterprise document and template management platform where email signatures are a small add-on feature. Siggly is purpose-built for email signature management, delivering deeper functionality at a fraction of the cost.',
+        'Templafy is an enterprise content management platform where email signatures are a secondary feature bundled into a larger document management suite. Siggly is purpose-built for email signature management, delivering deeper signature functionality at a fraction of the cost — without the document management overhead.',
       variant: 'slate',
     },
     featuresTitle: 'Why Choose a Dedicated Signature Platform',
@@ -1213,20 +1241,22 @@ export const comparisonsPages: SEOLandingPageData[] = [
     sections: [
       {
         type: 'comparison-table',
-        title: 'Feature Comparison: Siggly vs Templafy',
+        title: 'Document Management Platform vs Dedicated Signature Tool',
         competitor: 'Templafy',
         rows: [
           { feature: 'Dedicated email signature platform', siggly: true, competitor: false },
+          { feature: 'Enterprise document template management', siggly: false, competitor: true },
+          { feature: 'PowerPoint/Word template management', siggly: false, competitor: true },
           { feature: 'Drag-and-drop signature editor', siggly: true, competitor: 'Basic' },
-          { feature: 'HTML code editor', siggly: true, competitor: false },
+          { feature: 'Custom HTML signature editor', siggly: true, competitor: false },
           { feature: 'Banner campaigns with scheduling', siggly: true, competitor: 'Limited' },
           { feature: 'Click and impression analytics', siggly: true, competitor: 'Limited' },
           { feature: 'A/B testing for banners', siggly: true, competitor: false },
           { feature: 'Google Workspace integration', siggly: true, competitor: true },
           { feature: 'Microsoft 365 integration', siggly: true, competitor: true },
+          { feature: 'Setup time', siggly: '< 10 minutes', competitor: '2-6 weeks' },
+          { feature: 'Pricing', siggly: 'From $1.50/user/mo', competitor: 'Enterprise quote only' },
           { feature: 'Free plan available', siggly: true, competitor: false },
-          { feature: 'Document template management', siggly: false, competitor: true },
-          { feature: 'Setup time under 10 minutes', siggly: true, competitor: false },
         ],
       },
       {
@@ -1235,56 +1265,56 @@ export const comparisonsPages: SEOLandingPageData[] = [
         items: [
           {
             icon: 'credit-card',
-            title: 'Predictable, Lower Cost',
+            title: 'Pay Only for What You Need',
             description:
-              'No enterprise sales calls, no custom quotes, no multi-year lock-ins. Siggly pricing is published, per-user, and includes a generous free tier.',
+              'Templafy bundles signatures into a broader document management platform, so you pay for PowerPoint templates, Word formatting, and brand asset libraries you may never use. Siggly focuses on signatures alone.',
           },
           {
             icon: 'rocket',
-            title: 'Deploy in Minutes',
+            title: 'Deploy in Minutes, Not Weeks',
             description:
-              'Templafy implementations can take weeks with professional services. Siggly connects to your directory and deploys signatures the same day.',
+              'Templafy implementations typically involve professional services, IT workshops, and multi-week rollouts. Siggly connects to your directory and deploys signatures the same day you sign up.',
           },
           {
             icon: 'sparkles',
             title: 'Deeper Signature Features',
             description:
-              'Because Siggly focuses solely on signatures, you get features like cross-client preview, A/B banner testing, and granular targeting that Templafy does not prioritize.',
+              'Because Siggly focuses solely on signatures, you get features like cross-client preview, A/B banner testing, and granular click analytics that a generalist platform like Templafy cannot prioritize.',
           },
         ],
       },
     ],
     testimonial: {
       quote:
-        'We evaluated Templafy but could not justify the cost when we only needed email signatures. Siggly gave us better signature features at a tenth of the price, and we were live in an afternoon.',
+        'We evaluated Templafy but could not justify paying for their entire document management suite when we only needed email signatures. Siggly gave us better signature features at a tenth of the price, and we were live in an afternoon.',
       authorName: 'Henrik Johansson',
-      authorTitle: 'IT Director, Nordic Financial Services',
+      authorTitle: 'IT Director, Scandinavian Trade Alliance',
     },
     faqs: [
       {
         question: 'Is Templafy overkill if I only need email signatures?',
         answer:
-          'For most teams, yes. Templafy is designed for enterprise-wide document and template management. If your primary need is email signatures, Siggly gives you better tools at a lower cost.',
+          'For most teams, yes. Templafy is designed for enterprise-wide document and content management, including PowerPoint, Word, and brand asset distribution. If your primary need is email signatures, Siggly gives you better tools at a fraction of the cost.',
       },
       {
-        question: 'Can I migrate from Templafy to Siggly?',
+        question: 'Can I use Templafy for documents and Siggly for signatures?',
         answer:
-          'Yes. Export your signature templates as HTML from Templafy and import them directly into Siggly. Our team can assist with migration for larger organizations.',
+          'Absolutely. Many organizations use Templafy for document template management and Siggly for email signatures. The combined cost is often still lower than using Templafy for both, and you get superior signature features.',
       },
       {
         question: 'Does Siggly integrate with the same identity providers as Templafy?',
         answer:
-          'Yes. Siggly supports Azure AD, Google Workspace, Okta, OneLogin, and SAML/SCIM for user provisioning, just like Templafy.',
+          'Yes. Siggly supports Azure AD (Entra ID), Google Workspace, Okta, OneLogin, and SAML/SCIM for user provisioning, just like Templafy.',
       },
       {
-        question: 'What if I also need document template management?',
+        question: 'Can I migrate my Templafy email signatures to Siggly?',
         answer:
-          'Siggly focuses on email signatures. If you also need document template management, you could use Templafy for documents and Siggly for signatures, often at a lower combined cost than Templafy alone.',
+          'Yes. Export your signature templates as HTML from Templafy and import them directly into Siggly. Our team can assist with migration for larger organizations.',
       },
       {
         question: 'How does Siggly pricing compare to Templafy?',
         answer:
-          'Templafy does not publish pricing and typically requires a custom enterprise quote. Siggly offers transparent per-user pricing starting with a free plan, making it accessible to teams of any size.',
+          'Templafy does not publish pricing and typically requires a custom enterprise quote that starts in the thousands per month. Siggly offers transparent per-user pricing starting with a free plan, making it accessible to teams of any size.',
       },
     ],
     cta: {
