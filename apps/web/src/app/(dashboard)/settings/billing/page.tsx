@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
-import { PageHeader } from '@/components/dashboard';
 import {
   CreditCard,
   Check,
@@ -16,29 +14,11 @@ import {
   Calendar,
   AlertTriangle,
   Sparkles,
-  User,
-  Building2,
-  Bell,
-  Palette,
-  Shield,
   RefreshCw,
-  Image as ImageIcon,
 } from 'lucide-react';
 import { PLANS, getPlan, formatPrice } from '@/lib/billing/plans';
 import { trackViewItem, trackBeginCheckout, trackAddToCart, trackPurchase, trackSubscriptionEvent } from '@/components/analytics';
 import { useSearchParams } from 'next/navigation';
-
-// Note: billing page can't know MSP status without extra fetch, so we always show Brand Assets
-// and skip the conditional Branding tab (users navigate there from the main settings page).
-const settingsTabs = [
-  { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
-  { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
-  { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
-  { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
-  { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
-  { id: 'appearance', label: 'Appearance', icon: Palette, href: '/settings' },
-  { id: 'security', label: 'Security', icon: Shield, href: '/settings' },
-];
 
 interface Subscription {
   id: string;
@@ -278,34 +258,6 @@ export default function BillingPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Settings"
-        description="Manage your account and preferences"
-      />
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <div className="w-full lg:w-56 shrink-0">
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:sticky lg:top-6">
-            {settingsTabs.map((tab) => (
-              <Link
-                key={tab.id}
-                href={tab.href}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
-                  tab.id === 'billing'
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'text-muted-foreground hover:bg-secondary'
-                }`}
-              >
-                <tab.icon className="h-5 w-5" />
-                {tab.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Billing & Subscription</h2>
             <Button
@@ -629,8 +581,6 @@ export default function BillingPage() {
           </div>
         </CardContent>
       </Card>
-        </div>
-      </div>
     </div>
   );
 }

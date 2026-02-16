@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, redirect } from 'next/navigation';
-import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Upload, Check, X, ExternalLink, Palette, Image, Type, Globe, Eye, Trash2, User, Building2, Bell, Shield, CreditCard, Monitor } from 'lucide-react';
+import { Loader2, Upload, Check, X, ExternalLink, Palette, Image, Type, Globe, Eye, Trash2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import type { OrganizationBranding } from '@/lib/db/schema';
 
@@ -229,50 +228,8 @@ export default function BrandingSettingsPage() {
 
   const isMsp = organizationType === 'msp';
 
-  const settingsTabs = [
-    { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
-    { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
-    ...(isMsp ? [{ id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' }] : []),
-    { id: 'brand-assets', label: 'Brand Assets', icon: Image, href: '/settings/brand-assets' },
-    { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
-    { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
-    { id: 'appearance', label: 'Appearance', icon: Monitor, href: '/settings' },
-    { id: 'security', label: 'Security', icon: Shield, href: '/settings' },
-  ];
-
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your account and preferences
-        </p>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <div className="w-full lg:w-56 shrink-0">
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:sticky lg:top-6">
-            {settingsTabs.map((tab) => (
-              <Link
-                key={tab.id}
-                href={tab.href}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
-                  tab.id === 'branding'
-                    ? 'bg-primary/10 text-primary font-medium'
-                    : 'text-muted-foreground hover:bg-secondary'
-                }`}
-              >
-                <tab.icon className="h-5 w-5" />
-                {tab.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 max-w-4xl">
-
+    <div className="space-y-6 max-w-4xl">
       {error && (
         <Alert variant="destructive" className="mb-6">
           <AlertDescription>{error}</AlertDescription>
@@ -846,8 +803,6 @@ export default function BrandingSettingsPage() {
             </>
           )}
         </Button>
-      </div>
-        </div>
       </div>
     </div>
   );
