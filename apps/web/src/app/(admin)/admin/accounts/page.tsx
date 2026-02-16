@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   Download,
   ShieldAlert,
+  Network,
 } from 'lucide-react';
 import Link from 'next/link';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
@@ -27,9 +28,12 @@ interface Organization {
   templateCount: number;
   lastActivity: string | null;
   isSuspended: boolean;
+  organizationType: string;
+  partnerTier: string | null;
 }
 
 type PlanFilter = 'all' | 'free' | 'starter' | 'professional' | 'enterprise';
+type OrgTypeFilter = 'all' | 'standard' | 'msp' | 'msp_client';
 
 const PAGE_SIZE = 25;
 
@@ -39,6 +43,7 @@ export default function AccountsPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [planFilter, setPlanFilter] = useState<PlanFilter>('all');
+  const [orgTypeFilter, setOrgTypeFilter] = useState<OrgTypeFilter>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -62,7 +67,7 @@ export default function AccountsPage() {
     // Build query with server-side search and pagination
     let query = supabase
       .from('organizations')
-      .select('id, name, slug, domain, created_at', { count: 'exact' })
+      .select('id, name, slug, domain, created_at, organization_type, partner_tier', { count: 'exact' })
       .order('created_at', { ascending: false });
 
     if (debouncedSearch) {
@@ -138,15 +143,19 @@ export default function AccountsPage() {
       templateCount: templateCountByOrg.get(org.id) || 0,
       lastActivity: lastActivityByOrg.get(org.id) || null,
       isSuspended: (org as any).is_suspended || false,
+      organizationType: (org as any).organization_type || 'standard',
+      partnerTier: (org as any).partner_tier || null,
     }));
 
     setOrganizations(enrichedOrgs);
     setLoading(false);
   };
 
-  // Plan filter is client-side since plan lives in subscriptions table
+  // Plan and org type filters are client-side
   const filteredOrgs = organizations.filter(org => {
-    return planFilter === 'all' || org.plan === planFilter;
+    if (planFilter !== 'all' && org.plan !== planFilter) return false;
+    if (orgTypeFilter !== 'all' && org.organizationType !== orgTypeFilter) return false;
+    return true;
   });
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -162,6 +171,8 @@ export default function AccountsPage() {
       { label: 'Created', accessor: (r) => new Date(r.createdAt).toLocaleDateString() },
       { label: 'Last Activity', accessor: (r) => r.lastActivity ? new Date(r.lastActivity).toLocaleDateString() : '' },
       { label: 'Suspended', accessor: (r) => r.isSuspended ? 'Yes' : 'No' },
+      { label: 'Org Type', accessor: (r) => r.organizationType },
+      { label: 'Partner Tier', accessor: (r) => r.partnerTier || '' },
     ];
     exportToCSV(filteredOrgs, columns, 'accounts');
   };
@@ -209,7 +220,7 @@ export default function AccountsPage() {
                 className="pl-10"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {(['all', 'free', 'starter', 'professional', 'enterprise'] as PlanFilter[]).map((plan) => (
                 <button
                   key={plan}
@@ -221,6 +232,25 @@ export default function AccountsPage() {
                   }`}
                 >
                   {plan}
+                </button>
+              ))}
+              <span className="border-l border-slate-300 mx-1" />
+              {([
+                { key: 'all' as OrgTypeFilter, label: 'All Types' },
+                { key: 'standard' as OrgTypeFilter, label: 'Standard' },
+                { key: 'msp' as OrgTypeFilter, label: 'Partners' },
+                { key: 'msp_client' as OrgTypeFilter, label: 'MSP Clients' },
+              ]).map((opt) => (
+                <button
+                  key={opt.key}
+                  onClick={() => { setOrgTypeFilter(opt.key); }}
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    orgTypeFilter === opt.key
+                      ? 'bg-violet-600 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {opt.label}
                 </button>
               ))}
             </div>
@@ -263,6 +293,20 @@ export default function AccountsPage() {
                         <span className={`px-2 py-0.5 text-xs rounded-full capitalize ${planBadgeClass(org.plan)}`}>
                           {org.plan}
                         </span>
+                        {org.organizationType === 'msp' && (
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-purple-100 text-purple-700 flex items-center gap-1">
+                            <Network className="h-3 w-3" />
+                            Partner
+                            {org.partnerTier && (
+                              <span className="font-semibold capitalize">• {org.partnerTier}</span>
+                            )}
+                          </span>
+                        )}
+                        {org.organizationType === 'msp_client' && (
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-600">
+                            MSP Client
+                          </span>
+                        )}
                         {org.isSuspended && (
                           <span className="px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 flex items-center gap-1">
                             <ShieldAlert className="h-3 w-3" />
