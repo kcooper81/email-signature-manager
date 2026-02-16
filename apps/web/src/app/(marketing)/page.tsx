@@ -19,7 +19,7 @@ export default function HomePage() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-3 md:px-4 py-1.5 text-xs md:text-sm mb-6 md:mb-8">
               <span className="flex h-2 w-2 rounded-full bg-white animate-pulse" />
-              <span className="text-white/90 font-medium">Google Workspace & Microsoft 365</span>
+              <span className="text-white/90 font-medium">Built for Google Workspace</span>
             </div>
             
             {/* Headline */}
@@ -473,7 +473,7 @@ export default function HomePage() {
             <StepCard 
               number="01"
               title="Connect your workspace"
-              description="Link your Google Workspace or Microsoft 365 account with a single click. We handle the OAuth securely."
+              description="Connect your Google Workspace account with a single click. Secure OAuth — no passwords stored."
               icon={<Globe className="h-6 w-6" />}
               color="violet"
             />
@@ -571,7 +571,7 @@ export default function HomePage() {
             <FeatureCard
               icon={<Zap className="h-5 w-5" />}
               title="Instant Deployment"
-              description="Push signatures to all users with one click. Changes sync across Gmail, Outlook, and mobile."
+              description="Push signatures to all users with one click. Changes sync across Gmail web, mobile, and all devices."
             />
             <FeatureCard
               icon={<Shield className="h-5 w-5" />}
@@ -581,7 +581,7 @@ export default function HomePage() {
             <FeatureCard
               icon={<Building2 className="h-5 w-5" />}
               title="Directory Sync"
-              description="Automatically sync user data from Google Workspace or Microsoft 365. Always up to date."
+              description="Automatically sync user data from Google Workspace directory. Always up to date."
             />
             <FeatureCard
               icon={<Clock className="h-5 w-5" />}
@@ -611,7 +611,7 @@ export default function HomePage() {
             <FeatureCard
               icon={<Globe className="h-5 w-5" />}
               title="Multi-Platform"
-              description="Works seamlessly across Gmail, Outlook, and mobile apps. One signature, everywhere."
+              description="Works seamlessly across Gmail web, mobile, and all Google Workspace apps. One signature, everywhere."
             />
             <FeatureCard
               icon={<BarChart3 className="h-5 w-5" />}

@@ -30,6 +30,11 @@ When a new feature is released:
 | **Dynamic Help Articles** | Database-driven help center with step-by-step guides and FAQs | ✅ Live | ✅ | N/A |
 | **Unified Help/Support** | /help and /support share same content with clean article URLs | ✅ Live | ✅ | N/A |
 | **Calendly Help Docs** | 5 comprehensive articles for Calendly integration setup and usage | ✅ Live | ✅ | N/A |
+| **Disclaimer Engine** | Advanced disclaimer management with templates, rules, regulatory presets, and audit trail | ✅ Live | ✅ | ⬜ |
+| **HR Sync** | Sync employee data from HR providers with approval workflows and profile validation | ✅ Live | ✅ | ⬜ |
+| **Lifecycle Automation** | Automate onboarding/offboarding with workflow triggers and actions | ✅ Live | ✅ | ⬜ |
+| **Brand Governance** | Brand guidelines, compliance audits, and asset management (Enterprise) | ✅ Live | ✅ | ⬜ |
+| **Billing Enforcement** | 35+ API routes now check subscriptions, field injection prevention, SSRF protection | ✅ Live | ✅ | N/A |
 
 ---
 
@@ -77,14 +82,17 @@ When a new feature is released:
 | `/features` | Personal Links, Bulk Invite, Signature Rules, Campaign Banners, Analytics, RBAC, Audit Logs, Disclaimers | ⬜ |
 | `/` (Homepage) | Signature Rules, Campaign Banners, Analytics | ⬜ |
 | `/help` | All 8 features in FAQs | ⬜ |
+| `/settings` | Disclaimers, HR Sync, Automation, Validation nav links | ✅ |
 
 ### Priority 2: Audience Pages
 
 | Page | Features to Add | Status |
 |------|-----------------|--------|
 | `/for/enterprise` | RBAC, Audit Logs, SSO mention | ⬜ |
+| `/for/enterprise` | Brand Governance, Lifecycle Automation, HR Sync | ⬜ |
 | `/for/marketing` | Campaign Banners, Analytics | ⬜ |
 | `/for/it-admins` | Bulk Invite, RBAC | ⬜ |
+| `/for/it-admins` | HR Sync, Lifecycle Automation, Disclaimers | ⬜ |
 
 ### Priority 3: Industry Pages
 
@@ -138,6 +146,31 @@ When a new feature is released:
 **Medium:** Browse and insert professionally-written disclaimers including GDPR, HIPAA, confidentiality notices, and industry-specific compliance text.
 **Benefits:** Legal compliance, time savings, professional language
 
+### Disclaimer Engine
+**Short:** Advanced disclaimer management with regulatory compliance
+**Medium:** Create and manage disclaimer templates, set up rule-based assignment, use regulatory presets (HIPAA, GDPR, FINRA), and track deployment history through a full audit trail.
+**Benefits:** Regulatory compliance, automated disclaimer assignment, legal risk reduction
+
+### HR Sync
+**Short:** Sync employee data from HR systems automatically
+**Medium:** Connect to HR providers like BambooHR, Workday, and Gusto to keep employee data in sync. Changes are reviewed and approved before applying, with profile completeness analytics.
+**Benefits:** Automated data accuracy, reduced admin workload, self-service employee profiles
+
+### Lifecycle Automation
+**Short:** Automate signature workflows for employee events
+**Medium:** Create workflows triggered by employee events (join, leave, move departments). Automatically assign templates, deploy signatures, and notify admins when lifecycle events occur.
+**Benefits:** Zero-touch onboarding, consistent offboarding, automated department transitions
+
+### Brand Governance
+**Short:** Enterprise brand compliance management
+**Medium:** Define brand guidelines (colors, fonts, logos), run compliance audits across all user signatures, and manage brand assets with approval workflows. Enterprise only.
+**Benefits:** Brand consistency, compliance scoring, centralized brand control
+
+### Billing Enforcement
+**Short:** Subscription-based feature gating across all platform features
+**Medium:** All 35+ new API routes now verify the organization's subscription plan before allowing access. Includes field injection prevention on PUT routes and SSRF protection on webhooks.
+**Benefits:** Revenue protection, security hardening, consistent plan enforcement
+
 ---
 
 ## Workflow for Future Releases
@@ -159,5 +192,5 @@ When a new feature is released:
 ---
 
 ## Last Updated
-**Date:** February 8, 2026
+**Date:** February 16, 2026
 **By:** Development Team

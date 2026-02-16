@@ -28,6 +28,17 @@ export const organizationTypeEnum = pgEnum('organization_type', ['standard', 'ms
 export const partnerTierEnum = pgEnum('partner_tier', ['registered', 'authorized', 'premier']);
 export const partnerApplicationStatusEnum = pgEnum('partner_application_status', ['pending', 'under_review', 'approved', 'rejected', 'withdrawn']);
 export const mspAccessLevelEnum = pgEnum('msp_access_level', ['full', 'read_only', 'deploy_only', 'billing_only']);
+export const regulationTypeEnum = pgEnum('regulation_type', ['gdpr', 'hipaa', 'ccpa', 'finra', 'sox', 'custom']);
+export const disclaimerRuleStatusEnum = pgEnum('disclaimer_rule_status', ['active', 'inactive', 'archived']);
+export const syncProviderEnum = pgEnum('sync_provider', ['bamboohr', 'gusto', 'rippling', 'google', 'microsoft']);
+export const syncScheduleEnum = pgEnum('sync_schedule', ['manual', 'daily', 'weekly', 'realtime']);
+export const conflictResolutionEnum = pgEnum('conflict_resolution', ['hr_wins', 'manual_wins', 'ask_admin']);
+export const changeTypeEnum = pgEnum('change_type', ['create', 'update', 'deactivate']);
+export const changeStatusEnum = pgEnum('change_status', ['pending', 'approved', 'rejected', 'auto_applied']);
+export const profileRequestStatusEnum = pgEnum('profile_request_status', ['pending', 'approved', 'rejected']);
+export const lifecycleEventTypeEnum = pgEnum('lifecycle_event_type', ['user_joined', 'user_left', 'user_moved', 'user_updated', 'invite_accepted']);
+export const lifecycleEventSourceEnum = pgEnum('lifecycle_event_source', ['hr_sync', 'google_sync', 'microsoft_sync', 'manual', 'invite']);
+export const workflowRunStatusEnum = pgEnum('workflow_run_status', ['running', 'completed', 'failed', 'partial']);
 
 // ============================================
 // Organizations
@@ -151,6 +162,13 @@ export const users = pgTable('users', {
   selfManageEnabled: boolean('self_manage_enabled').default(true),
   isActive: boolean('is_active').default(true),
   deletedAt: timestamp('deleted_at'),
+  region: text('region'),
+  managerEmail: text('manager_email'),
+  startDate: date('start_date'),
+  dataSourcePriority: jsonb('data_source_priority').$type<Record<string, string>>(),
+  profileCompleteness: integer('profile_completeness').default(0),
+  lastEnrichmentAt: timestamp('last_enrichment_at'),
+  lastEnrichmentSource: text('last_enrichment_source'),
   createdAt: timestamp('created_at', { withTimezone: false }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: false }).defaultNow().notNull(),
 });
@@ -603,9 +621,16 @@ export const disclaimerTemplates = pgTable('disclaimer_templates', {
   name: text('name').notNull(),
   category: text('category').notNull(),
   content: text('content').notNull(),
+  contentHtml: text('content_html'),
   description: text('description'),
   isSystem: boolean('is_system').default(false),
   organizationId: uuid('organization_id').references(() => organizations.id),
+  regulationType: text('regulation_type'), // gdpr/hipaa/ccpa/finra/sox/custom
+  locale: text('locale').default('en'),
+  version: integer('version').default(1),
+  isDeprecated: boolean('is_deprecated').default(false),
+  parentTemplateId: uuid('parent_template_id').references((): any => disclaimerTemplates.id),
+  styling: jsonb('styling').$type<{ backgroundColor?: string; borderColor?: string; textColor?: string; fontSize?: string; padding?: string }>(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -614,6 +639,93 @@ export const disclaimerTemplatesRelations = relations(disclaimerTemplates, ({ on
   organization: one(organizations, {
     fields: [disclaimerTemplates.organizationId],
     references: [organizations.id],
+  }),
+}));
+
+// ============================================
+// Disclaimer Rules (Compliance Engine)
+// ============================================
+
+export const disclaimerRules = pgTable('disclaimer_rules', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  priority: integer('priority').default(0).notNull(),
+  isActive: boolean('is_active').default(true).notNull(),
+  disclaimerTemplateId: uuid('disclaimer_template_id').references(() => disclaimerTemplates.id, { onDelete: 'cascade' }).notNull(),
+  // Conditions
+  departmentCondition: text('department_condition').default('all'), // 'all' | 'specific'
+  departments: text('departments').array(),
+  regionCondition: text('region_condition').default('all'),
+  regions: text('regions').array(),
+  recipientCondition: text('recipient_condition').default('all'), // 'all' | 'external' | 'internal' | 'specific_domains'
+  recipientDomains: text('recipient_domains').array(),
+  industryCondition: text('industry_condition').default('all'),
+  industries: text('industries').array(),
+  userSourceCondition: text('user_source_condition').default('all'),
+  userSources: text('user_sources').array(),
+  // Date range
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
+  // MSP
+  cascadeToClients: boolean('cascade_to_clients').default(false),
+  // Audit
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const disclaimerRulesRelations = relations(disclaimerRules, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [disclaimerRules.organizationId],
+    references: [organizations.id],
+  }),
+  disclaimerTemplate: one(disclaimerTemplates, {
+    fields: [disclaimerRules.disclaimerTemplateId],
+    references: [disclaimerTemplates.id],
+  }),
+  creator: one(users, {
+    fields: [disclaimerRules.createdBy],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
+// Disclaimer Deployments (Audit Trail)
+// ============================================
+
+export const disclaimerDeployments = pgTable('disclaimer_deployments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  disclaimerTemplateId: uuid('disclaimer_template_id').references(() => disclaimerTemplates.id),
+  disclaimerRuleId: uuid('disclaimer_rule_id').references(() => disclaimerRules.id),
+  deploymentId: uuid('deployment_id').references(() => signatureDeployments.id),
+  disclaimerHtml: text('disclaimer_html').notNull(),
+  appliedAt: timestamp('applied_at').defaultNow().notNull(),
+});
+
+export const disclaimerDeploymentsRelations = relations(disclaimerDeployments, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [disclaimerDeployments.organizationId],
+    references: [organizations.id],
+  }),
+  user: one(users, {
+    fields: [disclaimerDeployments.userId],
+    references: [users.id],
+  }),
+  disclaimerTemplate: one(disclaimerTemplates, {
+    fields: [disclaimerDeployments.disclaimerTemplateId],
+    references: [disclaimerTemplates.id],
+  }),
+  rule: one(disclaimerRules, {
+    fields: [disclaimerDeployments.disclaimerRuleId],
+    references: [disclaimerRules.id],
+  }),
+  deployment: one(signatureDeployments, {
+    fields: [disclaimerDeployments.deploymentId],
+    references: [signatureDeployments.id],
   }),
 }));
 
@@ -890,6 +1002,13 @@ export const brandAssets = pgTable('brand_assets', {
   description: text('description'),
   uploadedBy: uuid('uploaded_by').references(() => users.id, { onDelete: 'set null' }),
   usageCount: integer('usage_count').default(0),
+  usageGuidelines: text('usage_guidelines'),
+  approvedStatus: text('approved_status').default('approved'), // approved, pending, deprecated
+  approvedBy: uuid('approved_by').references(() => users.id),
+  approvedAt: timestamp('approved_at'),
+  minSize: integer('min_size'),
+  maxSize: integer('max_size'),
+  allowedContexts: text('allowed_contexts').array(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -1040,6 +1159,347 @@ export const ticketNotes = pgTable('ticket_notes', {
 export const ticketNotesRelations = relations(ticketNotes, ({ one }) => ({
   author: one(users, {
     fields: [ticketNotes.authorId],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
+// Sync Configurations (HR/Directory Sync)
+// ============================================
+
+export const syncConfigurations = pgTable('sync_configurations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  provider: text('provider').notNull(), // bamboohr, gusto, rippling, google, microsoft
+  scheduleType: text('schedule_type').default('manual').notNull(),
+  fieldMapping: jsonb('field_mapping').$type<Record<string, string>>().default({}),
+  conflictResolution: text('conflict_resolution').default('ask_admin').notNull(),
+  autoApplyChanges: boolean('auto_apply_changes').default(false),
+  syncNewUsers: boolean('sync_new_users').default(true),
+  syncDeactivated: boolean('sync_deactivated').default(true),
+  apiKey: text('api_key'),
+  apiUrl: text('api_url'),
+  lastSyncAt: timestamp('last_sync_at'),
+  lastSyncStatus: text('last_sync_status'),
+  lastSyncResult: jsonb('last_sync_result'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const syncConfigurationsRelations = relations(syncConfigurations, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [syncConfigurations.organizationId],
+    references: [organizations.id],
+  }),
+  changeQueue: many(syncChangeQueue),
+}));
+
+// ============================================
+// Sync Change Queue (Pending Changes)
+// ============================================
+
+export const syncChangeQueue = pgTable('sync_change_queue', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  syncConfigurationId: uuid('sync_configuration_id').references(() => syncConfigurations.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').references(() => users.id),
+  userEmail: text('user_email').notNull(),
+  changeType: text('change_type').notNull(), // create, update, deactivate
+  fieldChanges: jsonb('field_changes').$type<{ field: string; oldValue: string | null; newValue: string | null }[]>().default([]),
+  status: text('status').default('pending').notNull(),
+  reviewedBy: uuid('reviewed_by').references(() => users.id),
+  reviewedAt: timestamp('reviewed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const syncChangeQueueRelations = relations(syncChangeQueue, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [syncChangeQueue.organizationId],
+    references: [organizations.id],
+  }),
+  syncConfiguration: one(syncConfigurations, {
+    fields: [syncChangeQueue.syncConfigurationId],
+    references: [syncConfigurations.id],
+  }),
+  user: one(users, {
+    fields: [syncChangeQueue.userId],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [syncChangeQueue.reviewedBy],
+    references: [users.id],
+    relationName: 'changeReviewer',
+  }),
+}));
+
+// ============================================
+// Data Validation Rules
+// ============================================
+
+export const dataValidationRules = pgTable('data_validation_rules', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  fieldName: text('field_name').notNull(),
+  validationType: text('validation_type').notNull(), // required, regex, format, enum
+  validationValue: text('validation_value'),
+  errorMessage: text('error_message'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const dataValidationRulesRelations = relations(dataValidationRules, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [dataValidationRules.organizationId],
+    references: [organizations.id],
+  }),
+}));
+
+// ============================================
+// User Profile Requests (Self-Service)
+// ============================================
+
+export const userProfileRequests = pgTable('user_profile_requests', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  fieldChanges: jsonb('field_changes').$type<{ field: string; oldValue: string | null; newValue: string | null }[]>().default([]),
+  status: text('status').default('pending').notNull(),
+  requiresApproval: boolean('requires_approval').default(true),
+  reviewedBy: uuid('reviewed_by').references(() => users.id),
+  reviewedAt: timestamp('reviewed_at'),
+  rejectionReason: text('rejection_reason'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const userProfileRequestsRelations = relations(userProfileRequests, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [userProfileRequests.organizationId],
+    references: [organizations.id],
+  }),
+  user: one(users, {
+    fields: [userProfileRequests.userId],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [userProfileRequests.reviewedBy],
+    references: [users.id],
+    relationName: 'profileRequestReviewer',
+  }),
+}));
+
+// ============================================
+// Lifecycle Events
+// ============================================
+
+export const lifecycleEvents = pgTable('lifecycle_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').references(() => users.id),
+  eventType: text('event_type').notNull(), // user_joined, user_left, user_moved, user_updated, invite_accepted
+  eventSource: text('event_source').notNull(), // hr_sync, google_sync, microsoft_sync, manual, invite
+  eventData: jsonb('event_data').$type<Record<string, any>>().default({}),
+  processed: boolean('processed').default(false),
+  processedAt: timestamp('processed_at'),
+  workflowId: uuid('workflow_id'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const lifecycleEventsRelations = relations(lifecycleEvents, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [lifecycleEvents.organizationId],
+    references: [organizations.id],
+  }),
+  user: one(users, {
+    fields: [lifecycleEvents.userId],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
+// Lifecycle Workflows
+// ============================================
+
+export type WorkflowAction = {
+  type: string; // assign_template, deploy_signature, apply_disclaimers, send_welcome_email, send_notification, set_self_service_access, wait, archive_signature_data, set_departed_signature, deactivate_user, webhook
+  config: Record<string, any>;
+};
+
+export const lifecycleWorkflows = pgTable('lifecycle_workflows', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  eventType: text('event_type').notNull(),
+  isActive: boolean('is_active').default(true),
+  priority: integer('priority').default(0),
+  departmentFilter: text('department_filter').array(),
+  sourceFilter: text('source_filter').array(),
+  actions: jsonb('actions').$type<WorkflowAction[]>().default([]),
+  cascadeToClients: boolean('cascade_to_clients').default(false),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const lifecycleWorkflowsRelations = relations(lifecycleWorkflows, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [lifecycleWorkflows.organizationId],
+    references: [organizations.id],
+  }),
+  creator: one(users, {
+    fields: [lifecycleWorkflows.createdBy],
+    references: [users.id],
+  }),
+  runs: many(lifecycleWorkflowRuns),
+}));
+
+// ============================================
+// Lifecycle Workflow Runs
+// ============================================
+
+export const lifecycleWorkflowRuns = pgTable('lifecycle_workflow_runs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  workflowId: uuid('workflow_id').references(() => lifecycleWorkflows.id, { onDelete: 'cascade' }).notNull(),
+  eventId: uuid('event_id').references(() => lifecycleEvents.id),
+  userId: uuid('user_id').references(() => users.id),
+  status: text('status').default('running').notNull(),
+  actionResults: jsonb('action_results').$type<{ action: string; status: string; error?: string }[]>().default([]),
+  startedAt: timestamp('started_at').defaultNow().notNull(),
+  completedAt: timestamp('completed_at'),
+});
+
+export const lifecycleWorkflowRunsRelations = relations(lifecycleWorkflowRuns, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [lifecycleWorkflowRuns.organizationId],
+    references: [organizations.id],
+  }),
+  workflow: one(lifecycleWorkflows, {
+    fields: [lifecycleWorkflowRuns.workflowId],
+    references: [lifecycleWorkflows.id],
+  }),
+  event: one(lifecycleEvents, {
+    fields: [lifecycleWorkflowRuns.eventId],
+    references: [lifecycleEvents.id],
+  }),
+  user: one(users, {
+    fields: [lifecycleWorkflowRuns.userId],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
+// Brand Guidelines
+// ============================================
+
+export const brandGuidelines = pgTable('brand_guidelines', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  primaryColors: text('primary_colors').array(),
+  secondaryColors: text('secondary_colors').array(),
+  accentColors: text('accent_colors').array(),
+  allowedFonts: text('allowed_fonts').array(),
+  requiredLogoAssetId: uuid('required_logo_asset_id').references(() => brandAssets.id),
+  logoMinWidth: integer('logo_min_width'),
+  logoMaxWidth: integer('logo_max_width'),
+  requiredDisclaimer: boolean('required_disclaimer').default(false),
+  requiredSocialLinks: text('required_social_links').array(),
+  lockedBlocks: text('locked_blocks').array(),
+  lockedColors: boolean('locked_colors').default(false),
+  lockedFonts: boolean('locked_fonts').default(false),
+  isActive: boolean('is_active').default(true),
+  version: integer('version').default(1),
+  cascadeToClients: boolean('cascade_to_clients').default(false),
+  allowClientOverride: boolean('allow_client_override').default(false),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const brandGuidelinesRelations = relations(brandGuidelines, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [brandGuidelines.organizationId],
+    references: [organizations.id],
+  }),
+  requiredLogo: one(brandAssets, {
+    fields: [brandGuidelines.requiredLogoAssetId],
+    references: [brandAssets.id],
+  }),
+  creator: one(users, {
+    fields: [brandGuidelines.createdBy],
+    references: [users.id],
+  }),
+  auditResults: many(brandAuditResults),
+}));
+
+// ============================================
+// Brand Audit Results
+// ============================================
+
+export const brandAuditResults = pgTable('brand_audit_results', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  guidelineId: uuid('guideline_id').references(() => brandGuidelines.id, { onDelete: 'cascade' }).notNull(),
+  userId: uuid('user_id').references(() => users.id),
+  templateId: uuid('template_id').references(() => signatureTemplates.id),
+  complianceScore: integer('compliance_score').default(0).notNull(),
+  violations: jsonb('violations').$type<{ rule: string; expected: string; actual: string; severity: string }[]>().default([]),
+  auditedAt: timestamp('audited_at').defaultNow().notNull(),
+});
+
+export const brandAuditResultsRelations = relations(brandAuditResults, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [brandAuditResults.organizationId],
+    references: [organizations.id],
+  }),
+  guideline: one(brandGuidelines, {
+    fields: [brandAuditResults.guidelineId],
+    references: [brandGuidelines.id],
+  }),
+  user: one(users, {
+    fields: [brandAuditResults.userId],
+    references: [users.id],
+  }),
+  template: one(signatureTemplates, {
+    fields: [brandAuditResults.templateId],
+    references: [signatureTemplates.id],
+  }),
+}));
+
+// ============================================
+// Brand Document Templates
+// ============================================
+
+export const brandDocumentTemplates = pgTable('brand_document_templates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id, { onDelete: 'cascade' }).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  templateType: text('template_type').notNull(), // google_doc, google_slide, pdf
+  sourceUrl: text('source_url'),
+  thumbnailUrl: text('thumbnail_url'),
+  brandGuidelineId: uuid('brand_guideline_id').references(() => brandGuidelines.id),
+  isActive: boolean('is_active').default(true),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const brandDocumentTemplatesRelations = relations(brandDocumentTemplates, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [brandDocumentTemplates.organizationId],
+    references: [organizations.id],
+  }),
+  guideline: one(brandGuidelines, {
+    fields: [brandDocumentTemplates.brandGuidelineId],
+    references: [brandGuidelines.id],
+  }),
+  creator: one(users, {
+    fields: [brandDocumentTemplates.createdBy],
     references: [users.id],
   }),
 }));

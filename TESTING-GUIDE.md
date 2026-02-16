@@ -2,7 +2,7 @@
 
 ## Getting Started
 
-Before testing, make sure all database updates are complete. Ask your developer to run the 7 migration files in Supabase.
+Before testing, make sure all database updates are complete. Ask your developer to run the 13 migration files in Supabase.
 
 ---
 
@@ -260,6 +260,141 @@ Ask your developer to verify 15 disclaimers are in the database, including:
 
 ---
 
+## Feature 9: Disclaimer Engine (Advanced)
+
+**What it does:** Full disclaimer management with templates, rules, regulatory presets, and audit trail.
+
+### How to Test:
+
+**As a Free User:**
+1. Go to **Settings** → **Disclaimers**
+2. You should see the Templates and Rules tabs
+3. The **Regulatory Presets** and **Audit Trail** tabs should show a lock icon
+4. Try creating disclaimer templates — you're limited to 2
+5. Try creating disclaimer rules — you're limited to 1
+6. Trying to create more should show an upgrade prompt
+
+**As a Professional User:**
+1. All tabs should be accessible (no lock icons)
+2. Create unlimited templates and rules
+3. Access the Regulatory Presets tab — browse and use presets
+4. Access the Audit Trail tab — view deployment history
+
+**As an Enterprise User:**
+1. Everything Professional gets, plus:
+2. Create a rule with "Cascade to Clients" enabled (MSP feature)
+3. Create a template with a non-English locale
+
+✅ **Success:** Free users see limits, Pro users see all tabs, Enterprise gets MSP cascade
+
+---
+
+## Feature 10: HR Sync & Directory Integration
+
+**What it does:** Sync employee data from BambooHR, Gusto, Rippling, and other HR providers.
+
+### How to Test:
+
+**As a Free User:**
+1. Go to **Settings** → **HR Sync**
+2. You should see an upgrade prompt blocking the entire page
+3. The page content should NOT be accessible
+
+**As a Professional User:**
+1. HR Sync page should load fully
+2. Create a sync configuration (e.g., BambooHR)
+3. Trigger a manual sync
+4. Review pending changes and approve/reject them
+5. The schedule type "realtime" should show upgrade prompt (Enterprise only)
+
+**As an Enterprise User:**
+1. Everything Professional gets, plus:
+2. Can set schedule type to "realtime"
+
+**Profile Requests (Pro+):**
+1. Go to **Settings** → **Validation** to manage validation rules
+2. As an employee, update your profile — changes go to admin for approval
+3. As an admin, approve or reject pending profile changes
+
+✅ **Success:** Free users see upgrade prompt, Pro users have full HR sync
+
+---
+
+## Feature 11: Lifecycle Automation
+
+**What it does:** Automate signature assignment when employees join, leave, or change departments.
+
+### How to Test:
+
+**As a Free User:**
+1. Go to **Settings** → **Automation**
+2. You should see an upgrade prompt blocking the entire page
+
+**As a Professional User:**
+1. Automation page should load
+2. Create a workflow (e.g., "Onboard New Hire" triggered by "User Joined")
+3. Add actions like "Assign Template" and "Deploy Signature"
+4. You're limited to 5 workflows total
+5. Trying to add a webhook action should show upgrade prompt
+6. Test the workflow using the Test button
+
+**As an Enterprise User:**
+1. Unlimited workflows
+2. Can add webhook actions
+3. Can enable "Cascade to Clients" for MSP
+
+✅ **Success:** Free blocked, Pro gets 5 workflows, Enterprise unlimited with webhooks
+
+---
+
+## Feature 12: Brand Governance
+
+**What it does:** Define brand guidelines, audit signature compliance, and manage brand assets.
+
+### How to Test:
+
+**As a Free or Professional User:**
+1. Navigate to **Brand Hub** (/brand)
+2. You should see an upgrade prompt (Enterprise only)
+3. Try /brand/guidelines — same upgrade prompt
+4. Try /brand/audit — same upgrade prompt
+
+**As an Enterprise User:**
+1. Brand Hub shows compliance score, quick links
+2. Create brand guidelines (colors, fonts, logo requirements)
+3. Run a brand audit — see per-user compliance scores
+4. Manage document templates
+5. Approve/deprecate brand assets
+
+✅ **Success:** Only Enterprise users can access brand features
+
+---
+
+## Feature 13: Billing Enforcement & Security
+
+**What it does:** Ensures all API routes check subscriptions and blocks unauthorized access.
+
+### How to Test:
+
+**API Security (for developers):**
+1. With dev bypass OFF, make API requests as a Free user to:
+   - `POST /api/hr-sync/configurations` → should get 403 with `upgradeRequired: true`
+   - `GET /api/brand/hub` → should get 403 with `upgradeRequired: true`
+   - `POST /api/lifecycle/workflows` → should get 403 with `upgradeRequired: true`
+2. Try PUT requests with `organization_id` or `is_system` in the body → these fields should be silently stripped (not applied)
+3. Try creating a lifecycle webhook with a localhost URL → should be rejected
+4. Try creating a webhook with 10.0.0.1, 172.16.0.1, 192.168.1.1 URLs → all rejected
+5. Dev bypass: Set `NEXT_PUBLIC_BYPASS_PAY_GATES=true` → all routes should work regardless of plan
+
+**Settings Navigation:**
+1. Go to Settings page
+2. You should see 4 new nav links: Disclaimers, HR Sync, Automation, Validation
+3. Each link should navigate to its page
+
+✅ **Success:** Unauthorized API calls get 403, field injection is blocked, SSRF URLs rejected
+
+---
+
 ## Quick Verification Checklist
 
 Go through this list to make sure everything works:
@@ -276,6 +411,15 @@ Go through this list to make sure everything works:
 - [ ] Viewers can't edit templates
 - [ ] Disclaimers are loaded in the database
 - [ ] All actions create audit log entries
+- [ ] Disclaimers: Free users limited to 2 templates, 1 rule
+- [ ] Disclaimers: Presets and Audit tabs locked for Free
+- [ ] HR Sync: Free users see upgrade prompt on page
+- [ ] Automation: Free users see upgrade prompt on page
+- [ ] Brand: Non-Enterprise users see upgrade prompt
+- [ ] Settings nav shows Disclaimers, HR Sync, Automation, Validation links
+- [ ] API PUT routes strip unauthorized fields
+- [ ] Webhook URLs reject private/localhost addresses
+- [ ] Dev bypass unlocks all gates when enabled
 
 ---
 
@@ -302,7 +446,7 @@ Go through this list to make sure everything works:
 ## Need Help?
 
 If something isn't working:
-1. Check that all 7 migrations were run successfully
+1. Check that all 13 migrations were run successfully
 2. Verify you're logged in with the correct account
 3. Try refreshing the page
 4. Check browser console for errors
@@ -312,7 +456,7 @@ If something isn't working:
 
 ## Success!
 
-You've successfully tested all 8 new features when:
+You've successfully tested all 13 new features when:
 ✅ Personal links work in signatures
 ✅ Invites send and employees can sign up
 ✅ Rules control which signatures show
@@ -320,6 +464,11 @@ You've successfully tested all 8 new features when:
 ✅ Different users have different permissions
 ✅ Actions are logged for compliance
 ✅ Disclaimers are available to use
+✅ Disclaimer engine enforces plan limits
+✅ HR Sync works for Pro+ users
+✅ Lifecycle automation creates and runs workflows
+✅ Brand governance restricted to Enterprise
+✅ API routes enforce billing and block unauthorized access
 
 **Total Testing Time:** About 1-2 hours
 
