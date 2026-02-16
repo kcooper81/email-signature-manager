@@ -11,6 +11,11 @@ import { emailSignaturesPages } from '@/lib/seo-pages/data/email-signatures';
 import { alternativesPages } from '@/lib/seo-pages/data/alternatives';
 import { platformsPages } from '@/lib/seo-pages/data/platforms';
 import { glossaryPages } from '@/lib/seo-pages/data/glossary';
+import { migrationsPages } from '@/lib/seo-pages/data/migrations';
+import { examplesPages } from '@/lib/seo-pages/data/examples';
+import { caseStudiesPages } from '@/lib/seo-pages/data/case-studies';
+import { checklistsPages } from '@/lib/seo-pages/data/checklists';
+import { compliancePages } from '@/lib/seo-pages/data/compliance';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
@@ -220,6 +225,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/glossary`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/migrate-from`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/examples`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/case-studies`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/checklists`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/compliance`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
   ];
@@ -238,6 +248,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { pages: alternativesPages, priority: 0.85, changeFrequency: 'weekly' },
     { pages: platformsPages, priority: 0.8, changeFrequency: 'monthly' },
     { pages: glossaryPages, priority: 0.7, changeFrequency: 'monthly' },
+    { pages: migrationsPages, priority: 0.85, changeFrequency: 'monthly' },
+    { pages: examplesPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: caseStudiesPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: checklistsPages, priority: 0.75, changeFrequency: 'monthly' },
+    { pages: compliancePages, priority: 0.85, changeFrequency: 'monthly' },
   ];
 
   const seoLandingPages: MetadataRoute.Sitemap = seoRouteMap.flatMap(
