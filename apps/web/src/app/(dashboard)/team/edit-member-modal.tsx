@@ -67,7 +67,7 @@ export function EditMemberModal({
           Update information for {memberName}
         </ModalDescription>
       </ModalHeader>
-      <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto">
+      <div className="space-y-4 px-4 sm:px-6 max-h-[70vh] overflow-y-auto flex-1">
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-3">

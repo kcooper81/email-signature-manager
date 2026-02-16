@@ -21,6 +21,7 @@ import { trackSignUpStart, trackSignUpComplete, trackEvent } from '@/components/
 export default function SignupPage() {
   const router = useRouter();
   const [step, setStep] = useState<'form' | 'success'>('form');
+  const [checkingSession, setCheckingSession] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,11 +33,31 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Check for existing session on mount (cross-tab detection)
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          window.location.href = '/dashboard';
+          return;
+        }
+      } catch {
+        // No session, show signup form
+      }
+      setCheckingSession(false);
+    };
+    checkSession();
+  }, []);
+
   // Track signup page view
   useEffect(() => {
-    trackSignUpStart();
-    trackEvent('signup_page_view', 'engagement', 'signup');
-  }, []);
+    if (!checkingSession) {
+      trackSignUpStart();
+      trackEvent('signup_page_view', 'engagement', 'signup');
+    }
+  }, [checkingSession]);
 
   const handleGoogleSignUp = async () => {
     setError(null);
@@ -121,6 +142,16 @@ export default function SignupPage() {
       setLoading(false);
     }
   };
+
+  if (checkingSession) {
+    return (
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (step === 'success') {
     return (

@@ -2,11 +2,30 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 import { createClient } from '@supabase/supabase-js';
 
-const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/reset-password', '/partners/apply', '/guide'];
+// Routes that don't require authentication
+const publicRoutes = [
+  '/', '/partners/apply', '/guide', '/suspended',
+  '/pricing', '/features', '/about', '/contact', '/demo',
+  '/blog', '/terms', '/privacy', '/help', '/compare', '/for',
+  '/tools', '/use-cases', '/google-workspace', '/microsoft-365',
+];
+
+// Routes that authenticated users should NOT see (redirect to dashboard)
 const authRoutes = ['/login', '/signup', '/forgot-password'];
 
 // Reserved subdomains that cannot be used by MSPs
 const RESERVED_SUBDOMAINS = ['www', 'app', 'api', 'admin', 'dashboard', 'help', 'support', 'docs', 'blog', 'mail', 'status'];
+
+function isPublicRoute(pathname: string): boolean {
+  // Exact match or prefix match for nested marketing routes
+  return publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'))
+    || pathname.startsWith('/auth/')
+    || pathname.startsWith('/invite/');
+}
+
+function isAuthRoute(pathname: string): boolean {
+  return authRoutes.some(route => pathname === route);
+}
 
 // Extract subdomain from hostname
 function getSubdomain(hostname: string): string | null {
@@ -14,10 +33,10 @@ function getSubdomain(hostname: string): string | null {
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
     return null;
   }
-  
+
   // Expected format: subdomain.siggly.io or subdomain.domain.com
   const parts = hostname.split('.');
-  
+
   // Need at least 3 parts for a subdomain (sub.domain.tld)
   if (parts.length >= 3) {
     const subdomain = parts[0];
@@ -26,35 +45,35 @@ function getSubdomain(hostname: string): string | null {
       return subdomain.toLowerCase();
     }
   }
-  
+
   return null;
 }
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request);
-  
+  const { response, user } = await updateSession(request);
+
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get('host') || '';
-  
+
   // Check for custom subdomain (white-label)
   const subdomain = getSubdomain(hostname);
-  
+
   if (subdomain) {
     // Look up the organization by subdomain
     // We use a lightweight Supabase client here (no auth needed for this lookup)
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
+
     if (supabaseUrl && supabaseAnonKey) {
       try {
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
-        
+
         const { data: org } = await supabase
           .from('organizations')
           .select('id, name, branding, organization_type')
           .eq('custom_subdomain', subdomain)
           .single();
-        
+
         if (org) {
           // Set headers for downstream components to read branding
           response.headers.set('x-msp-org-id', org.id);
@@ -67,12 +86,23 @@ export async function middleware(request: NextRequest) {
       }
     }
   }
-  
-  // Allow public routes and static files
-  if (publicRoutes.includes(pathname) || pathname.startsWith('/auth/')) {
-    return response;
+
+  // Auth gating: redirect authenticated users away from auth routes
+  if (user && isAuthRoute(pathname)) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  
+
+  // Auth gating: redirect unauthenticated users to login for protected routes
+  // (skip public routes, auth routes, static files, and API routes)
+  if (!user && !isPublicRoute(pathname) && !isAuthRoute(pathname) && !pathname.startsWith('/api/')) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('next', pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Reset-password requires an active session (from the email link callback)
+  // Don't redirect away from it even though it's technically an auth-style page
+
   return response;
 }
 

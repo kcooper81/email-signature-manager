@@ -38,7 +38,7 @@ function Modal({ open, onClose, children, className }: ModalProps) {
       />
       <div
         className={cn(
-          'relative z-50 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-card p-4 sm:p-6 shadow-xl animate-in fade-in-0 zoom-in-95',
+          'relative z-50 w-full max-w-lg max-h-[90vh] flex flex-col rounded-xl bg-card shadow-xl animate-in fade-in-0 zoom-in-95',
           className
         )}
       >
@@ -50,7 +50,7 @@ function Modal({ open, onClose, children, className }: ModalProps) {
 
 function ModalHeader({ className, children, onClose }: { className?: string; children: React.ReactNode; onClose?: () => void }) {
   return (
-    <div className={cn('flex items-start justify-between gap-3 mb-3 sm:mb-4', className)}>
+    <div className={cn('flex items-start justify-between gap-3 p-4 sm:p-6 pb-0', className)}>
       <div className="flex-1 min-w-0">{children}</div>
       {onClose && (
         <button
@@ -82,7 +82,7 @@ function ModalDescription({ className, children }: { className?: string; childre
 
 function ModalFooter({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn('flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 mt-4 sm:mt-6', className)}>
+    <div className={cn('flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 pt-4', className)}>
       {children}
     </div>
   );
