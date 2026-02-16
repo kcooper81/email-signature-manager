@@ -83,7 +83,7 @@ export default async function DashboardLayout({
                 <DashboardHeader user={user} isAdmin={isSuperAdmin} />
                 <div className="flex flex-1 min-h-0">
                   <DashboardNav />
-                  <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden overflow-y-auto">{children}</main>
+                  <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden overflow-y-auto scrollbar-hide">{children}</main>
                 </div>
                 <PoweredByFooter />
                 <DevBypassIndicator />
