@@ -1,14 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Shield, RefreshCw } from 'lucide-react';
+import { Button, useToast } from '@/components/ui';
+import { Shield, RefreshCw, Loader2 } from 'lucide-react';
 import { FeatureGate } from '@/components/billing/upgrade-prompt';
 
+interface AuditViolation {
+  rule: string;
+  expected: string;
+  actual: string;
+}
+
+interface AuditResult {
+  userEmail: string;
+  templateName: string;
+  score: number;
+  violations: AuditViolation[];
+}
+
 export default function BrandAuditPage() {
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<AuditResult[]>([]);
   const [avgScore, setAvgScore] = useState(0);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     runAudit();
@@ -19,10 +33,11 @@ export default function BrandAuditPage() {
     try {
       const res = await fetch('/api/brand/audit');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to run audit');
       setResults(data.results || []);
       setAvgScore(data.averageScore || 0);
-    } catch (err) {
-      console.error('Failed to run audit:', err);
+    } catch (err: any) {
+      toast.error('Audit failed', err.message);
     }
     setLoading(false);
   }
@@ -51,7 +66,7 @@ export default function BrandAuditPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : results.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
@@ -73,7 +88,7 @@ export default function BrandAuditPage() {
               </div>
               {r.violations?.length > 0 && (
                 <div className="mt-2 space-y-1">
-                  {r.violations.map((v: any, j: number) => (
+                  {r.violations.map((v: AuditViolation, j: number) => (
                     <div key={j} className="text-xs text-red-600 flex items-center gap-1">
                       <span>•</span> {v.rule}: expected {v.expected}, found {v.actual}
                     </div>
