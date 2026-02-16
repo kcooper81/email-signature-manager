@@ -1,24 +1,83 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Shield, Plus, FileText, Scale, History, Lock } from 'lucide-react';
+import { Button, ConfirmDialog, useToast } from '@/components/ui';
+import { Shield, Plus, FileText, Scale, History, Lock, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
-import { UpgradePrompt } from '@/components/billing/upgrade-prompt';
+import { DisclaimerTemplateModal } from './disclaimer-template-modal';
+import { DisclaimerRuleModal } from './disclaimer-rule-modal';
 
 type Tab = 'templates' | 'rules' | 'presets' | 'audit';
 
+interface DisclaimerTemplate {
+  id: string;
+  name: string;
+  content: string;
+  category: string;
+  description: string | null;
+  regulation_type: string | null;
+  locale: string | null;
+  is_system: boolean;
+  is_active: boolean;
+}
+
+interface DisclaimerRule {
+  id: string;
+  name: string;
+  priority: number;
+  disclaimer_template_id: string;
+  department_condition: string | null;
+  departments: string[] | null;
+  region_condition: string | null;
+  regions: string[] | null;
+  recipient_condition: string | null;
+  recipient_domains: string[] | null;
+  start_date: string | null;
+  end_date: string | null;
+  is_active: boolean;
+  cascade_to_clients: boolean;
+  _cascaded?: boolean;
+  _readOnly?: boolean;
+}
+
+interface Preset {
+  id: string;
+  name: string;
+  description: string;
+  regulationType: string;
+  content: string;
+  category: string;
+}
+
+interface AuditEntry {
+  id: string;
+  applied_at: string;
+  disclaimer_templates: { name: string } | null;
+  users: { email: string } | null;
+}
+
 export default function DisclaimersPage() {
   const [activeTab, setActiveTab] = useState<Tab>('templates');
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [rules, setRules] = useState<any[]>([]);
-  const [presets, setPresets] = useState<any[]>([]);
-  const [auditLog, setAuditLog] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<DisclaimerTemplate[]>([]);
+  const [rules, setRules] = useState<DisclaimerRule[]>([]);
+  const [presets, setPresets] = useState<Preset[]>([]);
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const { canAccess } = useSubscription();
   const devBypass = usePayGatesBypass();
   const hasPresets = devBypass || canAccess('disclaimerRegulatoryPresets');
   const hasAudit = devBypass || canAccess('disclaimerAuditTrail');
+  const toast = useToast();
+
+  // Modal state
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<DisclaimerTemplate | null>(null);
+  const [presetData, setPresetData] = useState<Preset | null>(null);
+  const [ruleModalOpen, setRuleModalOpen] = useState(false);
+  const [editingRule, setEditingRule] = useState<DisclaimerRule | null>(null);
+  const [deleteType, setDeleteType] = useState<'template' | 'rule' | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -35,6 +94,10 @@ export default function DisclaimersPage() {
         const res = await fetch('/api/disclaimers/rules');
         const data = await res.json();
         setRules(data.rules || []);
+        // Also load templates for the rule modal's template selector
+        const tRes = await fetch('/api/disclaimers/templates');
+        const tData = await tRes.json();
+        setTemplates(tData.templates || []);
       } else if (activeTab === 'presets') {
         const res = await fetch('/api/disclaimers/presets');
         const data = await res.json();
@@ -45,9 +108,57 @@ export default function DisclaimersPage() {
         setAuditLog(data.deployments || []);
       }
     } catch (err) {
-      console.error('Failed to load data:', err);
+      toast.error('Failed to load data');
     }
     setLoading(false);
+  }
+
+  function openCreateTemplate() {
+    setEditingTemplate(null);
+    setPresetData(null);
+    setTemplateModalOpen(true);
+  }
+
+  function openEditTemplate(t: DisclaimerTemplate) {
+    setEditingTemplate(t);
+    setPresetData(null);
+    setTemplateModalOpen(true);
+  }
+
+  function openPresetTemplate(p: Preset) {
+    setEditingTemplate(null);
+    setPresetData(p);
+    setTemplateModalOpen(true);
+  }
+
+  function openCreateRule() {
+    setEditingRule(null);
+    setRuleModalOpen(true);
+  }
+
+  function openEditRule(r: DisclaimerRule) {
+    setEditingRule(r);
+    setRuleModalOpen(true);
+  }
+
+  async function handleDelete() {
+    if (!deleteId || !deleteType) return;
+    setDeleting(true);
+    try {
+      const url = deleteType === 'template'
+        ? `/api/disclaimers/templates/${deleteId}`
+        : `/api/disclaimers/rules/${deleteId}`;
+      const res = await fetch(url, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete');
+      toast.success(`${deleteType === 'template' ? 'Template' : 'Rule'} deleted`);
+      setDeleteId(null);
+      setDeleteType(null);
+      await loadData();
+    } catch (err: any) {
+      toast.error('Failed to delete', err.message);
+    }
+    setDeleting(false);
   }
 
   const tabs = [
@@ -61,13 +172,19 @@ export default function DisclaimersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Disclaimers & Compliance</h1>
-          <p className="text-muted-foreground">Manage email disclaimers, compliance rules, and regulatory templates</p>
+          <h2 className="text-xl font-semibold">Disclaimers &amp; Compliance</h2>
+          <p className="text-sm text-muted-foreground">Manage email disclaimers, compliance rules, and regulatory templates</p>
         </div>
-        {(activeTab === 'templates' || activeTab === 'rules') && (
-          <Button>
+        {activeTab === 'templates' && (
+          <Button onClick={openCreateTemplate}>
             <Plus className="h-4 w-4 mr-2" />
-            Add {activeTab === 'templates' ? 'Template' : 'Rule'}
+            Add Template
+          </Button>
+        )}
+        {activeTab === 'rules' && (
+          <Button onClick={openCreateRule}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Rule
           </Button>
         )}
       </div>
@@ -93,7 +210,7 @@ export default function DisclaimersPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
         <div>
@@ -113,7 +230,15 @@ export default function DisclaimersPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {t.is_system && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">System</span>}
-                      <Button variant="outline" size="sm">Edit</Button>
+                      <Button variant="outline" size="sm" onClick={() => openEditTemplate(t)}>
+                        <Pencil className="h-3.5 w-3.5 mr-1" />
+                        Edit
+                      </Button>
+                      {!t.is_system && (
+                        <Button variant="outline" size="sm" onClick={() => { setDeleteType('template'); setDeleteId(t.id); }} className="text-red-600 hover:text-red-700">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))
@@ -140,7 +265,17 @@ export default function DisclaimersPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {r._readOnly && <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">Read Only</span>}
-                      {!r._readOnly && <Button variant="outline" size="sm">Edit</Button>}
+                      {!r._readOnly && (
+                        <>
+                          <Button variant="outline" size="sm" onClick={() => openEditRule(r)}>
+                            <Pencil className="h-3.5 w-3.5 mr-1" />
+                            Edit
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => { setDeleteType('rule'); setDeleteId(r.id); }} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))
@@ -158,7 +293,7 @@ export default function DisclaimersPage() {
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{p.regulationType.toUpperCase()}</span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">{p.description}</p>
-                  <Button variant="outline" size="sm">Use This Preset</Button>
+                  <Button variant="outline" size="sm" onClick={() => openPresetTemplate(p)}>Use This Preset</Button>
                 </div>
               ))}
             </div>
@@ -187,6 +322,40 @@ export default function DisclaimersPage() {
           )}
         </div>
       )}
+
+      {/* Template Modal */}
+      {templateModalOpen && (
+        <DisclaimerTemplateModal
+          open={templateModalOpen}
+          onClose={() => { setTemplateModalOpen(false); setEditingTemplate(null); setPresetData(null); }}
+          template={editingTemplate}
+          presetData={presetData}
+          onSaved={() => { toast.success(editingTemplate ? 'Template updated' : 'Template created'); loadData(); }}
+        />
+      )}
+
+      {/* Rule Modal */}
+      {ruleModalOpen && (
+        <DisclaimerRuleModal
+          open={ruleModalOpen}
+          onClose={() => { setRuleModalOpen(false); setEditingRule(null); }}
+          rule={editingRule}
+          templates={templates.map(t => ({ id: t.id, name: t.name }))}
+          onSaved={() => { toast.success(editingRule ? 'Rule updated' : 'Rule created'); loadData(); }}
+        />
+      )}
+
+      {/* Delete Confirm */}
+      <ConfirmDialog
+        open={!!deleteId}
+        onClose={() => { setDeleteId(null); setDeleteType(null); }}
+        onConfirm={handleDelete}
+        title={`Delete ${deleteType === 'template' ? 'Template' : 'Rule'}`}
+        description="Are you sure? This will be permanently removed."
+        confirmText="Delete"
+        variant="destructive"
+        loading={deleting}
+      />
     </div>
   );
 }

@@ -3,23 +3,17 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Switch } from '@/components/ui';
-import { PageHeader } from '@/components/dashboard';
 import {
   Building2,
   User,
-  Bell,
   Shield,
-  Palette,
   Save,
   Loader2,
   Check,
   AlertCircle,
-  CreditCard,
   Smartphone,
   Monitor,
   Trash2,
-  X,
-  Copy,
   Users,
   CalendarClock,
   Link2,
@@ -31,12 +25,7 @@ import {
   Instagram,
   Facebook,
   Youtube,
-  Image as ImageIcon,
-  RefreshCw,
-  Zap,
-  ClipboardCheck,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useTheme } from '@/components/providers/theme-provider';
 
 interface UserProfile {
@@ -535,65 +524,35 @@ export default function SettingsPage() {
     );
   }
 
-  const isMspOrg = organization?.organization_type === 'msp';
-  
-  const tabs = [
+  // Inline tabs for sections rendered on this page
+  const inlineTabs = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'organization', label: 'Organization', icon: Building2 },
-    // Branding is only available for MSP organizations with white-label subdomains
-    ...(isMspOrg ? [{ id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' }] : []),
-    { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
-    { id: 'disclaimers', label: 'Disclaimers', icon: Shield, href: '/settings/disclaimers' },
-    { id: 'hr-sync', label: 'HR Sync', icon: RefreshCw, href: '/settings/hr-sync' },
-    { id: 'automation', label: 'Automation', icon: Zap, href: '/settings/automation' },
-    { id: 'validation-rules', label: 'Validation', icon: ClipboardCheck, href: '/settings/validation-rules' },
-    { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'notifications', label: 'Notifications', icon: Monitor },
     { id: 'appearance', label: 'Appearance', icon: Monitor },
     { id: 'security', label: 'Security', icon: Shield },
   ];
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Settings" 
-        description="Manage your account and preferences" 
-      />
+      {/* Inline sub-tab bar for this page's sections */}
+      <div className="flex gap-1 border-b overflow-x-auto">
+        {inlineTabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === tab.id
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <div className="w-full lg:w-56 shrink-0">
-          <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:sticky lg:top-6">
-          {tabs.map((tab) => (
-              tab.href ? (
-                <Link
-                  key={tab.id}
-                  href={tab.href}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors text-muted-foreground hover:bg-secondary"
-                >
-                  <tab.icon className="h-5 w-5" />
-                  {tab.label}
-                </Link>
-              ) : (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors ${
-                    activeTab === tab.id
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-secondary'
-                  }`}
-                >
-                  <tab.icon className="h-5 w-5" />
-                  {tab.label}
-                </button>
-              )
-            ))}
-          </nav>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1">
+      <div>
           {activeTab === 'profile' && (
             <Card>
               <CardHeader>
@@ -1318,7 +1277,6 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           )}
-        </div>
       </div>
     </div>
   );
