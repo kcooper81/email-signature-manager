@@ -18,6 +18,7 @@ import {
   Headphones,
   Building2,
   Sparkles,
+  Palette,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeedbackWidget } from '@/components/feedback';
@@ -52,7 +53,9 @@ export function DashboardNav() {
   const { plan } = useSubscription();
   const isFreePlan = plan.id === 'free';
 
-  // Build nav items dynamically based on org type
+  const isEnterprise = plan.id === 'enterprise';
+
+  // Build nav items dynamically based on org type and plan
   const navItems = [
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { title: 'Templates', href: '/templates', icon: FileSignature },
@@ -61,6 +64,7 @@ export function DashboardNav() {
     { title: 'Deployments', href: '/deployments', icon: Send },
     { title: 'Integrations', href: '/integrations', icon: Link2 },
     { title: 'Analytics', href: '/analytics', icon: BarChart3 },
+    ...(isEnterprise ? [{ title: 'Brand', href: '/brand', icon: Palette }] : []),
   ];
 
   const renderNavItem = (item: typeof navItems[0], mobile = false) => {

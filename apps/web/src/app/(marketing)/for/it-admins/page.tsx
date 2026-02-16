@@ -12,7 +12,7 @@ import { JsonLd } from '@/components/seo/json-ld';
 
 export const metadata = genMeta({
   title: 'Email Signature Management for IT Admins',
-  description: 'Centralized email signature control for IT teams. Deploy consistent signatures across Google Workspace and Microsoft 365 with zero end-user involvement.',
+  description: 'Centralized email signature control for IT teams. Deploy consistent signatures across Google Workspace with zero end-user involvement.',
   keywords: ['IT admin', 'centralized management', 'domain-wide deployment', 'directory sync', 'compliance'],
   canonical: '/for/it-admins',
 });
@@ -50,7 +50,7 @@ const features = [
   {
     icon: Lock,
     title: 'Domain-Wide Deployment',
-    description: 'Push signatures to every user in your Google Workspace or Microsoft 365 organization with one click.',
+    description: 'Push signatures to every user in your Google Workspace organization with one click. Domain-wide deployment in seconds.',
   },
   {
     icon: Users,
@@ -166,7 +166,7 @@ export default function ITAdminsPage() {
                 to everyone—all without touching individual mailboxes.
               </p>
               <ul className="space-y-4">
-                {['Google Workspace integration', 'Microsoft 365 support', 'Department-based templates', 'Scheduled deployments', 'Role-based access control'].map((item) => (
+                {['Google Workspace integration', 'Department-based templates', 'Scheduled deployments', 'Role-based access control', 'HR directory sync'].map((item) => (
                   <li key={item} className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <span>{item}</span>

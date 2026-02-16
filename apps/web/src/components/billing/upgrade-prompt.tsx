@@ -123,6 +123,28 @@ const featureRequirements = {
   apiAccess: 'professional',
   prioritySupport: 'professional',
 
+  // Disclaimer features
+  disclaimerHtmlEditor: 'professional',
+  disclaimerRegulatoryPresets: 'professional',
+  disclaimerAuditTrail: 'professional',
+  disclaimerMspCascade: 'enterprise',
+  disclaimerMultiLanguage: 'enterprise',
+
+  // HR Sync features
+  hrIntegrations: 'professional',
+  selfServiceAdminApproval: 'professional',
+  profileCompletenessAnalytics: 'professional',
+  hrRealtimeSync: 'enterprise',
+  hrMspManaged: 'enterprise',
+
+  // Lifecycle features
+  maxLifecycleWorkflows: 'professional',
+  lifecycleWebhooks: 'enterprise',
+  lifecycleMspCascade: 'enterprise',
+
+  // Brand governance
+  brandGovernance: 'enterprise',
+
   // Enterprise plan features
   sso: 'enterprise',
   whiteLabel: 'enterprise',

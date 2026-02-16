@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookOpen, Mail, MessageCircle, FileText, Zap, Users, GitBranch, Image, Shield, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
+import { BookOpen, Mail, MessageCircle, FileText, Zap, Users, GitBranch, Image, Shield, BarChart3, Sparkles, ArrowRight, RefreshCw, Palette, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 import { DynamicFAQs } from '@/components/help/dynamic-faqs';
@@ -73,9 +73,42 @@ const quickLinks = [
     description: 'Disclaimers, audit logs, and more',
     color: 'slate',
     links: [
-      { text: 'Disclaimers Library', href: '/help/disclaimers-library' },
+      { text: 'Disclaimer Engine', href: '/help/disclaimer-engine' },
       { text: 'Audit Logs', href: '/help/audit-logs' },
       { text: 'GDPR & HIPAA Compliance', href: '/security' },
+    ],
+  },
+  {
+    icon: RefreshCw,
+    title: 'HR Sync',
+    description: 'Sync employee data from HR providers',
+    color: 'cyan',
+    links: [
+      { text: 'Connect HR Provider', href: '/help/hr-sync-setup' },
+      { text: 'Approve Pending Changes', href: '/help/hr-sync-approvals' },
+      { text: 'Profile Validation Rules', href: '/help/profile-validation' },
+    ],
+  },
+  {
+    icon: ClipboardCheck,
+    title: 'Lifecycle Automation',
+    description: 'Automate onboarding and offboarding workflows',
+    color: 'orange',
+    links: [
+      { text: 'Create Automation Workflow', href: '/help/lifecycle-workflows' },
+      { text: 'Workflow Triggers & Actions', href: '/help/workflow-triggers' },
+      { text: 'Test Workflows', href: '/help/test-workflows' },
+    ],
+  },
+  {
+    icon: Palette,
+    title: 'Brand Governance',
+    description: 'Brand guidelines and compliance auditing',
+    color: 'purple',
+    links: [
+      { text: 'Set Up Brand Guidelines', href: '/help/brand-guidelines' },
+      { text: 'Run Brand Audit', href: '/help/brand-audit' },
+      { text: 'Manage Brand Assets', href: '/help/brand-assets' },
     ],
   },
 ];
@@ -87,6 +120,9 @@ const colorMap: Record<string, { bg: string; icon: string; border: string }> = {
   pink: { bg: 'bg-pink-50', icon: 'text-pink-600', border: 'hover:border-pink-300' },
   emerald: { bg: 'bg-emerald-50', icon: 'text-emerald-600', border: 'hover:border-emerald-300' },
   slate: { bg: 'bg-slate-100', icon: 'text-slate-600', border: 'hover:border-slate-300' },
+  cyan: { bg: 'bg-cyan-50', icon: 'text-cyan-600', border: 'hover:border-cyan-300' },
+  orange: { bg: 'bg-orange-50', icon: 'text-orange-600', border: 'hover:border-orange-300' },
+  purple: { bg: 'bg-purple-50', icon: 'text-purple-600', border: 'hover:border-purple-300' },
 };
 
 

@@ -1,7 +1,28 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git push:*)",
+      "Bash(git status:*)",
+      "Bash(find:*)",
+      "Bash(head:*)",
+      "Bash(npx next:*)",
+      "Bash(cd:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(wc:*)",
+      "WebSearch",
+      "WebFetch(domain:news.ycombinator.com)",
+      "WebFetch(domain:www.reddit.com)",
+      "WebFetch(domain:support.google.com)",
+      "WebFetch(domain:redditfavorites.com)",
+      "WebFetch(domain:crowdfavs.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:google-workspace.pissedconsumer.com)",
+      "WebFetch(domain:www.trustpilot.com)",
+      "WebFetch(domain:www.capterra.com)"
     ]
   }
 }

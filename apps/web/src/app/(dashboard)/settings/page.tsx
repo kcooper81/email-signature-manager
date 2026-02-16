@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Switch } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
-import { 
+import {
   Building2,
   User,
   Bell,
@@ -32,6 +32,9 @@ import {
   Facebook,
   Youtube,
   Image as ImageIcon,
+  RefreshCw,
+  Zap,
+  ClipboardCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useTheme } from '@/components/providers/theme-provider';
@@ -540,6 +543,10 @@ export default function SettingsPage() {
     // Branding is only available for MSP organizations with white-label subdomains
     ...(isMspOrg ? [{ id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding' }] : []),
     { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
+    { id: 'disclaimers', label: 'Disclaimers', icon: Shield, href: '/settings/disclaimers' },
+    { id: 'hr-sync', label: 'HR Sync', icon: RefreshCw, href: '/settings/hr-sync' },
+    { id: 'automation', label: 'Automation', icon: Zap, href: '/settings/automation' },
+    { id: 'validation-rules', label: 'Validation', icon: ClipboardCheck, href: '/settings/validation-rules' },
     { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'appearance', label: 'Appearance', icon: Monitor },

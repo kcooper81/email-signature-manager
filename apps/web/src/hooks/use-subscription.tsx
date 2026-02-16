@@ -79,18 +79,28 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
     // Check for impersonation (admin viewing as customer)
     const impersonatedOrgId = getImpersonatedOrgId();
-    
-    // Get user's organization (or use impersonated org)
+
+    // Get user's organization and super admin status
     let organizationId: string | null = impersonatedOrgId;
-    
+    let isSuperAdmin = false;
+
     if (!organizationId) {
       const { data: userData } = await supabase
         .from('users')
-        .select('organization_id')
+        .select('organization_id, is_super_admin')
         .eq('auth_id', user.id)
         .single();
-      
+
       organizationId = userData?.organization_id || null;
+      isSuperAdmin = userData?.is_super_admin === true;
+    } else {
+      // Even with impersonation, check super admin status
+      const { data: userData } = await supabase
+        .from('users')
+        .select('is_super_admin')
+        .eq('auth_id', user.id)
+        .single();
+      isSuperAdmin = userData?.is_super_admin === true;
     }
 
     if (!organizationId) {
@@ -130,31 +140,33 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       maxTeamMembers: plan.features.maxUsers,
     };
 
-    // Create helper functions with dev bypass
+    // Create helper functions with dev bypass and super admin bypass
+    const shouldBypass = getDevBypassEnabled() || isSuperAdmin;
+
     const canAccess = (feature: keyof PlanFeatures): boolean => {
-      if (getDevBypassEnabled()) return true;
+      if (shouldBypass) return true;
       return canAccessFeature(planId, feature);
     };
 
     const isWithinTemplateLimit = (): boolean => {
-      if (getDevBypassEnabled()) return true;
+      if (shouldBypass) return true;
       return isWithinLimit(planId, 'maxTemplates', usage.templateCount);
     };
 
     const isWithinTeamMemberLimit = (): boolean => {
-      if (getDevBypassEnabled()) return true;
+      if (shouldBypass) return true;
       return isWithinLimit(planId, 'maxUsers', usage.teamMemberCount);
     };
 
     const canCreateTemplate = (): boolean => {
-      if (getDevBypassEnabled()) return true;
+      if (shouldBypass) return true;
       // Can create if within limit (current count < max)
       if (limits.maxTemplates === -1) return true;
       return usage.templateCount < limits.maxTemplates;
     };
 
     const canAddTeamMember = (): boolean => {
-      if (getDevBypassEnabled()) return true;
+      if (shouldBypass) return true;
       // Can add if within limit
       if (limits.maxTeamMembers === -1) return true;
       return usage.teamMemberCount < limits.maxTeamMembers;

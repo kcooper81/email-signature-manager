@@ -12,6 +12,29 @@ export interface PlanFeatures {
   hubspotCRM: boolean;
   scheduledDeployments: boolean;
   whiteLabel: boolean;
+  // Disclaimer Engine
+  maxDisclaimerTemplates: number; // -1 = unlimited
+  maxDisclaimerRules: number; // -1 = unlimited
+  disclaimerHtmlEditor: boolean;
+  disclaimerRegulatoryPresets: boolean;
+  disclaimerAuditTrail: boolean;
+  disclaimerMspCascade: boolean;
+  disclaimerMultiLanguage: boolean;
+  // HR Sync & Directory
+  hrIntegrations: boolean;
+  hrRealtimeSync: boolean;
+  hrMspManaged: boolean;
+  selfServicePortal: boolean;
+  selfServiceAdminApproval: boolean;
+  profileCompleteness: boolean;
+  profileCompletenessAnalytics: boolean;
+  // Lifecycle Automation
+  maxLifecycleWorkflows: number; // -1 = unlimited
+  lifecycleMoverDetection: boolean;
+  lifecycleWebhooks: boolean;
+  lifecycleMspCascade: boolean;
+  // Brand Governance
+  brandGovernance: boolean;
 }
 
 export interface PlanFeatureDisplay {
@@ -58,6 +81,29 @@ export const PLANS: Record<string, Plan> = {
       hubspotCRM: true,
       scheduledDeployments: true,
       whiteLabel: false,
+      // Disclaimer: 2 custom + system presets, 1 rule
+      maxDisclaimerTemplates: 2,
+      maxDisclaimerRules: 1,
+      disclaimerHtmlEditor: false,
+      disclaimerRegulatoryPresets: false,
+      disclaimerAuditTrail: false,
+      disclaimerMspCascade: false,
+      disclaimerMultiLanguage: false,
+      // HR Sync: none
+      hrIntegrations: false,
+      hrRealtimeSync: false,
+      hrMspManaged: false,
+      selfServicePortal: true,
+      selfServiceAdminApproval: false,
+      profileCompleteness: true,
+      profileCompletenessAnalytics: false,
+      // Lifecycle: none
+      maxLifecycleWorkflows: 0,
+      lifecycleMoverDetection: false,
+      lifecycleWebhooks: false,
+      lifecycleMspCascade: false,
+      // Brand: none
+      brandGovernance: false,
     },
     featureList: [
       { text: 'Up to 5 users', included: true },
@@ -65,13 +111,13 @@ export const PLANS: Record<string, Plan> = {
       { text: 'Drag-and-drop editor', included: true },
       { text: 'Google Workspace deployment', included: true },
       { text: 'HubSpot CRM sync', included: true },
-      { text: 'Compliance & legal blocks', included: true },
-      { text: 'Bulk operations & directory sync', included: true },
+      { text: '2 disclaimer templates + 1 rule', included: true },
+      { text: 'Basic self-service portal', included: true },
       { text: 'Scheduled deployments', included: true },
       { text: 'Analytics (7-day preview)', included: true },
-      { text: 'Microsoft 365 deployment', included: false },
-      { text: 'Unlimited templates', included: false },
-      { text: 'Full analytics & reporting', included: false },
+      { text: 'HR integrations', included: false },
+      { text: 'Lifecycle automation', included: false },
+      { text: 'Brand governance', included: false },
     ],
   },
   professional: {
@@ -98,18 +144,41 @@ export const PLANS: Record<string, Plan> = {
       hubspotCRM: true,
       scheduledDeployments: true,
       whiteLabel: false,
+      // Disclaimer: unlimited + HTML + regulatory presets + audit
+      maxDisclaimerTemplates: -1,
+      maxDisclaimerRules: -1,
+      disclaimerHtmlEditor: true,
+      disclaimerRegulatoryPresets: true,
+      disclaimerAuditTrail: true,
+      disclaimerMspCascade: false,
+      disclaimerMultiLanguage: false,
+      // HR Sync: BambooHR, Gusto, Rippling + scheduled
+      hrIntegrations: true,
+      hrRealtimeSync: false,
+      hrMspManaged: false,
+      selfServicePortal: true,
+      selfServiceAdminApproval: true,
+      profileCompleteness: true,
+      profileCompletenessAnalytics: true,
+      // Lifecycle: 5 workflows
+      maxLifecycleWorkflows: 5,
+      lifecycleMoverDetection: false,
+      lifecycleWebhooks: false,
+      lifecycleMspCascade: false,
+      // Brand: none
+      brandGovernance: false,
     },
     featureList: [
       { text: 'Unlimited users ($1.50/user/mo)', included: true },
       { text: '10-user minimum ($15/mo)', included: true },
-      { text: 'Unlimited templates', included: true },
+      { text: 'Unlimited templates & disclaimers', included: true },
       { text: 'Full analytics & reporting', included: true },
-      { text: 'Microsoft 365 deployment', included: true },
-      { text: 'Google Workspace deployment', included: true },
-      { text: 'HubSpot CRM sync', included: true },
-      { text: 'API access', included: true },
-      { text: 'Priority support', included: true },
+      { text: 'BambooHR, Gusto, Rippling sync', included: true },
+      { text: '5 lifecycle automation workflows', included: true },
+      { text: 'Admin approval workflows', included: true },
+      { text: 'Regulatory disclaimer presets', included: true },
       { text: 'Everything in Free', included: true },
+      { text: 'Brand governance', included: false },
       { text: 'SSO/SAML', included: false },
       { text: 'White-label', included: false },
     ],
@@ -137,15 +206,41 @@ export const PLANS: Record<string, Plan> = {
       hubspotCRM: true,
       scheduledDeployments: true,
       whiteLabel: true,
+      // Disclaimer: all features + MSP cascade + multi-language
+      maxDisclaimerTemplates: -1,
+      maxDisclaimerRules: -1,
+      disclaimerHtmlEditor: true,
+      disclaimerRegulatoryPresets: true,
+      disclaimerAuditTrail: true,
+      disclaimerMspCascade: true,
+      disclaimerMultiLanguage: true,
+      // HR Sync: all + realtime + MSP-managed
+      hrIntegrations: true,
+      hrRealtimeSync: true,
+      hrMspManaged: true,
+      selfServicePortal: true,
+      selfServiceAdminApproval: true,
+      profileCompleteness: true,
+      profileCompletenessAnalytics: true,
+      // Lifecycle: unlimited + all features
+      maxLifecycleWorkflows: -1,
+      lifecycleMoverDetection: true,
+      lifecycleWebhooks: true,
+      lifecycleMspCascade: true,
+      // Brand: full governance
+      brandGovernance: true,
     },
     featureList: [
       { text: 'Everything in Professional', included: true },
+      { text: 'Brand governance & audit', included: true },
+      { text: 'Unlimited lifecycle workflows', included: true },
+      { text: 'MSP cascading rules & workflows', included: true },
+      { text: 'Realtime HR sync + MSP-managed', included: true },
+      { text: 'Multi-language disclaimers', included: true },
       { text: 'SSO/SAML authentication', included: true },
       { text: 'White-label options', included: true },
       { text: 'Dedicated account manager', included: true },
-      { text: 'Custom integrations', included: true },
       { text: 'SLA guarantees', included: true },
-      { text: 'Volume discounts', included: true },
     ],
   },
 };
@@ -171,7 +266,7 @@ export function canAccessFeature(
 
 export function isWithinLimit(
   planId: string,
-  feature: 'maxTemplates' | 'maxUsers',
+  feature: 'maxTemplates' | 'maxUsers' | 'maxDisclaimerTemplates' | 'maxDisclaimerRules' | 'maxLifecycleWorkflows',
   currentCount: number
 ): boolean {
   const plan = getPlan(planId);
