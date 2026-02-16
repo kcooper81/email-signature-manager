@@ -109,7 +109,7 @@ export const useCasesPages: SEOLandingPageData[] = [
       quote:
         'Before Siggly, we had over 200 employees with 200 different signature styles. Now every email looks like it came from one unified brand. The impact on our professional image has been remarkable.',
       authorName: 'Jessica Moreno',
-      authorTitle: 'Brand Director, Apex Media Group',
+      authorTitle: 'Brand Director, Osprey Media Group',
     },
     faqs: [
       {
@@ -235,8 +235,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We replaced our entire internal email newsletter with signature banners. The engagement was five times higher and it cost us nothing extra. Siggly made employee advocacy effortless.',
-      authorName: 'David Chen',
-      authorTitle: 'VP of Marketing, BrightPath Solutions',
+      authorName: 'Kofi Mensah',
+      authorTitle: 'VP of Marketing, Crestline Ventures',
     },
     faqs: [
       {
@@ -381,7 +381,7 @@ export const useCasesPages: SEOLandingPageData[] = [
       quote:
         'As a financial services firm, compliance is non-negotiable. Siggly gave us the confidence that every single email leaving our organization meets regulatory requirements. It eliminated a major source of risk.',
       authorName: 'Margaret Thornton',
-      authorTitle: 'Chief Compliance Officer, Sterling Capital Advisors',
+      authorTitle: 'Chief Compliance Officer, Harrington Capital Advisors',
     },
     faqs: [
       {
@@ -508,7 +508,7 @@ export const useCasesPages: SEOLandingPageData[] = [
       quote:
         'We rebranded our 500-person company over a weekend. Monday morning, every single email going out had the new logo, colors, and tagline. Without Siggly, that would have taken weeks of IT tickets.',
       authorName: 'Ryan Mitchell',
-      authorTitle: 'CTO, Lumina Technologies',
+      authorTitle: 'CTO, Lumina Digital',
     },
     faqs: [
       {
@@ -767,8 +767,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Siggly showed us that our email signature banners were driving more qualified leads than our paid social campaigns. The analytics dashboard gave our marketing team the proof they needed to double down on this channel.',
-      authorName: 'Laura Simmons',
-      authorTitle: 'Director of Digital Marketing, NovaBridge Inc.',
+      authorName: 'Cecilia Hartmann',
+      authorTitle: 'Director of Digital Marketing, Silverlake Inc.',
     },
     faqs: [
       {
@@ -877,7 +877,7 @@ export const useCasesPages: SEOLandingPageData[] = [
       quote:
         'We had a former employee whose branded signature was still being used months after they left. That was a serious brand risk. With Siggly, offboarding now includes automatic signature removal and we never worry about it.',
       authorName: 'Thomas Grant',
-      authorTitle: 'HR Director, Meridian Consulting Group',
+      authorTitle: 'HR Director, Hawthorne Consulting Group',
     },
     faqs: [
       {
@@ -1133,8 +1133,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We work with dozens of freelancers at any given time. Siggly lets us give them all professional signatures that match our brand, and they automatically disappear when contracts end. It is a huge time saver.',
-      authorName: 'Marcus Webb',
-      authorTitle: 'Head of Operations, Pixel & Code Agency',
+      authorName: 'Takeshi Mori',
+      authorTitle: 'Head of Operations, Brushstroke Creative',
     },
     faqs: [
       {
@@ -1259,7 +1259,7 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our consulting team communicates with C-suite executives daily. Siggly gave us signatures that match the caliber of our work. Clients have actually commented on how professional our emails look.',
-      authorName: 'Patricia Nakamura',
+      authorName: 'Reiko Fujimoto',
       authorTitle: 'Managing Partner, Evergreen Strategic Advisory',
     },
     faqs: [
@@ -1389,7 +1389,7 @@ export const useCasesPages: SEOLandingPageData[] = [
       quote:
         'We added a webinar banner to all 150 employee signatures and saw a 35% increase in registrations compared to our previous webinar. Siggly turned our team into a free promotion engine.',
       authorName: 'Kevin O\'Brien',
-      authorTitle: 'Events Manager, SummitPoint Technologies',
+      authorTitle: 'Events Manager, Eventide Creative',
     },
     faqs: [
       {
@@ -1518,7 +1518,7 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We plan all 12 months of seasonal campaigns at the start of the year. Siggly handles everything automatically. Holiday banners go up and come down without anyone lifting a finger.',
-      authorName: 'Emily Tran',
+      authorName: 'Bianca Moretti',
       authorTitle: 'Marketing Manager, Harvest Retail Co.',
     },
     faqs: [
@@ -1634,8 +1634,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We experienced a phishing incident where someone impersonated our CEO using a copied email signature. After switching to Siggly, our signatures are centrally controlled and tamper-proof. That attack vector is now closed.',
-      authorName: 'James Whitfield',
-      authorTitle: 'CISO, Fortis Financial Group',
+      authorName: 'Adriana Costa',
+      authorTitle: 'CISO, Sentinel Risk Advisors',
     },
     faqs: [
       {
@@ -1770,8 +1770,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our sales team needed booking links, support needed ticket links, and executives wanted a premium look. Siggly let us give each department exactly what they needed while keeping everything on-brand.',
-      authorName: 'Nina Kowalski',
-      authorTitle: 'Director of Internal Communications, Vantage Corp.',
+      authorName: 'Mei-Ling Chow',
+      authorTitle: 'Director of Internal Communications, Whitestone Media',
     },
     faqs: [
       {
@@ -1922,8 +1922,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We have over 40 channel partners. Before Siggly, each one used our logo differently in their emails. Now they all use approved co-branded signatures that look fantastic and protect our brand integrity.',
-      authorName: 'Robert Chang',
-      authorTitle: 'VP of Channel Partnerships, CloudReach Solutions',
+      authorName: 'Willem de Vries',
+      authorTitle: 'VP of Channel Partnerships, Cascadia Growth Partners',
     },
     faqs: [
       {
@@ -2201,8 +2201,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Managing email signatures across 120 franchise locations used to be impossible. With Siggly, every location has a perfect, on-brand signature and we can push promotions to all of them at once.',
-      authorName: 'Kevin Marsh',
-      authorTitle: 'Director of Franchise Operations, BrightClean Services',
+      authorName: 'Derek Marsh',
+      authorTitle: 'Director of Franchise Operations, SparkleWash Services',
     },
     faqs: [
       {
@@ -2557,7 +2557,7 @@ export const useCasesPages: SEOLandingPageData[] = [
       quote:
         'Adding NPS survey links to our account manager signatures increased our response rate by 18%. We now have a constant pulse on customer satisfaction without sending separate survey emails.',
       authorName: 'Sarah Lindgren',
-      authorTitle: 'Head of Customer Success, Apex SaaS',
+      authorTitle: 'Head of Customer Success, Juniper SaaS',
     },
     faqs: [
       {
@@ -2679,8 +2679,8 @@ export const useCasesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our last product launch generated 3,400 clicks from email signature banners alone. That was more traffic than our paid social campaign, and it cost us nothing beyond our Siggly subscription.',
-      authorName: 'Natalie Park',
-      authorTitle: 'Product Marketing Manager, Vantage Software',
+      authorName: 'Natalie Kwon',
+      authorTitle: 'Product Marketing Manager, Hearthstone Software',
     },
     faqs: [
       {

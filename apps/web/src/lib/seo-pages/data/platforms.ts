@@ -274,8 +274,8 @@ export const platformsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Managing Gmail signatures for 300 Google Workspace users was a nightmare until Siggly. Now I update one template and the whole company is on-brand within minutes.',
-      authorName: 'Priya Sharma',
-      authorTitle: 'IT Admin, Greenfield Ventures',
+      authorName: 'Sonia Ramirez',
+      authorTitle: 'IT Admin, Birchwood Ventures',
     },
     faqs: [
       {
@@ -781,8 +781,8 @@ export const platformsPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Half our sales team answers emails from their phones. Before Siggly and Intune, every mobile reply had a different signature. Now they all match our brand perfectly.',
-      authorName: 'Rebecca Lawson',
-      authorTitle: 'Sales Operations Manager, Apex Dynamics',
+      authorName: 'Vivian Obi',
+      authorTitle: 'Sales Operations Manager, Pinecrest Industrial',
     },
     faqs: [
       {
@@ -1038,7 +1038,7 @@ export const platformsPages: SEOLandingPageData[] = [
       quote:
         'We moved to ProtonMail for privacy and thought we would have to give up professional signatures. Siggly proved us wrong — our signatures look great and respect our encryption-first philosophy.',
       authorName: 'Erik Lindqvist',
-      authorTitle: 'Security Engineer, NordVault Solutions',
+      authorTitle: 'Security Engineer, NordVault Crypto',
     },
     cta: {
       title: 'Bring Professional Signatures to ProtonMail',

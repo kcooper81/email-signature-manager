@@ -108,7 +108,7 @@ export const alternativesPages: SEOLandingPageData[] = [
       quote:
         'We were paying for HubSpot seats we did not need just to manage signatures. Siggly gave us better templates and real analytics at a fraction of the price.',
       authorName: 'Daniel Park',
-      authorTitle: 'Head of Marketing, Vantage Digital',
+      authorTitle: 'Head of Marketing, Kestrel Digital',
     },
     faqs: [
       {
@@ -364,8 +364,8 @@ export const alternativesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'Our reps used to have mismatched signatures with outdated phone numbers. Siggly standardized everything in one afternoon and now every outbound email looks professional.',
-      authorName: 'Marcus Rivera',
-      authorTitle: 'Sales Director, CloudReach Partners',
+      authorName: 'Simone Delacroix',
+      authorTitle: 'Sales Director, Harborview Consulting',
     },
     faqs: [
       {
@@ -494,8 +494,8 @@ export const alternativesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'After the Terminus acquisition, our Sigstr renewal quote tripled. Siggly matched every feature we actually used and saved us over $30,000 annually.',
-      authorName: 'James Whitfield',
-      authorTitle: 'VP of Revenue Operations, Meridian Analytics',
+      authorName: 'Lukas Brandt',
+      authorTitle: 'VP of Revenue Operations, Keystone Data Corp',
     },
     faqs: [
       {
@@ -774,7 +774,7 @@ export const alternativesPages: SEOLandingPageData[] = [
       quote:
         'Bybrand served us well at 20 employees, but at 200 it could not keep up. Siggly gave us the department-level control and analytics we needed without any learning curve.',
       authorName: 'Laura Mendes',
-      authorTitle: 'IT Director, Novacore Technologies',
+      authorTitle: 'IT Director, Novacore Systems',
     },
     faqs: [
       {
@@ -1012,8 +1012,8 @@ export const alternativesPages: SEOLandingPageData[] = [
     testimonial: {
       quote:
         'We used Signature Maker for years and spent hours every quarter manually updating signatures for 80 employees. Siggly eliminated that chore completely.',
-      authorName: 'Nina Kapoor',
-      authorTitle: 'Operations Manager, BrightEdge Consulting',
+      authorName: 'Priscilla Yamamoto',
+      authorTitle: 'Operations Manager, Cornerstone Advisory',
     },
     cta: {
       title: 'Stop Generating. Start Managing.',

@@ -170,6 +170,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Present your AIA membership, LEED accreditation, and project portfolio with a signature that matches the design quality of your work. Siggly makes it effortless.',
       variant: 'violet',
     },
+    stats: [
+      { value: '78%', label: 'Clients verify credentials before hiring' },
+      { value: '3x', label: 'More portfolio clicks from email' },
+      { value: '5 min', label: 'Firm-wide signature setup' },
+    ],
     features: [
       {
         icon: 'award',
@@ -659,6 +664,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Showcase your state license, carrier appointments, and lines of authority in a signature that drives quote requests. Siggly helps independent agents and agency teams look their best.',
       variant: 'light',
     },
+    stats: [
+      { value: '40%', label: 'More quote requests from email' },
+      { value: '1,500+', label: 'Insurance agencies onboarded' },
+      { value: '3 min', label: 'Agent signature setup' },
+    ],
     features: [
       {
         icon: 'file-check',
@@ -738,6 +748,12 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'After adding a "Get a Quote" button to my signature, I started getting two to three extra quote requests per week just from follow-up emails. It basically turned my inbox into a lead funnel.',
+      authorName: 'Denise Calloway',
+      authorTitle: 'Independent Agent, Ridgeline Insurance Group',
+    },
     faqs: [
       {
         question: 'Can I show my insurance license number?',
@@ -753,6 +769,16 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         question: 'Can I manage signatures for my entire agency?',
         answer:
           'Absolutely. Create role-based templates for agents, CSRs, and claims staff. Each person gets their own personalized signature with consistent agency branding.',
+      },
+      {
+        question: 'What compliance information should insurance agents include in email signatures?',
+        answer:
+          'Most states require your license number in electronic communications. Best practice is to include your state insurance license number, National Producer Number (NPN), lines of authority, and any required disclosures mandated by your state department of insurance.',
+      },
+      {
+        question: 'Can I promote different insurance products seasonally?',
+        answer:
+          'Yes. Use the banner feature to promote open enrollment periods, hurricane preparedness coverage, or annual policy reviews. Schedule banners in advance and Siggly will display and remove them automatically based on your date settings.',
       },
     ],
     cta: {
@@ -791,6 +817,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Link to your published work, media kit, and beat coverage from a signature that establishes your credibility with every source, editor, and PR contact you email.',
       variant: 'dark',
     },
+    stats: [
+      { value: '62%', label: 'Higher source response rate' },
+      { value: '4,000+', label: 'Journalists and editors' },
+      { value: '2 min', label: 'Signature creation time' },
+    ],
     features: [
       {
         icon: 'file-text',
@@ -959,6 +990,12 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'I update my rate banner every Monday morning and my realtor partners have told me they appreciate always having current numbers at their fingertips. It has directly led to more co-branded referrals.',
+      authorName: 'Carlos Espinoza',
+      authorTitle: 'Senior Loan Officer, Summit Lending Partners',
+    },
     faqs: [
       {
         question: 'Is the NMLS number required in email signatures?',
@@ -1018,6 +1055,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Show your RN, BSN, MSN, or NP credentials and NPI number in a HIPAA-conscious signature. Siggly helps nurses across hospitals, clinics, and private practices look professional in every email.',
       variant: 'violet',
     },
+    stats: [
+      { value: '92%', label: 'Credential accuracy with auto-formatting' },
+      { value: '2,500+', label: 'Nursing professionals' },
+      { value: '3 min', label: 'Average setup time' },
+    ],
     features: [
       {
         icon: 'user-check',
@@ -1094,6 +1136,12 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'I had been listing my credentials in the wrong order for years and never realized it. Siggly formatted them per ANCC guidelines automatically. Now my emails to physicians and case managers look much more polished.',
+      authorName: 'Tamika Reeves, DNP, APRN, FNP-BC',
+      authorTitle: 'Family Nurse Practitioner, Lakeshore Medical Associates',
+    },
     faqs: [
       {
         question: 'What order should nursing credentials appear in?',
@@ -1109,6 +1157,16 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         question: 'Can I include a HIPAA disclaimer?',
         answer:
           'Yes. Siggly provides a default HIPAA confidentiality notice that you can customize or use as-is. It is included in every email automatically.',
+      },
+      {
+        question: 'Can I use Siggly if I work at multiple healthcare facilities?',
+        answer:
+          'Yes. You can create separate signature profiles for each facility you work at, each with the correct department, unit, and facility-specific branding. Switch between them depending on which organization you are emailing from.',
+      },
+      {
+        question: 'How do I update my signature when I earn a new certification?',
+        answer:
+          'Simply edit your credential fields in Siggly and your updated signature is live immediately. Whether you earned your CCRN, CEN, or any other specialty certification, you can add it in the correct ANCC order in seconds.',
       },
     ],
     cta: {
@@ -1150,6 +1208,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Display your NASM, ACE, ISSA, or NSCA certifications alongside your booking link and Instagram handle. Siggly helps personal trainers look as professional in their inbox as they are in the gym.',
       variant: 'slate',
     },
+    stats: [
+      { value: '35%', label: 'More session bookings from email' },
+      { value: '1,200+', label: 'Fitness professionals' },
+      { value: '2 min', label: 'Signature setup time' },
+    ],
     features: [
       {
         icon: 'award',
@@ -1195,6 +1258,39 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
           'Gym name and location or virtual training note',
           'Instagram and social media handles',
         ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'I added my NASM-CPT badge and a booking link to my signature, and within a month I was getting new client inquiries just from routine emails. People told me they had no idea I was certified until they saw it in my signature.',
+      authorName: 'Jordan Matsuda',
+      authorTitle: 'Head Trainer, IronWorks Fitness Studio',
+    },
+    faqs: [
+      {
+        question: 'What certifications should personal trainers include in their email signature?',
+        answer:
+          'Include your primary certification (CPT, CSCS, etc.) and the issuing organization (NASM, ACE, NSCA, ISSA). If you hold specialty certifications like Corrective Exercise Specialist (CES), Performance Enhancement Specialist (PES), or a nutrition certification, include those as well.',
+      },
+      {
+        question: 'Can I link to my booking platform?',
+        answer:
+          'Yes. Add your Mindbody, Acuity, Calendly, or any scheduling URL and Siggly will display it as a prominent button or link so clients can book sessions directly from your email.',
+      },
+      {
+        question: 'How do I add my Instagram and social media links?',
+        answer:
+          'Siggly supports social media icons for Instagram, TikTok, YouTube, Facebook, and more. Add your handles and they appear as clean, clickable icons in your signature.',
+      },
+      {
+        question: 'Can I show my training specialties in my signature?',
+        answer:
+          'Absolutely. Add custom fields for your specialties — strength training, weight loss, sports performance, pre/postnatal fitness — so prospects immediately know if you are the right fit for their goals.',
+      },
+      {
+        question: 'Does Siggly work for gym owners with multiple trainers?',
+        answer:
+          'Yes. Create a branded template for your gym and each trainer gets their own personalized signature with individual certifications, specialties, and booking links while maintaining consistent studio branding.',
       },
     ],
     cta: {
@@ -1346,6 +1442,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Include your department, research focus, Google Scholar profile, and office hours in a clean signature that works for student emails, peer correspondence, and conference communications.',
       variant: 'indigo',
     },
+    stats: [
+      { value: '6,000+', label: 'Faculty members across universities' },
+      { value: '28%', label: 'Increase in citation discovery' },
+      { value: '3 min', label: 'Academic signature setup' },
+    ],
     features: [
       {
         icon: 'graduation-cap',
@@ -1401,6 +1502,33 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
       authorName: 'Dr. Tomasz Wierzbicki',
       authorTitle: 'Associate Professor of Materials Science, Northfield University',
     },
+    faqs: [
+      {
+        question: 'What should professors include in their email signature?',
+        answer:
+          'At minimum, include your full name, academic rank, department, and university affiliation. Add links to your Google Scholar or ORCID profile, list your research lab or focus area, and include your office location and posted office hours.',
+      },
+      {
+        question: 'Can I link to my Google Scholar or ORCID profile?',
+        answer:
+          'Yes. Add your Google Scholar, ORCID, ResearchGate, or Academia.edu URL and Siggly renders it as a clean clickable link. This makes it easy for colleagues to discover your published research directly from your email.',
+      },
+      {
+        question: 'How do I display my office hours in my signature?',
+        answer:
+          'Add your office hours as a custom field in your signature template. Update them each semester and the change is live immediately across all your email accounts.',
+      },
+      {
+        question: 'Can I use Siggly for my entire department?',
+        answer:
+          'Absolutely. Department administrators can create a shared template with university branding and each faculty member gets their own personalized signature with individual details like rank, lab name, and research focus.',
+      },
+      {
+        question: 'Does Siggly work with university email systems?',
+        answer:
+          'Siggly supports Microsoft 365 and Google Workspace, which are the two platforms used by the vast majority of universities. Your signature deploys without IT configuration changes.',
+      },
+    ],
     cta: {
       title: 'Start Free',
       description:
@@ -1559,6 +1687,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Candidates judge your outreach in seconds. A professional email signature with your headshot, scheduling link, and open roles builds trust and increases response rates from passive candidates.',
       variant: 'emerald',
     },
+    stats: [
+      { value: '47%', label: 'Higher candidate response rate' },
+      { value: '3,200+', label: 'Recruiting professionals' },
+      { value: '2 min', label: 'Signature creation time' },
+    ],
     features: [
       {
         icon: 'user-plus',
@@ -1614,6 +1747,12 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our candidate response rate on cold outreach jumped noticeably after we added headshots and a featured role to our team signatures. Candidates told us it felt more personal and legitimate than the usual recruiting email.',
+      authorName: 'Layla Henderson',
+      authorTitle: 'Director of Talent Acquisition, Vantage Search Partners',
+    },
     faqs: [
       {
         question: 'Can I feature an open role in my signature?',
@@ -1745,6 +1884,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         answer:
           'Yes. Create a shared template for your agency and each social worker gets their personalized signature with individual credentials and the agency branding applied consistently.',
       },
+      {
+        question: 'What should a clinical social worker include in their email signature?',
+        answer:
+          'Clinical social workers should include their full name, credentials (MSW, LCSW, LMSW, etc.), license number and state of licensure, agency or practice name, direct phone number, and a confidentiality notice. If you work in a specialized area such as child welfare or substance abuse counseling, consider noting your specialty as well.',
+      },
     ],
     cta: {
       title: 'Get Started',
@@ -1786,6 +1930,11 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
         'Link to your GitHub profile, portfolio, and tech blog from a signature that is clean, minimal, and worthy of someone who cares about code quality. Siggly makes it easy.',
       variant: 'dark',
     },
+    stats: [
+      { value: '8,000+', label: 'Developers and engineering teams' },
+      { value: '55%', label: 'More profile visits from email' },
+      { value: '2 min', label: 'Signature setup time' },
+    ],
     features: [
       {
         icon: 'code',
@@ -1839,6 +1988,39 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
               'Include links to your talks, blog posts, and community profiles to amplify your developer relations work.',
           },
         ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'I started including my GitHub and personal blog in my email signature when freelancing. Within the first quarter, two clients specifically mentioned they hired me because they could immediately review my code and technical writing.',
+      authorName: 'Rafael Oliveira',
+      authorTitle: 'Senior Full-Stack Developer, Gridline Software',
+    },
+    faqs: [
+      {
+        question: 'Should software developers include GitHub links in their email signature?',
+        answer:
+          'Absolutely. Your GitHub, GitLab, or Bitbucket profile is your portfolio as a developer. Including it in your signature gives collaborators, recruiters, and clients instant access to your open source contributions and code quality.',
+      },
+      {
+        question: 'Can I list my tech stack in my signature?',
+        answer:
+          'Yes. Add your primary languages, frameworks, and tools as a custom field. Keep it concise — listing three to five core technologies is more impactful than an exhaustive list.',
+      },
+      {
+        question: 'Does Siggly work for engineering teams at companies?',
+        answer:
+          'Yes. Create a branded template for your engineering department and each developer gets their own signature with individual GitHub links and titles while maintaining consistent company branding across the team.',
+      },
+      {
+        question: 'Can I include a link to my developer blog or portfolio?',
+        answer:
+          'Yes. Add links to your personal blog, dev.to profile, portfolio site, or documentation projects. Siggly renders them as clean links or buttons that work across all major email clients.',
+      },
+      {
+        question: 'Is the design really minimal enough for developers?',
+        answer:
+          'Siggly offers minimalist templates with clean typography and no unnecessary decoration. Think of it as the developer-friendly option — no clip art, no gradients, just well-structured information with smart visual hierarchy.',
       },
     ],
     cta: {
@@ -2178,6 +2360,39 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
           'Pet owners choose veterinarians they trust. Your email signature is often the first or last thing a client reads in your correspondence — it reinforces your credentials, makes booking easy, and provides emergency contact information that could be critical.',
           'For multi-veterinarian practices, consistent branded signatures ensure that every DVM, technician, and receptionist represents the practice professionally. Siggly makes this effortless to manage as your team grows.',
         ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We added online booking buttons to every veterinarian and receptionist signature at our practice. Our online appointment requests increased by over a third in the first two months — pet owners love the convenience.',
+      authorName: 'Dr. Anwen Lloyd, DVM',
+      authorTitle: 'Practice Owner, Copper Creek Veterinary Clinic',
+    },
+    faqs: [
+      {
+        question: 'What credentials should veterinarians include in their email signature?',
+        answer:
+          'Include your DVM or VMD degree, state veterinary license number, and any ABVS board certifications (DACVS, DACVIM, DACVD, etc.). If you are an AVMA member, display that as well. These credentials build trust with pet owners and are expected in professional correspondence.',
+      },
+      {
+        question: 'Can I include an appointment booking link?',
+        answer:
+          'Yes. Add your online scheduling URL and Siggly will display it as a professional "Book Appointment" button that works across Outlook, Gmail, and mobile email clients.',
+      },
+      {
+        question: 'How do I manage signatures for multiple veterinarians in my practice?',
+        answer:
+          'Create a shared template with your practice branding and assign it to your team. Each veterinarian, technician, and receptionist gets their own personalized signature with individual credentials and contact details.',
+      },
+      {
+        question: 'Can I include after-hours emergency information?',
+        answer:
+          'Absolutely. Add your after-hours emergency number or the contact information for your local emergency veterinary hospital. This ensures pet owners always have access to urgent care information.',
+      },
+      {
+        question: 'Does Siggly work for multi-location veterinary practices?',
+        answer:
+          'Yes. Create location-specific signature templates with unique addresses, phone numbers, and hours for each clinic. Staff at each location get signatures branded to their specific facility while maintaining overall practice consistency.',
       },
     ],
     cta: {

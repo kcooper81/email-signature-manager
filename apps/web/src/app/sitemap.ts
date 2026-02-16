@@ -10,6 +10,7 @@ import { templatesPages } from '@/lib/seo-pages/data/templates';
 import { emailSignaturesPages } from '@/lib/seo-pages/data/email-signatures';
 import { alternativesPages } from '@/lib/seo-pages/data/alternatives';
 import { platformsPages } from '@/lib/seo-pages/data/platforms';
+import { glossaryPages } from '@/lib/seo-pages/data/glossary';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
@@ -123,6 +124,7 @@ const blogPosts = [
   { slug: 'gdpr-email-signature-requirements', date: '2025-10-18' },
   { slug: 'exclaimer-alternative', date: '2025-10-17' },
   { slug: 'codetwo-alternative', date: '2025-10-16' },
+  { slug: 'why-email-signatures-matter', date: '2026-01-28' },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -217,6 +219,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/demo`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/glossary`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
   ];
@@ -234,6 +237,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { pages: emailSignaturesPages, priority: 0.8, changeFrequency: 'monthly' },
     { pages: alternativesPages, priority: 0.85, changeFrequency: 'weekly' },
     { pages: platformsPages, priority: 0.8, changeFrequency: 'monthly' },
+    { pages: glossaryPages, priority: 0.7, changeFrequency: 'monthly' },
   ];
 
   const seoLandingPages: MetadataRoute.Sitemap = seoRouteMap.flatMap(

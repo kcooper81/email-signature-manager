@@ -29,6 +29,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Present a unified, authoritative image with every email your team sends. The corporate template features structured layouts designed for enterprise branding, complete with logo placement, department details, and social links.',
       variant: 'dark',
     },
+    stats: [
+      { value: '92%', label: 'Brand consistency improvement' },
+      { value: '500+', label: 'Enterprises deployed' },
+      { value: '5 min', label: 'Average team rollout' },
+    ],
     features: [
       {
         icon: 'building',
@@ -170,6 +175,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Less is more. The minimalist template strips away visual noise to deliver a signature that is clean, elegant, and effortlessly professional. Perfect for those who value simplicity and clarity.',
       variant: 'light',
     },
+    stats: [
+      { value: '74%', label: 'Faster email load times' },
+      { value: '2 min', label: 'Setup to deploy' },
+      { value: '4.8/5', label: 'Readability rating' },
+    ],
     features: [
       {
         icon: 'layout',
@@ -300,6 +310,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Make every email a statement. The creative template offers bold color palettes, dynamic layouts, and room for visual flair that showcases your personality and artistic vision.',
       variant: 'violet',
     },
+    stats: [
+      { value: '3x', label: 'More portfolio clicks' },
+      { value: '60%', label: 'Higher reply rates' },
+      { value: '10 min', label: 'Full customization' },
+    ],
     features: [
       {
         icon: 'palette',
@@ -437,6 +452,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Stay current with a signature that reflects today\'s design standards. The modern template combines flat aesthetics, smart color accents, and balanced typography for a fresh, professional look.',
       variant: 'emerald',
     },
+    stats: [
+      { value: '88%', label: 'Client compatibility rate' },
+      { value: '1,200+', label: 'Teams using it' },
+      { value: '3 min', label: 'Average setup time' },
+    ],
     features: [
       {
         icon: 'layout',
@@ -570,6 +590,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'The gold standard for business email signatures. The professional template balances structure and style to deliver a signature that looks great, communicates clearly, and works everywhere.',
       variant: 'indigo',
     },
+    stats: [
+      { value: '10,000+', label: 'Professionals using it' },
+      { value: '99%', label: 'Email client support' },
+      { value: '5 min', label: 'Setup to inbox' },
+    ],
     features: [
       {
         icon: 'award',
@@ -707,6 +732,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Move fast and look great doing it. The startup template is built for growing teams that need a professional, energetic email presence without slowing down to fuss over design details.',
       variant: 'slate',
     },
+    stats: [
+      { value: '2,000+', label: 'Startups onboarded' },
+      { value: '45 sec', label: 'Per-member setup' },
+      { value: '28%', label: 'More demo bookings' },
+    ],
     features: [
       {
         icon: 'rocket',
@@ -837,6 +867,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Communicate authority and sophistication in every message. The executive template features refined typography, muted color palettes, and a distinguished layout befitting senior leadership.',
       variant: 'dark',
     },
+    stats: [
+      { value: '95%', label: 'Executive adoption rate' },
+      { value: '350+', label: 'C-suite leaders using it' },
+      { value: '4 min', label: 'Signature setup' },
+    ],
     features: [
       {
         icon: 'award',
@@ -971,6 +1006,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Turn every email into a conversion opportunity. The sales representative template is engineered for outbound success with built-in booking links, social proof, and strategic call-to-action placement.',
       variant: 'light',
     },
+    stats: [
+      { value: '23%', label: 'More meetings booked' },
+      { value: '1,500+', label: 'Sales teams deployed' },
+      { value: '3 min', label: 'Rep onboarding' },
+    ],
     features: [
       {
         icon: 'target',
@@ -1116,6 +1156,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Make every email a listing opportunity. The real estate agent template features brokerage branding, license credentials, featured property links, and a design that builds buyer and seller confidence.',
       variant: 'violet',
     },
+    stats: [
+      { value: '40%', label: 'More listing inquiries' },
+      { value: '900+', label: 'Agents using it' },
+      { value: '5 min', label: 'Full agent setup' },
+    ],
     features: [
       {
         icon: 'building',
@@ -1252,6 +1297,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Communicate trust, authority, and professionalism with a signature designed for legal professionals. The lawyer template supports bar admissions, practice areas, and the confidentiality notices your practice requires.',
       variant: 'emerald',
     },
+    stats: [
+      { value: '100%', label: 'Disclaimer compliance' },
+      { value: '400+', label: 'Law firms using it' },
+      { value: '6 min', label: 'Firm-wide deployment' },
+    ],
     features: [
       {
         icon: 'briefcase',
@@ -1383,6 +1433,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Inspire patient confidence with a signature that communicates expertise and care. The doctor template displays your medical credentials, specialty, and practice information alongside HIPAA-compliant disclaimer language.',
       variant: 'indigo',
     },
+    stats: [
+      { value: '30%', label: 'Fewer front-desk calls' },
+      { value: '650+', label: 'Physicians using it' },
+      { value: '4 min', label: 'Provider onboarding' },
+    ],
     features: [
       {
         icon: 'heart',
@@ -1519,6 +1574,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Position yourself as the expert your clients need. The consultant template highlights your areas of expertise, professional certifications, and makes booking your time effortless.',
       variant: 'slate',
     },
+    stats: [
+      { value: '35%', label: 'More consultation bookings' },
+      { value: '750+', label: 'Consultants using it' },
+      { value: '3 min', label: 'Profile setup' },
+    ],
     features: [
       {
         icon: 'briefcase',
@@ -1650,6 +1710,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Stand out from the crowd and win more clients. The freelancer template is built for independent professionals who want to project credibility, showcase their skills, and make hiring them effortless.',
       variant: 'dark',
     },
+    stats: [
+      { value: '2x', label: 'More client inquiries' },
+      { value: '1,800+', label: 'Freelancers using it' },
+      { value: '2 min', label: 'Signature creation' },
+    ],
     features: [
       {
         icon: 'edit-3',
@@ -1784,6 +1849,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Every email is a marketing opportunity. The marketing manager template turns your signature into a brand touchpoint with campaign banners, social links, and strategic CTAs that drive measurable results.',
       variant: 'light',
     },
+    stats: [
+      { value: '22%', label: 'More campaign click-throughs' },
+      { value: '1,000+', label: 'Marketing teams using it' },
+      { value: '4 min', label: 'Team-wide setup' },
+    ],
     features: [
       {
         icon: 'trending-up',
@@ -1924,6 +1994,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Communicate technical authority with a signature built for IT professionals. Display your certifications, support channels, and technical expertise in a clean, structured format that tech teams respect.',
       variant: 'violet',
     },
+    stats: [
+      { value: '85%', label: 'Faster support resolution' },
+      { value: '1,100+', label: 'IT professionals using it' },
+      { value: '90 sec', label: 'Template setup' },
+    ],
     features: [
       {
         icon: 'monitor',
@@ -2272,6 +2347,12 @@ export const templatesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our multi-provider clinic deployed HIPAA-compliant signatures to 45 staff members in a single morning. Patients now click the scheduling link directly from our emails, which has cut phone wait times dramatically.',
+      authorName: 'Dr. Renata Oliveira',
+      authorTitle: 'Medical Director at Lakeshore Family Health',
+    },
     faqs: [
       {
         question: 'Can I display board certifications and specialty credentials?',
@@ -2464,6 +2545,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Public servants need email signatures that project authority, transparency, and compliance. This template provides clean, accessible layouts with agency seals, official titles, and mandatory disclosure notices.',
       variant: 'dark',
     },
+    stats: [
+      { value: '100%', label: 'Section 508 compliant' },
+      { value: '200+', label: 'Agencies deployed' },
+      { value: '8 min', label: 'Department-wide rollout' },
+    ],
     features: [
       {
         icon: 'landmark',
@@ -2541,6 +2627,12 @@ export const templatesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Rolling out compliant signatures across our 300-person department used to take weeks of back-and-forth with IT. With Siggly, we deployed Section 508-compliant signatures to everyone in a single afternoon.',
+      authorName: 'Carolyn Whitmore',
+      authorTitle: 'Communications Director at the State Bureau of Public Works',
+    },
     cta: {
       title: 'Serve the Public with Professional Email',
       description:
@@ -3056,6 +3148,12 @@ export const templatesPages: SEOLandingPageData[] = [
         ],
       },
     ],
+    testimonial: {
+      quote:
+        'Our compliance team used to spend hours reviewing advisor signatures before every audit. Siggly locked disclosures eliminated that workload entirely. We passed our last FINRA examination without a single email-related finding.',
+      authorName: 'Gregory Tanaka',
+      authorTitle: 'Chief Compliance Officer at Redstone Wealth Partners',
+    },
     cta: {
       title: 'Compliance-Ready Financial Signatures',
       description:
@@ -3095,6 +3193,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'First impressions matter in event planning. This template lets you showcase upcoming events, share booking calendars, and display vendor certifications in a signature that is as polished as the events you produce.',
       variant: 'slate',
     },
+    stats: [
+      { value: '20%', label: 'More consultation bookings' },
+      { value: '500+', label: 'Event planners using it' },
+      { value: '5 min', label: 'Full profile setup' },
+    ],
     features: [
       {
         icon: 'calendar',
@@ -3213,6 +3316,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Let your images do the talking. This template features a hero image area for your best shot, gallery links, and booking integration in a layout that treats your email signature as a mini portfolio.',
       variant: 'dark',
     },
+    stats: [
+      { value: '3x', label: 'More gallery visits' },
+      { value: '700+', label: 'Photographers using it' },
+      { value: '3 min', label: 'Portfolio setup' },
+    ],
     features: [
       {
         icon: 'image',
@@ -3330,6 +3438,11 @@ export const templatesPages: SEOLandingPageData[] = [
         'Your coaching practice thrives on connection and credibility. This template features session booking links, ICF or NBHWC certification badges, client testimonials, and a warm design that invites prospects to take the next step.',
       variant: 'light',
     },
+    stats: [
+      { value: '45%', label: 'More discovery calls booked' },
+      { value: '600+', label: 'Coaches using it' },
+      { value: '4 min', label: 'Practice setup' },
+    ],
     features: [
       {
         icon: 'target',
