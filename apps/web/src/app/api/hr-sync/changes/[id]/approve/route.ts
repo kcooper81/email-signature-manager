@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, checkLimit, planDenied, limitDenied } from '@/lib/billing/plan-guard';
+import { processEvent, type WorkflowRunContext } from '@/lib/lifecycle/workflow-runner';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,79 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .from('sync_change_queue')
       .update({ status: 'approved', reviewed_by: userData.id, reviewed_at: new Date().toISOString() })
       .eq('id', id);
+
+    // Fire lifecycle event so workflows trigger
+    const eventTypeMap: Record<string, string> = {
+      create: 'user_created',
+      update: 'user_updated',
+      deactivate: 'user_offboarded',
+    };
+
+    const eventType = eventTypeMap[change.change_type];
+    if (eventType) {
+      // Determine the target user ID
+      let targetUserId = change.user_id;
+      if (change.change_type === 'create' && !targetUserId) {
+        // For new users, look up the just-created user by email
+        const { data: newUser } = await supabase
+          .from('users')
+          .select('id, department')
+          .eq('email', change.user_email)
+          .eq('organization_id', userData.organization_id)
+          .single();
+        targetUserId = newUser?.id;
+      }
+
+      if (targetUserId) {
+        // Get user department for workflow filtering
+        const { data: targetUserData } = await supabase
+          .from('users')
+          .select('department')
+          .eq('id', targetUserId)
+          .single();
+
+        const { data: lifecycleEvent } = await supabase
+          .from('lifecycle_events')
+          .insert({
+            organization_id: userData.organization_id,
+            user_id: targetUserId,
+            event_type: eventType,
+            event_source: 'hr_sync',
+            event_data: {
+              changeId: id,
+              changeType: change.change_type,
+              fieldChanges: change.field_changes,
+              approvedBy: userData.id,
+            },
+            processed: false,
+          })
+          .select('id')
+          .single();
+
+        if (lifecycleEvent) {
+          // Process the event to trigger matching workflows
+          try {
+            const eventContext: WorkflowRunContext = {
+              eventId: lifecycleEvent.id,
+              organizationId: userData.organization_id,
+              userId: targetUserId,
+              eventType,
+              eventSource: 'hr_sync',
+              eventData: {
+                changeId: id,
+                changeType: change.change_type,
+                fieldChanges: change.field_changes,
+              },
+              userDepartment: targetUserData?.department || undefined,
+            };
+            await processEvent(eventContext);
+          } catch (err) {
+            // Log but don't fail the approval if workflow processing fails
+            console.error('Lifecycle event processing failed:', err);
+          }
+        }
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

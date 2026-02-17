@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { TemplateEditor } from '@/components/templates/editor';
 import { RulesManager } from '@/components/templates/rules-manager';
 import type { SignatureBlock, IndustryType } from '@/components/templates/types';
-import { Loader2, Paintbrush, Target } from 'lucide-react';
+import { AlertCircle, Loader2, Paintbrush, Target } from 'lucide-react';
 
 interface PageProps {
   params: { id: string };
@@ -24,6 +24,7 @@ export default function EditTemplatePage({ params }: PageProps) {
   const [activeTab, setActiveTab] = useState<'design' | 'rules'>('design');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [brandError, setBrandError] = useState<string[] | null>(null);
 
   useEffect(() => {
     loadTemplate();
@@ -76,43 +77,23 @@ export default function EditTemplatePage({ params }: PageProps) {
 
   const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry?: IndustryType) => {
     setSaving(true);
+    setBrandError(null);
 
     try {
-      const supabase = createClient();
-      
-      // Get current user's organization for security
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/templates');
-        return;
-      }
+      const res = await fetch(`/api/templates/${params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description, blocks, industry: industry || 'general' }),
+      });
 
-      const { data: currentUser } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('auth_id', user.id)
-        .single();
+      const data = await res.json();
 
-      if (!currentUser?.organization_id) {
-        router.push('/templates');
-        return;
-      }
-
-      // Update template - FILTERED BY ORGANIZATION to prevent cross-org modification
-      const { error } = await supabase
-        .from('signature_templates')
-        .update({
-          name,
-          description,
-          blocks,
-          industry: industry || 'general',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', params.id)
-        .eq('organization_id', currentUser.organization_id);
-
-      if (error) {
-        console.error('Failed to save template:', error);
+      if (!res.ok) {
+        if (data.violations) {
+          setBrandError(data.violations);
+        } else {
+          setBrandError([data.error || 'Failed to save template']);
+        }
         return;
       }
 
@@ -138,6 +119,19 @@ export default function EditTemplatePage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
+      {brandError && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-red-800">Brand guideline violations</p>
+              <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
+                {brandError.map((v, i) => <li key={i}>{v}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Tabs */}
       <div className="border-b">
         <nav className="flex gap-4">
