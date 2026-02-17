@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        break;
     }
 
     return NextResponse.json({ received: true });
@@ -123,10 +123,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
 
-  console.log('[Webhook] Checkout completed:', { customerId, subscriptionId });
-
   if (!subscriptionId) {
-    console.log('[Webhook] No subscription ID in session');
     return;
   }
 
@@ -135,7 +132,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   // Determine plan from all line items (handles multi-item subscriptions)
   const plan = getPlanFromSubscription(subscription);
-  console.log('[Webhook] Detected plan:', plan);
 
   // Update our database
   const supabase = getSupabaseAdmin();
@@ -171,8 +167,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     if (error) {
       console.error('[Webhook] Failed to update subscription after checkout:', error);
     } else {
-      console.log('[Webhook] Successfully updated subscription to plan:', plan);
-      
       // Log the subscription event
       const eventType = oldPlan === 'free' ? 'created' : 
                         getPlanRank(plan) > getPlanRank(oldPlan) ? 'upgraded' : 'downgraded';
@@ -197,8 +191,6 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   const status = mapStripeStatus(subscription.status);
   const plan = getPlanFromSubscription(subscription);
-
-  console.log('[Webhook] Subscription updated:', { customerId, subscriptionId: subscription.id, plan, status });
 
   const supabase = getSupabaseAdmin();
   
@@ -225,8 +217,6 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   if (error) {
     console.error('[Webhook] Failed to update subscription:', error);
   } else {
-    console.log('[Webhook] Successfully updated subscription');
-    
     // Log event if plan or status changed
     if (existingSub && (existingSub.plan !== plan || existingSub.status !== status)) {
       let eventType = 'updated';
@@ -432,7 +422,5 @@ async function logSubscriptionEvent(
 
   if (error) {
     console.error('[Webhook] Failed to log subscription event:', error);
-  } else {
-    console.log('[Webhook] Logged subscription event:', data.eventType);
   }
 }

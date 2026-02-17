@@ -10,6 +10,4 @@ export async function archiveData(context: WorkflowRunContext, _config: Record<s
     .delete()
     .eq('user_id', context.userId)
     .eq('organization_id', context.organizationId);
-
-  console.log(`[Lifecycle] Archived signature data for user ${context.userId}`);
 }
