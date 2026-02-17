@@ -96,48 +96,31 @@ export default function NewTemplatePage() {
   // Check if user can create more templates
   const canCreate = devBypass || limits.maxTemplates === -1 || templateCount < limits.maxTemplates;
 
+  const [brandError, setBrandError] = useState<string[] | null>(null);
+
   const handleSave = async (name: string, description: string, blocks: SignatureBlock[], industry?: string) => {
     setSaving(true);
+    setBrandError(null);
 
     try {
-      const supabase = createClient();
-      
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description, blocks, industry: industry || 'general' }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.violations) {
+          setBrandError(data.violations);
+        } else {
+          setBrandError([data.error || 'Failed to save template']);
+        }
         return;
       }
 
-      // Get CURRENT USER's organization - CRITICAL for multi-tenant security
-      const { data: userData } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('auth_id', user.id)
-        .single();
-
-      if (!userData?.organization_id) {
-        router.push('/dashboard');
-        return;
-      }
-
-      // Create the template under user's organization
-      const { error } = await supabase
-        .from('signature_templates')
-        .insert({
-          organization_id: userData.organization_id,
-          name,
-          description,
-          blocks,
-          industry: industry || 'general',
-          is_default: false,
-        })
-        .select('id')
-        .single();
-
-      if (!error) {
-        router.push('/templates');
-      }
+      router.push('/templates');
     } finally {
       setSaving(false);
     }
@@ -168,10 +151,25 @@ export default function NewTemplatePage() {
   }
 
   return (
-    <TemplateEditor
-      initialBlocks={defaultBlocks}
-      onSave={handleSave}
-      saving={saving}
-    />
+    <>
+      {brandError && (
+        <div className="mx-auto max-w-4xl mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-red-800">Brand guideline violations</p>
+              <ul className="mt-1 text-sm text-red-700 list-disc list-inside">
+                {brandError.map((v, i) => <li key={i}>{v}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+      <TemplateEditor
+        initialBlocks={defaultBlocks}
+        onSave={handleSave}
+        saving={saving}
+      />
+    </>
   );
 }
