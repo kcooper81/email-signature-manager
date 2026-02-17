@@ -1,518 +1,406 @@
-# Simple Testing Guide for Email Signature Manager
+# Siggly — User Guide
 
-## Getting Started
+Welcome to Siggly! This guide walks you through every feature in the app so you can explore, test, and verify things work end-to-end. Each section tells you **which account type to log in as** so you always know the right context.
 
-Before testing, make sure all database updates are complete. Ask your developer to run the 13 migration files in Supabase.
+> **Before you start:** Make sure your developer has run all database migrations in Supabase.
 
 ---
 
-## Feature 1: Personal Links
+## Account Types Reference
 
-**What it does:** Lets employees add their personal social media and scheduling links to their email signatures.
+Throughout this guide, you'll see badges like **[Admin]**, **[Employee]**, etc. Here's what they mean:
 
-### How to Test:
+| Badge | Who | How to log in |
+|-------|-----|---------------|
+| **[Owner]** | The person who created the organization | Log in with the original account |
+| **[Admin]** | A team member with admin access | Assigned by the Owner on the Team page |
+| **[Editor]** | Can create and edit templates | Assigned by Owner/Admin |
+| **[Viewer]** | Read-only access | Assigned by Owner/Admin |
+| **[Employee]** | A team member using self-service | Accept an invite link and create an account |
+| **[Free]** | Any user on the Free plan | Default plan for new orgs |
+| **[Pro]** | Any user on the Professional plan | Upgrade via Settings → Billing |
+| **[Enterprise]** | Any user on the Enterprise plan | Contact sales or use dev bypass |
 
-**As an Admin:**
-1. Log into the app
-2. Go to the **Team** page
-3. Click the **Edit** button next to any team member's name
-4. Scroll down to the **Personal Links** section
-5. Add some test links:
+> **Tip:** To test pay-gated features without upgrading, your developer can set `NEXT_PUBLIC_BYPASS_PAY_GATES=true` in the environment. A yellow "Pay Gates Bypassed" badge appears in the bottom-right corner when active.
+
+---
+
+## 1. Personal Links
+
+Lets employees add their own social media and scheduling links to email signatures.
+
+### **[Admin]** — Add links for a team member
+1. Go to the **Team** page
+2. Click **Edit** next to any team member
+3. Scroll to the **Personal Links** section
+4. Add some test links:
    - Calendly: `https://calendly.com/john-smith`
    - LinkedIn: `https://linkedin.com/in/john-smith`
-6. Click **Save Changes**
-7. You should see a success message
+5. Click **Save Changes** — you should see a success message
 
-**As an Employee:**
-1. Log into the app
-2. Go to **Settings** (top right)
-3. Click the **Profile** tab
-4. Scroll to **Personal Links**
-5. Add or update your links
-6. Click **Save Changes**
-7. You should see "Saved!" message
+### **[Employee]** — Add your own links
+1. Go to **Settings** → **Profile** tab
+2. Scroll to **Personal Links**
+3. Add or update your links
+4. Click **Save Changes** — you should see "Saved!"
 
-**Verify it Works:**
+### **[Any user]** — Verify links appear in signatures
 1. Go to **Templates** and edit any template
-2. Add text like: "Book a meeting: {{calendly_url}}"
+2. Add text like: `Book a meeting: {{calendly_url}}`
 3. Save the template
 4. Generate a signature for yourself
-5. Your actual Calendly link should appear (not the placeholder text)
-
-✅ **Success:** Personal links save correctly and appear in signatures
+5. Your actual Calendly link should appear in the output (not the placeholder)
 
 ---
 
-## Feature 2: Bulk Employee Invites
+## 2. Bulk Employee Invites
 
-**What it does:** Admins can invite multiple employees at once to create their own accounts and manage their profiles.
+Admins can invite multiple employees at once to create their own accounts.
 
-### How to Test:
-
-**Setup:**
-1. Make sure you have at least one team member who doesn't have an account yet
-2. If needed, add a test employee on the Team page
-
-**Send Invites:**
+### **[Admin]** — Send invites
 1. Go to the **Team** page
-2. Check the boxes next to 2-3 employees
-3. Click the **Invite to Self-Manage** button
+2. Check the boxes next to 2–3 employees who don't have accounts yet
+3. Click **Invite to Self-Manage**
 4. You should see: "Successfully sent X invites"
 
-**Accept Invite (as Employee):**
-1. Ask your developer to get the invite link from the database
-2. Open the invite link in a new browser (or incognito window)
+### **[Employee]** — Accept an invite
+1. Get the invite link (check email, or ask your developer to get it from the database)
+2. Open the link in a **new browser** or **incognito window**
 3. You'll see a "Create Your Account" page
-4. Enter a password (at least 8 characters)
-5. Confirm the password
-6. Click **Create Account**
-7. You should be redirected to the Settings page
+4. Enter and confirm a password (at least 8 characters)
+5. Click **Create Account** — you'll be redirected to the Settings page
 
-**Verify:**
-1. Log out and log back in with the new employee's email and password
-2. You should be able to access the app
-3. Go to Settings and update your profile
-
-✅ **Success:** Employees can create accounts via invite and manage their own profiles
+### **[Employee]** — Verify your account works
+1. Log out, then log back in with the new email and password
+2. You should be able to access the app and update your profile under Settings
 
 ---
 
-## Feature 3: Signature Rules
+## 3. Signature Rules
 
-**What it does:** Automatically shows different signatures based on who's sending and who's receiving the email.
+Automatically show different signatures based on sender, recipient, department, or date.
 
-### How to Test:
-
-**Create Test Templates:**
+### **[Admin or Editor]** — Create test templates
 1. Go to **Templates**
 2. Create a template called "Internal Template" with text: "This is for internal emails"
 3. Create another called "External Template" with text: "This is for external emails"
 
-**Create Rules:**
-1. Open the "External Template"
-2. Click the **Rules** tab
-3. Click **Add Rule**
-4. Fill in:
+### **[Admin or Editor]** — Create recipient-based rules
+1. Open the "External Template" → click the **Rules** tab
+2. Click **Add Rule** and fill in:
    - Name: "External Emails Only"
    - Recipients: Select "All external"
    - Status: Active
-5. Click **Create Rule**
-6. You should see the rule appear in the list
+3. Click **Create Rule** — it should appear in the list
+4. Repeat for "Internal Template" with recipient set to "All internal"
 
-**Create Another Rule:**
-1. Open the "Internal Template"
-2. Click the **Rules** tab
-3. Click **Add Rule**
-4. Fill in:
-   - Name: "Internal Emails Only"
-   - Recipients: Select "All internal"
-5. Click **Create Rule**
+### **[Admin or Editor]** — Create department-based rules
+1. Create a template called "Sales Template"
+2. Go to the **Rules** tab → **Add Rule**
+3. Set Sender to "Specific departments" → check "Sales"
+4. Save — only Sales team members will get this signature
 
-**Test Department Rules:**
-1. Create a new template called "Sales Template"
-2. Go to Rules tab
-3. Add a rule:
-   - Name: "Sales Department"
-   - Sender: Select "Specific departments" → Check "Sales"
-4. Save the rule
-
-**Test Campaign Dates:**
+### **[Admin or Editor]** — Create date-based campaign rules
 1. Create a template called "Holiday Campaign"
-2. Add a rule:
-   - Name: "Holiday Promo"
-   - Start Date: Today
-   - End Date: One week from today
-   - Recipients: "All external"
-3. This signature will only show during those dates
-
-✅ **Success:** Rules appear in the list and can be edited/deleted
+2. Add a rule with Start Date (today) and End Date (one week out)
+3. Set Recipients to "All external"
+4. This signature will only show during those dates
 
 ---
 
-## Feature 4: Campaign Banners
+## 4. Campaign Banners
 
-**What it does:** Add promotional banners to signatures that can be tracked when clicked.
+Add promotional banners to signatures with click tracking.
 
-### How to Test:
-
-**Add a Banner:**
-1. Go to **Templates** and edit any template
+### **[Admin or Editor]** — Add a banner to a template
+1. Go to **Templates** → edit any template
 2. Click **Add Block** → **Banner**
-3. Upload an image or use a URL
-4. Add a link URL (like your website)
+3. Upload an image or paste a URL
+4. Add a destination link (like your website)
 5. Set width to 600px
 6. Save the template
 
-**Schedule a Campaign:**
+### **[Admin or Editor]** — Schedule the banner
 1. Go to the **Rules** tab on that template
-2. Create a rule with:
-   - Start date: Today
-   - End date: Next week
-   - Recipients: "All external"
-3. The banner will only show during these dates
+2. Create a rule with a start date, end date, and recipients set to "All external"
+3. The banner will only appear during those dates
 
-**Test Click Tracking:**
+### **[Any user]** — Test click tracking
 1. Generate a signature with the banner
-2. Copy the signature HTML
-3. Paste it into an email or HTML viewer
-4. Click the banner
-5. You should be redirected to your website
-
-✅ **Success:** Banner appears in signature and is clickable
+2. Copy the HTML and paste it into an email or HTML viewer
+3. Click the banner — you should be redirected to the destination URL
 
 ---
 
-## Feature 5: Analytics & Click Tracking
+## 5. Analytics & Click Tracking
 
-**What it does:** Tracks when people click links in your signatures so you can measure effectiveness.
+Track link clicks across your organization's signatures.
 
-### How to Test:
+### **[Admin]** — View analytics
+1. Go to the **Analytics** page from the sidebar
+2. You'll see tabs: Overview, Deployments, Templates, Marketing, Sales, HR, IT, Campaigns
+3. On the Free plan, you'll see a 7-day preview with an upgrade prompt
+4. On Professional, you get 30-day and 90-day reporting
 
-**Test the Tracking:**
+### **[Any user]** — Generate some click data
 1. Create a signature with a Calendly or LinkedIn link
-2. Generate the signature
-3. Copy the signature HTML
-4. Paste into an email
-5. Click the link
-6. You should be redirected to the actual website
-
-**View Analytics:**
-1. Ask your developer to check the database for click data
-2. They should see your test clicks logged with:
-   - The link you clicked
-   - What type of link it was (Calendly, LinkedIn, etc.)
-   - When you clicked it
-
-✅ **Success:** Clicks are being tracked in the background
+2. Generate and copy the signature HTML
+3. Paste into an email and click the links
+4. Your developer can verify clicks are logged in the database
 
 ---
 
-## Feature 6: Roles & Permissions
+## 6. Roles & Permissions
 
-**What it does:** Control what different users can do in the app (view only, edit, full admin, etc.)
+Control what different team members can do in the app.
 
-### How to Test:
+### **[Owner]** — Verify default roles
+Your organization should have these 4 roles:
+- **Owner** — full access to everything including billing
+- **Admin** — manages everything except billing
+- **Editor** — creates and edits templates
+- **Viewer** — read-only access
 
-**Check Default Roles:**
-Ask your developer to verify these 4 roles exist:
-- **Owner** - Can do everything
-- **Admin** - Can manage everything except billing
-- **Editor** - Can create and edit templates
-- **Viewer** - Can only view, not edit
+### **[Owner or Admin]** — Assign roles
+1. Go to the **Team** page
+2. Edit a team member and assign them a role
+3. Their access will update immediately
 
-**Assign a Role:**
-1. Your developer will need to assign roles to users in the database
-2. Once assigned, users will only see features they have permission for
-
-**Test Permissions:**
-1. Log in as a user with "Viewer" role
-2. You should NOT see Edit or Delete buttons
-3. You should only be able to view templates and analytics
-
-✅ **Success:** Different users have different access levels
+### **[Viewer]** — Verify restricted access
+1. Log in as a Viewer
+2. You should **not** see Edit or Delete buttons on templates
+3. You should only be able to view templates, analytics, and your own profile
 
 ---
 
-## Feature 7: Audit Logs
+## 7. Audit Logs
 
-**What it does:** Keeps a record of every action taken in the app for security and compliance.
+Every action in the app is recorded for security and compliance.
 
-### How to Test:
-
-**Create Some Actions:**
+### **[Admin]** — Generate and review logs
 1. Create a new template
-2. Edit the template
-3. Delete the template
-
-**Check the Logs:**
-Ask your developer to check the audit logs. They should see:
-- When you created the template
-- When you edited it (with before/after values)
-- When you deleted it
-- Your user ID and timestamp for each action
-
-✅ **Success:** All actions are being logged automatically
+2. Edit it
+3. Delete it
+4. Ask your developer to check the audit logs table — they should see all three actions with timestamps, your user ID, and before/after values for edits
 
 ---
 
-## Feature 8: Disclaimers Library
+## 8. Disclaimers Library
 
-**What it does:** Pre-written legal disclaimers you can quickly add to signatures.
+Pre-written legal disclaimers you can add to signatures.
 
-### How to Test:
-
-**Check Disclaimers Loaded:**
-Ask your developer to verify 15 disclaimers are in the database, including:
+### **[Admin]** — Verify disclaimers are loaded
+Ask your developer to confirm 15 disclaimers exist in the database, including:
 - Confidentiality Notice
 - GDPR Compliance
 - HIPAA Notice
 - Legal Disclaimer
-- And 11 more
 
-**Use a Disclaimer (when UI is ready):**
-1. When editing a template, look for "Add Disclaimer" button
-2. Browse the disclaimer library
-3. Search for "GDPR"
-4. Click "Preview" to see full text
-5. Click "Insert" to add it to your template
-
-✅ **Success:** Disclaimers are available and can be inserted
+### **[Admin or Editor]** — Use a disclaimer in a template
+1. When editing a template, look for "Add Disclaimer"
+2. Browse the library or search for "GDPR"
+3. Preview the full text
+4. Click "Insert" to add it to your template
 
 ---
 
-## Feature 9: Disclaimer Engine (Advanced)
+## 9. Disclaimer Engine
 
-**What it does:** Full disclaimer management with templates, rules, regulatory presets, and audit trail.
+Full disclaimer management with templates, rules, regulatory presets, and audit trail.
 
-### How to Test:
-
-**As a Free User:**
+### **[Free]** — Test plan limits
 1. Go to **Settings** → **Disclaimers**
-2. You should see the Templates and Rules tabs
+2. You should see the **Templates** and **Rules** tabs
 3. The **Regulatory Presets** and **Audit Trail** tabs should show a lock icon
-4. On the Templates tab, click **Add Template** — a modal opens
-5. Fill in name, category (Legal/Privacy/Compliance/Custom), content, and description
-6. Click **Create** — template appears in the list
-7. Try creating more than 2 templates — should show an upgrade prompt
-8. Switch to the Rules tab, click **Add Rule** — a modal opens
-9. Select a disclaimer template from the dropdown, set conditions (department, region, recipient domains)
-10. Try creating more than 1 rule — should show an upgrade prompt
-11. Click **Edit** on any template/rule — modal opens pre-filled for editing
-12. Click **Delete** — removes the item
+4. On Templates, click **Add Template** — fill in name, category, content, description
+5. Click **Create** — template appears in the list
+6. Try creating more than 2 templates — you should see an upgrade prompt
+7. Switch to Rules, click **Add Rule** — select a template, set conditions
+8. Try creating more than 1 rule — upgrade prompt appears
+9. Test **Edit** and **Delete** on templates and rules
 
-**As a Professional User:**
+### **[Pro]** — Test full access
 1. All tabs should be accessible (no lock icons)
 2. Create unlimited templates and rules
-3. On the Presets tab, click **Use This** on any preset — creates a template pre-filled with that content
-4. Access the Audit Trail tab — view deployment history
+3. On the **Presets** tab, click **Use This** on any preset — it pre-fills the template modal
+4. Check the **Audit Trail** tab for deployment history
 
-**As an Enterprise User:**
-1. Everything Professional gets, plus:
-2. Create a rule with "Cascade to Clients" enabled (MSP feature)
+### **[Enterprise]** — Test MSP features
+1. Everything Pro gets, plus:
+2. Create a rule with "Cascade to Clients" enabled
 3. Create a template with a non-English locale
 
-✅ **Success:** Free users see limits, Pro users see all tabs, Enterprise gets MSP cascade
-
 ---
 
-## Feature 10: HR Sync & Directory Integration
+## 10. HR Sync & Directory Integration
 
-**What it does:** Sync employee data from BambooHR, Gusto, Rippling, and other HR providers.
+Sync employee data from BambooHR, Gusto, Rippling, Google Directory, or Microsoft Directory.
 
-### How to Test:
-
-**As a Free User:**
+### **[Free]** — Verify upgrade gate
 1. Go to **Settings** → **HR Sync**
 2. You should see an upgrade prompt blocking the entire page
-3. The page content should NOT be accessible
 
-**As a Professional User:**
-1. HR Sync page should load fully
-2. Click **Add Integration** — a modal opens
-3. Select a provider (BambooHR, Gusto, Rippling, Google, Microsoft)
-4. Configure schedule type, conflict resolution, and API credentials
-5. Click **Create** — configuration appears in the list
-6. Click **Configure** on an existing config — modal opens pre-filled for editing
-7. Click **Sync Now** — triggers a manual sync with loading spinner
-8. Click **Delete** — removes the configuration
-9. The schedule type "realtime" should show upgrade prompt (Enterprise only)
+### **[Pro]** — Test full HR sync
+1. HR Sync page should load
+2. Click **Add Integration** — select a provider, configure schedule and conflict resolution
+3. Enter API credentials and click **Add**
+4. The configuration appears in the list
+5. Click **Configure** to edit, **Sync Now** to trigger a manual sync, **Delete** to remove
+6. Note: "Realtime" schedule is Enterprise-only — should show upgrade prompt
 
-**As an Enterprise User:**
-1. Everything Professional gets, plus:
-2. Can set schedule type to "realtime"
+### **[Enterprise]** — Test realtime sync
+1. Everything Pro gets, plus realtime schedule option
 
-**Validation Rules (Pro+):**
+### **[Pro]** — Test Validation Rules
 1. Go to **Settings** → **Validation**
-2. Click **Add Rule** — a modal opens
-3. Select a field (email, phone, job_title, etc.) and validation type (required, regex, min_length, etc.)
-4. Set the validation value and error message
-5. Click **Create** — rule appears in the list
-6. Click **Edit** to modify, **Delete** to remove
-7. As an employee, update your profile — changes go to admin for approval
-8. As an admin, approve or reject pending profile changes
-
-✅ **Success:** Free users see upgrade prompt, Pro users have full HR sync and validation
+2. Click **Add Rule** — select a field (email, phone, job title, etc.) and validation type
+3. Set the value and error message, then click **Create**
+4. Test Edit and Delete
+5. As an employee, profile updates go to admin for approval
 
 ---
 
-## Feature 11: Lifecycle Automation
+## 11. Lifecycle Automation
 
-**What it does:** Automate signature assignment when employees join, leave, or change departments.
+Automate signature assignment when employees join, leave, or change departments.
 
-### How to Test:
-
-**As a Free User:**
+### **[Free]** — Verify upgrade gate
 1. Go to **Settings** → **Automation**
 2. You should see an upgrade prompt blocking the entire page
 
-**As a Professional User:**
+### **[Pro]** — Test workflow creation
 1. Automation page should load
-2. Click **Create Workflow** — a modal opens
-3. Fill in name, description, event trigger (e.g., "User Joined")
-4. In the **Actions** section, select "Assign Template"
-5. A **template dropdown** appears — select a signature template from your org (not a UUID)
-6. Click **Add Action** to add more actions (deploy signature, send notification, etc.)
-7. Click **Create** — workflow appears in the list
-8. Click **Edit** on an existing workflow — modal opens pre-filled
-9. Click **Test** — confirms the workflow fires correctly
-10. Click **Delete** — confirmation dialog, then removed
-11. You're limited to 5 workflows total
-12. Trying to add a webhook action should show upgrade prompt
+2. Click **Create Workflow** — fill in name, description, event trigger (e.g., "User Joined")
+3. In **Actions**, select "Assign Template" — a dropdown shows your org's templates (not UUIDs)
+4. Click **Add Action** for more actions (deploy signature, send notification, etc.)
+5. Click **Create** — workflow appears in the list
+6. Click **Edit** to modify, **Test** to dry-run, **Delete** to remove
+7. You're limited to **5 workflows** on Pro
+8. Trying to add a webhook action should show an upgrade prompt
 
-**As an Enterprise User:**
+### **[Enterprise]** — Test advanced features
 1. Unlimited workflows
-2. Can add webhook actions
-3. Can enable "Cascade to Clients" for MSP
-
-✅ **Success:** Free blocked, Pro gets 5 workflows with template dropdowns, Enterprise unlimited with webhooks
+2. Webhook actions are available
+3. "Cascade to Clients" option for MSP
 
 ---
 
-## Feature 12: Brand Governance
+## 12. Brand Governance
 
-**What it does:** Define brand guidelines, audit signature compliance, and manage brand assets.
+Define brand guidelines, audit signature compliance, and manage brand assets.
 
-### How to Test:
+### **[Free or Pro]** — Verify upgrade gates
+1. **Brand** appears in the sidebar for all plans
+2. Navigate to **Brand Hub** → you should see an upgrade prompt
+3. Try **/brand/guidelines** and **/brand/audit** — same upgrade prompt
+4. **Brand Assets** (/brand/assets) should be accessible on all plans
 
-**As a Free or Professional User:**
-1. The **Brand** item appears in the main sidebar nav for all plans
-2. Navigate to **Brand Hub** (/brand)
-3. You should see an upgrade prompt (page content is Enterprise only)
-4. Try /brand/guidelines — same upgrade prompt
-5. Try /brand/audit — same upgrade prompt
-6. Try /brand/assets — asset management page (available to all plans)
-
-**As an Enterprise User:**
-1. Brand Hub shows compliance score, quick links
-2. Go to **Brand Guidelines** → click **New Guideline** — modal opens
-3. Set name, description, primary/secondary/accent colors (hex color picker with swatches)
-4. Add allowed fonts, toggle locked colors/fonts, required disclaimer, required social links
-5. Click **Create** — guideline appears in the list
-6. Click **Edit** to modify, **Delete** to remove
-7. Go to **Brand Audit** → click **Re-run Audit** — see per-user compliance scores with violation details
-8. Manage document templates and approve/deprecate brand assets
-
-✅ **Success:** Brand nav visible to all plans, Enterprise users access governance features, free/pro see upgrade prompt, assets available to all
+### **[Enterprise]** — Test brand features
+1. **Brand Hub** shows compliance score and quick links
+2. Use the **Brand Nav** tabs (Overview, Guidelines, Audit, Assets) to navigate between views
+3. Go to **Guidelines** → click **New Guideline**
+4. Set name, description, colors (hex picker with swatches), fonts, toggle locks
+5. Click **Create** — guideline appears in the list. Test Edit and Delete.
+6. Go to **Audit** → click **Re-run Audit** — see per-user compliance scores with violations
+7. Go to **Assets** — upload logos, icons, banners. Filter by category and search.
 
 ---
 
-## Feature 13: Billing Enforcement & Security
+## 13. Billing Enforcement & Settings Navigation
 
-**What it does:** Ensures all API routes check subscriptions and blocks unauthorized access.
+All API routes check subscriptions, and the settings page is organized for easy access.
 
-### How to Test:
-
-**API Security (for developers):**
-1. With dev bypass OFF, make API requests as a Free user to:
-   - `POST /api/hr-sync/configurations` → should get 403 with `upgradeRequired: true`
-   - `GET /api/brand/hub` → should get 403 with `upgradeRequired: true`
-   - `POST /api/lifecycle/workflows` → should get 403 with `upgradeRequired: true`
-2. Try PUT requests with `organization_id` or `is_system` in the body → these fields should be silently stripped (not applied)
-3. Try creating a lifecycle webhook with a localhost URL → should be rejected
-4. Try creating a webhook with 10.0.0.1, 172.16.0.1, 192.168.1.1 URLs → all rejected
-5. Dev bypass: Set `NEXT_PUBLIC_BYPASS_PAY_GATES=true` → all routes should work regardless of plan
-
-**Settings Navigation:**
-1. Go to Settings page
-2. The sidebar nav is grouped into 3 sections:
+### **[Admin]** — Test settings navigation
+1. Go to **Settings**
+2. The sidebar is grouped into three sections:
    - **Account**: General (Profile/Org/Notifications/Appearance/Security), Billing
    - **Compliance**: Disclaimers, Validation, Branding (MSP only)
    - **Automation**: HR Sync, Workflows
-3. Click **General** — shows the main settings page with inline sub-tabs (Profile, Organization, Notifications, Appearance, Security)
-4. Click each sub-page link — only that item highlights (no multi-highlight)
-5. Navigation persists across all settings sub-pages
+3. Click through each item — only the active item should highlight
 
-✅ **Success:** Unauthorized API calls get 403, field injection is blocked, SSRF URLs rejected, nav is grouped and highlights correctly
+### **[Developer]** — Test API security
+1. With dev bypass OFF, make API requests as a Free user to:
+   - `POST /api/hr-sync/configurations` → 403 with `upgradeRequired: true`
+   - `GET /api/brand/hub` → 403 with `upgradeRequired: true`
+   - `POST /api/lifecycle/workflows` → 403 with `upgradeRequired: true`
+2. Try PUT requests with `organization_id` or `is_system` in the body — fields should be silently stripped
+3. Try webhook URLs with localhost, 10.0.0.1, 172.16.x.x, 192.168.x.x — all should be rejected
 
 ---
 
 ## Quick Verification Checklist
 
-Go through this list to make sure everything works:
+Run through this to confirm everything works:
 
-- [ ] Personal links save and appear in signatures
-- [ ] Bulk invites send successfully
-- [ ] Employees can create accounts from invites
-- [ ] Signature rules can be created and edited
-- [ ] Rules show active/inactive status
-- [ ] Campaign banners display in signatures
-- [ ] Banners are clickable
-- [ ] Links redirect correctly
-- [ ] Different user roles have different permissions
-- [ ] Viewers can't edit templates
-- [ ] Disclaimers are loaded in the database
+**Core Features**
+- [ ] Personal links save and appear in generated signatures
+- [ ] Bulk invites send, and employees can create accounts from invite links
+- [ ] Signature rules can be created, edited, and deleted
+- [ ] Campaign banners display in signatures and are clickable
+- [ ] Analytics page loads with tabs and data
+- [ ] Different user roles have appropriate access levels
 - [ ] All actions create audit log entries
-- [ ] Disclaimers: Create/Edit/Delete templates via modal
-- [ ] Disclaimers: Create/Edit/Delete rules via modal with template dropdown
-- [ ] Disclaimers: Free users limited to 2 templates, 1 rule
-- [ ] Disclaimers: Presets "Use This" button pre-fills template modal
-- [ ] HR Sync: Add/Edit/Delete configurations via modal
-- [ ] HR Sync: Sync Now button triggers sync with loading state
-- [ ] HR Sync: Free users see upgrade prompt on page
-- [ ] Automation: Create/Edit/Delete workflows via modal
-- [ ] Automation: Template actions show dropdown selector (not UUID input)
-- [ ] Automation: Free users see upgrade prompt on page
-- [ ] Validation: Create/Edit/Delete rules via modal
-- [ ] Brand Guidelines: Create/Edit/Delete guidelines with color picker
-- [ ] Brand Audit: Re-run audit shows per-user scores and violations
-- [ ] Brand: Non-Enterprise users see upgrade prompt
-- [ ] Brand nav visible in sidebar for all plans (not just Enterprise)
-- [ ] Brand Assets accessible at /brand/assets (not /settings/brand-assets)
-- [ ] Settings nav grouped into Account/Compliance/Automation sections
-- [ ] Settings nav: only one item highlights at a time
+
+**Disclaimers**
+- [ ] Create/Edit/Delete templates via modal
+- [ ] Create/Edit/Delete rules via modal with template dropdown
+- [ ] Free users limited to 2 templates, 1 rule
+- [ ] Regulatory Presets and Audit Trail tabs locked on Free
+- [ ] Presets "Use This" pre-fills the template modal
+
+**HR Sync**
+- [ ] Free users see upgrade prompt on page
+- [ ] Add/Edit/Delete configurations via modal
+- [ ] Sync Now triggers with loading state
+- [ ] Validation rules: Create/Edit/Delete via modal
+
+**Automation**
+- [ ] Free users see upgrade prompt on page
+- [ ] Create/Edit/Delete workflows via modal
+- [ ] Template actions show dropdown (not UUID input)
+- [ ] Test button dry-runs the workflow
+
+**Brand Governance**
+- [ ] Brand nav visible in sidebar for all plans
+- [ ] Non-Enterprise users see upgrade prompt on Brand Hub/Guidelines/Audit
+- [ ] Brand Assets accessible on all plans
+- [ ] Brand Nav tabs work between sub-pages
+- [ ] Create/Edit/Delete guidelines with color picker
+
+**Settings & Security**
+- [ ] Settings nav grouped into Account/Compliance/Automation
+- [ ] Only one nav item highlights at a time
 - [ ] API PUT routes strip unauthorized fields
 - [ ] Webhook URLs reject private/localhost addresses
 - [ ] Dev bypass unlocks all gates when enabled
 
 ---
 
-## Common Issues
+## Troubleshooting
 
-**"I don't see the Rules tab"**
-- Make sure you're editing a template (not creating a new one)
-- The Rules tab appears next to the Design tab
+**"I don't see the Rules tab on a template"**
+Make sure you're *editing* an existing template, not creating a new one. The Rules tab appears next to the Design tab.
 
 **"Invite link doesn't work"**
-- Check that the link hasn't expired (7 days)
-- Make sure you're using the full URL with the token
+Check that the link hasn't expired (valid for 7 days) and that you're using the full URL including the token.
 
-**"Personal links don't appear in signature"**
-- Make sure you used the correct placeholder: `{{calendly_url}}`
-- Check that the URL was saved in your profile
+**"Personal links don't show up in my signature"**
+Make sure you used the correct placeholder format: `{{calendly_url}}`. Verify the URL was saved in your profile first.
 
-**"Can't create rules"**
-- Make sure your organization has a domain set
-- Check that you have permission to edit templates
+**"I see an upgrade prompt but I should have access"**
+Check that your organization is on the correct plan in Settings → Billing. If you're using dev bypass, make sure `NEXT_PUBLIC_BYPASS_PAY_GATES=true` is set.
 
----
-
-## Need Help?
-
-If something isn't working:
-1. Check that all 13 migrations were run successfully
-2. Verify you're logged in with the correct account
-3. Try refreshing the page
-4. Check browser console for errors
-5. Ask your developer to check the database
+**"Brand/HR Sync/Automation pages show a database error"**
+Ask your developer to verify all migration files have been run in Supabase. The platform expansion tables must exist.
 
 ---
 
-## Success!
+## All Done?
 
-You've successfully tested all 13 new features when:
-✅ Personal links work in signatures
-✅ Invites send and employees can sign up
-✅ Rules control which signatures show
-✅ Banners appear and track clicks
-✅ Different users have different permissions
-✅ Actions are logged for compliance
-✅ Disclaimers are available to use
-✅ Disclaimer engine enforces plan limits
-✅ HR Sync works for Pro+ users
-✅ Lifecycle automation creates and runs workflows
-✅ Brand governance restricted to Enterprise
-✅ API routes enforce billing and block unauthorized access
+When you've verified everything above, you're ready to use Siggly in production. Total testing time is about 1–2 hours.
 
-**Total Testing Time:** About 1-2 hours
-
-**You're ready to use these features in production!** 🎉
+If you run into anything unexpected:
+1. Refresh the page
+2. Check that you're logged in with the right account type
+3. Check the browser console for errors
+4. Ask your developer to verify the database state

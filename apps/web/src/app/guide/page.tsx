@@ -41,6 +41,7 @@ interface GuideSection {
   steps: {
     title: string;
     description: string;
+    role?: string;
     link?: string;
     tips?: string[];
     warning?: string;
@@ -56,6 +57,7 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Sign Up',
+        role: 'New User',
         description: 'Go to the signup page and create an account with your work email. You\'ll automatically become the organization owner.',
         link: '/signup',
         tips: [
@@ -65,6 +67,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 2: Verify Your Email',
+        role: 'New User',
         description: 'Check your inbox for a verification email and click the link to confirm your account.',
         tips: [
           'Check spam/junk folder if you don\'t see it',
@@ -73,6 +76,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 3: Log In',
+        role: 'New User',
         description: 'After verifying, log in to access your dashboard.',
         link: '/login',
       }
@@ -87,11 +91,13 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Integrations',
+        role: 'Admin',
         description: 'From the dashboard sidebar, click "Integrations" to see available connections.',
         link: '/integrations',
       },
       {
         title: 'Step 2: Click "Connect" on Google Workspace',
+        role: 'Admin',
         description: 'Find the Google Workspace card and click the "Connect" button. You\'ll be redirected to Google\'s OAuth screen.',
         tips: [
           'You must be a Google Workspace admin to connect',
@@ -101,6 +107,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 3: Authorize the App',
+        role: 'Admin',
         description: 'On Google\'s screen, review the permissions and click "Allow" to grant access.',
         tips: [
           'You\'ll see permissions for Gmail API and Admin Directory API',
@@ -109,6 +116,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 4: Verify Connection',
+        role: 'Admin',
         description: 'After authorizing, you\'ll be redirected back. The Google Workspace card should now show "Connected" with a green checkmark.',
         link: '/integrations',
       }
@@ -123,11 +131,13 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Team Page',
+        role: 'Admin',
         description: 'From the sidebar, click "Team" to see your team members list.',
         link: '/team',
       },
       {
         title: 'Step 2: Click "Sync Users"',
+        role: 'Admin',
         description: 'Click the "Sync Users" button (cloud icon) in the top right. This imports all users from your Google Workspace directory.',
         tips: [
           'Users are imported with name, email, title, and department',
@@ -136,6 +146,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 3: Review Imported Users',
+        role: 'Admin',
         description: 'After sync completes, you\'ll see all your team members listed with their details.',
         tips: [
           'Users show their source (Google, Microsoft, Manual)',
@@ -153,20 +164,24 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Templates',
+        role: 'Admin / Editor',
         description: 'From the sidebar, click "Templates" to see your signature templates.',
         link: '/templates',
       },
       {
         title: 'Step 2: Click "Create Template"',
+        role: 'Admin / Editor',
         description: 'Click the "Create Template" button to start designing a new signature.',
         link: '/templates/new',
       },
       {
         title: 'Step 3: Name Your Template',
+        role: 'Admin / Editor',
         description: 'Give your template a descriptive name like "Company Standard" or "Sales Team Signature".',
       },
       {
         title: 'Step 4: Add Blocks',
+        role: 'Admin / Editor',
         description: 'Use the block palette on the left to add elements: Name, Title, Company, Phone, Email, Social Links, Logo, Banner, Divider, Disclaimer.',
         tips: [
           'Drag blocks to reorder them',
@@ -176,6 +191,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 5: Add Your Logo',
+        role: 'Admin / Editor',
         description: 'Add a Logo block and either upload an image or paste a URL to your company logo.',
         tips: [
           'Recommended size: 200-300px wide',
@@ -185,6 +201,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 6: Add Social Links',
+        role: 'Admin / Editor',
         description: 'Add a Social Links block. Links are pulled from each user\'s profile (LinkedIn, Twitter, etc.).',
         tips: [
           'Social icons are automatically detected from URLs',
@@ -193,6 +210,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 7: Set Up Signature Rules (Optional)',
+        role: 'Admin / Editor',
         description: 'On the Rules tab of your template, create rules to control when this template is used. Target by department, recipient type (internal/external), or schedule date ranges.',
         tips: [
           'Rules use priority ordering — higher priority rules are evaluated first',
@@ -202,6 +220,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 8: Preview and Save',
+        role: 'Admin / Editor',
         description: 'Use the preview panel on the right to see how the signature looks. Click "Save" when done.',
         tips: [
           'Preview shows desktop and mobile views',
@@ -219,19 +238,23 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Deployments',
+        role: 'Admin',
         description: 'From the sidebar, click "Deployments" to manage signature deployments.',
         link: '/deployments',
       },
       {
         title: 'Step 2: Click "Deploy Signatures"',
+        role: 'Admin',
         description: 'Click the "Deploy Signatures" button to start the deployment wizard.',
       },
       {
         title: 'Step 3: Select a Template',
+        role: 'Admin',
         description: 'Choose which signature template to deploy from the dropdown.',
       },
       {
         title: 'Step 4: Choose Target Users',
+        role: 'Admin',
         description: 'Select who should receive the signature: "Just Me" (test), "Selected Users", or "All Users".',
         tips: [
           'Start with "Just Me" to test before deploying to everyone',
@@ -241,6 +264,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 5: Deploy',
+        role: 'Admin',
         description: 'Click "Deploy" to push signatures. The system will show progress and results.',
         tips: [
           'Deployment typically takes a few seconds',
@@ -249,6 +273,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 6: View Results',
+        role: 'Admin',
         description: 'After deployment, you\'ll see a summary showing successful and failed deployments.',
         tips: [
           'Click on a deployment to see per-user results',
@@ -264,7 +289,8 @@ const guideSections: GuideSection[] = [
     description: 'How users can manage their own profile and links',
     steps: [
       {
-        title: 'Admin: Edit User from Team Page',
+        title: 'Edit User from Team Page',
+        role: 'Admin',
         description: 'Admins can edit any user by going to Team \u2192 clicking on a user \u2192 Edit. This opens a modal where you can update their title, department, phone, and personal links.',
         link: '/team',
         tips: [
@@ -273,12 +299,14 @@ const guideSections: GuideSection[] = [
         ]
       },
       {
-        title: 'Admin: Enable Self-Manage for Users',
+        title: 'Enable Self-Manage for Users',
+        role: 'Admin',
         description: 'To let users manage their own profile, edit the user and enable "Self-Manage Portal". This gives them access to /my-profile.',
         link: '/team',
       },
       {
-        title: 'User: Access Self-Manage Portal',
+        title: 'Access Self-Manage Portal',
+        role: 'Employee',
         description: 'Users with self-manage enabled can log in and access /my-profile to update their own information.',
         link: '/my-profile',
         tips: [
@@ -288,6 +316,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Setting Calendly URL',
+        role: 'Admin / Employee',
         description: 'Calendly links are set per-user. Admin: Edit user on Team page. User: Update in /my-profile under "Personal Links".',
         tips: [
           'Enter the full Calendly URL (e.g., https://calendly.com/yourname)',
@@ -303,12 +332,14 @@ const guideSections: GuideSection[] = [
     description: 'Automatic OOO banners based on Google Calendar',
     steps: [
       {
-        title: 'Admin: Enable Calendar Integration',
+        title: 'Enable Calendar Integration',
+        role: 'Admin',
         description: 'Go to Settings \u2192 General \u2192 Organization tab \u2192 scroll to "Employee Features" \u2192 enable "Allow Calendar Integration" and "Allow OOO Banners".',
         link: '/settings',
       },
       {
-        title: 'User: Enable in Self-Manage Portal',
+        title: 'Enable in Self-Manage Portal',
+        role: 'Employee',
         description: 'Users go to /my-profile \u2192 find "Calendar Integration" section \u2192 toggle "Enable Google Calendar" and "Show OOO Banner".',
         link: '/my-profile',
         tips: [
@@ -318,6 +349,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'How It Works',
+        role: 'All Users',
         description: 'When a user has an OOO event in Google Calendar, their signature automatically shows an OOO banner with dates.',
         tips: [
           'Users can customize their OOO message',
@@ -336,11 +368,13 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'View Analytics Dashboard',
+        role: 'Admin',
         description: 'From the sidebar, click "Analytics" to see your signature performance overview with total clicks, top links, and trends.',
         link: '/analytics',
       },
       {
         title: 'Link Performance',
+        role: 'Admin',
         description: 'See which links in your signatures get the most clicks. Track social links, website links, booking links, and banner clicks.',
         tips: [
           'Click tracking is automatic for all deployed signatures',
@@ -349,6 +383,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Campaign Analytics',
+        role: 'Admin',
         description: 'Track banner campaign performance with click-through rates and engagement metrics.',
         tips: [
           'Use date filters to compare campaign periods',
@@ -367,11 +402,13 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Disclaimers',
+        role: 'Admin (Pro)',
         description: 'Go to Settings \u2192 click "Disclaimers" in the Compliance section of the sidebar.',
         link: '/settings/disclaimers',
       },
       {
         title: 'Step 2: Create a Disclaimer Template',
+        role: 'Admin (Pro)',
         description: 'On the Templates tab, click "Add Template". Fill in the name, category (Legal/Privacy/Compliance/Custom), and the disclaimer content text.',
         tips: [
           'Use presets for common regulations \u2014 click the Presets tab and hit "Use This" to pre-fill a template',
@@ -381,6 +418,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 3: Create Disclaimer Rules',
+        role: 'Admin (Pro)',
         description: 'Switch to the Rules tab and click "Add Rule". Select which disclaimer template to use and set conditions for when it applies.',
         tips: [
           'Target by department (e.g., only Legal team)',
@@ -392,10 +430,12 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 4: Edit and Delete',
+        role: 'Admin (Pro)',
         description: 'Click "Edit" on any template or rule to modify it. Click "Delete" to remove it. Changes take effect on the next signature deployment.',
       },
       {
         title: 'Testing with Sample Data',
+        role: 'Admin (Pro)',
         description: 'Create a test disclaimer to verify the full flow:',
         tips: [
           'Template name: "Test Confidentiality Notice"',
@@ -417,15 +457,18 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to HR Sync',
+        role: 'Admin (Pro)',
         description: 'Go to Settings \u2192 click "HR Sync" in the Automation section of the sidebar.',
         link: '/settings/hr-sync',
       },
       {
         title: 'Step 2: Add an Integration',
+        role: 'Admin (Pro)',
         description: 'Click "Add Integration" and select your HR provider: BambooHR, Gusto, Rippling, Google, or Microsoft.',
       },
       {
         title: 'Step 3: Configure the Sync',
+        role: 'Admin (Pro)',
         description: 'Set the schedule (manual, daily, weekly), conflict resolution (HR wins, Siggly wins, or manual review), and enter your API credentials.',
         tips: [
           'Enable "Auto-apply changes" to update user profiles automatically',
@@ -436,10 +479,12 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 4: Test the Sync',
+        role: 'Admin (Pro)',
         description: 'Click "Sync Now" to trigger a manual sync. Review the results to verify data is pulling correctly.',
       },
       {
         title: 'Testing with Dummy Data',
+        role: 'Admin (Pro)',
         description: 'To test HR Sync without a real HR provider, create a configuration with these test values:',
         tips: [
           'Provider: BambooHR',
@@ -462,11 +507,13 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Validation',
+        role: 'Admin (Pro)',
         description: 'Go to Settings \u2192 click "Validation" in the Compliance section of the sidebar.',
         link: '/settings/validation-rules',
       },
       {
         title: 'Step 2: Add a Rule',
+        role: 'Admin (Pro)',
         description: 'Click "Add Rule". Select the field to validate (email, phone, job_title, etc.), the validation type (required, regex, min_length, max_length, format), and set the value and error message.',
         tips: [
           'Example: Phone must match format +1-555-123-4567',
@@ -476,10 +523,12 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 3: Test',
+        role: 'Employee',
         description: 'When an employee updates their profile, validation rules run against the submitted data. If a field fails, they see your custom error message.',
       },
       {
         title: 'Sample Validation Rules to Try',
+        role: 'Admin (Pro)',
         description: 'Create these test rules to see validation in action:',
         tips: [
           'Field: phone, Type: format, Value: "+1-XXX-XXX-XXXX", Error: "Phone must be in +1-XXX-XXX-XXXX format"',
@@ -499,15 +548,18 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Workflows',
+        role: 'Admin (Pro)',
         description: 'Go to Settings \u2192 click "Workflows" in the Automation section of the sidebar.',
         link: '/settings/automation',
       },
       {
         title: 'Step 2: Create a Workflow',
+        role: 'Admin (Pro)',
         description: 'Click "Create Workflow". Give it a name and select a trigger event: User Joined, User Left, User Moved Department, User Updated, or Invite Accepted.',
       },
       {
         title: 'Step 3: Add Actions',
+        role: 'Admin (Pro)',
         description: 'In the Actions section, add one or more actions that execute when the trigger fires.',
         tips: [
           'Assign Template \u2014 select a signature template from the dropdown',
@@ -521,6 +573,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 4: Set Filters (Optional)',
+        role: 'Admin (Pro)',
         description: 'Narrow the trigger to specific departments or user sources. Set priority to control execution order when multiple workflows match.',
         tips: [
           'Department filter: only trigger for Sales, Engineering, etc.',
@@ -530,10 +583,12 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 5: Test the Workflow',
+        role: 'Admin (Pro)',
         description: 'Click the "Test" button on any workflow to simulate execution and verify it works correctly.',
       },
       {
         title: 'Sample Workflow to Try',
+        role: 'Admin (Pro)',
         description: 'Create this onboarding workflow to test the full flow:',
         tips: [
           'Name: "New Hire Onboarding"',
@@ -557,6 +612,7 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Go to Brand',
+        role: 'Admin (Enterprise)',
         description: 'From the sidebar, click "Brand" to access the Brand Hub. This shows your compliance score and quick links to all brand tools.',
         link: '/brand',
         tips: [
@@ -566,6 +622,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 2: Create Brand Guidelines',
+        role: 'Admin (Enterprise)',
         description: 'Go to Brand \u2192 Guidelines \u2192 click "New Guideline". Define your approved colors (hex values), allowed fonts, and required elements.',
         link: '/brand/guidelines',
         tips: [
@@ -576,6 +633,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 3: Upload Brand Assets',
+        role: 'Admin (All Plans)',
         description: 'Go to Brand \u2192 Assets to upload and manage logos, banners, and icons for use in signature templates.',
         link: '/brand/assets',
         tips: [
@@ -586,6 +644,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 4: Run a Brand Audit',
+        role: 'Admin (Enterprise)',
         description: 'Go to Brand \u2192 Audit \u2192 click "Re-run Audit". The system scores every user\'s signature against your brand guidelines.',
         link: '/brand/audit',
         tips: [
@@ -596,6 +655,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Sample Brand Guideline to Try',
+        role: 'Admin (Enterprise)',
         description: 'Create a test guideline to see the audit in action:',
         tips: [
           'Name: "Company Brand Standards"',
@@ -618,6 +678,7 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Settings Navigation',
+        role: 'All Users',
         description: 'Click "Settings" in the sidebar. The settings page has a grouped sidebar with three sections: Account (General, Billing), Compliance (Disclaimers, Validation, Branding for MSP), and Automation (HR Sync, Workflows).',
         link: '/settings',
         tips: [
@@ -627,11 +688,13 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'View Current Plan',
+        role: 'Admin / Owner',
         description: 'Go to Settings \u2192 Billing to see your current plan, usage, and manage your subscription.',
         link: '/settings/billing',
       },
       {
         title: 'Upgrade Plan',
+        role: 'Owner',
         description: 'Click "Upgrade" to see available plans. You\'ll be redirected to Stripe Checkout.',
         tips: [
           'Free: 5 users, 1 template, basic features',
@@ -641,6 +704,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Manage Billing',
+        role: 'Owner',
         description: 'Click "Manage Billing" to access Stripe Customer Portal for payment methods, invoices, and cancellation.',
       }
     ]
@@ -653,8 +717,8 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Step 1: Apply for Partner Status',
-        description: 'Go to the Partner Application page and submit your application to become an MSP partner.',
-        link: '/partners/apply',
+        role: 'Admin',
+        description: 'Click "Become a Partner" in the sidebar or go to the Partner Application page and submit your application.',
         tips: [
           'Partners get volume discounts',
           'Manage all clients from one dashboard'
@@ -662,10 +726,12 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 2: Wait for Approval',
+        role: 'Admin',
         description: 'Our team will review your application. You\'ll receive an email when approved.',
       },
       {
         title: 'Step 3: Add Client Organizations',
+        role: 'MSP Admin',
         description: 'Once approved, go to Clients page and click "Add Client". Enter client company name and admin email.',
         link: '/clients',
         tips: [
@@ -675,6 +741,7 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 4: Switch Between Clients',
+        role: 'MSP Admin',
         description: 'Use the organization switcher in the dashboard header to switch between your MSP org and client orgs.',
         tips: [
           'A banner shows which client you\'re currently viewing',
@@ -683,10 +750,12 @@ const guideSections: GuideSection[] = [
       },
       {
         title: 'Step 5: Manage Client Templates & Deployments',
+        role: 'MSP Admin',
         description: 'While viewing a client org, you can create templates and deploy signatures just like your own org.',
       },
       {
         title: 'Step 6: Cascade Settings to Clients',
+        role: 'MSP Admin',
         description: 'Disclaimer rules, automation workflows, and brand guidelines can be set to "Cascade to Clients" \u2014 they automatically apply to all your managed client organizations.',
         tips: [
           'Cascaded rules appear as read-only in client orgs',
@@ -703,68 +772,80 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: '\u2713 Account & Auth',
+        role: 'New User',
         description: 'Sign up \u2192 Verify email \u2192 Log in \u2192 Log out \u2192 Log back in',
         link: '/signup',
       },
       {
         title: '\u2713 Google Integration',
+        role: 'Admin',
         description: 'Connect Google Workspace \u2192 Verify "Connected" status \u2192 Sync users',
         link: '/integrations',
       },
       {
         title: '\u2713 Team Management',
+        role: 'Admin',
         description: 'View synced users \u2192 Edit a user \u2192 Add personal links \u2192 Enable self-manage',
         link: '/team',
       },
       {
         title: '\u2713 Templates & Rules',
+        role: 'Admin / Editor',
         description: 'Create template \u2192 Add blocks \u2192 Set up signature rules \u2192 Preview \u2192 Save',
         link: '/templates',
       },
       {
         title: '\u2713 Deployment',
+        role: 'Admin',
         description: 'Deploy to "Just Me" \u2192 Check Gmail for signature \u2192 Deploy to selected users',
         link: '/deployments',
       },
       {
         title: '\u2713 Self-Manage Portal',
+        role: 'Employee',
         description: 'Log in as a self-manage user \u2192 Access /my-profile \u2192 Update personal links',
         link: '/my-profile',
       },
       {
         title: '\u2713 Analytics',
+        role: 'Admin (Pro)',
         description: 'View analytics dashboard \u2192 Check click tracking \u2192 Review campaign performance',
         link: '/analytics',
       },
       {
-        title: '\u2713 Disclaimers (Pro)',
+        title: '\u2713 Disclaimers',
+        role: 'Admin (Pro)',
         description: 'Create disclaimer template \u2192 Add rule with conditions \u2192 Verify disclaimer appends on deploy',
         link: '/settings/disclaimers',
       },
       {
-        title: '\u2713 HR Sync (Pro)',
+        title: '\u2713 HR Sync',
+        role: 'Admin (Pro)',
         description: 'Add HR integration \u2192 Configure schedule \u2192 Run manual sync \u2192 Verify data pulled',
         link: '/settings/hr-sync',
       },
       {
-        title: '\u2713 Automation (Pro)',
+        title: '\u2713 Automation',
+        role: 'Admin (Pro)',
         description: 'Create workflow \u2192 Select trigger \u2192 Add actions with template dropdown \u2192 Test workflow',
         link: '/settings/automation',
       },
       {
-        title: '\u2713 Brand Governance (Enterprise)',
+        title: '\u2713 Brand Governance',
+        role: 'Admin (Enterprise)',
         description: 'Create brand guideline \u2192 Upload assets to Brand > Assets \u2192 Run audit \u2192 Review scores',
         link: '/brand',
       },
       {
         title: '\u2713 Billing',
+        role: 'Owner',
         description: 'View current plan \u2192 Test upgrade flow (use test card 4242424242424242)',
         link: '/settings/billing',
       },
       {
         title: '\u2713 MSP (if applicable)',
+        role: 'MSP Admin',
         description: 'Apply for partner \u2192 Add client org \u2192 Switch to client \u2192 Create template \u2192 Deploy',
-        link: '/partners/apply',
       }
     ]
   }
@@ -816,8 +897,11 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
           <div className="space-y-6">
             {section.steps.map((step, index) => (
               <div key={index} className="border-l-2 border-primary/20 pl-4">
-                <h4 className="font-semibold text-base mb-2 flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                <h4 className="font-semibold text-base mb-2 flex items-center gap-2 flex-wrap">
+                  <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                  {step.role && (
+                    <Badge variant="secondary" className="text-xs font-medium">{step.role}</Badge>
+                  )}
                   {step.title}
                   {step.link && (
                     <Link
@@ -876,13 +960,16 @@ export default function GuidePage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <Badge variant="outline" className="text-orange-600 border-orange-300 bg-orange-50">
-            Internal Testing Guide
+          <Badge variant="outline" className="text-violet-600 border-violet-300 bg-violet-50">
+            User Guide
           </Badge>
         </div>
         <h1 className="text-3xl font-bold mb-2">Siggly User Guide</h1>
         <p className="text-muted-foreground text-lg">
           Step-by-step instructions for all Siggly features. Click any section to expand.
+        </p>
+        <p className="text-muted-foreground text-sm mt-2">
+          Each step is labeled with the account type you need — look for tags like <Badge variant="secondary" className="text-xs mx-1">Admin</Badge> <Badge variant="secondary" className="text-xs mx-1">Employee</Badge> <Badge variant="secondary" className="text-xs mx-1">Pro</Badge> to know which account to log in as.
         </p>
       </div>
 
