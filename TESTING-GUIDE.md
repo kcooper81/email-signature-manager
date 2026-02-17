@@ -270,14 +270,20 @@ Ask your developer to verify 15 disclaimers are in the database, including:
 1. Go to **Settings** → **Disclaimers**
 2. You should see the Templates and Rules tabs
 3. The **Regulatory Presets** and **Audit Trail** tabs should show a lock icon
-4. Try creating disclaimer templates — you're limited to 2
-5. Try creating disclaimer rules — you're limited to 1
-6. Trying to create more should show an upgrade prompt
+4. On the Templates tab, click **Add Template** — a modal opens
+5. Fill in name, category (Legal/Privacy/Compliance/Custom), content, and description
+6. Click **Create** — template appears in the list
+7. Try creating more than 2 templates — should show an upgrade prompt
+8. Switch to the Rules tab, click **Add Rule** — a modal opens
+9. Select a disclaimer template from the dropdown, set conditions (department, region, recipient domains)
+10. Try creating more than 1 rule — should show an upgrade prompt
+11. Click **Edit** on any template/rule — modal opens pre-filled for editing
+12. Click **Delete** — removes the item
 
 **As a Professional User:**
 1. All tabs should be accessible (no lock icons)
 2. Create unlimited templates and rules
-3. Access the Regulatory Presets tab — browse and use presets
+3. On the Presets tab, click **Use This** on any preset — creates a template pre-filled with that content
 4. Access the Audit Trail tab — view deployment history
 
 **As an Enterprise User:**
@@ -302,21 +308,30 @@ Ask your developer to verify 15 disclaimers are in the database, including:
 
 **As a Professional User:**
 1. HR Sync page should load fully
-2. Create a sync configuration (e.g., BambooHR)
-3. Trigger a manual sync
-4. Review pending changes and approve/reject them
-5. The schedule type "realtime" should show upgrade prompt (Enterprise only)
+2. Click **Add Integration** — a modal opens
+3. Select a provider (BambooHR, Gusto, Rippling, Google, Microsoft)
+4. Configure schedule type, conflict resolution, and API credentials
+5. Click **Create** — configuration appears in the list
+6. Click **Configure** on an existing config — modal opens pre-filled for editing
+7. Click **Sync Now** — triggers a manual sync with loading spinner
+8. Click **Delete** — removes the configuration
+9. The schedule type "realtime" should show upgrade prompt (Enterprise only)
 
 **As an Enterprise User:**
 1. Everything Professional gets, plus:
 2. Can set schedule type to "realtime"
 
-**Profile Requests (Pro+):**
-1. Go to **Settings** → **Validation** to manage validation rules
-2. As an employee, update your profile — changes go to admin for approval
-3. As an admin, approve or reject pending profile changes
+**Validation Rules (Pro+):**
+1. Go to **Settings** → **Validation**
+2. Click **Add Rule** — a modal opens
+3. Select a field (email, phone, job_title, etc.) and validation type (required, regex, min_length, etc.)
+4. Set the validation value and error message
+5. Click **Create** — rule appears in the list
+6. Click **Edit** to modify, **Delete** to remove
+7. As an employee, update your profile — changes go to admin for approval
+8. As an admin, approve or reject pending profile changes
 
-✅ **Success:** Free users see upgrade prompt, Pro users have full HR sync
+✅ **Success:** Free users see upgrade prompt, Pro users have full HR sync and validation
 
 ---
 
@@ -332,18 +347,24 @@ Ask your developer to verify 15 disclaimers are in the database, including:
 
 **As a Professional User:**
 1. Automation page should load
-2. Create a workflow (e.g., "Onboard New Hire" triggered by "User Joined")
-3. Add actions like "Assign Template" and "Deploy Signature"
-4. You're limited to 5 workflows total
-5. Trying to add a webhook action should show upgrade prompt
-6. Test the workflow using the Test button
+2. Click **Create Workflow** — a modal opens
+3. Fill in name, description, event trigger (e.g., "User Joined")
+4. In the **Actions** section, select "Assign Template"
+5. A **template dropdown** appears — select a signature template from your org (not a UUID)
+6. Click **Add Action** to add more actions (deploy signature, send notification, etc.)
+7. Click **Create** — workflow appears in the list
+8. Click **Edit** on an existing workflow — modal opens pre-filled
+9. Click **Test** — confirms the workflow fires correctly
+10. Click **Delete** — confirmation dialog, then removed
+11. You're limited to 5 workflows total
+12. Trying to add a webhook action should show upgrade prompt
 
 **As an Enterprise User:**
 1. Unlimited workflows
 2. Can add webhook actions
 3. Can enable "Cascade to Clients" for MSP
 
-✅ **Success:** Free blocked, Pro gets 5 workflows, Enterprise unlimited with webhooks
+✅ **Success:** Free blocked, Pro gets 5 workflows with template dropdowns, Enterprise unlimited with webhooks
 
 ---
 
@@ -354,19 +375,24 @@ Ask your developer to verify 15 disclaimers are in the database, including:
 ### How to Test:
 
 **As a Free or Professional User:**
-1. Navigate to **Brand Hub** (/brand)
-2. You should see an upgrade prompt (Enterprise only)
-3. Try /brand/guidelines — same upgrade prompt
-4. Try /brand/audit — same upgrade prompt
+1. The **Brand** item appears in the main sidebar nav for all plans
+2. Navigate to **Brand Hub** (/brand)
+3. You should see an upgrade prompt (page content is Enterprise only)
+4. Try /brand/guidelines — same upgrade prompt
+5. Try /brand/audit — same upgrade prompt
+6. Try /brand/assets — asset management page (available to all plans)
 
 **As an Enterprise User:**
 1. Brand Hub shows compliance score, quick links
-2. Create brand guidelines (colors, fonts, logo requirements)
-3. Run a brand audit — see per-user compliance scores
-4. Manage document templates
-5. Approve/deprecate brand assets
+2. Go to **Brand Guidelines** → click **New Guideline** — modal opens
+3. Set name, description, primary/secondary/accent colors (hex color picker with swatches)
+4. Add allowed fonts, toggle locked colors/fonts, required disclaimer, required social links
+5. Click **Create** — guideline appears in the list
+6. Click **Edit** to modify, **Delete** to remove
+7. Go to **Brand Audit** → click **Re-run Audit** — see per-user compliance scores with violation details
+8. Manage document templates and approve/deprecate brand assets
 
-✅ **Success:** Only Enterprise users can access brand features
+✅ **Success:** Brand nav visible to all plans, Enterprise users access governance features, free/pro see upgrade prompt, assets available to all
 
 ---
 
@@ -388,10 +414,15 @@ Ask your developer to verify 15 disclaimers are in the database, including:
 
 **Settings Navigation:**
 1. Go to Settings page
-2. You should see 4 new nav links: Disclaimers, HR Sync, Automation, Validation
-3. Each link should navigate to its page
+2. The sidebar nav is grouped into 3 sections:
+   - **Account**: General (Profile/Org/Notifications/Appearance/Security), Billing
+   - **Compliance**: Disclaimers, Validation, Branding (MSP only)
+   - **Automation**: HR Sync, Workflows
+3. Click **General** — shows the main settings page with inline sub-tabs (Profile, Organization, Notifications, Appearance, Security)
+4. Click each sub-page link — only that item highlights (no multi-highlight)
+5. Navigation persists across all settings sub-pages
 
-✅ **Success:** Unauthorized API calls get 403, field injection is blocked, SSRF URLs rejected
+✅ **Success:** Unauthorized API calls get 403, field injection is blocked, SSRF URLs rejected, nav is grouped and highlights correctly
 
 ---
 
@@ -411,12 +442,24 @@ Go through this list to make sure everything works:
 - [ ] Viewers can't edit templates
 - [ ] Disclaimers are loaded in the database
 - [ ] All actions create audit log entries
+- [ ] Disclaimers: Create/Edit/Delete templates via modal
+- [ ] Disclaimers: Create/Edit/Delete rules via modal with template dropdown
 - [ ] Disclaimers: Free users limited to 2 templates, 1 rule
-- [ ] Disclaimers: Presets and Audit tabs locked for Free
+- [ ] Disclaimers: Presets "Use This" button pre-fills template modal
+- [ ] HR Sync: Add/Edit/Delete configurations via modal
+- [ ] HR Sync: Sync Now button triggers sync with loading state
 - [ ] HR Sync: Free users see upgrade prompt on page
+- [ ] Automation: Create/Edit/Delete workflows via modal
+- [ ] Automation: Template actions show dropdown selector (not UUID input)
 - [ ] Automation: Free users see upgrade prompt on page
+- [ ] Validation: Create/Edit/Delete rules via modal
+- [ ] Brand Guidelines: Create/Edit/Delete guidelines with color picker
+- [ ] Brand Audit: Re-run audit shows per-user scores and violations
 - [ ] Brand: Non-Enterprise users see upgrade prompt
-- [ ] Settings nav shows Disclaimers, HR Sync, Automation, Validation links
+- [ ] Brand nav visible in sidebar for all plans (not just Enterprise)
+- [ ] Brand Assets accessible at /brand/assets (not /settings/brand-assets)
+- [ ] Settings nav grouped into Account/Compliance/Automation sections
+- [ ] Settings nav: only one item highlights at a time
 - [ ] API PUT routes strip unauthorized fields
 - [ ] Webhook URLs reject private/localhost addresses
 - [ ] Dev bypass unlocks all gates when enabled

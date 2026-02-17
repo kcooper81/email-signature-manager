@@ -53,9 +53,7 @@ export function DashboardNav() {
   const { plan } = useSubscription();
   const isFreePlan = plan.id === 'free';
 
-  const isEnterprise = plan.id === 'enterprise';
-
-  // Build nav items dynamically based on org type and plan
+  // Build nav items dynamically based on org type
   const navItems = [
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { title: 'Templates', href: '/templates', icon: FileSignature },
@@ -64,7 +62,7 @@ export function DashboardNav() {
     { title: 'Deployments', href: '/deployments', icon: Send },
     { title: 'Integrations', href: '/integrations', icon: Link2 },
     { title: 'Analytics', href: '/analytics', icon: BarChart3 },
-    ...(isEnterprise ? [{ title: 'Brand', href: '/brand', icon: Palette }] : []),
+    { title: 'Brand', href: '/brand', icon: Palette },
   ];
 
   const renderNavItem = (item: typeof navItems[0], mobile = false) => {

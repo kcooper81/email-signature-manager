@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw, HelpCircle, Calendar, Palmtree } from 'lucide-react';
+import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw, HelpCircle, Calendar, Palmtree, FileText, GitBranch, Palette, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta, generateFAQSchema, generateBreadcrumbSchema } from '@/lib/seo/metadata';
 
@@ -58,6 +58,14 @@ const faqs = [
     answer: 'You can choose to allow or prevent manual changes. With enforcement enabled, any manual changes will be overwritten on the next sync, ensuring brand consistency across your organization.',
   },
   {
+    question: 'Can Siggly add legal disclaimers to signatures automatically?',
+    answer: 'Yes. Siggly supports email disclaimers that can be targeted by department, region, or recipient domain. This helps you stay compliant with GDPR, HIPAA, and other regulations without manual effort.',
+  },
+  {
+    question: 'Does Siggly integrate with HR systems?',
+    answer: 'Yes. Siggly can sync employee data from BambooHR, Gusto, Rippling, and your Google Workspace directory. When a new hire is added to your HR system, they can automatically receive the correct signature.',
+  },
+  {
     question: 'Is there a free plan for Google Workspace?',
     answer: 'Yes. Siggly is free for teams up to 5 users, forever. No credit card required. The Professional plan is $1.50/user/month for larger teams, with everything unlocked.',
   },
@@ -70,11 +78,14 @@ const comparisonData = [
   { feature: 'Template Library', siggly: true, native: false },
   { feature: 'Campaign Banners', siggly: true, native: false },
   { feature: 'Analytics & Click Tracking', siggly: true, native: false },
-  { feature: 'Scheduled Updates', siggly: true, native: false },
   { feature: 'User Directory Sync', siggly: true, native: false },
   { feature: 'Signature Enforcement', siggly: true, native: false },
   { feature: 'Google Calendar Integration', siggly: true, native: false },
   { feature: 'Auto Out-of-Office Banners', siggly: true, native: false },
+  { feature: 'Email Disclaimers & Compliance', siggly: true, native: false },
+  { feature: 'HR System Sync', siggly: true, native: false },
+  { feature: 'Lifecycle Automation', siggly: true, native: false },
+  { feature: 'Brand Governance & Audits', siggly: true, native: false },
 ];
 
 export default function GoogleWorkspacePage() {
@@ -213,7 +224,7 @@ export default function GoogleWorkspacePage() {
                   <h4 className="font-semibold">Booking Links in Signatures</h4>
                 </div>
                 <p className="text-gray-600 text-sm">
-                  Let employees add their Google Calendar appointment scheduling links directly to their email signatures. 
+                  Let employees add their Google Calendar appointment scheduling links directly to their email signatures.
                   Recipients can book meetings with one click—no back-and-forth emails needed.
                 </p>
               </div>
@@ -225,8 +236,66 @@ export default function GoogleWorkspacePage() {
                   <h4 className="font-semibold">Automatic Out-of-Office Banners</h4>
                 </div>
                 <p className="text-gray-600 text-sm">
-                  Siggly automatically detects when employees are on vacation or out of office from their Google Calendar 
+                  Siggly automatically detects when employees are on vacation or out of office from their Google Calendar
                   and displays a dynamic banner in their signature with their return date.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Compliance & Automation Features */}
+          <div className="mt-16 pt-16 border-t">
+            <h3 className="text-2xl font-bold text-center mb-4">Compliance, HR Sync & Automation</h3>
+            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+              Go beyond signatures. Automate disclaimers, sync from HR systems, and enforce brand standards across your entire Google Workspace organization.
+            </p>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-emerald-50 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <h4 className="font-semibold">Email Disclaimers</h4>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Automatically append legal disclaimers, confidentiality notices, and regulatory text to signatures.
+                  Target disclaimers by department, region, or recipient domain for GDPR, HIPAA, and industry compliance.
+                </p>
+              </div>
+              <div className="bg-violet-50 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                    <RefreshCw className="h-5 w-5 text-violet-600" />
+                  </div>
+                  <h4 className="font-semibold">HR System Sync</h4>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Connect BambooHR, Gusto, Rippling, or your Google Workspace directory to keep employee data current.
+                  New hires get signatures automatically, and updates sync on schedule.
+                </p>
+              </div>
+              <div className="bg-orange-50 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <GitBranch className="h-5 w-5 text-orange-600" />
+                  </div>
+                  <h4 className="font-semibold">Lifecycle Automation</h4>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Build workflows that trigger when users join, leave, or change departments. Automatically assign templates,
+                  deploy signatures, and send notifications — no manual intervention needed.
+                </p>
+              </div>
+              <div className="bg-rose-50 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center">
+                    <Palette className="h-5 w-5 text-rose-600" />
+                  </div>
+                  <h4 className="font-semibold">Brand Governance</h4>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Define brand guidelines with approved colors, fonts, and required elements. Run audits to score every
+                  user&apos;s signature against your standards and identify violations instantly.
                 </p>
               </div>
             </div>

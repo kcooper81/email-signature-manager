@@ -131,7 +131,7 @@ export function AssetPickerModal({ open, onClose, onSelect, category }: AssetPic
             <ImageIcon className="h-10 w-10 mx-auto text-muted-foreground/40 mb-3" />
             <p className="font-medium text-sm">No assets found</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Upload assets in Settings &gt; Brand Assets
+              Upload assets in Brand &gt; Assets
             </p>
           </div>
         ) : (

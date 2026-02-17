@@ -5,17 +5,13 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
-  User,
-  Building2,
+  Settings,
   Palette,
-  Image as ImageIcon,
   Shield,
   RefreshCw,
   Zap,
   ClipboardCheck,
   CreditCard,
-  Bell,
-  Monitor,
 } from 'lucide-react';
 
 interface SettingsTab {
@@ -26,19 +22,34 @@ interface SettingsTab {
   mspOnly?: boolean;
 }
 
-const allTabs: SettingsTab[] = [
-  { id: 'profile', label: 'Profile', icon: User, href: '/settings' },
-  { id: 'organization', label: 'Organization', icon: Building2, href: '/settings' },
-  { id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding', mspOnly: true },
-  { id: 'brand-assets', label: 'Brand Assets', icon: ImageIcon, href: '/settings/brand-assets' },
-  { id: 'disclaimers', label: 'Disclaimers', icon: Shield, href: '/settings/disclaimers' },
-  { id: 'hr-sync', label: 'HR Sync', icon: RefreshCw, href: '/settings/hr-sync' },
-  { id: 'automation', label: 'Automation', icon: Zap, href: '/settings/automation' },
-  { id: 'validation-rules', label: 'Validation', icon: ClipboardCheck, href: '/settings/validation-rules' },
-  { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
-  { id: 'notifications', label: 'Notifications', icon: Bell, href: '/settings' },
-  { id: 'appearance', label: 'Appearance', icon: Monitor, href: '/settings' },
-  { id: 'security', label: 'Security', icon: Shield, href: '/settings' },
+interface NavSection {
+  title: string;
+  tabs: SettingsTab[];
+}
+
+const sections: NavSection[] = [
+  {
+    title: 'Account',
+    tabs: [
+      { id: 'general', label: 'General', icon: Settings, href: '/settings' },
+      { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
+    ],
+  },
+  {
+    title: 'Compliance',
+    tabs: [
+      { id: 'disclaimers', label: 'Disclaimers', icon: Shield, href: '/settings/disclaimers' },
+      { id: 'validation-rules', label: 'Validation', icon: ClipboardCheck, href: '/settings/validation-rules' },
+      { id: 'branding', label: 'Branding', icon: Palette, href: '/settings/branding', mspOnly: true },
+    ],
+  },
+  {
+    title: 'Automation',
+    tabs: [
+      { id: 'hr-sync', label: 'HR Sync', icon: RefreshCw, href: '/settings/hr-sync' },
+      { id: 'automation', label: 'Workflows', icon: Zap, href: '/settings/automation' },
+    ],
+  },
 ];
 
 export function SettingsNav() {
@@ -66,36 +77,42 @@ export function SettingsNav() {
     checkOrgType();
   }, []);
 
-  const tabs = allTabs.filter(tab => !tab.mspOnly || isMsp);
-
   function isActive(tab: SettingsTab): boolean {
-    // For sub-route tabs, check startsWith
-    if (tab.href !== '/settings') {
-      return pathname.startsWith(tab.href);
+    if (tab.href === '/settings') {
+      return pathname === '/settings';
     }
-    // For /settings tabs (profile, org, notifications, appearance, security),
-    // only active when we're exactly on /settings
-    return pathname === '/settings';
+    return pathname.startsWith(tab.href);
   }
 
   return (
     <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 lg:sticky lg:top-6">
-      {tabs.map((tab) => {
-        const active = isActive(tab);
-        const TabIcon = tab.icon;
+      {sections.map((section) => {
+        const visibleTabs = section.tabs.filter(tab => !tab.mspOnly || isMsp);
+        if (visibleTabs.length === 0) return null;
         return (
-          <Link
-            key={tab.id}
-            href={tab.href}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-colors whitespace-nowrap ${
-              active
-                ? 'bg-primary/10 text-primary font-medium'
-                : 'text-muted-foreground hover:bg-secondary'
-            }`}
-          >
-            <TabIcon className="h-5 w-5" />
-            {tab.label}
-          </Link>
+          <div key={section.title} className="lg:mb-3">
+            <p className="hidden lg:block text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wider px-4 mb-1">
+              {section.title}
+            </p>
+            {visibleTabs.map((tab) => {
+              const active = isActive(tab);
+              const TabIcon = tab.icon;
+              return (
+                <Link
+                  key={tab.id}
+                  href={tab.href}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors whitespace-nowrap text-sm ${
+                    active
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-muted-foreground hover:bg-secondary'
+                  }`}
+                >
+                  <TabIcon className="h-4 w-4" />
+                  {tab.label}
+                </Link>
+              );
+            })}
+          </div>
         );
       })}
     </nav>
