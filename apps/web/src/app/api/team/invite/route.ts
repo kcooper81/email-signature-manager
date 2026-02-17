@@ -80,11 +80,6 @@ export async function POST(request: NextRequest) {
     const invites: { email: string; token: string; inviteUrl: string; emailSent: boolean }[] = [];
     const emailErrors: string[] = [];
     
-    console.log(`Processing ${usersWithoutAccounts.length} users for invite`);
-    console.log('RESEND_API_KEY configured:', !!process.env.RESEND_API_KEY);
-    console.log('RESEND_FROM_EMAIL:', process.env.RESEND_FROM_EMAIL || 'not set (using default)');
-    console.log('NEXT_PUBLIC_APP_URL:', process.env.NEXT_PUBLIC_APP_URL);
-    
     for (const inviteUser of usersWithoutAccounts) {
       // Generate a secure invite token
       const token = crypto.randomUUID();
@@ -115,7 +110,6 @@ export async function POST(request: NextRequest) {
 
       let emailSent = false;
       try {
-        console.log(`Attempting to send invite email to ${inviteUser.email}...`);
         const result = await sendTeamInviteEmail({
           to: inviteUser.email,
           inviterName,
@@ -124,7 +118,6 @@ export async function POST(request: NextRequest) {
           expiresAt: expiresAt.toISOString(),
         });
         
-        console.log(`Invite email sent successfully to ${inviteUser.email}:`, result);
         emailSent = true;
       } catch (emailError: any) {
         const errorMsg = emailError?.message || String(emailError);
@@ -142,11 +135,6 @@ export async function POST(request: NextRequest) {
 
     const emailsSent = invites.filter(i => i.emailSent).length;
     const emailsFailed = invites.filter(i => !i.emailSent).length;
-    
-    console.log(`Invite summary: ${emailsSent} emails sent, ${emailsFailed} failed`);
-    if (emailErrors.length > 0) {
-      console.log('Email errors:', emailErrors);
-    }
 
     return NextResponse.json({
       success: true,

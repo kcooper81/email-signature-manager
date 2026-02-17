@@ -12,7 +12,5 @@ export async function notifyAdmin(context: WorkflowRunContext, config: Record<st
     .eq('organization_id', context.organizationId)
     .in('role', ['owner', 'admin']);
 
-  for (const admin of admins || []) {
-    console.log(`[Lifecycle] Notifying admin ${admin.email}: ${message || 'Lifecycle event occurred'}`);
-  }
+  // In production, send notification to each admin
 }

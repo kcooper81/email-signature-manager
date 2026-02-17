@@ -23,6 +23,7 @@ interface SubscriptionState {
   planId: string;
   status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'loading';
   isLoading: boolean;
+  isSuperAdmin: boolean;
   usage: {
     templateCount: number;
     teamMemberCount: number;
@@ -45,6 +46,7 @@ const defaultState: SubscriptionState = {
   planId: 'free',
   status: 'loading',
   isLoading: true,
+  isSuperAdmin: false,
   usage: {
     templateCount: 0,
     teamMemberCount: 0,
@@ -177,6 +179,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       planId,
       status: status as SubscriptionState['status'],
       isLoading: false,
+      isSuperAdmin,
       usage,
       limits,
       canAccess,
@@ -222,7 +225,8 @@ export function useSubscription() {
   return context;
 }
 
-// Utility hook for checking if pay gates are bypassed (for dev UI indicators)
+// Utility hook for checking if pay gates are bypassed (dev toggle or super admin)
 export function usePayGatesBypass() {
-  return getDevBypassEnabled();
+  const context = useContext(SubscriptionContext);
+  return getDevBypassEnabled() || context.isSuperAdmin;
 }
