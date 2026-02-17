@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
-import { listWorkspaceUsers } from '@/lib/google/gmail';
+import { listWorkspaceUsersWithClient } from '@/lib/google/gmail';
+import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { logException } from '@/lib/error-logging';
 
 export const dynamic = 'force-dynamic';
@@ -28,22 +29,6 @@ export async function POST(request: NextRequest) {
 
     const organizationId = userData.organization_id;
 
-    // Get Google connection - MUST filter by organization_id for security
-    const { data: connection } = await supabase
-      .from('provider_connections')
-      .select('*')
-      .eq('provider', 'google')
-      .eq('is_active', true)
-      .eq('organization_id', organizationId)
-      .single();
-
-    if (!connection) {
-      return NextResponse.json(
-        { error: 'Google Workspace not connected' },
-        { status: 400 }
-      );
-    }
-
     // Get the domain from the user's email
     const domain = user.email?.split('@')[1];
     if (!domain) {
@@ -53,12 +38,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create Google client with automatic token refresh
+    let googleAuth;
+    try {
+      googleAuth = await createOrgGoogleClient(organizationId);
+    } catch (err: any) {
+      return NextResponse.json(
+        { error: err.message || 'Google Workspace not connected' },
+        { status: 400 }
+      );
+    }
+
     // Fetch users from Google Directory
-    const googleUsers = await listWorkspaceUsers(
-      connection.access_token,
-      connection.refresh_token,
-      domain
-    );
+    const googleUsers = await listWorkspaceUsersWithClient(googleAuth, domain);
 
     // Use service client to bypass RLS for upsert operations
     const serviceClient = createServiceClient();
