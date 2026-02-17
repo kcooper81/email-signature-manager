@@ -50,7 +50,7 @@ function Modal({ open, onClose, children, className }: ModalProps) {
 
 function ModalHeader({ className, children, onClose }: { className?: string; children: React.ReactNode; onClose?: () => void }) {
   return (
-    <div className={cn('flex items-start justify-between gap-3 p-4 sm:p-6 pb-0', className)}>
+    <div className={cn('flex items-start justify-between gap-3 p-4 sm:p-6 pb-4', className)}>
       <div className="flex-1 min-w-0">{children}</div>
       {onClose && (
         <button
@@ -80,6 +80,14 @@ function ModalDescription({ className, children }: { className?: string; childre
   );
 }
 
+function ModalContent({ className, children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <div className={cn('px-4 sm:px-6 py-4 overflow-y-auto flex-1', className)}>
+      {children}
+    </div>
+  );
+}
+
 function ModalFooter({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
     <div className={cn('flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 pt-4', className)}>
@@ -88,4 +96,4 @@ function ModalFooter({ className, children }: { className?: string; children: Re
   );
 }
 
-export { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter };
+export { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter };

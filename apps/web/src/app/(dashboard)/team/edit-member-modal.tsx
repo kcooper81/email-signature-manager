@@ -1,4 +1,4 @@
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label, Input, Button, Switch, Textarea } from '@/components/ui';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label, Input, Button, Switch, Textarea } from '@/components/ui';
 import { Loader2, Save, Trash2, AlertTriangle, UserX, UserCheck, Calendar, Link as LinkIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -67,7 +67,8 @@ export function EditMemberModal({
           Update information for {memberName}
         </ModalDescription>
       </ModalHeader>
-      <div className="space-y-4 px-4 sm:px-6 max-h-[70vh] overflow-y-auto flex-1">
+      <ModalContent className="max-h-[70vh]">
+        <div className="space-y-4">
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-3">
@@ -401,7 +402,8 @@ export function EditMemberModal({
             />
           </div>
         </div>
-      </div>
+        </div>
+      </ModalContent>
       <ModalFooter className="flex justify-between">
         <Button 
           variant="ghost" 

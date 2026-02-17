@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter, Label } from '@/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
 import { EditMemberModal } from './edit-member-modal';
 import { 
@@ -1332,9 +1332,10 @@ export default function TeamMembersPage() {
             Add a team member manually. They will be available for signature deployments.
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4 py-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-2">
+        <ModalContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="space-y-2">
               <Label htmlFor="first_name">First Name</Label>
               <Input
                 id="first_name"
@@ -1436,7 +1437,8 @@ export default function TeamMembersPage() {
               />
             </div>
           </div>
-        </div>
+          </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowAddModal(false)}>
             Cancel
@@ -1485,7 +1487,7 @@ export default function TeamMembersPage() {
             Generate personalized signatures for {selectedMembers.size} team member{selectedMembers.size !== 1 ? 's' : ''}
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4 py-4">
+        <ModalContent>
           {generatedSignatures.length === 0 ? (
             <>
               <div className="space-y-2">
@@ -1579,7 +1581,7 @@ export default function TeamMembersPage() {
               </div>
             </>
           )}
-        </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={closeShareModal}>
             {generatedSignatures.length > 0 ? 'Done' : 'Cancel'}
@@ -1613,8 +1615,9 @@ export default function TeamMembersPage() {
             Invite someone to help manage your organization's email signatures. They'll have full admin access.
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4 py-4">
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+        <ModalContent>
+          <div className="space-y-4">
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
             <p className="text-sm text-blue-600">
               <strong>Admins can:</strong> Create templates, deploy signatures, manage integrations, and invite team members.
             </p>
@@ -1650,7 +1653,8 @@ export default function TeamMembersPage() {
               required
             />
           </div>
-        </div>
+          </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowAdminInviteModal(false)}>
             Cancel
