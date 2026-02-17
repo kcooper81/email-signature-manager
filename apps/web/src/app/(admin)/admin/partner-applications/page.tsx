@@ -91,7 +91,7 @@ export default function PartnerApplicationsPage() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('pending');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   // Approval form
   const [subdomain, setSubdomain] = useState('');
