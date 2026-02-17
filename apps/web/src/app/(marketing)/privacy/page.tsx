@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Mail, ArrowLeft } from 'lucide-react';
+import { generateMetadata as genMeta } from '@/lib/seo/metadata';
 
-export const metadata = {
-  title: 'Privacy Policy | Siggly',
+export const metadata = genMeta({
+  title: 'Privacy Policy',
   description: 'Privacy Policy for Siggly email signature management platform',
-};
+  canonical: '/privacy',
+});
 
 export default function PrivacyPage() {
   return (
@@ -16,7 +18,7 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-        <p className="text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+        <p className="text-gray-500 mb-8">Last updated: February 1, 2026</p>
 
         <div className="prose prose-gray max-w-none">
           <h2>1. Introduction</h2>

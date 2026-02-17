@@ -30,7 +30,7 @@ export function generateMetadata({
   noIndex = false,
   article,
 }: SEOConfig): Metadata {
-  const fullTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+  const fullTitle = title;
   const url = canonical ? `${SITE_URL}${canonical}` : SITE_URL;
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
 
@@ -133,16 +133,9 @@ export function generateSoftwareApplicationSchema() {
     offers: {
       '@type': 'AggregateOffer',
       lowPrice: '0',
-      highPrice: '3',
+      highPrice: '1.50',
       priceCurrency: 'USD',
-      offerCount: '4',
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '150',
-      bestRating: '5',
-      worstRating: '1',
+      offerCount: '3',
     },
     featureList: [
       'Google Workspace integration',

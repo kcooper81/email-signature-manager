@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Mail, ArrowLeft } from 'lucide-react';
+import { generateMetadata as genMeta } from '@/lib/seo/metadata';
 
-export const metadata = {
-  title: 'Terms of Service | Siggly',
+export const metadata = genMeta({
+  title: 'Terms of Service',
   description: 'Terms of Service for Siggly email signature management platform',
-};
+  canonical: '/terms',
+});
 
 export default function TermsPage() {
   return (
@@ -16,7 +18,7 @@ export default function TermsPage() {
         </Link>
 
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
-        <p className="text-gray-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+        <p className="text-gray-500 mb-8">Last updated: February 1, 2026</p>
 
         <div className="prose prose-gray max-w-none">
           <h2>1. Acceptance of Terms</h2>
@@ -138,7 +140,7 @@ export default function TermsPage() {
 
           <h2>15. Governing Law</h2>
           <p>
-            These Terms are governed by the laws of [Your Jurisdiction]. Any disputes shall be resolved in the courts of [Your Jurisdiction].
+            These Terms are governed by the laws of the State of Delaware. Any disputes shall be resolved in the courts of the State of Delaware.
           </p>
 
           <h2>16. Severability</h2>
