@@ -1,7 +1,7 @@
 // Social media icon URLs using Simple Icons CDN with official brand colors.
-// These brand-color URLs are reliable; arbitrary hex colors may 404 on the CDN.
+// LinkedIn was removed from Simple Icons (brand requested removal), so we self-host it.
 export const SOCIAL_ICONS: Record<string, string> = {
-  linkedin: 'https://cdn.simpleicons.org/linkedin/0A66C2',
+  linkedin: 'https://siggly.io/icons/linkedin.svg',
   twitter: 'https://cdn.simpleicons.org/x/000000',
   facebook: 'https://cdn.simpleicons.org/facebook/1877F2',
   instagram: 'https://cdn.simpleicons.org/instagram/E4405F',
@@ -10,8 +10,7 @@ export const SOCIAL_ICONS: Record<string, string> = {
 };
 
 /**
- * Returns the CDN URL for a social platform icon.
- * Uses official brand colors since the CDN doesn't reliably serve arbitrary hex colors.
+ * Returns the URL for a social platform icon.
  */
 export function getSocialIconUrl(platform: string): string {
   return SOCIAL_ICONS[platform] || '';
