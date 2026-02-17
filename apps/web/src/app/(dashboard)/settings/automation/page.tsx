@@ -119,10 +119,22 @@ export default function AutomationPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : workflows.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>No automation workflows yet.</p>
-          <p className="text-sm mt-1">Create workflows to automate signature assignment and deployment when users join or leave.</p>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Zap className="h-8 w-8 text-amber-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No automation workflows yet</h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-2">
+            Lifecycle workflows run automatically when users are created, updated, or offboarded.
+            Assign templates, deploy signatures, and notify admins without manual effort.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            Example: When a new user is synced from Google Workspace, auto-assign a template and deploy their signature.
+          </p>
+          <Button onClick={openCreate}>
+            <Zap className="h-4 w-4 mr-2" />
+            Create Your First Workflow
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">

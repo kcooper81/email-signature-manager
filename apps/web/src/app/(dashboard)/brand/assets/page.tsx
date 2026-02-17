@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Input, Card, CardContent, Badge, Select, ConfirmDialog, useToast } from '@/components/ui';
 import { FeatureGate } from '@/components/billing/upgrade-prompt';
+import { BrandNav } from '@/components/dashboard';
 import {
   Upload,
   Trash2,
@@ -276,6 +277,7 @@ export default function BrandAssetsPage() {
 
   return (
     <FeatureGate feature="brandGovernance">
+    <BrandNav />
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Brand Assets</h2>
       <p className="text-sm text-muted-foreground -mt-4">Upload and manage images for use across your email signatures</p>
@@ -361,19 +363,24 @@ export default function BrandAssetsPage() {
 
       {/* Assets Display */}
       {filteredAssets.length === 0 ? (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center">
-              <FileImage className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
-              <p className="font-medium">No assets found</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                {assets.length === 0
-                  ? 'Upload your first image to get started'
-                  : 'Try adjusting your search or category filter'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FileImage className="h-8 w-8 text-emerald-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">
+            {assets.length === 0 ? 'No brand assets yet' : 'No matching assets'}
+          </h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-2">
+            {assets.length === 0
+              ? 'Upload logos, icons, and banners to use in your email signatures. All assets are stored securely and can be shared across templates.'
+              : 'Try adjusting your search or category filter to find what you\'re looking for.'}
+          </p>
+          {assets.length === 0 && (
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Supported formats: PNG, JPG, GIF, SVG, and WebP.
+            </p>
+          )}
+        </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {filteredAssets.map((asset) => (

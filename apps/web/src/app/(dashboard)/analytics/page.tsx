@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Loader2,
   Lock,
-  Sparkles,
   LayoutDashboard,
   Rocket,
   FileSignature,
@@ -20,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import Link from 'next/link';
+import { UpgradePrompt } from '@/components/billing/upgrade-prompt';
 import { AnalyticsData, EmployeeSignatureStatus } from './types';
 import { OverviewTab, DeploymentsTab, TemplatesTab, MarketingTab, SalesTab, HRTab, ITTab, CampaignsTab } from './tabs';
 
@@ -498,22 +498,12 @@ export default function AnalyticsPage() {
       />
 
       {!hasFullAnalytics && (
-        <Card className="border-violet-200 bg-gradient-to-r from-violet-50 to-white">
-          <CardContent className="py-4">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-5 w-5 text-violet-600" />
-                <div>
-                  <p className="text-sm font-medium">You&apos;re viewing a 7-day analytics preview</p>
-                  <p className="text-xs text-muted-foreground">Upgrade to Professional for 30-day and 90-day reporting</p>
-                </div>
-              </div>
-              <Link href="/settings/billing" className="shrink-0">
-                <Button size="sm" variant="default">Upgrade</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <UpgradePrompt
+          feature="analytics"
+          requiredPlan="professional"
+          title="Upgrade to Professional"
+          description="You're viewing a 7-day analytics preview. Upgrade for 30-day and 90-day reporting with full insights."
+        />
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

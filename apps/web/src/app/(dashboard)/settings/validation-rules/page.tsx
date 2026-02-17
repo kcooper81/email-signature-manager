@@ -158,10 +158,22 @@ export default function ValidationRulesPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : rules.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <ShieldCheck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>No validation rules configured yet.</p>
-          <p className="text-sm mt-1">Add rules to ensure data quality across your organization.</p>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ShieldCheck className="h-8 w-8 text-indigo-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No validation rules yet</h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-2">
+            Validation rules enforce data quality across your organization&apos;s signature profiles.
+            Require fields, set minimum lengths, enforce URL formats, or use custom regex patterns.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            Example: Require all users to have a job title, or ensure LinkedIn URLs match a valid pattern.
+          </p>
+          <Button onClick={openCreate}>
+            <ShieldCheck className="h-4 w-4 mr-2" />
+            Create Your First Rule
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">

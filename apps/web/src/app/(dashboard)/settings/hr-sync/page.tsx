@@ -206,10 +206,23 @@ export default function HrSyncPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : configurations.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <RefreshCw className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>No sync integrations configured yet.</p>
-          <p className="text-sm mt-1">Connect BambooHR, Gusto, or Rippling to automatically sync employee data.</p>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <RefreshCw className="h-8 w-8 text-teal-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No HR integrations connected yet</h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-2">
+            HR &amp; Directory Sync keeps your signature data in sync with your HR system.
+            When employees are added, updated, or offboarded, their signature data updates automatically.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            Supports BambooHR, Gusto, Rippling, Google Directory, and Microsoft Directory.
+            Choose a sync schedule and conflict resolution strategy that fits your workflow.
+          </p>
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Connect Your First Integration
+          </Button>
         </div>
       ) : (
         <div className="space-y-4">
