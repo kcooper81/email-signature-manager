@@ -72,7 +72,7 @@ export default function BrandHubPage() {
           <h3 className="font-medium">Audit</h3>
           <p className="text-sm text-muted-foreground">Run compliance checks</p>
         </Link>
-        <Link href="/settings/brand-assets" className="p-4 rounded-lg border bg-card hover:border-primary transition-colors">
+        <Link href="/brand/assets" className="p-4 rounded-lg border bg-card hover:border-primary transition-colors">
           <Image className="h-8 w-8 text-primary mb-2" />
           <h3 className="font-medium">Assets</h3>
           <p className="text-sm text-muted-foreground">

@@ -65,15 +65,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, category, content, contentHtml, description, regulationType, locale, styling } = body;
+    const { name, category, content, description, regulationType, locale } = body;
 
     if (!name || !category || !content) {
       return NextResponse.json({ error: 'Name, category, and content are required' }, { status: 400 });
     }
 
-    if (contentHtml && !checkFeature(orgPlan, 'disclaimerHtmlEditor')) {
-      return planDenied('HTML disclaimer editor', 'professional');
-    }
     if (regulationType && !checkFeature(orgPlan, 'disclaimerRegulatoryPresets')) {
       return planDenied('Regulatory presets', 'professional');
     }
@@ -87,12 +84,10 @@ export async function POST(request: NextRequest) {
         name,
         category,
         content,
-        content_html: contentHtml || null,
         description: description || null,
         organization_id: userData.organization_id,
         regulation_type: regulationType || null,
         locale: locale || 'en',
-        styling: styling || null,
         is_system: false,
       })
       .select()
