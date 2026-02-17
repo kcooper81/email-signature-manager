@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { listWorkspaceUsers } from '@/lib/google/gmail';
-import { createAuthenticatedClient } from '@/lib/google/oauth';
+import { listWorkspaceUsersWithClient } from '@/lib/google/gmail';
+import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { listUsersWithServiceAccount } from '@/lib/google/service-account';
 import { getPlan } from '@/lib/billing/plans';
 import { logException } from '@/lib/error-logging';
@@ -60,33 +60,9 @@ export async function POST(request: NextRequest) {
       const adminEmail = connection.admin_email || userData.email;
       workspaceUsers = await listUsersWithServiceAccount(adminEmail, domain);
     } else {
-      // OAuth flow - use stored tokens
-      let accessToken = connection.access_token;
-      const expiresAt = connection.token_expires_at ? new Date(connection.token_expires_at) : null;
-
-      if (expiresAt && expiresAt < new Date()) {
-        const auth = createAuthenticatedClient(connection.access_token, connection.refresh_token);
-        const { credentials } = await auth.refreshAccessToken();
-        
-        accessToken = credentials.access_token!;
-
-        await supabase
-          .from('provider_connections')
-          .update({
-            access_token: credentials.access_token,
-            refresh_token: credentials.refresh_token || connection.refresh_token,
-            token_expires_at: credentials.expiry_date 
-              ? new Date(credentials.expiry_date).toISOString() 
-              : null,
-          })
-          .eq('id', connection.id);
-      }
-
-      workspaceUsers = await listWorkspaceUsers(
-        accessToken,
-        connection.refresh_token,
-        domain
-      );
+      // OAuth flow — use createOrgGoogleClient for automatic token refresh + persistence
+      const googleAuth = await createOrgGoogleClient(userData.organization_id);
+      workspaceUsers = await listWorkspaceUsersWithClient(googleAuth, domain);
     }
 
     // Check plan limits before syncing

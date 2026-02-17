@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { 
-  checkOutOfOfficeStatus, 
-  getAppointmentSchedules,
-  getUpcomingOOOEvents,
-  formatOOODateRange 
+import {
+  checkOutOfOfficeStatusWithClient,
+  getAppointmentSchedulesWithClient,
+  getUpcomingOOOEventsWithClient,
+  formatOOODateRange
 } from '@/lib/google/calendar';
-import { createAuthenticatedClient } from '@/lib/google/oauth';
+import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { logException } from '@/lib/error-logging';
 
 /**
@@ -69,33 +69,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Refresh token if needed
-    let accessToken = connection.access_token;
-    const expiresAt = connection.token_expires_at ? new Date(connection.token_expires_at) : null;
-
-    if (expiresAt && expiresAt < new Date()) {
-      const auth = createAuthenticatedClient(connection.access_token, connection.refresh_token);
-      const { credentials } = await auth.refreshAccessToken();
-      
-      accessToken = credentials.access_token!;
-
-      await supabase
-        .from('provider_connections')
-        .update({
-          access_token: credentials.access_token,
-          refresh_token: credentials.refresh_token || connection.refresh_token,
-          token_expires_at: credentials.expiry_date 
-            ? new Date(credentials.expiry_date).toISOString() 
-            : null,
-        })
-        .eq('id', connection.id);
+    // Create Google client with automatic token refresh
+    let googleAuth;
+    try {
+      googleAuth = await createOrgGoogleClient(userData.organization_id);
+    } catch (err: any) {
+      return NextResponse.json(
+        { error: err.message || 'Google Workspace not connected', needsReconnect: true },
+        { status: 400 }
+      );
     }
 
     // Fetch calendar data
     const [oooStatus, bookingLinks, upcomingOOO] = await Promise.all([
-      checkOutOfOfficeStatus(accessToken, connection.refresh_token),
-      getAppointmentSchedules(accessToken, connection.refresh_token).catch(() => []),
-      getUpcomingOOOEvents(accessToken, connection.refresh_token, 30),
+      checkOutOfOfficeStatusWithClient(googleAuth),
+      getAppointmentSchedulesWithClient(googleAuth).catch(() => []),
+      getUpcomingOOOEventsWithClient(googleAuth, 30),
     ]);
 
     // Format OOO date range for display

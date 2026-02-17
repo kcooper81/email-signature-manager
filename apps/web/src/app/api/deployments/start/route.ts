@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { setGmailSignature } from '@/lib/google/gmail';
+import { setGmailSignatureWithClient } from '@/lib/google/gmail';
+import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { logException } from '@/lib/error-logging';
 import { getTemplateForUserWithFallback } from '@/lib/signature-rules';
@@ -52,35 +53,33 @@ export async function POST(request: NextRequest) {
       organizationId = userData.organization_id;
     }
 
-    // Get Google connection - if no org from user, get it from connection
-    const connectionQuery = supabase
-      .from('provider_connections')
-      .select('*')
-      .eq('provider', 'google')
-      .eq('is_active', true);
-
-    if (organizationId) {
-      connectionQuery.eq('organization_id', organizationId);
-    }
-
-    const { data: connection } = await connectionQuery.single();
-
-    if (!connection) {
-      return NextResponse.json(
-        { error: 'Google Workspace not connected' },
-        { status: 400 }
-      );
-    }
-
-    // Use organization from connection if we didn't have it
     if (!organizationId) {
-      organizationId = connection.organization_id;
+      // Fallback: try to get org from connection
+      const { data: connection } = await supabase
+        .from('provider_connections')
+        .select('organization_id')
+        .eq('provider', 'google')
+        .eq('is_active', true)
+        .single();
+
+      organizationId = connection?.organization_id || null;
     }
 
     if (!organizationId) {
       return NextResponse.json(
         { error: 'Organization not found' },
         { status: 404 }
+      );
+    }
+
+    // Create Google client with automatic token refresh
+    let googleAuth;
+    try {
+      googleAuth = await createOrgGoogleClient(organizationId);
+    } catch (err: any) {
+      return NextResponse.json(
+        { error: err.message || 'Google Workspace not connected' },
+        { status: 400 }
       );
     }
 
@@ -320,9 +319,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Deploy to Gmail
-        await setGmailSignature(
-          connection.access_token,
-          connection.refresh_token,
+        await setGmailSignatureWithClient(
+          googleAuth,
           targetUser.email!,
           finalHtml
         );

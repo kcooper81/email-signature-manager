@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
-import { 
-  checkOutOfOfficeStatus, 
+import {
+  checkOutOfOfficeStatusWithClient,
   checkOutOfOfficeStatusWithServiceAccount,
-  formatOOODateRange 
+  formatOOODateRange
 } from '@/lib/google/calendar';
-import { createAuthenticatedClient } from '@/lib/google/oauth';
+import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { isServiceAccountConfigured } from '@/lib/google/service-account';
 import { logException } from '@/lib/error-logging';
 
@@ -102,37 +102,17 @@ export async function GET(request: NextRequest) {
     if (connection.auth_type === 'marketplace' && isServiceAccountConfigured()) {
       oooStatus = await checkOutOfOfficeStatusWithServiceAccount(userData.email);
     } else {
-      // Use OAuth tokens
-      let accessToken = connection.access_token;
-      const expiresAt = connection.token_expires_at ? new Date(connection.token_expires_at) : null;
-
-      if (expiresAt && expiresAt < new Date()) {
-        try {
-          const auth = createAuthenticatedClient(connection.access_token, connection.refresh_token);
-          const { credentials } = await auth.refreshAccessToken();
-          
-          accessToken = credentials.access_token!;
-
-          await serviceClient
-            .from('provider_connections')
-            .update({
-              access_token: credentials.access_token,
-              refresh_token: credentials.refresh_token || connection.refresh_token,
-              token_expires_at: credentials.expiry_date 
-                ? new Date(credentials.expiry_date).toISOString() 
-                : null,
-            })
-            .eq('id', connection.id);
-        } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
-          return NextResponse.json({
-            isOutOfOffice: false,
-            error: 'Token refresh failed',
-          });
-        }
+      // OAuth flow — use createOrgGoogleClient for automatic token refresh + persistence
+      try {
+        const googleAuth = await createOrgGoogleClient(userData.organization_id);
+        oooStatus = await checkOutOfOfficeStatusWithClient(googleAuth);
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        return NextResponse.json({
+          isOutOfOffice: false,
+          error: 'Token refresh failed — please reconnect Google Workspace',
+        });
       }
-
-      oooStatus = await checkOutOfOfficeStatus(accessToken, connection.refresh_token);
     }
 
     // Format response with banner settings
