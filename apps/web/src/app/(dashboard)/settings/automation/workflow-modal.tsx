@@ -1,8 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalTitle, ModalFooter, Button, Input, Select, Switch, Label } from '@/components/ui';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+
+interface SignatureTemplate {
+  id: string;
+  name: string;
+}
 
 interface WorkflowAction {
   type: string;
@@ -52,6 +58,29 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
   const isEdit = !!workflow;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [templates, setTemplates] = useState<SignatureTemplate[]>([]);
+
+  useEffect(() => {
+    async function loadTemplates() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: userData } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('auth_id', user.id)
+        .single();
+      if (!userData?.organization_id) return;
+      const { data } = await supabase
+        .from('signature_templates')
+        .select('id, name')
+        .eq('organization_id', userData.organization_id)
+        .order('name');
+      setTemplates(data || []);
+    }
+    if (open) loadTemplates();
+  }, [open]);
+
   const [form, setForm] = useState({
     name: workflow?.name || '',
     description: workflow?.description || '',
@@ -84,11 +113,15 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
     setActions(updated);
   }
 
+  function isTemplateAction(actionType: string): boolean {
+    return actionType === 'assign_template' || actionType === 'remove_template';
+  }
+
   function getConfigFields(actionType: string): { key: string; label: string; placeholder: string }[] {
     switch (actionType) {
       case 'assign_template':
       case 'remove_template':
-        return [{ key: 'templateId', label: 'Template ID', placeholder: 'Template UUID' }];
+        return []; // Handled separately with Select
       case 'deploy_signature':
         return [{ key: 'method', label: 'Deploy Method', placeholder: 'google_api / microsoft_api' }];
       case 'send_notification':
@@ -148,6 +181,8 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
     }
     setSaving(false);
   }
+
+  const templateOptions = templates.map(t => ({ value: t.id, label: t.name }));
 
   return (
     <Modal open={open} onClose={onClose} className="max-w-2xl">
@@ -219,6 +254,27 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
                 onChange={(e) => updateAction(i, 'type', e.target.value)}
                 options={actionTypeOptions}
               />
+              {/* Template selector for assign/remove template actions */}
+              {isTemplateAction(action.type) && (
+                <div className="space-y-1">
+                  <label className="text-xs text-muted-foreground">Signature Template</label>
+                  {templates.length > 0 ? (
+                    <Select
+                      value={action.config.templateId || ''}
+                      onChange={(e) => updateAction(i, 'templateId', e.target.value)}
+                      options={[
+                        { value: '', label: 'Select a template...' },
+                        ...templateOptions,
+                      ]}
+                    />
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic py-1">
+                      No templates found. Create a signature template first.
+                    </p>
+                  )}
+                </div>
+              )}
+              {/* Other config fields */}
               {getConfigFields(action.type).map(field => (
                 <div key={field.key} className="space-y-1">
                   <label className="text-xs text-muted-foreground">{field.label}</label>

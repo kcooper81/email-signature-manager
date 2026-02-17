@@ -5,8 +5,8 @@
  */
 
 export const DISCLAIMER_TEMPLATE_UPDATABLE = new Set([
-  'name', 'category', 'content', 'content_html', 'description',
-  'regulation_type', 'locale', 'styling', 'is_active',
+  'name', 'category', 'content', 'description',
+  'regulation_type', 'locale', 'is_active',
 ]);
 
 export const DISCLAIMER_RULE_UPDATABLE = new Set([
