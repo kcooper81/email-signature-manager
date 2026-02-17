@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { logException } from '@/lib/error-logging';
+import { resolveDisclaimersForUser } from '@/lib/disclaimer-engine';
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,6 +61,13 @@ export async function POST(request: NextRequest) {
 
     const organizationName = (currentUser.organizations as any)?.name || '';
 
+    // Get org details for disclaimer context
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('domain, industry, parent_organization_id')
+      .eq('id', currentUser.organization_id)
+      .single();
+
     // Get all selected users
     const { data: selectedUsers, error: usersError } = await supabase
       .from('users')
@@ -112,11 +120,33 @@ export async function POST(request: NextRequest) {
 
         const { html } = await renderSignatureToHtml(blocks, context);
 
+        // Resolve and append disclaimers
+        let finalHtml = html;
+        try {
+          const disclaimerResult = await resolveDisclaimersForUser(
+            {
+              userId: selectedUser.id,
+              userEmail: selectedUser.email,
+              userDepartment: selectedUser.department || undefined,
+              userSource: selectedUser.source || undefined,
+              organizationId: currentUser.organization_id,
+              organizationDomain: orgData?.domain || undefined,
+              organizationIndustry: orgData?.industry || undefined,
+            },
+            orgData?.parent_organization_id || null
+          );
+          if (disclaimerResult.combinedHtml) {
+            finalHtml += disclaimerResult.combinedHtml;
+          }
+        } catch (disclaimerErr) {
+          console.error(`Disclaimer resolution failed for ${selectedUser.email}:`, disclaimerErr);
+        }
+
         return {
           userId: selectedUser.id,
           userName: `${selectedUser.first_name || ''} ${selectedUser.last_name || ''}`.trim() || selectedUser.email,
           email: selectedUser.email,
-          html,
+          html: finalHtml,
         };
       })
     );

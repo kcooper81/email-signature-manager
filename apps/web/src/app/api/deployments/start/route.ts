@@ -5,6 +5,7 @@ import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { logException } from '@/lib/error-logging';
 import { getTemplateForUserWithFallback } from '@/lib/signature-rules';
 import { logDeployment } from '@/lib/audit/logger';
+import { resolveDisclaimersForUser } from '@/lib/disclaimer-engine';
 
 export const dynamic = 'force-dynamic';
 
@@ -99,13 +100,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get org details for disclaimer context
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('domain, industry, parent_organization_id')
+      .eq('id', organizationId)
+      .single();
+
     // Determine target users based on deployment target
-    let targetUsers: { 
-      id?: string; 
-      email: string; 
-      name: string; 
-      firstName?: string; 
+    let targetUsers: {
+      id?: string;
+      email: string;
+      name: string;
+      firstName?: string;
       lastName?: string;
+      department?: string;
+      source?: string;
       calendlyUrl?: string;
       linkedinUrl?: string;
       twitterUrl?: string;
@@ -116,26 +126,30 @@ export async function POST(request: NextRequest) {
       youtubeUrl?: string;
     }[] = [];
 
+    const userSelectFields = 'id, email, first_name, last_name, department, source, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url';
+
     if (target === 'me') {
       // Deploy to current user only - get their user ID from the users table
       const { data: currentUserData } = await supabase
         .from('users')
-        .select('id')
+        .select('id, department, source')
         .eq('auth_id', user.id)
         .single();
-      
+
       targetUsers = [{
         id: currentUserData?.id,
         email: user.email!,
         name: user.user_metadata?.full_name || user.email!,
         firstName: user.user_metadata?.first_name,
         lastName: user.user_metadata?.last_name,
+        department: currentUserData?.department || undefined,
+        source: currentUserData?.source || undefined,
       }];
     } else if (target === 'selected' && userIds?.length > 0) {
       // Deploy to selected users
       const { data: selectedUsers } = await supabase
         .from('users')
-        .select('id, email, first_name, last_name, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url')
+        .select(userSelectFields)
         .eq('organization_id', organizationId)
         .in('id', userIds);
 
@@ -146,6 +160,8 @@ export async function POST(request: NextRequest) {
           name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
           firstName: u.first_name || undefined,
           lastName: u.last_name || undefined,
+          department: u.department || undefined,
+          source: u.source || undefined,
           calendlyUrl: u.calendly_url || undefined,
           linkedinUrl: u.linkedin_url || undefined,
           twitterUrl: u.twitter_url || undefined,
@@ -160,7 +176,7 @@ export async function POST(request: NextRequest) {
       // Deploy to all users in organization
       const { data: allUsers } = await supabase
         .from('users')
-        .select('id, email, first_name, last_name, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url')
+        .select(userSelectFields)
         .eq('organization_id', organizationId);
 
       if (allUsers) {
@@ -170,6 +186,8 @@ export async function POST(request: NextRequest) {
           name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
           firstName: u.first_name || undefined,
           lastName: u.last_name || undefined,
+          department: u.department || undefined,
+          source: u.source || undefined,
           calendlyUrl: u.calendly_url || undefined,
           linkedinUrl: u.linkedin_url || undefined,
           twitterUrl: u.twitter_url || undefined,
@@ -277,12 +295,36 @@ export async function POST(request: NextRequest) {
 
         const signatureResult = await renderSignatureToHtml(actualTemplate.blocks, renderContext);
 
+        // Resolve and append disclaimers
+        let finalHtml = signatureResult.html;
+        try {
+          const disclaimerResult = await resolveDisclaimersForUser(
+            {
+              userId: targetUser.id || '',
+              userEmail: targetUser.email,
+              userDepartment: targetUser.department,
+              userSource: targetUser.source,
+              organizationId: organizationId!,
+              organizationDomain: orgData?.domain || undefined,
+              organizationIndustry: orgData?.industry || undefined,
+              recipients,
+            },
+            orgData?.parent_organization_id || null
+          );
+          if (disclaimerResult.combinedHtml) {
+            finalHtml += disclaimerResult.combinedHtml;
+          }
+        } catch (disclaimerErr) {
+          // Log but don't block deployment if disclaimers fail
+          console.error(`Disclaimer resolution failed for ${targetUser.email}:`, disclaimerErr);
+        }
+
         // Deploy to Gmail
         await setGmailSignature(
           connection.access_token,
           connection.refresh_token,
           targetUser.email!,
-          signatureResult.html
+          finalHtml
         );
 
         successCount++;
