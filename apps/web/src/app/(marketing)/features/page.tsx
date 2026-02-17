@@ -12,6 +12,21 @@ export const metadata = {
   },
 };
 
+const colorClasses: Record<string, { bg: string; text: string }> = {
+  violet: { bg: 'bg-violet-100', text: 'text-violet-600' },
+  blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+  cyan: { bg: 'bg-cyan-100', text: 'text-cyan-600' },
+  indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+  emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600' },
+  orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
+  pink: { bg: 'bg-pink-100', text: 'text-pink-600' },
+  amber: { bg: 'bg-amber-100', text: 'text-amber-600' },
+  red: { bg: 'bg-red-100', text: 'text-red-600' },
+  slate: { bg: 'bg-slate-100', text: 'text-slate-600' },
+  teal: { bg: 'bg-teal-100', text: 'text-teal-600' },
+  green: { bg: 'bg-green-100', text: 'text-green-600' },
+};
+
 const features = [
   {
     icon: Palette,
@@ -130,8 +145,8 @@ export default function FeaturesPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature) => (
               <div key={feature.title} className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-                <div className={`w-12 h-12 rounded-xl bg-${feature.color}-100 flex items-center justify-center mb-4`}>
-                  <feature.icon className={`h-6 w-6 text-${feature.color}-600`} />
+                <div className={`w-12 h-12 rounded-xl ${colorClasses[feature.color]?.bg ?? 'bg-gray-100'} flex items-center justify-center mb-4`}>
+                  <feature.icon className={`h-6 w-6 ${colorClasses[feature.color]?.text ?? 'text-gray-600'}`} />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600 mb-4">{feature.description}</p>

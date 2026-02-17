@@ -10,7 +10,7 @@ import { ProfessionalPricingCalculator } from '@/components/pricing/professional
 
 export const metadata = genMeta({
   title: 'Pricing - Email Signature Management',
-  description: 'Free forever for small teams. Professional plan at $1.50/user/month with a 10-user minimum. Full features on every plan — 25-73% cheaper than competitors.',
+  description: 'Free forever for small teams. Professional plan at $1.50/user/month with a 10-user minimum. Full features on every plan — 25-63% cheaper than competitors.',
   keywords: ['pricing', 'email signature pricing', 'signature management cost', 'exclaimer pricing alternative'],
   canonical: '/pricing',
 });
@@ -69,7 +69,7 @@ export default function PricingPage() {
             Full feature access on the Free plan. One paid plan for teams — no tiers, no confusion.
           </p>
           <p className="text-lg text-violet-600 font-medium">
-            25-73% cheaper than Exclaimer, CodeTwo, and WiseStamp
+            25-63% cheaper than Exclaimer, CodeTwo, and WiseStamp
           </p>
         </div>
       </section>
