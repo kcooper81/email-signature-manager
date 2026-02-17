@@ -220,9 +220,11 @@ export default function ValidationRulesPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Validation Value</label>
               <Input
+                type={form.validationType === 'regex' ? 'text' : 'number'}
                 value={form.validationValue}
                 onChange={(e) => setForm({ ...form, validationValue: e.target.value })}
                 placeholder={form.validationType === 'regex' ? '^[A-Z].*' : '5'}
+                {...(form.validationType !== 'regex' ? { min: 1 } : {})}
               />
             </div>
           )}

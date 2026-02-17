@@ -12,8 +12,7 @@ interface SyncConfiguration {
   conflict_resolution: string;
   auto_apply_changes: boolean;
   sync_new_users: boolean;
-  sync_deactivated_users: boolean;
-  api_key_set: boolean;
+  sync_deactivated: boolean;
   api_url: string | null;
   last_sync_at: string | null;
   last_sync_status: string | null;
@@ -26,7 +25,7 @@ interface ConfigForm {
   conflictResolution: string;
   autoApplyChanges: boolean;
   syncNewUsers: boolean;
-  syncDeactivatedUsers: boolean;
+  syncDeactivated: boolean;
   apiKey: string;
   apiUrl: string;
 }
@@ -37,7 +36,7 @@ const emptyForm: ConfigForm = {
   conflictResolution: 'hr_wins',
   autoApplyChanges: true,
   syncNewUsers: true,
-  syncDeactivatedUsers: true,
+  syncDeactivated: true,
   apiKey: '',
   apiUrl: '',
 };
@@ -132,7 +131,7 @@ export default function HrSyncPage() {
       conflictResolution: config.conflict_resolution,
       autoApplyChanges: config.auto_apply_changes,
       syncNewUsers: config.sync_new_users,
-      syncDeactivatedUsers: config.sync_deactivated_users,
+      syncDeactivated: config.sync_deactivated,
       apiKey: '', // Don't prefill secret
       apiUrl: config.api_url || '',
     });
@@ -286,7 +285,7 @@ export default function HrSyncPage() {
           </div>
           <div className="flex items-center justify-between">
             <Label>Sync Deactivated Users</Label>
-            <Switch checked={form.syncDeactivatedUsers} onCheckedChange={(c) => setForm({ ...form, syncDeactivatedUsers: c })} />
+            <Switch checked={form.syncDeactivated} onCheckedChange={(c) => setForm({ ...form, syncDeactivated: c })} />
           </div>
         </div>
         <ModalFooter>

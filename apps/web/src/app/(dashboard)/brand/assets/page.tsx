@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Input, Card, CardContent, Badge } from '@/components/ui';
+import { Button, Input, Card, CardContent, Badge, Select, ConfirmDialog, useToast } from '@/components/ui';
+import { FeatureGate } from '@/components/billing/upgrade-prompt';
 import {
   Upload,
   Trash2,
@@ -35,6 +36,10 @@ interface BrandAsset {
 }
 
 const CATEGORIES = ['all', 'logo', 'banner', 'icon', 'photo', 'uncategorized'] as const;
+const CATEGORY_OPTIONS = CATEGORIES.filter((c) => c !== 'all').map((cat) => ({
+  value: cat,
+  label: cat.charAt(0).toUpperCase() + cat.slice(1),
+}));
 
 function categorizeByFilename(name: string): string {
   const lower = name.toLowerCase();
@@ -79,7 +84,10 @@ export default function BrandAssetsPage() {
     category: 'uncategorized',
     description: '',
   });
+  const [deleteTarget, setDeleteTarget] = useState<BrandAsset | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
 
   useEffect(() => {
     loadAssets();
@@ -114,7 +122,7 @@ export default function BrandAssetsPage() {
   };
 
   const handleUpload = useCallback(async (files: FileList | File[]) => {
-    if (!orgId) return;
+    if (!orgId || !userId) return;
     setUploading(true);
     const supabase = createClient();
 
@@ -177,18 +185,26 @@ export default function BrandAssetsPage() {
     setUploading(false);
   }, [orgId, userId]);
 
-  const handleDelete = async (asset: BrandAsset) => {
-    if (!confirm(`Delete "${asset.display_name}"? This cannot be undone.`)) return;
-
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     const supabase = createClient();
 
     // Delete from storage
-    await supabase.storage.from('signature-assets').remove([asset.file_path]);
+    await supabase.storage.from('signature-assets').remove([deleteTarget.file_path]);
 
     // Delete from table
-    await supabase.from('brand_assets').delete().eq('id', asset.id);
+    const { error } = await supabase.from('brand_assets').delete().eq('id', deleteTarget.id);
 
-    setAssets((prev) => prev.filter((a) => a.id !== asset.id));
+    if (error) {
+      toast.error('Failed to delete asset');
+      setDeleting(false);
+      return;
+    }
+
+    setAssets((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+    setDeleteTarget(null);
+    setDeleting(false);
   };
 
   const startEditing = (asset: BrandAsset) => {
@@ -208,7 +224,7 @@ export default function BrandAssetsPage() {
     if (!editingId) return;
     const supabase = createClient();
 
-    await supabase
+    const { error } = await supabase
       .from('brand_assets')
       .update({
         display_name: editForm.display_name,
@@ -217,6 +233,11 @@ export default function BrandAssetsPage() {
         updated_at: new Date().toISOString(),
       })
       .eq('id', editingId);
+
+    if (error) {
+      toast.error('Failed to save changes');
+      return;
+    }
 
     setAssets((prev) =>
       prev.map((a) =>
@@ -254,6 +275,7 @@ export default function BrandAssetsPage() {
   }
 
   return (
+    <FeatureGate feature="brandGovernance">
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Brand Assets</h2>
       <p className="text-sm text-muted-foreground -mt-4">Upload and manage images for use across your email signatures</p>
@@ -373,7 +395,7 @@ export default function BrandAssetsPage() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(asset); }}
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget(asset); }}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -387,15 +409,12 @@ export default function BrandAssetsPage() {
                     placeholder="Display name"
                     className="h-8 text-sm"
                   />
-                  <select
+                  <Select
                     value={editForm.category}
                     onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                    className="w-full h-8 rounded-md border border-input bg-background px-2 text-sm"
-                  >
-                    {CATEGORIES.filter((c) => c !== 'all').map((cat) => (
-                      <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-                    ))}
-                  </select>
+                    options={CATEGORY_OPTIONS}
+                    className="h-8 text-sm"
+                  />
                   <Input
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
@@ -469,15 +488,12 @@ export default function BrandAssetsPage() {
                     </td>
                     <td className="p-3">
                       {editingId === asset.id ? (
-                        <select
+                        <Select
                           value={editForm.category}
                           onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                          className="h-7 rounded-md border border-input bg-background px-2 text-sm"
-                        >
-                          {CATEGORIES.filter((c) => c !== 'all').map((cat) => (
-                            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-                          ))}
-                        </select>
+                          options={CATEGORY_OPTIONS}
+                          className="h-7 text-sm"
+                        />
                       ) : (
                         <Badge variant="secondary" className="capitalize">{asset.category}</Badge>
                       )}
@@ -507,7 +523,7 @@ export default function BrandAssetsPage() {
                               variant="ghost"
                               size="sm"
                               className="text-destructive"
-                              onClick={() => handleDelete(asset)}
+                              onClick={() => setDeleteTarget(asset)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -522,6 +538,18 @@ export default function BrandAssetsPage() {
           </CardContent>
         </Card>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Brand Asset"
+        description={`Delete "${deleteTarget?.display_name}"? This cannot be undone.`}
+        confirmText="Delete"
+        variant="destructive"
+        loading={deleting}
+      />
     </div>
+    </FeatureGate>
   );
 }

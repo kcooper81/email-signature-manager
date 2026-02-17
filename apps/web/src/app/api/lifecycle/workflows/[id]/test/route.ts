@@ -76,7 +76,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       userDepartment: userData.department || undefined,
     });
 
-    return NextResponse.json({ success: true, eventId: event.id });
+    // Fetch the run results to report actions executed
+    const { data: runs } = await supabase
+      .from('lifecycle_workflow_runs')
+      .select('action_results')
+      .eq('event_id', event.id)
+      .order('started_at', { ascending: false })
+      .limit(1);
+
+    const actionsExecuted = runs?.[0]?.action_results?.length || 0;
+
+    return NextResponse.json({ success: true, eventId: event.id, actionsExecuted });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

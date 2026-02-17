@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Marketplace Assets</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .preview-item {
+      text-align: center;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    .preview-item h3 {
+      margin: 0 0 15px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      display: block;
+      margin: 0 auto 15px;
+    }
+    button {
+      background: #4d52de;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #3d42ce;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .download-all {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .download-all button {
+      padding: 12px 30px;
+      font-size: 16px;
+    }
+    .instructions {
+      background: #f0f7ff;
+      border-left: 4px solid #4d52de;
+      padding: 15px;
+      margin-bottom: 30px;
+      border-radius: 4px;
+    }
+    .instructions h3 {
+      margin-top: 0;
+      color: #4d52de;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Google Workspace Marketplace Assets Generator</h1>
+    <p class="subtitle">Generate all required icon sizes for your marketplace listing</p>
+    
+    <div class="instructions">
+      <h3>Instructions:</h3>
+      <ol>
+        <li>The assets will be generated automatically from your existing logo</li>
+        <li>Preview each size below</li>
+        <li>Click "Download" on individual assets or "Download All" at the bottom</li>
+        <li>Upload these to your Google Workspace Marketplace listing</li>
+      </ol>
+    </div>
+
+    <div class="preview-grid">
+      <div class="preview-item">
+        <h3>32×32 Icon</h3>
+        <canvas id="canvas-32" width="32" height="32"></canvas>
+        <button onclick="downloadCanvas('canvas-32', 'siggly-icon-32x32.png')">Download</button>
+      </div>
+
+      <div class="preview-item">
+        <h3>48×48 Icon</h3>
+        <canvas id="canvas-48" width="48" height="48"></canvas>
+        <button onclick="downloadCanvas('canvas-48', 'siggly-icon-48x48.png')">Download</button>
+      </div>
+
+      <div class="preview-item">
+        <h3>96×96 Icon</h3>
+        <canvas id="canvas-96" width="96" height="96"></canvas>
+        <button onclick="downloadCanvas('canvas-96', 'siggly-icon-96x96.png')">Download</button>
+      </div>
+
+      <div class="preview-item">
+        <h3>128×128 Icon (Required)</h3>
+        <canvas id="canvas-128" width="128" height="128"></canvas>
+        <button onclick="downloadCanvas('canvas-128', 'siggly-icon-128x128.png')">Download</button>
+      </div>
+    </div>
+
+    <div class="preview-item" style="margin-top: 20px;">
+      <h3>220×140 Banner (Required)</h3>
+      <canvas id="canvas-banner" width="220" height="140"></canvas>
+      <button onclick="downloadCanvas('canvas-banner', 'siggly-banner-220x140.png')">Download</button>
+    </div>
+
+    <div class="download-all">
+      <button onclick="downloadAll()">Download All Assets</button>
+    </div>
+  </div>
+
+  <script>
+    // Gradient colors matching your brand
+    const gradientStart = '#8B5CF6'; // Purple
+    const gradientEnd = '#3B82F6';   // Blue
+
+    function createGradient(ctx, width, height) {
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, gradientStart);
+      gradient.addColorStop(1, gradientEnd);
+      return gradient;
+    }
+
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function drawEnvelopeIcon(ctx, size) {
+      const scale = size / 128;
+      const padding = size * 0.15;
+      const iconSize = size - (padding * 2);
+      const centerX = size / 2;
+      const centerY = size / 2;
+
+      // Background with rounded corners
+      ctx.save();
+      drawRoundedRect(ctx, 0, 0, size, size, size * 0.15);
+      ctx.fillStyle = createGradient(ctx, size, size);
+      ctx.fill();
+      ctx.restore();
+
+      // Draw white envelope
+      ctx.strokeStyle = 'white';
+      ctx.fillStyle = 'white';
+      ctx.lineWidth = Math.max(2, size / 40);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Envelope rectangle
+      const envWidth = iconSize * 0.5;
+      const envHeight = iconSize * 0.35;
+      const envX = centerX - envWidth / 2;
+      const envY = centerY - envHeight / 2;
+
+      ctx.strokeRect(envX, envY, envWidth, envHeight);
+
+      // Envelope flap
+      ctx.beginPath();
+      ctx.moveTo(envX, envY);
+      ctx.lineTo(centerX, centerY + envHeight * 0.15);
+      ctx.lineTo(envX + envWidth, envY);
+      ctx.stroke();
+
+      // Pen/swoosh
+      const penStartX = centerX + envWidth * 0.3;
+      const penStartY = centerY + envHeight * 0.3;
+      const penEndX = centerX + envWidth * 0.7;
+      const penEndY = centerY - envHeight * 0.3;
+
+      ctx.beginPath();
+      ctx.moveTo(penStartX, penStartY);
+      ctx.quadraticCurveTo(
+        centerX + envWidth * 0.5,
+        centerY,
+        penEndX,
+        penEndY
+      );
+      ctx.lineWidth = Math.max(3, size / 30);
+      ctx.stroke();
+
+      // Pen tip
+      ctx.beginPath();
+      ctx.arc(penEndX, penEndY, size / 25, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Sparkle
+      const sparkleX = envX - envWidth * 0.15;
+      const sparkleY = centerY;
+      const sparkleSize = size / 20;
+
+      ctx.beginPath();
+      ctx.moveTo(sparkleX, sparkleY - sparkleSize);
+      ctx.lineTo(sparkleX, sparkleY + sparkleSize);
+      ctx.moveTo(sparkleX - sparkleSize, sparkleY);
+      ctx.lineTo(sparkleX + sparkleSize, sparkleY);
+      ctx.lineWidth = Math.max(1.5, size / 50);
+      ctx.stroke();
+    }
+
+    function drawBanner(ctx, width, height) {
+      // Background gradient
+      ctx.fillStyle = createGradient(ctx, width, height);
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw envelope icon (smaller, centered)
+      const iconSize = Math.min(width, height) * 0.6;
+      const iconX = (width - iconSize) / 2;
+      const iconY = (height - iconSize) / 2;
+
+      ctx.save();
+      ctx.translate(iconX, iconY);
+      
+      // Draw white envelope (without background)
+      const scale = iconSize / 128;
+      const padding = iconSize * 0.15;
+      const envIconSize = iconSize - (padding * 2);
+      const centerX = iconSize / 2;
+      const centerY = iconSize / 2;
+
+      ctx.strokeStyle = 'white';
+      ctx.fillStyle = 'white';
+      ctx.lineWidth = Math.max(2, iconSize / 40);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Envelope rectangle
+      const envWidth = envIconSize * 0.5;
+      const envHeight = envIconSize * 0.35;
+      const envX = centerX - envWidth / 2;
+      const envY = centerY - envHeight / 2;
+
+      ctx.strokeRect(envX, envY, envWidth, envHeight);
+
+      // Envelope flap
+      ctx.beginPath();
+      ctx.moveTo(envX, envY);
+      ctx.lineTo(centerX, centerY + envHeight * 0.15);
+      ctx.lineTo(envX + envWidth, envY);
+      ctx.stroke();
+
+      // Pen/swoosh
+      const penStartX = centerX + envWidth * 0.3;
+      const penStartY = centerY + envHeight * 0.3;
+      const penEndX = centerX + envWidth * 0.7;
+      const penEndY = centerY - envHeight * 0.3;
+
+      ctx.beginPath();
+      ctx.moveTo(penStartX, penStartY);
+      ctx.quadraticCurveTo(
+        centerX + envWidth * 0.5,
+        centerY,
+        penEndX,
+        penEndY
+      );
+      ctx.lineWidth = Math.max(3, iconSize / 30);
+      ctx.stroke();
+
+      // Pen tip
+      ctx.beginPath();
+      ctx.arc(penEndX, penEndY, iconSize / 25, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Sparkle
+      const sparkleX = envX - envWidth * 0.15;
+      const sparkleY = centerY;
+      const sparkleSize = iconSize / 20;
+
+      ctx.beginPath();
+      ctx.moveTo(sparkleX, sparkleY - sparkleSize);
+      ctx.lineTo(sparkleX, sparkleY + sparkleSize);
+      ctx.moveTo(sparkleX - sparkleSize, sparkleY);
+      ctx.lineTo(sparkleX + sparkleSize, sparkleY);
+      ctx.lineWidth = Math.max(1.5, iconSize / 50);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // Generate all assets
+    function generateAssets() {
+      // Icons
+      [32, 48, 96, 128].forEach(size => {
+        const canvas = document.getElementById(`canvas-${size}`);
+        const ctx = canvas.getContext('2d');
+        drawEnvelopeIcon(ctx, size);
+      });
+
+      // Banner
+      const bannerCanvas = document.getElementById('canvas-banner');
+      const bannerCtx = bannerCanvas.getContext('2d');
+      drawBanner(bannerCtx, 220, 140);
+    }
+
+    function downloadCanvas(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    function downloadAll() {
+      const downloads = [
+        { id: 'canvas-32', name: 'siggly-icon-32x32.png' },
+        { id: 'canvas-48', name: 'siggly-icon-48x48.png' },
+        { id: 'canvas-96', name: 'siggly-icon-96x96.png' },
+        { id: 'canvas-128', name: 'siggly-icon-128x128.png' },
+        { id: 'canvas-banner', name: 'siggly-banner-220x140.png' }
+      ];
+
+      downloads.forEach((item, index) => {
+        setTimeout(() => {
+          downloadCanvas(item.id, item.name);
+        }, index * 200);
+      });
+    }
+
+    // Generate on load
+    window.addEventListener('load', generateAssets);
+  </script>
+</body>
+</html>

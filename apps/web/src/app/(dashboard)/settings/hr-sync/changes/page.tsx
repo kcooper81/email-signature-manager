@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, useToast } from '@/components/ui';
 import { Check, X, CheckCircle2 } from 'lucide-react';
 
 interface FieldChange {
@@ -20,6 +20,7 @@ interface SyncChange {
 export default function HrSyncChangesPage() {
   const [changes, setChanges] = useState<SyncChange[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     loadChanges();
@@ -30,31 +31,52 @@ export default function HrSyncChangesPage() {
     try {
       const res = await fetch('/api/hr-sync/changes?status=pending');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load changes');
       setChanges(data.changes || []);
-    } catch (err) {
-      console.error('Failed to load changes:', err);
+    } catch (err: any) {
+      toast.error('Failed to load changes', err.message);
+      setChanges([]);
     }
     setLoading(false);
   }
 
   async function approveChange(id: string) {
-    await fetch(`/api/hr-sync/changes/${id}/approve`, { method: 'POST' });
-    setChanges(prev => prev.filter(c => c.id !== id));
+    try {
+      const res = await fetch(`/api/hr-sync/changes/${id}/approve`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to approve');
+      setChanges(prev => prev.filter(c => c.id !== id));
+    } catch (err: any) {
+      toast.error('Failed to approve change', err.message);
+    }
   }
 
   async function rejectChange(id: string) {
-    await fetch(`/api/hr-sync/changes/${id}/reject`, { method: 'POST' });
-    setChanges(prev => prev.filter(c => c.id !== id));
+    try {
+      const res = await fetch(`/api/hr-sync/changes/${id}/reject`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to reject');
+      setChanges(prev => prev.filter(c => c.id !== id));
+    } catch (err: any) {
+      toast.error('Failed to reject change', err.message);
+    }
   }
 
   async function bulkApprove() {
-    const ids = changes.map(c => c.id);
-    await fetch('/api/hr-sync/changes/bulk-approve', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ changeIds: ids }),
-    });
-    setChanges([]);
+    try {
+      const ids = changes.map(c => c.id);
+      const res = await fetch('/api/hr-sync/changes/bulk-approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ changeIds: ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to approve');
+      setChanges([]);
+      toast.success(`Approved ${ids.length} changes`);
+    } catch (err: any) {
+      toast.error('Failed to bulk approve', err.message);
+    }
   }
 
   return (

@@ -45,12 +45,8 @@ const eventTypeOptions = [
 
 const actionTypeOptions = [
   { value: 'assign_template', label: 'Assign Template' },
-  { value: 'remove_template', label: 'Remove Template' },
   { value: 'deploy_signature', label: 'Deploy Signature' },
   { value: 'send_notification', label: 'Send Notification' },
-  { value: 'add_to_group', label: 'Add to Group' },
-  { value: 'remove_from_group', label: 'Remove from Group' },
-  { value: 'set_field', label: 'Set Field Value' },
   { value: 'webhook', label: 'Call Webhook' },
 ];
 
@@ -139,16 +135,39 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
     return actionType === 'assign_template' || actionType === 'remove_template';
   }
 
-  function getConfigFields(actionType: string): { key: string; label: string; placeholder: string }[] {
+  interface ConfigField {
+    key: string;
+    label: string;
+    placeholder: string;
+    type?: 'text' | 'select';
+    options?: { value: string; label: string }[];
+  }
+
+  function getConfigFields(actionType: string): ConfigField[] {
     switch (actionType) {
       case 'assign_template':
       case 'remove_template':
         return []; // Handled separately with Select
       case 'deploy_signature':
-        return [{ key: 'method', label: 'Deploy Method', placeholder: 'google_api / microsoft_api' }];
+        return [{
+          key: 'method', label: 'Deploy Method', placeholder: '',
+          type: 'select',
+          options: [
+            { value: 'google_api', label: 'Google Workspace API' },
+            { value: 'microsoft_api', label: 'Microsoft Graph API' },
+          ],
+        }];
       case 'send_notification':
         return [
-          { key: 'to', label: 'Recipient', placeholder: 'admin / user / email@example.com' },
+          {
+            key: 'to', label: 'Recipient', placeholder: 'email@example.com',
+            type: 'select',
+            options: [
+              { value: 'admin', label: 'Admin' },
+              { value: 'user', label: 'Triggering User' },
+              { value: '__custom__', label: 'Custom Email Address' },
+            ],
+          },
           { key: 'message', label: 'Message', placeholder: 'Notification message' },
         ];
       case 'add_to_group':
@@ -162,7 +181,17 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
       case 'webhook':
         return [
           { key: 'url', label: 'Webhook URL', placeholder: 'https://example.com/webhook' },
-          { key: 'method', label: 'HTTP Method', placeholder: 'POST' },
+          {
+            key: 'method', label: 'HTTP Method', placeholder: '',
+            type: 'select',
+            options: [
+              { value: 'POST', label: 'POST' },
+              { value: 'GET', label: 'GET' },
+              { value: 'PUT', label: 'PUT' },
+              { value: 'PATCH', label: 'PATCH' },
+              { value: 'DELETE', label: 'DELETE' },
+            ],
+          },
         ];
       default:
         return [];
@@ -230,17 +259,56 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
           </div>
           <div className="space-y-2">
             <Label>Priority</Label>
-            <Input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} />
+            <Input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} min={1} />
+            <p className="text-xs text-muted-foreground">Lower numbers run first (1 = highest priority)</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Department Filter (comma-separated)</Label>
             <Input value={form.departmentFilter} onChange={(e) => setForm({ ...form, departmentFilter: e.target.value })} placeholder="Sales, Engineering" />
+            <p className="text-xs text-muted-foreground">Must match exact department names in your organization</p>
           </div>
           <div className="space-y-2">
-            <Label>Source Filter (comma-separated)</Label>
-            <Input value={form.sourceFilter} onChange={(e) => setForm({ ...form, sourceFilter: e.target.value })} placeholder="google, manual" />
+            <Label>Source Filter</Label>
+            <Select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) {
+                  const current = form.sourceFilter ? form.sourceFilter.split(',').map(s => s.trim()).filter(Boolean) : [];
+                  if (!current.includes(e.target.value)) {
+                    setForm({ ...form, sourceFilter: [...current, e.target.value].join(', ') });
+                  }
+                }
+              }}
+              placeholder="Add source filter"
+              options={[
+                { value: 'google', label: 'Google Workspace' },
+                { value: 'microsoft', label: 'Microsoft 365' },
+                { value: 'manual', label: 'Manual' },
+                { value: 'api', label: 'API' },
+                { value: 'csv', label: 'CSV Import' },
+              ]}
+            />
+            {form.sourceFilter && (
+              <div className="flex flex-wrap gap-1">
+                {form.sourceFilter.split(',').map(s => s.trim()).filter(Boolean).map((source, idx) => (
+                  <span key={idx} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border bg-muted">
+                    {source}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = form.sourceFilter.split(',').map(s => s.trim()).filter((s, j) => j !== idx).join(', ');
+                        setForm({ ...form, sourceFilter: updated });
+                      }}
+                      className="hover:text-red-500"
+                    >
+                      <Trash2 className="h-2.5 w-2.5" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -304,12 +372,44 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
               {getConfigFields(action.type).map(field => (
                 <div key={field.key} className="space-y-1">
                   <label className="text-xs text-muted-foreground">{field.label}</label>
-                  <Input
-                    value={action.config[field.key] || ''}
-                    onChange={(e) => updateAction(i, field.key, e.target.value)}
-                    placeholder={field.placeholder}
-                    className="h-8 text-sm"
-                  />
+                  {field.type === 'select' ? (
+                    <>
+                      <Select
+                        value={
+                          field.key === 'to' && action.config[field.key] && !field.options?.some(o => o.value === action.config[field.key])
+                            ? '__custom__'
+                            : action.config[field.key] || ''
+                        }
+                        onChange={(e) => {
+                          if (e.target.value === '__custom__') {
+                            updateAction(i, field.key, '');
+                          } else {
+                            updateAction(i, field.key, e.target.value);
+                          }
+                        }}
+                        options={field.options || []}
+                        placeholder={`Select ${field.label.toLowerCase()}`}
+                        className="h-8 text-sm"
+                      />
+                      {field.key === 'to' && (
+                        action.config[field.key] === '' || (action.config[field.key] && !['admin', 'user'].includes(action.config[field.key]))
+                      ) && action.config[field.key] !== undefined && (
+                        <Input
+                          value={action.config[field.key] || ''}
+                          onChange={(e) => updateAction(i, field.key, e.target.value)}
+                          placeholder="email@example.com"
+                          className="h-8 text-sm mt-1"
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <Input
+                      value={action.config[field.key] || ''}
+                      onChange={(e) => updateAction(i, field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="h-8 text-sm"
+                    />
+                  )}
                 </div>
               ))}
             </div>

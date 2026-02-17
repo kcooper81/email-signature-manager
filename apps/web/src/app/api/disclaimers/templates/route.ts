@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getOrgPlan, checkFeature, checkLimit, planDenied, limitDenied } from '@/lib/billing/plan-guard';
+import { getOrgPlan, checkLimit, limitDenied } from '@/lib/billing/plan-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,17 +65,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, category, content, description, regulationType, locale } = body;
+    const { name, category, content, description } = body;
 
     if (!name || !category || !content) {
       return NextResponse.json({ error: 'Name, category, and content are required' }, { status: 400 });
-    }
-
-    if (regulationType && !checkFeature(orgPlan, 'disclaimerRegulatoryPresets')) {
-      return planDenied('Regulatory presets', 'professional');
-    }
-    if (locale && locale !== 'en' && !checkFeature(orgPlan, 'disclaimerMultiLanguage')) {
-      return planDenied('Multi-language disclaimers', 'enterprise');
     }
 
     const { data: template, error } = await supabase
@@ -86,8 +79,6 @@ export async function POST(request: NextRequest) {
         content,
         description: description || null,
         organization_id: userData.organization_id,
-        regulation_type: regulationType || null,
-        locale: locale || 'en',
         is_system: false,
       })
       .select()

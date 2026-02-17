@@ -53,7 +53,17 @@ export async function runOrgAudit(organizationId: string): Promise<AuditResult[]
     if (!template || !user) continue;
 
     const signatureData = extractSignatureData(template.blocks || [], deprecatedIds);
-    const { score, violations } = calculateComplianceScore(guideline, signatureData);
+    const mappedGuideline = {
+      id: guideline.id,
+      primaryColors: guideline.primary_colors,
+      secondaryColors: guideline.secondary_colors,
+      accentColors: guideline.accent_colors,
+      allowedFonts: guideline.allowed_fonts,
+      requiredLogoAssetId: guideline.required_logo_asset_id,
+      requiredDisclaimer: guideline.required_disclaimer,
+      requiredSocialLinks: guideline.required_social_links,
+    };
+    const { score, violations } = calculateComplianceScore(mappedGuideline, signatureData);
 
     // Save audit result
     await supabase.from('brand_audit_results').insert({
@@ -115,7 +125,17 @@ export async function auditUser(organizationId: string, userId: string): Promise
 
   const deprecatedIds = (deprecatedAssets || []).map((a: any) => a.id);
   const signatureData = extractSignatureData(template?.blocks || [], deprecatedIds);
-  const { score, violations } = calculateComplianceScore(guideline, signatureData);
+  const mappedGuideline = {
+    id: guideline.id,
+    primaryColors: guideline.primary_colors,
+    secondaryColors: guideline.secondary_colors,
+    accentColors: guideline.accent_colors,
+    allowedFonts: guideline.allowed_fonts,
+    requiredLogoAssetId: guideline.required_logo_asset_id,
+    requiredDisclaimer: guideline.required_disclaimer,
+    requiredSocialLinks: guideline.required_social_links,
+  };
+  const { score, violations } = calculateComplianceScore(mappedGuideline, signatureData);
 
   return {
     userId,

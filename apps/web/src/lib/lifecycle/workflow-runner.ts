@@ -38,7 +38,7 @@ export async function processEvent(context: WorkflowRunContext): Promise<void> {
     .eq('organization_id', context.organizationId)
     .eq('event_type', context.eventType)
     .eq('is_active', true)
-    .order('priority', { ascending: false });
+    .order('priority', { ascending: true });
 
   // Also load MSP cascaded workflows
   const { data: org } = await supabase
@@ -65,8 +65,8 @@ export async function processEvent(context: WorkflowRunContext): Promise<void> {
 
   // Filter by department and source
   const matchingWorkflows = allWorkflows.filter(w => {
-    if (w.department_filter?.length > 0 && context.userDepartment) {
-      if (!w.department_filter.includes(context.userDepartment)) return false;
+    if (w.department_filter?.length > 0) {
+      if (!context.userDepartment || !w.department_filter.includes(context.userDepartment)) return false;
     }
     if (w.source_filter?.length > 0) {
       if (!w.source_filter.includes(context.eventSource)) return false;
@@ -175,6 +175,6 @@ async function executeAction(action: WorkflowAction, context: WorkflowRunContext
       // Wait is handled by scheduling, not inline
       break;
     default:
-      console.warn(`Unknown action type: ${action.type}`);
+      throw new Error(`Unsupported action type: ${action.type}`);
   }
 }

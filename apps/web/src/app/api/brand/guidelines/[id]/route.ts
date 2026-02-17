@@ -38,6 +38,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         required_social_links: body.requiredSocialLinks || null,
         cascade_to_clients: body.cascadeToClients || false,
         is_active: body.isActive ?? true,
+        version: body.version ? body.version + 1 : undefined,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .eq('organization_id', userData.organization_id)
