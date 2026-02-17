@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button, useToast } from '@/components/ui';
 import { Shield, RefreshCw, Loader2 } from 'lucide-react';
 import { FeatureGate } from '@/components/billing/upgrade-prompt';
+import { BrandNav } from '@/components/dashboard';
 
 interface AuditViolation {
   rule: string;
@@ -44,6 +45,7 @@ export default function BrandAuditPage() {
 
   return (
     <FeatureGate feature="brandGovernance">
+    <BrandNav />
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -61,9 +63,21 @@ export default function BrandAuditPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : results.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>No audit results available. Make sure you have brand guidelines and user assignments configured.</p>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Shield className="h-8 w-8 text-blue-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No audit results yet</h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-2">
+            Brand audits check every deployed signature against your guidelines and score them for compliance.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            To run an audit, first create brand guidelines and deploy signatures to your users.
+          </p>
+          <Button onClick={runAudit} disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Run Audit
+          </Button>
         </div>
       ) : (
         <>

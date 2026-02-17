@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button, ConfirmDialog, useToast } from '@/components/ui';
 import { Palette, Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { FeatureGate } from '@/components/billing/upgrade-prompt';
+import { BrandNav } from '@/components/dashboard';
 import { GuidelineModal } from './guideline-modal';
 
 interface BrandGuideline {
@@ -79,6 +80,7 @@ export default function BrandGuidelinesPage() {
 
   return (
     <FeatureGate feature="brandGovernance">
+    <BrandNav />
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -96,9 +98,22 @@ export default function BrandGuidelinesPage() {
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : guidelines.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          <Palette className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p>No brand guidelines defined yet.</p>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Palette className="h-8 w-8 text-violet-600" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No brand guidelines yet</h3>
+          <p className="text-muted-foreground max-w-md mx-auto mb-2">
+            Brand guidelines define your approved colors, fonts, and required elements.
+            When enforced, they prevent templates from being saved with off-brand styling.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            Lock down colors and fonts to keep every signature on-brand across your organization.
+          </p>
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Your First Guideline
+          </Button>
         </div>
       ) : (
         <div className="space-y-4">
