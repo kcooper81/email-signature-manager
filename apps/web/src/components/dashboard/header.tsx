@@ -64,11 +64,11 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
           ) : (
             <>
               <Image
-                src="/siggly-logo.png"
+                src="/siggly-logo-header.png"
                 alt="Siggly Logo"
                 width={32}
                 height={32}
-                className="h-7 w-auto sm:h-8 brightness-0 invert"
+                className="h-7 w-auto sm:h-8"
               />
               <span className="font-semibold text-base sm:text-lg text-white">Siggly</span>
             </>
