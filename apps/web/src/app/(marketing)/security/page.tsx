@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Shield, Lock, Eye, FileCheck, Server, CheckCircle } from 'lucide-react';
+import { Shield, Lock, Eye, FileCheck, Server, CheckCircle, Clock, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 
@@ -44,10 +44,10 @@ const securityFeatures = [
 ];
 
 const complianceStandards = [
-  { name: 'GDPR', description: 'EU General Data Protection Regulation' },
-  { name: 'CCPA', description: 'California Consumer Privacy Act' },
-  { name: 'SOC 2 Type II', description: 'In progress - Expected Q2 2026' },
-  { name: 'ISO 27001', description: 'Roadmap - 2026' },
+  { name: 'GDPR', description: 'EU General Data Protection Regulation', status: 'achieved' as const },
+  { name: 'CCPA', description: 'California Consumer Privacy Act', status: 'achieved' as const },
+  { name: 'SOC 2 Type II', description: 'In progress - Expected Q2 2026', status: 'in-progress' as const },
+  { name: 'ISO 27001', description: 'Roadmap - 2026', status: 'roadmap' as const },
 ];
 
 export default function SecurityPage() {
@@ -129,9 +129,25 @@ export default function SecurityPage() {
             {complianceStandards.map((standard) => (
               <div key={standard.name} className="bg-white border border-gray-200 rounded-xl p-6">
                 <div className="flex items-start gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
+                  {standard.status === 'achieved' && (
+                    <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
+                  )}
+                  {standard.status === 'in-progress' && (
+                    <Clock className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
+                  )}
+                  {standard.status === 'roadmap' && (
+                    <Calendar className="h-6 w-6 text-gray-400 flex-shrink-0 mt-0.5" />
+                  )}
                   <div>
-                    <h3 className="font-semibold mb-1">{standard.name}</h3>
+                    <h3 className="font-semibold mb-1">
+                      {standard.name}
+                      {standard.status === 'in-progress' && (
+                        <span className="ml-2 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">In Progress</span>
+                      )}
+                      {standard.status === 'roadmap' && (
+                        <span className="ml-2 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Planned</span>
+                      )}
+                    </h3>
                     <p className="text-sm text-gray-600">{standard.description}</p>
                   </div>
                 </div>

@@ -130,7 +130,7 @@ export default function SignatureGeneratorPage() {
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <div className={`h-8 w-full rounded bg-${template.color}-500 mb-2`} 
+                      <div className="h-8 w-full rounded mb-2"
                            style={{ backgroundColor: template.color === 'violet' ? '#7c3aed' : template.color === 'blue' ? '#2563eb' : template.color === 'slate' ? '#64748b' : '#374151' }} />
                       <span className="text-sm font-medium">{template.name}</span>
                     </button>

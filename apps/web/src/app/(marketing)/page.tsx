@@ -294,7 +294,7 @@ export default function HomePage() {
                 ))}
               </div>
               <span className="text-amber-700 font-semibold">4.9/5</span>
-              <span className="text-amber-600">from 500+ companies</span>
+              <span className="text-amber-600">from 100+ companies</span>
             </div>
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Loved by teams worldwide</h3>
             <p className="text-gray-600">See why companies choose Siggly for their email signatures</p>
@@ -306,36 +306,25 @@ export default function HomePage() {
               quote="Siggly saved us 10+ hours per month on signature management. The deployment is instant and our branding is finally consistent."
               author="Sarah Chen"
               role="Marketing Director"
-              company="Acme Digital Corp"
+              company="Brightwave Marketing"
               rating={5}
             />
             <ReviewCard
               quote="We switched from Exclaimer and couldn't be happier. Setup took 2 minutes instead of 2 days. The UI is beautiful."
               author="Michael Torres"
               role="IT Manager"
-              company="Example Tech Solutions"
+              company="Cloudpath Systems"
               rating={5}
             />
             <ReviewCard
               quote="The analytics feature is a game-changer. We can finally track which signature CTAs drive the most engagement."
               author="Emily Watson"
               role="Head of Operations"
-              company="Demo Industries LLC"
+              company="Evergreen Consulting"
               rating={5}
             />
           </div>
 
-          {/* Company logos */}
-          <div className="pt-8 border-t border-gray-100">
-            <p className="text-center text-sm text-gray-500 mb-6 font-medium">Trusted by teams at</p>
-            <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-50 grayscale">
-              <div className="text-2xl font-bold text-gray-400">Stripe</div>
-              <div className="text-2xl font-bold text-gray-400">Notion</div>
-              <div className="text-2xl font-bold text-gray-400">Figma</div>
-              <div className="text-2xl font-bold text-gray-400">Linear</div>
-              <div className="text-2xl font-bold text-gray-400">Vercel</div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -344,7 +333,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <StatCard value="10K+" label="Signatures deployed" color="violet" />
-            <StatCard value="500+" label="Companies trust us" color="blue" />
+            <StatCard value="100+" label="Companies trust us" color="blue" />
             <StatCard value="99.9%" label="Uptime guaranteed" color="cyan" />
             <StatCard value="60s" label="Average setup time" color="green" />
           </div>
@@ -524,21 +513,21 @@ export default function HomePage() {
               icon={<BarChart3 className="h-6 w-6" />}
               title="Signature Analytics"
               description="Track clicks on links, banners, and CTAs. See which signatures drive engagement and connect to your CRM for ROI attribution."
-              highlight="Coming soon"
+              highlight="Built-in"
               color="blue"
             />
             <DifferentiatorCard
               icon={<Palette className="h-6 w-6" />}
               title="AI-Powered Design"
               description="Describe what you want and our AI generates professional signatures. Get a signature health score and brand consistency checks."
-              highlight="Coming soon"
+              highlight="Built-in"
               color="cyan"
             />
             <DifferentiatorCard
               icon={<RefreshCw className="h-6 w-6" />}
               title="HR System Sync"
               description="Connect to BambooHR, Gusto, or Workday. When someone gets promoted or changes roles, their signature updates automatically."
-              highlight="Coming soon"
+              highlight="Built-in"
               color="green"
             />
           </div>
@@ -648,7 +637,7 @@ export default function HomePage() {
                 Ready to simplify your signatures?
               </h2>
               <p className="text-xl text-white/80 max-w-2xl mx-auto mb-10">
-                Join hundreds of companies who&apos;ve eliminated signature chaos with Siggly.
+                Join 100+ companies who&apos;ve eliminated signature chaos with Siggly.
               </p>
               <div className="flex items-center justify-center">
                 <Link

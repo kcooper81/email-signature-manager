@@ -2,11 +2,13 @@ import Link from 'next/link';
 import { Mail, ArrowLeft, Users, Shield, Zap, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MarketingCTA } from '@/components/marketing/cta';
+import { generateMetadata as genMeta } from '@/lib/seo/metadata';
 
-export const metadata = {
-  title: 'About Us | Siggly',
+export const metadata = genMeta({
+  title: 'About Us',
   description: 'Learn about Siggly - the modern email signature management platform for teams',
-};
+  canonical: '/about',
+});
 
 export default function AboutPage() {
   return (

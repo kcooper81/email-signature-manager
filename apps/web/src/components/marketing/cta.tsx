@@ -61,7 +61,7 @@ const variantStyles = {
 
 export function MarketingCTA({
   title = 'Ready to get started?',
-  description = 'Join thousands of teams who trust Siggly for their email signatures.',
+  description = 'Join 100+ teams who trust Siggly for their email signatures.',
   primaryButtonText = 'Get Started Free',
   primaryButtonHref = '/signup',
   secondaryButtonText,

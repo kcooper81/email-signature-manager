@@ -63,33 +63,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Siggly',
-    applicationCategory: 'BusinessApplication',
-    operatingSystem: 'Web',
-    description: 'Email signature management platform for teams. Create, manage, and deploy consistent email signatures to your entire Google Workspace organization.',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      description: 'Free tier available',
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '150',
-    },
-  };
-
   return (
     <html lang="en">
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         <script src="https://script.supademo.com/supademo.js"></script>
       </head>
       <body className={inter.className}>

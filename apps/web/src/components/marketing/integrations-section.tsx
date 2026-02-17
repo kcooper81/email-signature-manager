@@ -2,6 +2,20 @@ import Link from 'next/link';
 import { INTEGRATIONS, AVAILABLE_INTEGRATIONS, COMING_SOON_INTEGRATIONS } from '@/lib/integrations';
 import { Badge } from '@/components/ui/badge';
 
+const colorClasses: Record<string, { bg: string; text: string }> = {
+  blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+  orange: { bg: 'bg-orange-100', text: 'text-orange-600' },
+  purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
+  green: { bg: 'bg-green-100', text: 'text-green-600' },
+  red: { bg: 'bg-red-100', text: 'text-red-600' },
+  yellow: { bg: 'bg-yellow-100', text: 'text-yellow-600' },
+  indigo: { bg: 'bg-indigo-100', text: 'text-indigo-600' },
+  pink: { bg: 'bg-pink-100', text: 'text-pink-600' },
+  teal: { bg: 'bg-teal-100', text: 'text-teal-600' },
+  cyan: { bg: 'bg-cyan-100', text: 'text-cyan-600' },
+  violet: { bg: 'bg-violet-100', text: 'text-violet-600' },
+};
+
 interface IntegrationsSectionProps {
   title?: string;
   description?: string;
@@ -30,8 +44,8 @@ export function IntegrationsSection({
               const Icon = integration.icon;
               const content = (
                 <div className="flex items-center gap-4 p-6 bg-white border border-gray-200 rounded-xl hover:shadow-lg hover:border-gray-300 transition-all">
-                  <div className={`h-12 w-12 rounded-xl bg-${integration.color}-100 flex items-center justify-center flex-shrink-0`}>
-                    <Icon className={`h-6 w-6 text-${integration.color}-600`} />
+                  <div className={`h-12 w-12 rounded-xl ${colorClasses[integration.color]?.bg ?? 'bg-gray-100'} flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`h-6 w-6 ${colorClasses[integration.color]?.text ?? 'text-gray-600'}`} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -72,8 +86,8 @@ export function IntegrationsSection({
             const content = (
               <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gray-300 transition-all">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`h-12 w-12 rounded-xl bg-${integration.color}-100 flex items-center justify-center`}>
-                    <Icon className={`h-6 w-6 text-${integration.color}-600`} />
+                  <div className={`h-12 w-12 rounded-xl ${colorClasses[integration.color]?.bg ?? 'bg-gray-100'} flex items-center justify-center`}>
+                    <Icon className={`h-6 w-6 ${colorClasses[integration.color]?.text ?? 'text-gray-600'}`} />
                   </div>
                   {integration.status === 'coming-soon' && (
                     <Badge variant="secondary" className="text-xs">Coming Soon</Badge>

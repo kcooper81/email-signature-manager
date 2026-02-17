@@ -64,7 +64,7 @@ export function DashboardHeader({ user, isAdmin = false }: DashboardHeaderProps)
           ) : (
             <>
               <Image
-                src="/siggly-logo-header.png"
+                src="/siggly-logo.png"
                 alt="Siggly Logo"
                 width={32}
                 height={32}
