@@ -213,9 +213,19 @@ export default function DisclaimersPage() {
           {activeTab === 'templates' && (
             <div className="space-y-3">
               {templates.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No disclaimer templates yet. Create one or use a regulatory preset.</p>
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Shield className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No disclaimer templates yet</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto mb-2">
+                    Disclaimer templates contain the legal or compliance text that gets appended to signatures.
+                    Start with a regulatory preset (GDPR, HIPAA, etc.) or create your own from scratch.
+                  </p>
+                  <div className="flex items-center justify-center gap-3 mt-6">
+                    <Button variant="outline" onClick={openCreateTemplate}>Create Custom Template</Button>
+                    <Button onClick={() => setActiveTab('presets')}>Browse Presets</Button>
+                  </div>
                 </div>
               ) : (
                 templates.map(t => (
@@ -245,9 +255,21 @@ export default function DisclaimersPage() {
           {activeTab === 'rules' && (
             <div className="space-y-3">
               {rules.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Scale className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No disclaimer rules configured. Rules determine which disclaimers are applied to each user.</p>
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Scale className="h-8 w-8 text-orange-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No disclaimer rules yet</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto mb-2">
+                    Rules control which disclaimers are applied to which users. You can target by department, region, industry, or recipient domain.
+                  </p>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+                    Example: Apply GDPR text only to users in the EU region, or add confidentiality notices for the Legal department.
+                  </p>
+                  <Button onClick={openCreateRule}>
+                    <Scale className="h-4 w-4 mr-2" />
+                    Create Your First Rule
+                  </Button>
                 </div>
               ) : (
                 rules.map(r => (
@@ -298,9 +320,14 @@ export default function DisclaimersPage() {
           {activeTab === 'audit' && (
             <div className="space-y-3">
               {auditLog.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No disclaimer deployments recorded yet.</p>
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <History className="h-8 w-8 text-slate-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No disclaimer deployments yet</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    Once you deploy signatures with disclaimer rules configured, each application is recorded here for compliance tracking.
+                  </p>
                 </div>
               ) : (
                 auditLog.map(a => (

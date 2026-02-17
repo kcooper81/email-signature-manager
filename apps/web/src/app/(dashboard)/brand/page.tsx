@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Palette, Shield, FileText, Image, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FeatureGate } from '@/components/billing/upgrade-prompt';
+import { BrandNav } from '@/components/dashboard';
 
 export default function BrandHubPage() {
   const [hubData, setHubData] = useState<any>(null);
@@ -38,6 +39,7 @@ export default function BrandHubPage() {
 
   return (
     <FeatureGate feature="brandGovernance">
+    <BrandNav />
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Brand Hub</h1>

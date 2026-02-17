@@ -211,7 +211,6 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
     <UpgradePrompt
       feature={feature}
       requiredPlan={featureRequirements[feature]}
-      inline
     />
   );
 }
