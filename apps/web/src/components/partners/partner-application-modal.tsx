@@ -175,6 +175,7 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
             </div>
           </ModalHeader>
 
+          <div className="px-4 sm:px-6 overflow-y-auto max-h-[calc(85vh-80px)]">
             {/* Benefits Preview */}
             <div className="grid grid-cols-2 gap-3 my-4">
               <div className="flex items-start gap-2 text-sm">
@@ -214,7 +215,7 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
                       Convert my existing organization to an MSP partner account
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Your organization "<strong>{existingOrg.name}</strong>" will be upgraded to an MSP partner account. 
+                      Your organization "<strong>{existingOrg.name}</strong>" will be upgraded to an MSP partner account.
                       All your existing templates, team members, and settings will be preserved.
                     </p>
                   </div>
@@ -222,7 +223,7 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 pb-2">
               <div className="space-y-4">
                 <h3 className="font-semibold">Company Information</h3>
                 <div className="grid md:grid-cols-2 gap-4">
@@ -360,8 +361,9 @@ export function PartnerApplicationModal({ isOpen, onClose }: PartnerApplicationM
                 </Button>
               </div>
             </form>
-          </>
-        )}
+          </div>
+        </>
+      )}
     </Modal>
   );
 }
