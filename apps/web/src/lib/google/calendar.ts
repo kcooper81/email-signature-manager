@@ -1,4 +1,4 @@
-import { google, calendar_v3 } from 'googleapis';
+import { google, calendar_v3, type Auth } from 'googleapis';
 import { createAuthenticatedClient } from './oauth';
 import { createServiceAccountClient } from './service-account';
 
@@ -344,6 +344,171 @@ export async function checkOutOfOfficeStatusWithServiceAccount(
   } catch (error: any) {
     console.error('Failed to check OOO status with service account:', error);
     return { isOutOfOffice: false };
+  }
+}
+
+/**
+ * Check OOO status using a pre-configured auth client (supports auto token refresh).
+ */
+export async function checkOutOfOfficeStatusWithClient(
+  auth: Auth.OAuth2Client
+): Promise<OutOfOfficeStatus> {
+  const calendar = google.calendar({ version: 'v3', auth });
+
+  try {
+    const now = new Date();
+    const weekAhead = new Date();
+    weekAhead.setDate(weekAhead.getDate() + 7);
+
+    const events = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: now.toISOString(),
+      timeMax: weekAhead.toISOString(),
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 50,
+    });
+
+    const oooKeywords = ['out of office', 'ooo', 'vacation', 'pto', 'holiday', 'away', 'leave', 'time off'];
+
+    for (const event of events.data.items || []) {
+      if (event.eventType === 'outOfOffice') {
+        return {
+          isOutOfOffice: true,
+          startDate: (event.start?.dateTime || event.start?.date) ?? undefined,
+          endDate: (event.end?.dateTime || event.end?.date) ?? undefined,
+          message: event.description ?? undefined,
+          eventTitle: event.summary || 'Out of Office',
+        };
+      }
+
+      const summary = (event.summary || '').toLowerCase();
+      const isAllDay = !!event.start?.date && !event.start?.dateTime;
+
+      if (isAllDay && oooKeywords.some(keyword => summary.includes(keyword))) {
+        const eventStart = new Date(event.start?.date || '');
+        const eventEnd = new Date(event.end?.date || '');
+
+        if (now >= eventStart && now < eventEnd) {
+          return {
+            isOutOfOffice: true,
+            startDate: event.start?.date ?? undefined,
+            endDate: event.end?.date ?? undefined,
+            message: event.description ?? undefined,
+            eventTitle: event.summary || 'Out of Office',
+          };
+        }
+      }
+    }
+
+    return { isOutOfOffice: false };
+  } catch (error: any) {
+    console.error('Failed to check OOO status:', error);
+    return { isOutOfOffice: false };
+  }
+}
+
+/**
+ * Get appointment schedules using a pre-configured auth client.
+ */
+export async function getAppointmentSchedulesWithClient(
+  auth: Auth.OAuth2Client
+): Promise<CalendarBookingLink[]> {
+  const calendar = google.calendar({ version: 'v3', auth });
+
+  try {
+    const calendarList = await calendar.calendarList.list();
+    const bookingLinks: CalendarBookingLink[] = [];
+
+    for (const cal of calendarList.data.items || []) {
+      if (cal.accessRole === 'owner' && cal.primary) {
+        const now = new Date();
+        const futureDate = new Date();
+        futureDate.setMonth(futureDate.getMonth() + 3);
+
+        const events = await calendar.events.list({
+          calendarId: cal.id!,
+          timeMin: now.toISOString(),
+          timeMax: futureDate.toISOString(),
+          singleEvents: false,
+          maxResults: 100,
+        });
+
+        for (const event of events.data.items || []) {
+          if (event.eventType === 'appointmentSchedule' ||
+              (event.conferenceData?.conferenceSolution?.name === 'Google Meet' &&
+               event.recurringEventId)) {
+            const bookingUrl = event.htmlLink?.replace('/event?', '/appointments/') ||
+                              `https://calendar.google.com/calendar/appointments`;
+
+            bookingLinks.push({
+              name: event.summary || 'Appointment',
+              url: bookingUrl,
+              duration: event.start?.dateTime && event.end?.dateTime
+                ? Math.round((new Date(event.end.dateTime).getTime() -
+                             new Date(event.start.dateTime).getTime()) / 60000)
+                : undefined,
+              description: event.description || undefined,
+            });
+          }
+        }
+      }
+    }
+
+    return bookingLinks;
+  } catch (error: any) {
+    console.error('Failed to get appointment schedules:', error);
+    throw new Error(error.message || 'Failed to fetch appointment schedules');
+  }
+}
+
+/**
+ * Get upcoming OOO events using a pre-configured auth client.
+ */
+export async function getUpcomingOOOEventsWithClient(
+  auth: Auth.OAuth2Client,
+  daysAhead: number = 30
+): Promise<CalendarEvent[]> {
+  const calendar = google.calendar({ version: 'v3', auth });
+
+  try {
+    const now = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + daysAhead);
+
+    const events = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: now.toISOString(),
+      timeMax: futureDate.toISOString(),
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 100,
+    });
+
+    const oooKeywords = ['out of office', 'ooo', 'vacation', 'pto', 'holiday', 'away', 'leave', 'time off'];
+    const oooEvents: CalendarEvent[] = [];
+
+    for (const event of events.data.items || []) {
+      const summary = (event.summary || '').toLowerCase();
+      const isAllDay = !!event.start?.date && !event.start?.dateTime;
+
+      if (event.eventType === 'outOfOffice' ||
+          (isAllDay && oooKeywords.some(keyword => summary.includes(keyword)))) {
+        oooEvents.push({
+          id: event.id!,
+          summary: event.summary || 'Out of Office',
+          start: event.start?.dateTime || event.start?.date || '',
+          end: event.end?.dateTime || event.end?.date || '',
+          status: event.status || 'confirmed',
+          eventType: event.eventType ?? undefined,
+        });
+      }
+    }
+
+    return oooEvents;
+  } catch (error: any) {
+    console.error('Failed to get upcoming OOO events:', error);
+    return [];
   }
 }
 
