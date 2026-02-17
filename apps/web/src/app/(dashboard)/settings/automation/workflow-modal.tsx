@@ -59,24 +59,30 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [templates, setTemplates] = useState<SignatureTemplate[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   useEffect(() => {
     async function loadTemplates() {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: userData } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('auth_id', user.id)
-        .single();
-      if (!userData?.organization_id) return;
-      const { data } = await supabase
-        .from('signature_templates')
-        .select('id, name')
-        .eq('organization_id', userData.organization_id)
-        .order('name');
-      setTemplates(data || []);
+      setLoadingTemplates(true);
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: userData } = await supabase
+          .from('users')
+          .select('organization_id')
+          .eq('auth_id', user.id)
+          .single();
+        if (!userData?.organization_id) return;
+        const { data } = await supabase
+          .from('signature_templates')
+          .select('id, name')
+          .eq('organization_id', userData.organization_id)
+          .order('name');
+        setTemplates(data || []);
+      } finally {
+        setLoadingTemplates(false);
+      }
     }
     if (open) loadTemplates();
   }, [open]);
@@ -94,6 +100,22 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
   const [actions, setActions] = useState<WorkflowAction[]>(
     workflow?.actions || [{ type: 'assign_template', config: {} }]
   );
+
+  // Reset form state when switching between create/edit or different workflows
+  useEffect(() => {
+    setForm({
+      name: workflow?.name || '',
+      description: workflow?.description || '',
+      eventType: workflow?.event_type || 'user_joined',
+      priority: workflow?.priority || 10,
+      departmentFilter: (workflow?.department_filter || []).join(', '),
+      sourceFilter: (workflow?.source_filter || []).join(', '),
+      isActive: workflow?.is_active ?? true,
+      cascadeToClients: workflow?.cascade_to_clients ?? false,
+    });
+    setActions(workflow?.actions || [{ type: 'assign_template', config: {} }]);
+    setError('');
+  }, [workflow, open]);
 
   function addAction() {
     setActions([...actions, { type: 'assign_template', config: {} }]);
@@ -258,7 +280,11 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
               {isTemplateAction(action.type) && (
                 <div className="space-y-1">
                   <label className="text-xs text-muted-foreground">Signature Template</label>
-                  {templates.length > 0 ? (
+                  {loadingTemplates ? (
+                    <p className="text-xs text-muted-foreground italic py-1">
+                      Loading templates...
+                    </p>
+                  ) : templates.length > 0 ? (
                     <Select
                       value={action.config.templateId || ''}
                       onChange={(e) => updateAction(i, 'templateId', e.target.value)}

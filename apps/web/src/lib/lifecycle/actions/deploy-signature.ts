@@ -18,5 +18,4 @@ export async function deploySignature(context: WorkflowRunContext, _config: Reco
 
   // Trigger deployment via internal API call
   // In production, this would call the deployment pipeline directly
-  console.log(`[Lifecycle] Deploying signature template ${assignment.template_id} for user ${context.userId}`);
 }

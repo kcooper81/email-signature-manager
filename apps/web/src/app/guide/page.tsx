@@ -1,15 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  Users, 
-  Palette, 
-  Rocket, 
-  Settings, 
-  Link2, 
-  Building2, 
+import {
+  ChevronDown,
+  ChevronRight,
+  Users,
+  Palette,
+  Rocket,
+  Settings,
+  Building2,
   CreditCard,
   Mail,
   CheckCircle2,
@@ -21,6 +20,12 @@ import {
   Calendar,
   Play,
   AlertTriangle,
+  BarChart3,
+  Shield,
+  RefreshCw,
+  Zap,
+  ClipboardCheck,
+  FileText,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,6 +37,7 @@ interface GuideSection {
   icon: React.ReactNode;
   description: string;
   link?: string;
+  badge?: string;
   steps: {
     title: string;
     description: string;
@@ -186,7 +192,16 @@ const guideSections: GuideSection[] = [
         ]
       },
       {
-        title: 'Step 7: Preview and Save',
+        title: 'Step 7: Set Up Signature Rules (Optional)',
+        description: 'On the Rules tab of your template, create rules to control when this template is used. Target by department, recipient type (internal/external), or schedule date ranges.',
+        tips: [
+          'Rules use priority ordering — higher priority rules are evaluated first',
+          'First matching rule wins: the system stops at the first match',
+          'Use date ranges for campaign-based signatures'
+        ]
+      },
+      {
+        title: 'Step 8: Preview and Save',
         description: 'Use the preview panel on the right to see how the signature looks. Click "Save" when done.',
         tips: [
           'Preview shows desktop and mobile views',
@@ -250,7 +265,7 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Admin: Edit User from Team Page',
-        description: 'Admins can edit any user by going to Team → clicking on a user → Edit. This opens a modal where you can update their title, department, phone, and personal links.',
+        description: 'Admins can edit any user by going to Team \u2192 clicking on a user \u2192 Edit. This opens a modal where you can update their title, department, phone, and personal links.',
         link: '/team',
         tips: [
           'Personal links include: LinkedIn, Twitter, Calendly, GitHub, Instagram, Facebook, YouTube, Personal Website',
@@ -289,12 +304,12 @@ const guideSections: GuideSection[] = [
     steps: [
       {
         title: 'Admin: Enable Calendar Integration',
-        description: 'Go to Settings → scroll to "Employee Features" → enable "Allow Calendar Integration" and "Allow OOO Banners".',
+        description: 'Go to Settings \u2192 General \u2192 Organization tab \u2192 scroll to "Employee Features" \u2192 enable "Allow Calendar Integration" and "Allow OOO Banners".',
         link: '/settings',
       },
       {
         title: 'User: Enable in Self-Manage Portal',
-        description: 'Users go to /my-profile → find "Calendar Integration" section → toggle "Enable Google Calendar" and "Show OOO Banner".',
+        description: 'Users go to /my-profile \u2192 find "Calendar Integration" section \u2192 toggle "Enable Google Calendar" and "Show OOO Banner".',
         link: '/my-profile',
         tips: [
           'User must have Google Calendar access',
@@ -312,24 +327,316 @@ const guideSections: GuideSection[] = [
     ]
   },
   {
-    id: 'billing',
-    title: '8. Billing & Upgrades',
-    icon: <CreditCard className="h-5 w-5" />,
-    description: 'Manage your subscription',
+    id: 'analytics',
+    title: '8. Analytics & Click Tracking',
+    icon: <BarChart3 className="h-5 w-5" />,
+    description: 'Track clicks, measure signature performance, and view reports',
+    link: '/analytics',
+    badge: 'Pro',
+    steps: [
+      {
+        title: 'View Analytics Dashboard',
+        description: 'From the sidebar, click "Analytics" to see your signature performance overview with total clicks, top links, and trends.',
+        link: '/analytics',
+      },
+      {
+        title: 'Link Performance',
+        description: 'See which links in your signatures get the most clicks. Track social links, website links, booking links, and banner clicks.',
+        tips: [
+          'Click tracking is automatic for all deployed signatures',
+          'Data updates in real-time as recipients click links'
+        ]
+      },
+      {
+        title: 'Campaign Analytics',
+        description: 'Track banner campaign performance with click-through rates and engagement metrics.',
+        tips: [
+          'Use date filters to compare campaign periods',
+          'Export data for reporting'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'disclaimers',
+    title: '9. Email Disclaimers',
+    icon: <Shield className="h-5 w-5" />,
+    description: 'Add legal disclaimers and compliance text to signatures',
+    link: '/settings/disclaimers',
+    badge: 'Pro',
+    steps: [
+      {
+        title: 'Step 1: Go to Disclaimers',
+        description: 'Go to Settings \u2192 click "Disclaimers" in the Compliance section of the sidebar.',
+        link: '/settings/disclaimers',
+      },
+      {
+        title: 'Step 2: Create a Disclaimer Template',
+        description: 'On the Templates tab, click "Add Template". Fill in the name, category (Legal/Privacy/Compliance/Custom), and the disclaimer content text.',
+        tips: [
+          'Use presets for common regulations \u2014 click the Presets tab and hit "Use This" to pre-fill a template',
+          'Available presets: GDPR, HIPAA, Confidentiality, SOX, FINRA, and more',
+          'Free plan: up to 2 templates. Professional: unlimited'
+        ]
+      },
+      {
+        title: 'Step 3: Create Disclaimer Rules',
+        description: 'Switch to the Rules tab and click "Add Rule". Select which disclaimer template to use and set conditions for when it applies.',
+        tips: [
+          'Target by department (e.g., only Legal team)',
+          'Target by region (e.g., only EU employees for GDPR)',
+          'Target by recipient domain (e.g., only external emails)',
+          'Set date ranges for time-limited disclaimers',
+          'Multiple rules can match \u2014 all matching disclaimers are appended'
+        ]
+      },
+      {
+        title: 'Step 4: Edit and Delete',
+        description: 'Click "Edit" on any template or rule to modify it. Click "Delete" to remove it. Changes take effect on the next signature deployment.',
+      },
+      {
+        title: 'Testing with Sample Data',
+        description: 'Create a test disclaimer to verify the full flow:',
+        tips: [
+          'Template name: "Test Confidentiality Notice"',
+          'Category: Legal',
+          'Content: "This email and any attachments are confidential and intended solely for the addressee. If you are not the intended recipient, please delete this message immediately."',
+          'Then create a Rule: name "External Only", link it to your template, set recipient condition to "external"',
+          'Or use the Presets tab \u2014 click "Use This" on any regulatory preset (GDPR, HIPAA, etc.) to auto-fill a template'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'hr-sync',
+    title: '10. HR Sync',
+    icon: <RefreshCw className="h-5 w-5" />,
+    description: 'Sync employee data from HR systems to keep signatures current',
+    link: '/settings/hr-sync',
+    badge: 'Pro',
+    steps: [
+      {
+        title: 'Step 1: Go to HR Sync',
+        description: 'Go to Settings \u2192 click "HR Sync" in the Automation section of the sidebar.',
+        link: '/settings/hr-sync',
+      },
+      {
+        title: 'Step 2: Add an Integration',
+        description: 'Click "Add Integration" and select your HR provider: BambooHR, Gusto, Rippling, Google, or Microsoft.',
+      },
+      {
+        title: 'Step 3: Configure the Sync',
+        description: 'Set the schedule (manual, daily, weekly), conflict resolution (HR wins, Siggly wins, or manual review), and enter your API credentials.',
+        tips: [
+          'Enable "Auto-apply changes" to update user profiles automatically',
+          'Enable "Sync new users" to auto-create Siggly accounts for new hires',
+          'Enable "Sync deactivated" to auto-deactivate users who leave',
+          'Realtime sync is available on Enterprise plans'
+        ]
+      },
+      {
+        title: 'Step 4: Test the Sync',
+        description: 'Click "Sync Now" to trigger a manual sync. Review the results to verify data is pulling correctly.',
+      },
+      {
+        title: 'Testing with Dummy Data',
+        description: 'To test HR Sync without a real HR provider, create a configuration with these test values:',
+        tips: [
+          'Provider: BambooHR',
+          'API Key: test_api_key_12345',
+          'API URL: https://api.bamboohr.com/api/gateway.php/testcompany',
+          'Schedule: Manual (so it only runs when you click "Sync Now")',
+          'Conflict Resolution: Manual Review (to inspect changes before applying)',
+          'The sync will attempt to connect \u2014 it will show an error since the credentials are fake, but this verifies the UI flow end-to-end'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'validation-rules',
+    title: '11. Validation Rules',
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    description: 'Enforce data quality on user profile fields',
+    link: '/settings/validation-rules',
+    badge: 'Pro',
+    steps: [
+      {
+        title: 'Step 1: Go to Validation',
+        description: 'Go to Settings \u2192 click "Validation" in the Compliance section of the sidebar.',
+        link: '/settings/validation-rules',
+      },
+      {
+        title: 'Step 2: Add a Rule',
+        description: 'Click "Add Rule". Select the field to validate (email, phone, job_title, etc.), the validation type (required, regex, min_length, max_length, format), and set the value and error message.',
+        tips: [
+          'Example: Phone must match format +1-555-123-4567',
+          'Example: Job title is required',
+          'Example: First name minimum 2 characters'
+        ]
+      },
+      {
+        title: 'Step 3: Test',
+        description: 'When an employee updates their profile, validation rules run against the submitted data. If a field fails, they see your custom error message.',
+      },
+      {
+        title: 'Sample Validation Rules to Try',
+        description: 'Create these test rules to see validation in action:',
+        tips: [
+          'Field: phone, Type: format, Value: "+1-XXX-XXX-XXXX", Error: "Phone must be in +1-XXX-XXX-XXXX format"',
+          'Field: job_title, Type: required, Value: "true", Error: "Job title is required for all employees"',
+          'Field: first_name, Type: min_length, Value: "2", Error: "First name must be at least 2 characters"'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'automation-workflows',
+    title: '12. Lifecycle Automation',
+    icon: <Zap className="h-5 w-5" />,
+    description: 'Automate signature assignment when users join, leave, or change departments',
+    link: '/settings/automation',
+    badge: 'Pro',
+    steps: [
+      {
+        title: 'Step 1: Go to Workflows',
+        description: 'Go to Settings \u2192 click "Workflows" in the Automation section of the sidebar.',
+        link: '/settings/automation',
+      },
+      {
+        title: 'Step 2: Create a Workflow',
+        description: 'Click "Create Workflow". Give it a name and select a trigger event: User Joined, User Left, User Moved Department, User Updated, or Invite Accepted.',
+      },
+      {
+        title: 'Step 3: Add Actions',
+        description: 'In the Actions section, add one or more actions that execute when the trigger fires.',
+        tips: [
+          'Assign Template \u2014 select a signature template from the dropdown',
+          'Remove Template \u2014 unassign a template',
+          'Deploy Signature \u2014 push to Gmail/Outlook automatically',
+          'Send Notification \u2014 alert an admin or the user',
+          'Add/Remove from Group \u2014 manage group membership',
+          'Set Field \u2014 update a profile field value',
+          'Call Webhook \u2014 hit an external URL (Enterprise only)'
+        ]
+      },
+      {
+        title: 'Step 4: Set Filters (Optional)',
+        description: 'Narrow the trigger to specific departments or user sources. Set priority to control execution order when multiple workflows match.',
+        tips: [
+          'Department filter: only trigger for Sales, Engineering, etc.',
+          'Source filter: only trigger for users from Google, manual entry, etc.',
+          'Higher priority workflows run first'
+        ]
+      },
+      {
+        title: 'Step 5: Test the Workflow',
+        description: 'Click the "Test" button on any workflow to simulate execution and verify it works correctly.',
+      },
+      {
+        title: 'Sample Workflow to Try',
+        description: 'Create this onboarding workflow to test the full flow:',
+        tips: [
+          'Name: "New Hire Onboarding"',
+          'Trigger: User Joined',
+          'Action 1: Assign Template \u2192 select your default signature template',
+          'Action 2: Deploy Signature \u2192 push to their email client',
+          'Action 3: Send Notification \u2192 alert admin of new hire',
+          'Department filter: leave empty to apply to all departments',
+          'Then click "Test" to simulate \u2014 it will show a success/failure result without affecting real data'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'brand-governance',
+    title: '13. Brand Governance',
+    icon: <FileText className="h-5 w-5" />,
+    description: 'Define brand standards and audit signature compliance',
+    link: '/brand',
+    badge: 'Enterprise',
+    steps: [
+      {
+        title: 'Step 1: Go to Brand',
+        description: 'From the sidebar, click "Brand" to access the Brand Hub. This shows your compliance score and quick links to all brand tools.',
+        link: '/brand',
+        tips: [
+          'Brand is visible in the sidebar for all plans',
+          'Free and Professional users see an upgrade prompt \u2014 brand governance features require Enterprise'
+        ]
+      },
+      {
+        title: 'Step 2: Create Brand Guidelines',
+        description: 'Go to Brand \u2192 Guidelines \u2192 click "New Guideline". Define your approved colors (hex values), allowed fonts, and required elements.',
+        link: '/brand/guidelines',
+        tips: [
+          'Add primary, secondary, and accent colors with hex color picker',
+          'Lock colors and fonts to prevent deviations',
+          'Require disclaimers or specific social links in all signatures'
+        ]
+      },
+      {
+        title: 'Step 3: Upload Brand Assets',
+        description: 'Go to Brand \u2192 Assets to upload and manage logos, banners, and icons for use in signature templates.',
+        link: '/brand/assets',
+        tips: [
+          'Drag and drop images or click to upload',
+          'Categorize assets: logo, banner, icon, photo',
+          'Assets are available to all plans \u2014 no Enterprise required'
+        ]
+      },
+      {
+        title: 'Step 4: Run a Brand Audit',
+        description: 'Go to Brand \u2192 Audit \u2192 click "Re-run Audit". The system scores every user\'s signature against your brand guidelines.',
+        link: '/brand/audit',
+        tips: [
+          'Each user gets a compliance score (0-100%)',
+          'Violations are listed with expected vs. actual values',
+          'Green = 80%+, Yellow = 60-79%, Red = below 60%'
+        ]
+      },
+      {
+        title: 'Sample Brand Guideline to Try',
+        description: 'Create a test guideline to see the audit in action:',
+        tips: [
+          'Name: "Company Brand Standards"',
+          'Primary colors: #7c3aed (violet), #2563eb (blue)',
+          'Secondary colors: #0891b2 (cyan)',
+          'Allowed fonts: Arial, Helvetica, Inter',
+          'Toggle "Lock Colors" and "Lock Fonts" on',
+          'Enable "Required Disclaimer" \u2014 audit will flag signatures missing a disclaimer',
+          'Then run a Brand Audit to see how current signatures score against these rules'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'settings',
+    title: '14. Settings & Billing',
+    icon: <Settings className="h-5 w-5" />,
+    description: 'Manage your account, organization, and subscription',
     link: '/settings',
     steps: [
       {
-        title: 'View Current Plan',
-        description: 'Go to Settings → scroll to the Billing section to see your current plan and usage.',
+        title: 'Settings Navigation',
+        description: 'Click "Settings" in the sidebar. The settings page has a grouped sidebar with three sections: Account (General, Billing), Compliance (Disclaimers, Validation, Branding for MSP), and Automation (HR Sync, Workflows).',
         link: '/settings',
+        tips: [
+          'General: Profile, Organization, Notifications, Appearance, Security \u2014 all accessible via tabs on the main settings page',
+          'Each sub-page in Compliance and Automation has its own dedicated page'
+        ]
+      },
+      {
+        title: 'View Current Plan',
+        description: 'Go to Settings \u2192 Billing to see your current plan, usage, and manage your subscription.',
+        link: '/settings/billing',
       },
       {
         title: 'Upgrade Plan',
         description: 'Click "Upgrade" to see available plans. You\'ll be redirected to Stripe Checkout.',
         tips: [
-          'Free: 5 users, 1 template, full feature access (analytics preview only)',
-          'Professional ($1.50/user, 10-user min): Unlimited templates, analytics, MS365, API, priority support',
-          'Enterprise: Custom pricing, dedicated AM, SSO, white-label, SLA'
+          'Free: 5 users, 1 template, basic features',
+          'Professional ($1.50/user, 10-user min): Unlimited templates, analytics, disclaimers, HR sync, automation',
+          'Enterprise: Custom pricing, brand governance, SSO, white-label, dedicated support'
         ]
       },
       {
@@ -340,7 +647,7 @@ const guideSections: GuideSection[] = [
   },
   {
     id: 'msp-multi-tenant',
-    title: '9. MSP Multi-Tenant (Partners)',
+    title: '15. MSP Multi-Tenant (Partners)',
     icon: <Building2 className="h-5 w-5" />,
     description: 'Manage multiple client organizations',
     steps: [
@@ -377,53 +684,86 @@ const guideSections: GuideSection[] = [
       {
         title: 'Step 5: Manage Client Templates & Deployments',
         description: 'While viewing a client org, you can create templates and deploy signatures just like your own org.',
+      },
+      {
+        title: 'Step 6: Cascade Settings to Clients',
+        description: 'Disclaimer rules, automation workflows, and brand guidelines can be set to "Cascade to Clients" \u2014 they automatically apply to all your managed client organizations.',
+        tips: [
+          'Cascaded rules appear as read-only in client orgs',
+          'Clients cannot modify cascaded rules'
+        ]
       }
     ]
   },
   {
     id: 'testing-checklist',
-    title: '10. Testing Checklist',
+    title: '16. Testing Checklist',
     icon: <CheckCircle2 className="h-5 w-5" />,
     description: 'Quick checklist to verify everything works',
     steps: [
       {
-        title: '✓ Account & Auth',
-        description: 'Sign up → Verify email → Log in → Log out → Log back in',
+        title: '\u2713 Account & Auth',
+        description: 'Sign up \u2192 Verify email \u2192 Log in \u2192 Log out \u2192 Log back in',
         link: '/signup',
       },
       {
-        title: '✓ Google Integration',
-        description: 'Connect Google Workspace → Verify "Connected" status → Sync users',
+        title: '\u2713 Google Integration',
+        description: 'Connect Google Workspace \u2192 Verify "Connected" status \u2192 Sync users',
         link: '/integrations',
       },
       {
-        title: '✓ Team Management',
-        description: 'View synced users → Edit a user → Add personal links → Enable self-manage',
+        title: '\u2713 Team Management',
+        description: 'View synced users \u2192 Edit a user \u2192 Add personal links \u2192 Enable self-manage',
         link: '/team',
       },
       {
-        title: '✓ Templates',
-        description: 'Create template → Add blocks (Name, Title, Logo, Social) → Preview → Save',
+        title: '\u2713 Templates & Rules',
+        description: 'Create template \u2192 Add blocks \u2192 Set up signature rules \u2192 Preview \u2192 Save',
         link: '/templates',
       },
       {
-        title: '✓ Deployment',
-        description: 'Deploy to "Just Me" → Check Gmail for signature → Deploy to selected users',
+        title: '\u2713 Deployment',
+        description: 'Deploy to "Just Me" \u2192 Check Gmail for signature \u2192 Deploy to selected users',
         link: '/deployments',
       },
       {
-        title: '✓ Self-Manage Portal',
-        description: 'Log in as a self-manage user → Access /my-profile → Update personal links',
+        title: '\u2713 Self-Manage Portal',
+        description: 'Log in as a self-manage user \u2192 Access /my-profile \u2192 Update personal links',
         link: '/my-profile',
       },
       {
-        title: '✓ Billing',
-        description: 'View current plan → Test upgrade flow (use test card 4242424242424242)',
-        link: '/settings',
+        title: '\u2713 Analytics',
+        description: 'View analytics dashboard \u2192 Check click tracking \u2192 Review campaign performance',
+        link: '/analytics',
       },
       {
-        title: '✓ MSP (if applicable)',
-        description: 'Apply for partner → Add client org → Switch to client → Create template → Deploy',
+        title: '\u2713 Disclaimers (Pro)',
+        description: 'Create disclaimer template \u2192 Add rule with conditions \u2192 Verify disclaimer appends on deploy',
+        link: '/settings/disclaimers',
+      },
+      {
+        title: '\u2713 HR Sync (Pro)',
+        description: 'Add HR integration \u2192 Configure schedule \u2192 Run manual sync \u2192 Verify data pulled',
+        link: '/settings/hr-sync',
+      },
+      {
+        title: '\u2713 Automation (Pro)',
+        description: 'Create workflow \u2192 Select trigger \u2192 Add actions with template dropdown \u2192 Test workflow',
+        link: '/settings/automation',
+      },
+      {
+        title: '\u2713 Brand Governance (Enterprise)',
+        description: 'Create brand guideline \u2192 Upload assets to Brand > Assets \u2192 Run audit \u2192 Review scores',
+        link: '/brand',
+      },
+      {
+        title: '\u2713 Billing',
+        description: 'View current plan \u2192 Test upgrade flow (use test card 4242424242424242)',
+        link: '/settings/billing',
+      },
+      {
+        title: '\u2713 MSP (if applicable)',
+        description: 'Apply for partner \u2192 Add client org \u2192 Switch to client \u2192 Create template \u2192 Deploy',
         link: '/partners/apply',
       }
     ]
@@ -435,7 +775,7 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
 
   return (
     <Card className="mb-4">
-      <CardHeader 
+      <CardHeader
         className="cursor-pointer hover:bg-muted/50 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -447,9 +787,12 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
             <div>
               <div className="flex items-center gap-2">
                 <CardTitle className="text-lg">{section.title}</CardTitle>
+                {section.badge && (
+                  <Badge variant="secondary" className="text-xs">{section.badge}</Badge>
+                )}
                 {section.link && (
-                  <Link 
-                    href={section.link} 
+                  <Link
+                    href={section.link}
                     target="_blank"
                     className="text-primary hover:text-primary/80"
                     onClick={(e) => e.stopPropagation()}
@@ -477,8 +820,8 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
                   <CheckCircle2 className="h-4 w-4 text-primary" />
                   {step.title}
                   {step.link && (
-                    <Link 
-                      href={step.link} 
+                    <Link
+                      href={step.link}
                       target="_blank"
                       className="text-primary hover:text-primary/80 ml-1"
                     >
@@ -488,8 +831,8 @@ function CollapsibleSection({ section }: { section: GuideSection }) {
                 </h4>
                 <p className="text-muted-foreground mb-3">{step.description}</p>
                 {step.link && (
-                  <Link 
-                    href={step.link} 
+                  <Link
+                    href={step.link}
                     target="_blank"
                     className="inline-flex items-center gap-1 text-sm text-primary hover:underline mb-3"
                   >
@@ -537,9 +880,9 @@ export default function GuidePage() {
             Internal Testing Guide
           </Badge>
         </div>
-        <h1 className="text-3xl font-bold mb-2">Siggly Testing Guide</h1>
+        <h1 className="text-3xl font-bold mb-2">Siggly User Guide</h1>
         <p className="text-muted-foreground text-lg">
-          Step-by-step instructions to test all Siggly features. Click any section to expand.
+          Step-by-step instructions for all Siggly features. Click any section to expand.
         </p>
       </div>
 
@@ -565,11 +908,17 @@ export default function GuidePage() {
             <Link href="/deployments" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
               Deployments <ExternalLink className="h-3 w-3" />
             </Link>
-            <Link href="/my-profile" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
-              My Profile <ExternalLink className="h-3 w-3" />
+            <Link href="/analytics" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Analytics <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/brand" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              Brand <ExternalLink className="h-3 w-3" />
             </Link>
             <Link href="/settings" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
               Settings <ExternalLink className="h-3 w-3" />
+            </Link>
+            <Link href="/my-profile" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
+              My Profile <ExternalLink className="h-3 w-3" />
             </Link>
             <Link href="/clients" target="_blank" className="inline-flex items-center gap-1 text-sm bg-white px-3 py-1 rounded-full border hover:bg-blue-100">
               Clients (MSP) <ExternalLink className="h-3 w-3" />

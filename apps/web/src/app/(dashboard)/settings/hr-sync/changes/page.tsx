@@ -4,8 +4,21 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, X, CheckCircle2 } from 'lucide-react';
 
+interface FieldChange {
+  field: string;
+  oldValue: string | null;
+  newValue: string;
+}
+
+interface SyncChange {
+  id: string;
+  change_type: 'create' | 'update' | 'delete';
+  user_email: string;
+  field_changes: FieldChange[] | null;
+}
+
 export default function HrSyncChangesPage() {
-  const [changes, setChanges] = useState<any[]>([]);
+  const [changes, setChanges] = useState<SyncChange[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -92,9 +105,9 @@ export default function HrSyncChangesPage() {
                   </Button>
                 </div>
               </div>
-              {change.field_changes?.length > 0 && (
+              {(change.field_changes?.length ?? 0) > 0 && (
                 <div className="space-y-1">
-                  {change.field_changes.map((fc: any, i: number) => (
+                  {change.field_changes!.map((fc: FieldChange, i: number) => (
                     <div key={i} className="text-sm flex gap-2">
                       <span className="text-muted-foreground w-32">{fc.field}:</span>
                       {fc.oldValue && <span className="text-red-600 line-through">{fc.oldValue}</span>}

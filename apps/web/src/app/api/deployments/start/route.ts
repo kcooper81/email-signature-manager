@@ -14,13 +14,10 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('POST /api/deployments/start called');
-  
   let requestBody: any = {};
-  
+
   try {
     requestBody = await request.json();
-    console.log('Request body:', requestBody);
     const { templateId, target = 'me', userIds, useRules = false, emailType = 'new', recipients = [] } = requestBody;
     
     const supabase = createClient();
@@ -249,7 +246,6 @@ export async function POST(request: NextRequest) {
             if (ruleTemplate) {
               actualTemplateId = ruleBasedTemplateId;
               actualTemplate = ruleTemplate;
-              console.log(`Rule matched: Using template "${ruleTemplate.name}" for user ${targetUser.email}`);
             }
           }
         }

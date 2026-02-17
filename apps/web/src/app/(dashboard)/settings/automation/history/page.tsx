@@ -3,8 +3,23 @@
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 
+interface ActionResult {
+  action: string;
+  status: string;
+  error?: string;
+}
+
+interface WorkflowRun {
+  id: string;
+  status: string;
+  started_at: string;
+  lifecycle_workflows?: { name: string } | null;
+  users?: { email: string } | null;
+  action_results?: ActionResult[] | null;
+}
+
 export default function AutomationHistoryPage() {
-  const [runs, setRuns] = useState<any[]>([]);
+  const [runs, setRuns] = useState<WorkflowRun[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,9 +76,9 @@ export default function AutomationHistoryPage() {
                   {run.status}
                 </span>
               </div>
-              {run.action_results?.length > 0 && (
+              {(run.action_results?.length ?? 0) > 0 && (
                 <div className="mt-2 space-y-1">
-                  {run.action_results.map((ar: any, i: number) => (
+                  {run.action_results!.map((ar: ActionResult, i: number) => (
                     <div key={i} className="text-xs flex items-center gap-2">
                       <span className={ar.status === 'completed' ? 'text-green-600' : 'text-red-600'}>
                         {ar.status === 'completed' ? '\u2713' : '\u2717'}

@@ -9,6 +9,30 @@ import { Sparkles, X, Lock, ArrowRight } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import { PLANS } from '@/lib/billing/plans';
 
+// Human-readable feature names for upgrade prompts
+const featureDisplayNames: Record<string, string> = {
+  analytics: 'Analytics',
+  microsoft365: 'Microsoft 365 integration',
+  apiAccess: 'API access',
+  prioritySupport: 'Priority support',
+  disclaimerHtmlEditor: 'Disclaimer HTML editor',
+  disclaimerRegulatoryPresets: 'Regulatory presets',
+  disclaimerAuditTrail: 'Disclaimer audit trail',
+  disclaimerMspCascade: 'Disclaimer cascade to clients',
+  disclaimerMultiLanguage: 'Multi-language disclaimers',
+  hrIntegrations: 'HR integrations',
+  selfServiceAdminApproval: 'Self-service admin approval',
+  profileCompletenessAnalytics: 'Profile completeness analytics',
+  hrRealtimeSync: 'Real-time HR sync',
+  hrMspManaged: 'Managed HR sync for clients',
+  maxLifecycleWorkflows: 'Lifecycle workflows',
+  lifecycleWebhooks: 'Lifecycle webhooks',
+  lifecycleMspCascade: 'Lifecycle cascade to clients',
+  brandGovernance: 'Brand governance',
+  sso: 'Single sign-on (SSO)',
+  whiteLabel: 'White-label branding',
+};
+
 interface UpgradePromptProps {
   feature: string;
   requiredPlan: 'professional' | 'enterprise';
@@ -40,8 +64,9 @@ export function UpgradePrompt({
   }
 
   const plan = PLANS[requiredPlan];
+  const displayName = featureDisplayNames[feature] || feature;
   const defaultTitle = `Upgrade to ${plan.name}`;
-  const defaultDescription = `${feature} is available on the ${plan.name} plan and above.`;
+  const defaultDescription = `${displayName} is available on the ${plan.name} plan and above. Upgrade to unlock this feature.`;
 
   if (inline) {
     return (

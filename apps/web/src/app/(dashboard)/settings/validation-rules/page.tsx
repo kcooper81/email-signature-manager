@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Input, Select, Switch, Modal, ModalHeader, ModalTitle, ModalFooter, ConfirmDialog, useToast } from '@/components/ui';
 import { ShieldCheck, Plus, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { FeatureGate } from '@/components/billing/upgrade-prompt';
 
 interface ValidationRule {
   id: string;
@@ -139,6 +140,7 @@ export default function ValidationRulesPage() {
   }
 
   return (
+    <FeatureGate feature="selfServiceAdminApproval">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -261,5 +263,6 @@ export default function ValidationRulesPage() {
         loading={deleting}
       />
     </div>
+    </FeatureGate>
   );
 }

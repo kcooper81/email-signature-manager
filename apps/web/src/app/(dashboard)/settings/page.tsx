@@ -109,7 +109,14 @@ export default function SettingsPage() {
   const [verificationCode, setVerificationCode] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  const [sessions, setSessions] = useState<any[]>([]);
+  interface Session {
+    id: string;
+    device: string;
+    location: string;
+    lastActive: string;
+    current: boolean;
+  }
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [showSessions, setShowSessions] = useState(false);
   
   // Appearance
@@ -134,7 +141,7 @@ export default function SettingsPage() {
       .single();
 
     if (userData) {
-      setProfile(userData as any);
+      setProfile(userData as UserProfile);
       setFirstName(userData.first_name || '');
       setLastName(userData.last_name || '');
       setCalendlyUrl(userData.calendly_url || '');
@@ -158,7 +165,7 @@ export default function SettingsPage() {
           setTwoFactorEnabled(true);
         }
       } catch (error) {
-        console.log('2FA not available or not configured');
+        console.error('2FA not available or not configured');
       }
 
       // Load organization

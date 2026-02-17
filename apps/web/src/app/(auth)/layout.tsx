@@ -52,7 +52,7 @@ export default async function AuthLayout({
             alt="Siggly Logo"
             width={48}
             height={48}
-            className="h-12 w-auto"
+            className="h-12 w-auto brightness-0 invert"
           />
         )}
         <span className="font-semibold text-2xl text-white drop-shadow-md">{companyName}</span>

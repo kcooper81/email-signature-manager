@@ -10,7 +10,6 @@ const supabaseAdmin = createClient(
 export async function POST(request: NextRequest) {
   try {
     const { userId, email, password, token } = await request.json();
-    console.log('Invite accept request:', { userId, email, token });
 
     if (!userId || !email || !password || !token) {
       console.error('Missing required fields:', { userId: !!userId, email: !!email, password: !!password, token: !!token });
@@ -21,7 +20,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the invite token is valid and matches the user
-    console.log('Verifying invite token...');
     const { data: invite, error: inviteError } = await supabaseAdmin
       .from('user_invites')
       .select('id, user_id, expires_at, accepted_at')
@@ -35,7 +33,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.log('Invite found:', { inviteId: invite.id, userId: invite.user_id });
 
     if (invite.accepted_at) {
       return NextResponse.json(
@@ -59,7 +56,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has an auth_id from a previous invite
-    console.log('Checking if user already has auth_id...');
     const { data: existingUserRecord } = await supabaseAdmin
       .from('users')
       .select('auth_id')
@@ -70,7 +66,6 @@ export async function POST(request: NextRequest) {
 
     if (existingUserRecord?.auth_id) {
       // User already has an auth account - just update the password
-      console.log('User already has auth_id, updating password:', existingUserRecord.auth_id);
       const { error: updatePasswordError } = await supabaseAdmin.auth.admin.updateUserById(
         existingUserRecord.auth_id,
         { password: password }
@@ -84,17 +79,13 @@ export async function POST(request: NextRequest) {
         );
       }
       authId = existingUserRecord.auth_id;
-      console.log('Password updated successfully');
     } else {
       // No auth account exists - create a new one
-      console.log('No auth_id found, creating new auth user...');
-      
       // Check if an auth user already exists with this email (orphaned from deletion)
       const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
       const existingAuthUser = existingUsers?.users.find(u => u.email === email);
       
       if (existingAuthUser) {
-        console.log('Found orphaned auth user, deleting:', existingAuthUser.id);
         await supabaseAdmin.auth.admin.deleteUser(existingAuthUser.id);
       }
 
@@ -113,10 +104,8 @@ export async function POST(request: NextRequest) {
         );
       }
       authId = authData.user.id;
-      console.log('Auth user created:', authId);
 
       // Update user record with auth_id using service role (bypasses RLS)
-      console.log('Updating user record with auth_id...');
       const { error: updateError } = await supabaseAdmin
         .from('users')
         .update({ auth_id: authId })
@@ -129,17 +118,14 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-      console.log('User record updated successfully');
     }
 
     // Mark invite as accepted
-    console.log('Marking invite as accepted...');
     await supabaseAdmin
       .from('user_invites')
       .update({ accepted_at: new Date().toISOString() })
       .eq('token', token);
 
-    console.log('Invite acceptance complete');
     return NextResponse.json({ success: true, authId: authId });
   } catch (error: any) {
     console.error('Unexpected error in invite accept:', error);

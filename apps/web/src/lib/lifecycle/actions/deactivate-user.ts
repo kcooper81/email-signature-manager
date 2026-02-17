@@ -9,6 +9,4 @@ export async function deactivateUser(context: WorkflowRunContext, _config: Recor
     .update({ is_active: false, updated_at: new Date().toISOString() })
     .eq('id', context.userId)
     .eq('organization_id', context.organizationId);
-
-  console.log(`[Lifecycle] Deactivated user ${context.userId}`);
 }
