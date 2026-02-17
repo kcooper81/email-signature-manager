@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     if (!userData) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
     const orgPlan = await getOrgPlan(supabase, userData.organization_id);
-    if (!checkFeature(orgPlan, 'hrIntegrations')) {
-      return planDenied('HR integrations', 'professional');
+    if (!checkFeature(orgPlan, 'selfServiceAdminApproval')) {
+      return planDenied('Data validation rules', 'professional');
     }
 
     const { data: rules } = await supabase
@@ -44,12 +44,12 @@ export async function POST(request: NextRequest) {
     }
 
     const orgPlan = await getOrgPlan(supabase, userData.organization_id);
-    if (!checkFeature(orgPlan, 'hrIntegrations')) {
-      return planDenied('HR integrations', 'professional');
+    if (!checkFeature(orgPlan, 'selfServiceAdminApproval')) {
+      return planDenied('Data validation rules', 'professional');
     }
 
     const body = await request.json();
-    const { fieldName, validationType, validationValue, errorMessage } = body;
+    const { fieldName, validationType, validationValue, errorMessage, isActive } = body;
 
     if (!fieldName || !validationType) {
       return NextResponse.json({ error: 'Field name and validation type are required' }, { status: 400 });
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         validation_type: validationType,
         validation_value: validationValue || null,
         error_message: errorMessage || null,
-        is_active: true,
+        is_active: isActive ?? true,
       })
       .select()
       .single();

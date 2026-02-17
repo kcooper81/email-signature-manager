@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         locked_blocks: body.lockedBlocks || null,
         locked_colors: body.lockedColors || false,
         locked_fonts: body.lockedFonts || false,
-        is_active: true,
+        is_active: body.isActive ?? true,
         cascade_to_clients: body.cascadeToClients || false,
         allow_client_override: body.allowClientOverride || false,
         created_by: userData.id,

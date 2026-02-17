@@ -15,10 +15,7 @@ interface DisclaimerTemplate {
   content: string;
   category: string;
   description: string | null;
-  regulation_type: string | null;
-  locale: string | null;
   is_system: boolean;
-  is_active: boolean;
 }
 
 interface DisclaimerRule {
@@ -44,7 +41,6 @@ interface Preset {
   id: string;
   name: string;
   description: string;
-  regulationType: string;
   content: string;
   category: string;
 }
@@ -226,7 +222,7 @@ export default function DisclaimersPage() {
                   <div key={t.id} className="flex items-center justify-between p-4 rounded-lg border bg-card">
                     <div>
                       <h3 className="font-medium">{t.name}</h3>
-                      <p className="text-sm text-muted-foreground">{t.category} {t.regulation_type ? `· ${t.regulation_type.toUpperCase()}` : ''}</p>
+                      <p className="text-sm text-muted-foreground">{t.category}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {t.is_system && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">System</span>}
@@ -290,7 +286,7 @@ export default function DisclaimersPage() {
                   <div className="flex items-center gap-2 mb-2">
                     <Shield className="h-4 w-4 text-primary" />
                     <h3 className="font-medium">{p.name}</h3>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{p.regulationType.toUpperCase()}</span>
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{p.category.toUpperCase()}</span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">{p.description}</p>
                   <Button variant="outline" size="sm" onClick={() => openPresetTemplate(p)}>Use This Preset</Button>

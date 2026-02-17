@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Modal, ModalHeader, ModalTitle, ModalFooter, Button, Input, Switch, Label, Textarea } from '@/components/ui';
+import { Modal, ModalHeader, ModalTitle, ModalFooter, Button, Input, Switch, Label, Textarea, Select } from '@/components/ui';
 import { Loader2, Plus, X } from 'lucide-react';
 
 interface BrandGuideline {
@@ -29,6 +29,7 @@ interface Props {
 
 function ColorListInput({ label, value, onChange }: { label: string; value: string[]; onChange: (v: string[]) => void }) {
   const [input, setInput] = useState('');
+  const [pickerColor, setPickerColor] = useState('#000000');
   function add() {
     const hex = input.trim();
     if (hex && /^#[0-9a-fA-F]{3,8}$/.test(hex) && !value.includes(hex)) {
@@ -40,7 +41,27 @@ function ColorListInput({ label, value, onChange }: { label: string; value: stri
     <div className="space-y-2">
       <Label>{label}</Label>
       <div className="flex gap-2">
-        <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="#FF5733" className="flex-1" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())} />
+        <Input
+          type="color"
+          value={pickerColor}
+          onChange={(e) => {
+            setPickerColor(e.target.value);
+            setInput(e.target.value);
+          }}
+          className="w-12 h-10 p-1 cursor-pointer"
+        />
+        <Input
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) {
+              setPickerColor(e.target.value);
+            }
+          }}
+          placeholder="#FF5733"
+          className="flex-1"
+          onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())}
+        />
         <Button type="button" variant="outline" size="sm" onClick={add}><Plus className="h-3.5 w-3.5" /></Button>
       </div>
       {value.length > 0 && (
@@ -58,26 +79,116 @@ function ColorListInput({ label, value, onChange }: { label: string; value: stri
   );
 }
 
-function TagListInput({ label, value, onChange, placeholder }: { label: string; value: string[]; onChange: (v: string[]) => void; placeholder: string }) {
-  const [input, setInput] = useState('');
-  function add() {
-    const val = input.trim();
-    if (val && !value.includes(val)) {
-      onChange([...value, val]);
-      setInput('');
+const EMAIL_SAFE_FONTS = [
+  'Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Verdana',
+  'Trebuchet MS', 'Tahoma', 'Courier New', 'Lucida Sans',
+  'Palatino', 'Garamond', 'Comic Sans MS', 'Impact',
+];
+
+function FontSelector({ label, value, onChange }: { label: string; value: string[]; onChange: (v: string[]) => void }) {
+  const [selected, setSelected] = useState('');
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState('');
+
+  const availableFonts = EMAIL_SAFE_FONTS.filter((f) => !value.includes(f));
+
+  function addFromSelect() {
+    if (selected && !value.includes(selected)) {
+      onChange([...value, selected]);
+      setSelected('');
     }
   }
+
+  function addCustom() {
+    const val = customInput.trim();
+    if (val && !value.includes(val)) {
+      onChange([...value, val]);
+      setCustomInput('');
+    }
+  }
+
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
-      <div className="flex gap-2">
-        <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder={placeholder} className="flex-1" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), add())} />
-        <Button type="button" variant="outline" size="sm" onClick={add}><Plus className="h-3.5 w-3.5" /></Button>
+      <div className="flex items-center justify-between">
+        <Label>{label}</Label>
+        <button
+          type="button"
+          onClick={() => setCustomMode(!customMode)}
+          className="text-xs text-muted-foreground hover:text-foreground underline"
+        >
+          {customMode ? 'Use preset list' : 'Add custom font'}
+        </button>
       </div>
+      {customMode ? (
+        <div className="flex gap-2">
+          <Input
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+            placeholder="Custom font name"
+            className="flex-1"
+            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustom())}
+          />
+          <Button type="button" variant="outline" size="sm" onClick={addCustom}><Plus className="h-3.5 w-3.5" /></Button>
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <Select
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+            placeholder="Select a font"
+            options={availableFonts.map((f) => ({ value: f, label: f }))}
+            className="flex-1"
+          />
+          <Button type="button" variant="outline" size="sm" onClick={addFromSelect}><Plus className="h-3.5 w-3.5" /></Button>
+        </div>
+      )}
       {value.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {value.map((v, i) => (
             <span key={i} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-muted">
+              <span style={{ fontFamily: v }}>{v}</span>
+              <button onClick={() => onChange(value.filter((_, j) => j !== i))} className="ml-0.5 hover:text-red-500"><X className="h-3 w-3" /></button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const SOCIAL_PLATFORMS = [
+  'linkedin', 'twitter', 'facebook', 'instagram', 'youtube',
+  'github', 'tiktok', 'website',
+];
+
+function SocialLinkSelector({ label, value, onChange }: { label: string; value: string[]; onChange: (v: string[]) => void }) {
+  const [selected, setSelected] = useState('');
+  const availablePlatforms = SOCIAL_PLATFORMS.filter((p) => !value.includes(p));
+
+  function addFromSelect() {
+    if (selected && !value.includes(selected)) {
+      onChange([...value, selected]);
+      setSelected('');
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex gap-2">
+        <Select
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+          placeholder="Select platform"
+          options={availablePlatforms.map((p) => ({ value: p, label: p.charAt(0).toUpperCase() + p.slice(1) }))}
+          className="flex-1"
+        />
+        <Button type="button" variant="outline" size="sm" onClick={addFromSelect}><Plus className="h-3.5 w-3.5" /></Button>
+      </div>
+      {value.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {value.map((v, i) => (
+            <span key={i} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full border bg-muted capitalize">
               {v}
               <button onClick={() => onChange(value.filter((_, j) => j !== i))} className="ml-0.5 hover:text-red-500"><X className="h-3 w-3" /></button>
             </span>
@@ -152,8 +263,8 @@ export function GuidelineModal({ open, onClose, guideline, onSaved }: Props) {
         <ColorListInput label="Primary Colors" value={form.primaryColors} onChange={(v) => setForm({ ...form, primaryColors: v })} />
         <ColorListInput label="Secondary Colors" value={form.secondaryColors} onChange={(v) => setForm({ ...form, secondaryColors: v })} />
         <ColorListInput label="Accent Colors" value={form.accentColors} onChange={(v) => setForm({ ...form, accentColors: v })} />
-        <TagListInput label="Allowed Fonts" value={form.allowedFonts} onChange={(v) => setForm({ ...form, allowedFonts: v })} placeholder="Arial" />
-        <TagListInput label="Required Social Links" value={form.requiredSocialLinks} onChange={(v) => setForm({ ...form, requiredSocialLinks: v })} placeholder="linkedin" />
+        <FontSelector label="Allowed Fonts" value={form.allowedFonts} onChange={(v) => setForm({ ...form, allowedFonts: v })} />
+        <SocialLinkSelector label="Required Social Links" value={form.requiredSocialLinks} onChange={(v) => setForm({ ...form, requiredSocialLinks: v })} />
 
         <div className="space-y-3 pt-3 border-t">
           <div className="flex items-center justify-between">

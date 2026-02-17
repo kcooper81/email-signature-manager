@@ -10,10 +10,7 @@ interface DisclaimerTemplate {
   content: string;
   category: string;
   description: string | null;
-  regulation_type: string | null;
-  locale: string | null;
   is_system: boolean;
-  is_active: boolean;
 }
 
 interface Props {
@@ -21,33 +18,19 @@ interface Props {
   onClose: () => void;
   template: DisclaimerTemplate | null;
   onSaved: () => void;
-  presetData?: { name: string; content: string; category: string; description: string; regulationType: string } | null;
+  presetData?: { name: string; content: string; category: string; description: string } | null;
 }
 
 const categoryOptions = [
   { value: 'legal', label: 'Legal' },
   { value: 'confidentiality', label: 'Confidentiality' },
   { value: 'compliance', label: 'Compliance' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'custom', label: 'Custom' },
-];
-
-const regulationOptions = [
-  { value: '', label: 'None' },
   { value: 'gdpr', label: 'GDPR' },
   { value: 'hipaa', label: 'HIPAA' },
-  { value: 'sox', label: 'SOX' },
-  { value: 'ccpa', label: 'CCPA' },
-  { value: 'finra', label: 'FINRA' },
-];
-
-const localeOptions = [
-  { value: '', label: 'Default' },
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Spanish' },
-  { value: 'fr', label: 'French' },
-  { value: 'de', label: 'German' },
-  { value: 'pt', label: 'Portuguese' },
+  { value: 'finance', label: 'Finance' },
+  { value: 'real_estate', label: 'Real Estate' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'custom', label: 'Custom' },
 ];
 
 export function DisclaimerTemplateModal({ open, onClose, template, onSaved, presetData }: Props) {
@@ -59,8 +42,6 @@ export function DisclaimerTemplateModal({ open, onClose, template, onSaved, pres
     content: template?.content || presetData?.content || '',
     category: template?.category || presetData?.category || 'legal',
     description: template?.description || presetData?.description || '',
-    regulationType: template?.regulation_type || presetData?.regulationType || '',
-    locale: template?.locale || '',
   });
 
   // Reset form when modal opens with different data
@@ -114,14 +95,6 @@ export function DisclaimerTemplateModal({ open, onClose, template, onSaved, pres
         <div className="space-y-2">
           <Label>Description (Optional)</Label>
           <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Internal note about this template" />
-        </div>
-        <div className="space-y-2">
-          <Label>Regulation Type</Label>
-          <Select value={form.regulationType} onChange={(e) => setForm({ ...form, regulationType: e.target.value })} options={regulationOptions} />
-        </div>
-        <div className="space-y-2">
-          <Label>Locale</Label>
-          <Select value={form.locale} onChange={(e) => setForm({ ...form, locale: e.target.value })} options={localeOptions} />
         </div>
       </div>
       <ModalFooter>

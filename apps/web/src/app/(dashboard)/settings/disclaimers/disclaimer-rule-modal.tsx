@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Modal, ModalHeader, ModalTitle, ModalFooter, Button, Input, Select, Switch, Label } from '@/components/ui';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 
 interface DisclaimerTemplate {
   id: string;
@@ -125,7 +125,8 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
         </div>
         <div className="space-y-2">
           <Label>Priority</Label>
-          <Input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} />
+          <Input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} min={1} />
+          <p className="text-xs text-muted-foreground">Lower numbers run first (1 = highest priority)</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
@@ -136,6 +137,7 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
             <div className="space-y-2">
               <Label>Departments</Label>
               <Input value={form.departments} onChange={(e) => setForm({ ...form, departments: e.target.value })} placeholder="Sales, Marketing" />
+              <p className="text-xs text-muted-foreground">Comma-separated, must match exact department names</p>
             </div>
           )}
         </div>
@@ -147,7 +149,47 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
           {form.regionCondition && (
             <div className="space-y-2">
               <Label>Regions</Label>
-              <Input value={form.regions} onChange={(e) => setForm({ ...form, regions: e.target.value })} placeholder="EU, US, APAC" />
+              <Select
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const current = form.regions ? form.regions.split(',').map(s => s.trim()).filter(Boolean) : [];
+                    if (!current.includes(e.target.value)) {
+                      setForm({ ...form, regions: [...current, e.target.value].join(', ') });
+                    }
+                  }
+                }}
+                placeholder="Add region"
+                options={[
+                  { value: 'US', label: 'US' },
+                  { value: 'EU', label: 'EU' },
+                  { value: 'UK', label: 'UK' },
+                  { value: 'CA', label: 'Canada' },
+                  { value: 'AU', label: 'Australia' },
+                  { value: 'APAC', label: 'APAC' },
+                  { value: 'LATAM', label: 'LATAM' },
+                  { value: 'MEA', label: 'Middle East & Africa' },
+                ]}
+              />
+              {form.regions && (
+                <div className="flex flex-wrap gap-1">
+                  {form.regions.split(',').map(s => s.trim()).filter(Boolean).map((region, idx) => (
+                    <span key={idx} className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border bg-muted">
+                      {region}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = form.regions.split(',').map(s => s.trim()).filter((_, j) => j !== idx).join(', ');
+                          setForm({ ...form, regions: updated });
+                        }}
+                        className="hover:text-red-500"
+                      >
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -160,6 +202,7 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
             <div className="space-y-2">
               <Label>Domains</Label>
               <Input value={form.recipientDomains} onChange={(e) => setForm({ ...form, recipientDomains: e.target.value })} placeholder="example.com, corp.com" />
+              <p className="text-xs text-muted-foreground">Bare domains only (no https:// or @), comma-separated</p>
             </div>
           )}
         </div>

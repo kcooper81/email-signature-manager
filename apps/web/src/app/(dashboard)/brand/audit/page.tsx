@@ -56,14 +56,6 @@ export default function BrandAuditPage() {
         </Button>
       </div>
 
-      {/* Score Summary */}
-      <div className="p-4 rounded-lg border bg-card">
-        <p className="text-sm text-muted-foreground">Organization Average</p>
-        <p className={`text-3xl font-bold ${avgScore >= 80 ? 'text-green-600' : avgScore >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-          {avgScore}%
-        </p>
-      </div>
-
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -74,30 +66,38 @@ export default function BrandAuditPage() {
           <p>No audit results available. Make sure you have brand guidelines and user assignments configured.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {results.map((r, i) => (
-            <div key={i} className="p-4 rounded-lg border bg-card">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">{r.userEmail}</h3>
-                  <p className="text-sm text-muted-foreground">Template: {r.templateName}</p>
+        <>
+          <div className="p-4 rounded-lg border bg-card">
+            <p className="text-sm text-muted-foreground">Organization Average</p>
+            <p className={`text-3xl font-bold ${avgScore >= 80 ? 'text-green-600' : avgScore >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
+              {avgScore}%
+            </p>
+          </div>
+          <div className="space-y-3">
+            {results.map((r, i) => (
+              <div key={i} className="p-4 rounded-lg border bg-card">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-medium">{r.userEmail}</h3>
+                    <p className="text-sm text-muted-foreground">Template: {r.templateName}</p>
+                  </div>
+                  <div className={`text-lg font-bold ${r.score >= 80 ? 'text-green-600' : r.score >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
+                    {r.score}%
+                  </div>
                 </div>
-                <div className={`text-lg font-bold ${r.score >= 80 ? 'text-green-600' : r.score >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-                  {r.score}%
-                </div>
+                {r.violations?.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {r.violations.map((v: AuditViolation, j: number) => (
+                      <div key={j} className="text-xs text-red-600 flex items-center gap-1">
+                        <span>•</span> {v.rule}: expected {v.expected}, found {v.actual}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              {r.violations?.length > 0 && (
-                <div className="mt-2 space-y-1">
-                  {r.violations.map((v: AuditViolation, j: number) => (
-                    <div key={j} className="text-xs text-red-600 flex items-center gap-1">
-                      <span>•</span> {v.rule}: expected {v.expected}, found {v.actual}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
     </FeatureGate>
