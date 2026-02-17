@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       .from('lifecycle_workflows')
       .select('*')
       .eq('organization_id', userData.organization_id)
-      .order('priority', { ascending: false });
+      .order('priority', { ascending: true });
 
     // Load MSP cascaded workflows
     const { data: org } = await supabase
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, eventType, priority, departmentFilter, sourceFilter, actions, cascadeToClients } = body;
+    const { name, description, eventType, priority, departmentFilter, sourceFilter, actions, cascadeToClients, isActive } = body;
 
     if (!name || !eventType) {
       return NextResponse.json({ error: 'Name and event type are required' }, { status: 400 });
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         name,
         description: description || null,
         event_type: eventType,
-        is_active: true,
+        is_active: isActive ?? true,
         priority: priority || 0,
         department_filter: departmentFilter || null,
         source_filter: sourceFilter || null,

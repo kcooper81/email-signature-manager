@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useToast } from '@/components/ui';
 import { Clock } from 'lucide-react';
 
 interface ActionResult {
@@ -21,6 +22,7 @@ interface WorkflowRun {
 export default function AutomationHistoryPage() {
   const [runs, setRuns] = useState<WorkflowRun[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     loadRuns();
@@ -31,9 +33,11 @@ export default function AutomationHistoryPage() {
     try {
       const res = await fetch('/api/lifecycle/runs');
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load runs');
       setRuns(data.runs || []);
-    } catch (err) {
-      console.error('Failed to load runs:', err);
+    } catch (err: any) {
+      toast.error('Failed to load history', err.message);
+      setRuns([]);
     }
     setLoading(false);
   }

@@ -18,8 +18,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const orgPlan = await getOrgPlan(supabase, userData.organization_id);
-    if (!checkFeature(orgPlan, 'hrIntegrations')) {
-      return planDenied('HR integrations', 'professional');
+    if (!checkFeature(orgPlan, 'selfServiceAdminApproval')) {
+      return planDenied('Data validation rules', 'professional');
     }
 
     const body = await request.json();
@@ -58,8 +58,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
 
     const orgPlan = await getOrgPlan(supabase, userData.organization_id);
-    if (!checkFeature(orgPlan, 'hrIntegrations')) {
-      return planDenied('HR integrations', 'professional');
+    if (!checkFeature(orgPlan, 'selfServiceAdminApproval')) {
+      return planDenied('Data validation rules', 'professional');
     }
 
     const { error } = await supabase

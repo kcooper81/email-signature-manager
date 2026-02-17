@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
 
     const { data: rules } = await supabase
       .from('disclaimer_rules')
-      .select('*, disclaimer_templates(id, name, category, regulation_type)')
+      .select('*, disclaimer_templates(id, name, category)')
       .eq('organization_id', userData.organization_id)
-      .order('priority', { ascending: false });
+      .order('priority', { ascending: true });
 
     // Also load MSP cascaded rules if this org has a parent
     const { data: org } = await supabase
@@ -39,11 +39,11 @@ export async function GET(request: NextRequest) {
     if (org?.parent_organization_id) {
       const { data: mspRules } = await supabase
         .from('disclaimer_rules')
-        .select('*, disclaimer_templates(id, name, category, regulation_type)')
+        .select('*, disclaimer_templates(id, name, category)')
         .eq('organization_id', org.parent_organization_id)
         .eq('cascade_to_clients', true)
         .eq('is_active', true)
-        .order('priority', { ascending: false });
+        .order('priority', { ascending: true });
 
       cascadedRules = (mspRules || []).map(r => ({ ...r, _cascaded: true, _readOnly: true }));
     }
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       name, description, priority, disclaimerTemplateId,
       departmentCondition, departments, regionCondition, regions,
       recipientCondition, recipientDomains, industryCondition, industries,
-      userSourceCondition, userSources, startDate, endDate, cascadeToClients,
+      userSourceCondition, userSources, startDate, endDate, cascadeToClients, isActive,
     } = body;
 
     if (!name || !disclaimerTemplateId) {
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
         name,
         description: description || null,
         priority: priority || 0,
-        is_active: true,
+        is_active: isActive ?? true,
         disclaimer_template_id: disclaimerTemplateId,
         department_condition: departmentCondition || 'all',
         departments: departments || null,

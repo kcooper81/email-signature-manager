@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { provider, scheduleType, fieldMapping, conflictResolution, autoApplyChanges, syncNewUsers, syncDeactivated, apiKey, apiUrl } = body;
+    const { provider, scheduleType, fieldMapping, conflictResolution, autoApplyChanges, syncNewUsers, syncDeactivated, apiKey, apiUrl, isActive } = body;
 
     if (!provider) return NextResponse.json({ error: 'Provider is required' }, { status: 400 });
 
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         sync_deactivated: syncDeactivated !== false,
         api_key: apiKey || null,
         api_url: apiUrl || null,
-        is_active: true,
+        is_active: isActive ?? true,
       })
       .select()
       .single();
