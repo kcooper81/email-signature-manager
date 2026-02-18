@@ -12,4 +12,5 @@ export { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFo
 export { EmptyState } from './empty-state';
 export { LoadingSpinner, LoadingPage } from './loading';
 export { ConfirmDialog } from './confirm-dialog';
+export { Checkbox } from './checkbox';
 export { ToastProvider, useToast } from './toast';

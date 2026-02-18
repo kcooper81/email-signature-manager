@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Checkbox } from '@/components/ui';
+import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import {
   Search,
   Building2,
@@ -46,6 +48,22 @@ export default function AccountsPage() {
   const [orgTypeFilter, setOrgTypeFilter] = useState<OrgTypeFilter>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+
+  const filteredOrgIds = useMemo(() => {
+    return organizations
+      .filter(org => {
+        if (planFilter !== 'all' && org.plan !== planFilter) return false;
+        if (orgTypeFilter !== 'all' && org.organizationType !== orgTypeFilter) return false;
+        return true;
+      })
+      .map(o => o.id);
+  }, [organizations, planFilter, orgTypeFilter]);
+
+  const bulk = useBulkSelection({ itemIds: filteredOrgIds });
+
+  useEffect(() => {
+    bulk.clearSelection();
+  }, [page, debouncedSearch, planFilter, orgTypeFilter]);
 
   // Debounce search
   useEffect(() => {
@@ -177,6 +195,37 @@ export default function AccountsPage() {
     exportToCSV(filteredOrgs, columns, 'accounts');
   };
 
+  const bulkSuspend = async () => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('organizations')
+      .update({ is_suspended: true })
+      .in('id', ids);
+    if (!error) {
+      setOrganizations(prev => prev.map(o => ids.includes(o.id) ? { ...o, isSuspended: true } : o));
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkUnsuspend = async () => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('organizations')
+      .update({ is_suspended: false })
+      .in('id', ids);
+    if (!error) {
+      setOrganizations(prev => prev.map(o => ids.includes(o.id) ? { ...o, isSuspended: false } : o));
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkActions: BulkAction[] = [
+    { label: 'Unsuspend', icon: Building2, onClick: bulkUnsuspend },
+    { label: 'Suspend', icon: ShieldAlert, onClick: bulkSuspend, destructive: true, confirmMessage: `Suspend ${bulk.selectedCount} organization(s)? Users in these organizations will lose access.` },
+  ];
+
   const planBadgeClass = (plan: string) => {
     switch (plan) {
       case 'starter': return 'bg-blue-100 text-blue-700'; // Legacy plan
@@ -262,6 +311,13 @@ export default function AccountsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
+            {filteredOrgs.length > 0 && (
+              <Checkbox
+                checked={bulk.allSelected}
+                onCheckedChange={bulk.toggleAll}
+                aria-label="Select all organizations"
+              />
+            )}
             <Building2 className="h-5 w-5" />
             Organizations
           </CardTitle>
@@ -282,11 +338,21 @@ export default function AccountsPage() {
             <>
               <div className="divide-y">
                 {filteredOrgs.map((org) => (
-                  <Link
+                  <div
                     key={org.id}
-                    href={`/admin/accounts/${org.id}`}
-                    className="flex items-center justify-between py-4 hover:bg-slate-50 -mx-6 px-6 transition-colors"
+                    className="flex items-center py-4 hover:bg-slate-50 -mx-6 px-6 transition-colors"
                   >
+                    <div className="mr-3 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={bulk.isSelected(org.id)}
+                        onCheckedChange={() => bulk.toggle(org.id)}
+                        aria-label={`Select ${org.name}`}
+                      />
+                    </div>
+                    <Link
+                      href={`/admin/accounts/${org.id}`}
+                      className="flex items-center justify-between flex-1 min-w-0"
+                    >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3">
                         <p className="font-medium text-slate-900 truncate">{org.name}</p>
@@ -336,7 +402,8 @@ export default function AccountsPage() {
                       </div>
                       <ChevronRight className="h-5 w-5 text-slate-400" />
                     </div>
-                  </Link>
+                    </Link>
+                  </div>
                 ))}
               </div>
 
@@ -370,6 +437,12 @@ export default function AccountsPage() {
           )}
         </CardContent>
       </Card>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onClear={bulk.clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }
