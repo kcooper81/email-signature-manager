@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
@@ -108,6 +111,13 @@ export default function PartnerApplicationsPage() {
   const [showTierModal, setShowTierModal] = useState(false);
   const [newTier, setNewTier] = useState('registered');
   const [tierChanging, setTierChanging] = useState(false);
+
+  const applicationIds = useMemo(() => applications.map(a => a.id), [applications]);
+  const bulk = useBulkSelection({ itemIds: applicationIds });
+
+  useEffect(() => {
+    bulk.clearSelection();
+  }, [statusFilter]);
 
   useEffect(() => {
     fetchApplications();
@@ -329,6 +339,37 @@ export default function PartnerApplicationsPage() {
     }
   };
 
+  const bulkMarkUnderReview = async () => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('partner_applications')
+      .update({ status: 'under_review', updated_at: new Date().toISOString() })
+      .in('id', ids);
+    if (!error) {
+      await fetchApplications();
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkReject = async () => {
+    const ids = [...bulk.selectedIds];
+    for (const id of ids) {
+      await fetch(`/api/admin/partner-applications/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reject', reviewNotes: 'Bulk rejected', sendNotification: false }),
+      });
+    }
+    await fetchApplications();
+    bulk.clearSelection();
+  };
+
+  const bulkActions: BulkAction[] = [
+    { label: 'Mark Under Review', icon: ClipboardCheck, onClick: bulkMarkUnderReview },
+    { label: 'Reject', icon: X, onClick: bulkReject, destructive: true, confirmMessage: `Reject ${bulk.selectedCount} application(s)? This action cannot be easily undone.` },
+  ];
+
   const handleExport = () => {
     const columns: CSVColumn<PartnerApplication>[] = [
       { label: 'Company', accessor: (r) => r.company_name },
@@ -416,9 +457,26 @@ export default function PartnerApplicationsPage() {
             </div>
           ) : (
             <div className="divide-y">
+              {applications.length > 0 && (
+                <div className="p-4 flex items-center gap-3 border-b">
+                  <Checkbox
+                    checked={bulk.allSelected}
+                    onCheckedChange={bulk.toggleAll}
+                    aria-label="Select all applications"
+                  />
+                  <span className="text-sm text-muted-foreground">Select all</span>
+                </div>
+              )}
               {applications.map((app) => (
                 <div key={app.id} className="p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-start justify-between gap-4">
+                    <div className="pt-1 flex-shrink-0">
+                      <Checkbox
+                        checked={bulk.isSelected(app.id)}
+                        onCheckedChange={() => bulk.toggle(app.id)}
+                        aria-label={`Select ${app.company_name}`}
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
                         <h3 className="font-semibold truncate">{app.company_name}</h3>
@@ -820,6 +878,12 @@ export default function PartnerApplicationsPage() {
           </Button>
         </ModalFooter>
       </Modal>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onClear={bulk.clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }

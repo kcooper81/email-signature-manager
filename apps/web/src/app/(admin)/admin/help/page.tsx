@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import { 
   Plus, 
   Pencil, 
@@ -235,6 +238,54 @@ export default function AdminHelpPage() {
     ? articles.filter(a => a.category === selectedCategory)
     : articles;
 
+  const filteredArticleIds = useMemo(() => filteredArticles.map(a => a.id), [filteredArticles]);
+  const bulk = useBulkSelection({ itemIds: filteredArticleIds });
+
+  useEffect(() => {
+    bulk.clearSelection();
+  }, [selectedCategory]);
+
+  const bulkPublish = async () => {
+    const ids = [...bulk.selectedIds];
+    for (const id of ids) {
+      await fetch(`/api/admin/help/articles/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_published: true }),
+      });
+    }
+    await loadData();
+    bulk.clearSelection();
+  };
+
+  const bulkUnpublish = async () => {
+    const ids = [...bulk.selectedIds];
+    for (const id of ids) {
+      await fetch(`/api/admin/help/articles/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_published: false }),
+      });
+    }
+    await loadData();
+    bulk.clearSelection();
+  };
+
+  const bulkDeleteArticles = async () => {
+    const ids = [...bulk.selectedIds];
+    for (const id of ids) {
+      await fetch(`/api/admin/help/articles/${id}`, { method: 'DELETE' });
+    }
+    await loadData();
+    bulk.clearSelection();
+  };
+
+  const bulkActions: BulkAction[] = [
+    { label: 'Publish', icon: Eye, onClick: bulkPublish },
+    { label: 'Unpublish', icon: EyeOff, onClick: bulkUnpublish },
+    { label: 'Delete', icon: Trash2, onClick: bulkDeleteArticles, destructive: true, confirmMessage: `Permanently delete ${bulk.selectedCount} article(s)? This cannot be undone.` },
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -431,67 +482,90 @@ export default function AdminHelpPage() {
                 <p>No articles found</p>
               </div>
             ) : (
-              filteredArticles.map(article => (
-                <div key={article.id} className="p-4 flex items-center justify-between hover:bg-muted/50">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="font-medium truncate">{article.title}</span>
-                      {!article.is_published && (
-                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Draft</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                      <span>{article.category}</span>
-                      <span>•</span>
-                      <span className="uppercase">{article.article_type}</span>
-                      <span>•</span>
-                      <span>
-                        {article.show_in_marketing && article.show_in_dashboard
-                          ? 'Both'
-                          : article.show_in_marketing
-                          ? 'Marketing only'
-                          : article.show_in_dashboard
-                          ? 'Dashboard only'
-                          : 'Hidden'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => togglePublished(article)}
-                      title={article.is_published ? 'Unpublish' : 'Publish'}
-                    >
-                      {article.is_published ? (
-                        <Eye className="h-4 w-4" />
-                      ) : (
-                        <EyeOff className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => startEdit(article)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => deleteArticle(article.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+              <>
+                <div className="p-4 flex items-center gap-3">
+                  <Checkbox
+                    checked={bulk.allSelected}
+                    onCheckedChange={bulk.toggleAll}
+                    aria-label="Select all articles"
+                  />
+                  <span className="text-sm text-muted-foreground">Select all</span>
                 </div>
-              ))
+                {filteredArticles.map(article => (
+                  <div key={article.id} className="p-4 flex items-center justify-between hover:bg-muted/50">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <Checkbox
+                        checked={bulk.isSelected(article.id)}
+                        onCheckedChange={() => bulk.toggle(article.id)}
+                        aria-label={`Select ${article.title}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="font-medium truncate">{article.title}</span>
+                          {!article.is_published && (
+                            <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">Draft</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                          <span>{article.category}</span>
+                          <span>•</span>
+                          <span className="uppercase">{article.article_type}</span>
+                          <span>•</span>
+                          <span>
+                            {article.show_in_marketing && article.show_in_dashboard
+                              ? 'Both'
+                              : article.show_in_marketing
+                              ? 'Marketing only'
+                              : article.show_in_dashboard
+                              ? 'Dashboard only'
+                              : 'Hidden'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => togglePublished(article)}
+                        title={article.is_published ? 'Unpublish' : 'Publish'}
+                      >
+                        {article.is_published ? (
+                          <Eye className="h-4 w-4" />
+                        ) : (
+                          <EyeOff className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEdit(article)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => deleteArticle(article.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </>
             )}
           </div>
         </CardContent>
       </Card>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onClear={bulk.clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }
