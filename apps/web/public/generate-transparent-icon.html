@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Transparent Icon</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .preview {
+      margin: 30px 0;
+      padding: 30px;
+      background: 
+        repeating-conic-gradient(#e0e0e0 0% 25%, transparent 0% 50%) 
+        50% / 20px 20px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    canvas {
+      display: block;
+      border-radius: 8px;
+    }
+    button {
+      background: #4d52de;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.2s;
+      margin: 10px;
+    }
+    button:hover {
+      background: #3d42ce;
+    }
+    .info {
+      background: #f0f7ff;
+      border-left: 4px solid #4d52de;
+      padding: 15px;
+      margin-top: 30px;
+      border-radius: 4px;
+      text-align: left;
+    }
+    .info h3 {
+      margin-top: 0;
+      color: #4d52de;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Transparent Icon Generator</h1>
+    <p class="subtitle">512×512 icon with gradient background and transparent corners</p>
+    
+    <div class="preview">
+      <canvas id="icon-canvas" width="512" height="512"></canvas>
+    </div>
+
+    <button onclick="downloadIcon()">Download Icon (512×512)</button>
+
+    <div class="info">
+      <h3>About this icon:</h3>
+      <ul>
+        <li>512×512 pixels</li>
+        <li>Transparent background (no dark corners)</li>
+        <li>Rounded square with gradient (purple to blue to cyan)</li>
+        <li>White Siggly logo icon</li>
+        <li>Perfect for app stores, marketplaces, and profiles</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function drawTransparentIcon() {
+      const canvas = document.getElementById('icon-canvas');
+      const ctx = canvas.getContext('2d', { alpha: true });
+      const size = 512;
+      const cornerRadius = 96; // Rounded corners
+
+      // Clear canvas to fully transparent
+      ctx.clearRect(0, 0, size, size);
+
+      // Draw rounded rectangle with gradient fill (no clip, just draw the shape)
+      ctx.beginPath();
+      ctx.moveTo(cornerRadius, 0);
+      ctx.lineTo(size - cornerRadius, 0);
+      ctx.quadraticCurveTo(size, 0, size, cornerRadius);
+      ctx.lineTo(size, size - cornerRadius);
+      ctx.quadraticCurveTo(size, size, size - cornerRadius, size);
+      ctx.lineTo(cornerRadius, size);
+      ctx.quadraticCurveTo(0, size, 0, size - cornerRadius);
+      ctx.lineTo(0, cornerRadius);
+      ctx.quadraticCurveTo(0, 0, cornerRadius, 0);
+      ctx.closePath();
+
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#581c87');    // Purple
+      gradient.addColorStop(0.25, '#7c3aed'); // Lighter purple
+      gradient.addColorStop(0.6, '#2563eb');  // Blue
+      gradient.addColorStop(1, '#0891b2');    // Cyan
+
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Load and draw the logo image
+      const img = new Image();
+      img.onload = function() {
+        // Apply white filter to the logo
+        ctx.save();
+        
+        // Draw the logo centered and scaled
+        const logoWidth = 320; // Same as profile-images.html for 512x512
+        const logoHeight = img.height * (logoWidth / img.width);
+        const x = (size - logoWidth) / 2;
+        const y = (size - logoHeight) / 2;
+        
+        // Apply filter to make it white with drop shadow
+        ctx.filter = 'brightness(0) invert(1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))';
+        ctx.drawImage(img, x, y, logoWidth, logoHeight);
+        
+        ctx.restore();
+      };
+      img.src = 'siggly-logo.png';
+    }
+
+    function downloadIcon() {
+      const canvas = document.getElementById('icon-canvas');
+      const link = document.createElement('a');
+      link.download = 'google-marketplace-icon.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Generate on load
+    window.addEventListener('load', drawTransparentIcon);
+  </script>
+</body>
+</html>
