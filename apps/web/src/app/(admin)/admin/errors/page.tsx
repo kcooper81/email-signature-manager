@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -57,6 +60,26 @@ export default function AdminErrorLogsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+
+  const filteredErrorIds = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return errors
+      .filter(e => {
+        if (!searchQuery) return true;
+        return (
+          e.error_message.toLowerCase().includes(query) ||
+          e.route?.toLowerCase().includes(query) ||
+          e.error_type.toLowerCase().includes(query)
+        );
+      })
+      .map(e => e.id);
+  }, [errors, searchQuery]);
+
+  const bulk = useBulkSelection({ itemIds: filteredErrorIds });
+
+  useEffect(() => {
+    bulk.clearSelection();
+  }, [filter, typeFilter]);
 
   useEffect(() => {
     loadErrors();
@@ -141,6 +164,38 @@ export default function AdminErrorLogsPage() {
     ];
     exportToCSV(filteredErrors, columns, 'error-logs');
   };
+
+  const bulkMarkResolved = async () => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from('error_logs')
+      .update({ resolved: true, resolved_at: new Date().toISOString(), resolved_by: user?.id })
+      .in('id', ids);
+    if (!error) {
+      setErrors(prev => prev.map(e => ids.includes(e.id) ? { ...e, resolved: true, resolved_at: new Date().toISOString() } : e));
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkDelete = async () => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('error_logs')
+      .delete()
+      .in('id', ids);
+    if (!error) {
+      setErrors(prev => prev.filter(e => !ids.includes(e.id)));
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkActions: BulkAction[] = [
+    { label: 'Mark Resolved', icon: CheckCircle2, onClick: bulkMarkResolved },
+    { label: 'Delete', icon: X, onClick: bulkDelete, destructive: true, confirmMessage: `Permanently delete ${bulk.selectedCount} error log(s)? This cannot be undone.` },
+  ];
 
   const getTimeAgo = (date: string) => {
     const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -266,11 +321,28 @@ export default function AdminErrorLogsPage() {
         </Card>
       ) : (
         <div className="space-y-3">
+          {filteredErrors.length > 0 && (
+            <div className="flex items-center gap-3 px-1">
+              <Checkbox
+                checked={bulk.allSelected}
+                onCheckedChange={bulk.toggleAll}
+                aria-label="Select all errors"
+              />
+              <span className="text-sm text-muted-foreground">Select all</span>
+            </div>
+          )}
           {filteredErrors.map((error) => (
             <Card key={error.id} className={error.resolved ? 'opacity-60' : ''}>
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
+                    <div className="mt-0.5" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={bulk.isSelected(error.id)}
+                        onCheckedChange={() => bulk.toggle(error.id)}
+                        aria-label={`Select error ${error.id}`}
+                      />
+                    </div>
                     {error.resolved ? (
                       <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
                     ) : (
@@ -388,6 +460,12 @@ export default function AdminErrorLogsPage() {
           ))}
         </div>
       )}
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onClear={bulk.clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }

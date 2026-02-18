@@ -32,7 +32,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             className
           )}
         >
-          <Check className="h-3 w-3 text-white opacity-0 peer-checked:opacity-100" />
+          {checked && <Check className="h-3 w-3 text-white" />}
         </div>
       </label>
     );

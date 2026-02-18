@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Checkbox } from '@/components/ui';
+import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import {
   Search,
   Loader2,
@@ -64,6 +66,26 @@ export default function AdminJobsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+
+  const filteredJobIds = useMemo(() => {
+    const searchLower = search.toLowerCase();
+    return jobs
+      .filter(job => {
+        if (search === '') return true;
+        return (
+          job.job_type.toLowerCase().includes(searchLower) ||
+          job.orgName.toLowerCase().includes(searchLower) ||
+          (job.error_message?.toLowerCase().includes(searchLower) ?? false)
+        );
+      })
+      .map(j => j.id);
+  }, [jobs, search]);
+
+  const bulk = useBulkSelection({ itemIds: filteredJobIds });
+
+  useEffect(() => {
+    bulk.clearSelection();
+  }, [page, statusFilter]);
 
   useEffect(() => {
     loadJobs();
@@ -173,6 +195,53 @@ export default function AdminJobsPage() {
     failed: jobs.filter(j => j.status === 'failed').length,
     completed: jobs.filter(j => j.status === 'completed').length,
   };
+
+  const bulkRetryFailed = async () => {
+    const ids = [...bulk.selectedIds];
+    const failedJobs = jobs.filter(j => ids.includes(j.id) && j.status === 'failed');
+    if (failedJobs.length === 0) return;
+    const supabase = createClient();
+    for (const job of failedJobs) {
+      await supabase
+        .from('job_logs')
+        .update({ status: 'pending', retry_count: job.retry_count + 1, error_message: null, started_at: null, completed_at: null })
+        .eq('id', job.id);
+    }
+    setJobs(prev =>
+      prev.map(j =>
+        failedJobs.some(fj => fj.id === j.id)
+          ? { ...j, status: 'pending' as const, retry_count: j.retry_count + 1, error_message: null, started_at: null, completed_at: null }
+          : j
+      )
+    );
+    bulk.clearSelection();
+  };
+
+  const bulkCancelPending = async () => {
+    const ids = [...bulk.selectedIds];
+    const pendingIds = jobs.filter(j => ids.includes(j.id) && j.status === 'pending').map(j => j.id);
+    if (pendingIds.length === 0) return;
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('job_logs')
+      .update({ status: 'failed', error_message: 'Cancelled by admin', completed_at: new Date().toISOString() })
+      .in('id', pendingIds);
+    if (!error) {
+      setJobs(prev =>
+        prev.map(j =>
+          pendingIds.includes(j.id)
+            ? { ...j, status: 'failed' as const, error_message: 'Cancelled by admin', completed_at: new Date().toISOString() }
+            : j
+        )
+      );
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkActions: BulkAction[] = [
+    { label: 'Retry Failed', icon: Play, onClick: bulkRetryFailed },
+    { label: 'Cancel Pending', icon: XCircle, onClick: bulkCancelPending, destructive: true, confirmMessage: `Cancel ${bulk.selectedCount} selected pending job(s)? They will be marked as failed.` },
+  ];
 
   const formatDuration = (startedAt: string | null, completedAt: string | null): string => {
     if (!startedAt || !completedAt) return 'N/A';
@@ -319,6 +388,13 @@ export default function AdminJobsPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b text-left">
+                      <th className="pb-3 pl-2 w-8">
+                        <Checkbox
+                          checked={bulk.allSelected}
+                          onCheckedChange={bulk.toggleAll}
+                          aria-label="Select all jobs"
+                        />
+                      </th>
                       <th className="pb-3 font-medium text-slate-500 w-8"></th>
                       <th className="pb-3 font-medium text-slate-500">Job Type</th>
                       <th className="pb-3 font-medium text-slate-500">Status</th>
@@ -338,12 +414,19 @@ export default function AdminJobsPage() {
 
                       return (
                         <tr key={job.id} className="group">
-                          <td colSpan={10} className="p-0">
+                          <td colSpan={11} className="p-0">
                             {/* Main Row */}
                             <div
                               className="flex items-center hover:bg-slate-50 cursor-pointer"
                               onClick={() => setExpandedId(isExpanded ? null : job.id)}
                             >
+                              <div className="py-3 pl-2 w-8 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                                <Checkbox
+                                  checked={bulk.isSelected(job.id)}
+                                  onCheckedChange={() => bulk.toggle(job.id)}
+                                  aria-label={`Select job ${job.id}`}
+                                />
+                              </div>
                               <div className="py-3 px-1 w-8 flex items-center justify-center">
                                 {isExpanded ? (
                                   <ChevronUp className="h-4 w-4 text-slate-400" />
@@ -530,6 +613,12 @@ export default function AdminJobsPage() {
           )}
         </CardContent>
       </Card>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onClear={bulk.clearSelection}
+        actions={bulkActions}
+      />
     </div>
   );
 }

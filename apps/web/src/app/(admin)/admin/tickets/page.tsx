@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Textarea } from '@/components/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Textarea, Checkbox } from '@/components/ui';
+import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import { 
   Search, 
   Ticket,
@@ -114,6 +116,25 @@ export default function TicketsPage() {
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isInternalNote, setIsInternalNote] = useState(false);
+
+  const filteredTicketIds = useMemo(() => {
+    const searchLower = search.toLowerCase();
+    return tickets
+      .filter(ticket => {
+        if (search === '') return true;
+        return (
+          ticket.message.toLowerCase().includes(searchLower) ||
+          (ticket.userEmail?.toLowerCase().includes(searchLower) ?? false)
+        );
+      })
+      .map(t => t.id);
+  }, [tickets, search]);
+
+  const bulk = useBulkSelection({ itemIds: filteredTicketIds });
+
+  useEffect(() => {
+    bulk.clearSelection();
+  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
 
   useEffect(() => {
     loadTickets();
@@ -338,6 +359,40 @@ export default function TicketsPage() {
     total: totalCount,
   };
 
+  const bulkUpdateStatus = async (newStatus: FeedbackEntry['status']) => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('feedback')
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
+      .in('id', ids);
+    if (!error) {
+      setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, status: newStatus } : t));
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkUpdatePriority = async (newPriority: FeedbackEntry['priority']) => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('feedback')
+      .update({ priority: newPriority, updated_at: new Date().toISOString() })
+      .in('id', ids);
+    if (!error) {
+      setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, priority: newPriority } : t));
+      bulk.clearSelection();
+    }
+  };
+
+  const bulkActions: BulkAction[] = [
+    { label: 'Mark Reviewed', icon: Eye, onClick: () => bulkUpdateStatus('reviewed') },
+    { label: 'Mark Resolved', icon: CheckCircle, onClick: () => bulkUpdateStatus('resolved') },
+    { label: 'Priority: High', icon: ArrowUp, onClick: () => bulkUpdatePriority('high') },
+    { label: 'Priority: Low', icon: ArrowDown, onClick: () => bulkUpdatePriority('low') },
+    { label: 'Archive', icon: Archive, onClick: () => bulkUpdateStatus('archived'), destructive: true, confirmMessage: `Archive ${bulk.selectedCount} ticket(s)? This will mark them as archived.` },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -479,6 +534,13 @@ export default function TicketsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
+            {filteredTickets.length > 0 && (
+              <Checkbox
+                checked={bulk.allSelected}
+                onCheckedChange={bulk.toggleAll}
+                aria-label="Select all tickets"
+              />
+            )}
             <Ticket className="h-5 w-5" />
             Tickets
           </CardTitle>
@@ -510,6 +572,13 @@ export default function TicketsPage() {
                       className="border rounded-lg p-4 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                       <div className="flex items-start justify-between gap-4">
+                        <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={bulk.isSelected(ticket.id)}
+                            onCheckedChange={() => bulk.toggle(ticket.id)}
+                            aria-label={`Select ticket ${ticket.id}`}
+                          />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <PriorityIcon className={`h-4 w-4 ${priorityColors[ticket.priority]}`} />
@@ -610,6 +679,12 @@ export default function TicketsPage() {
           )}
         </CardContent>
       </Card>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onClear={bulk.clearSelection}
+        actions={bulkActions}
+      />
 
       {/* Ticket Detail Slide-out Panel */}
       {selectedTicket && (
