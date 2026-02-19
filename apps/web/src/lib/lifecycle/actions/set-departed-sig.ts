@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { setGmailSignatureWithClient } from '@/lib/google/gmail';
 import { createOrgGoogleClient } from '@/lib/google/oauth';
+import { setSignatureWithServiceAccount } from '@/lib/google/service-account';
 import { resolveDisclaimersForUser } from '@/lib/disclaimer-engine';
 import { logAudit } from '@/lib/audit/logger';
 import type { WorkflowRunContext } from '../workflow-runner';
@@ -60,16 +61,23 @@ export async function setDepartedSignature(context: WorkflowRunContext, config: 
     console.error(`Disclaimer resolution failed for departed user ${userData.email}:`, err);
   }
 
-  // Deploy via Gmail if Google connection exists
+  // Deploy via Gmail if Google connection exists (OAuth or Marketplace)
   try {
     const googleAuth = await createOrgGoogleClient(context.organizationId);
     await setGmailSignatureWithClient(googleAuth, userData.email, finalHtml);
   } catch (err: any) {
-    // Skip silently if Google isn't connected (org may use Microsoft 365)
     if (err.message === 'Google Workspace not connected') {
-      return;
+      return; // Skip silently — org may use Microsoft 365
     }
-    console.error(`Google deployment failed for departed user ${userData.email}:`, err.message);
+    if (err.message === 'MARKETPLACE_AUTH') {
+      try {
+        await setSignatureWithServiceAccount(userData.email, finalHtml);
+      } catch (saErr: any) {
+        console.error(`Service account deployment failed for departed user ${userData.email}:`, saErr.message);
+      }
+    } else {
+      console.error(`Google deployment failed for departed user ${userData.email}:`, err.message);
+    }
   }
 
   await logAudit({

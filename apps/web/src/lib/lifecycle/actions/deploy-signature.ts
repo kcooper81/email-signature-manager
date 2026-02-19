@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { setGmailSignatureWithClient } from '@/lib/google/gmail';
 import { createOrgGoogleClient } from '@/lib/google/oauth';
+import { setSignatureWithServiceAccount } from '@/lib/google/service-account';
 import { resolveDisclaimersForUser } from '@/lib/disclaimer-engine';
 import { logAudit } from '@/lib/audit/logger';
 import type { WorkflowRunContext } from '../workflow-runner';
@@ -97,18 +98,27 @@ export async function deploySignature(context: WorkflowRunContext, _config: Reco
     console.error(`Disclaimer resolution failed for ${userData.email}:`, err);
   }
 
-  // Deploy via Gmail if Google connection exists
+  // Deploy via Gmail if Google connection exists (OAuth or Marketplace)
   let deployStatus = 'completed';
   try {
     const googleAuth = await createOrgGoogleClient(context.organizationId);
     await setGmailSignatureWithClient(googleAuth, userData.email, finalHtml);
   } catch (err: any) {
-    // Skip silently if Google isn't connected (org may use Microsoft 365)
     if (err.message === 'Google Workspace not connected') {
-      return;
+      return; // Skip silently — org may use Microsoft 365
     }
-    console.error(`Google deployment failed for ${userData.email}:`, err.message);
-    deployStatus = 'failed';
+    if (err.message === 'MARKETPLACE_AUTH') {
+      // Marketplace connection — use service account
+      try {
+        await setSignatureWithServiceAccount(userData.email, finalHtml);
+      } catch (saErr: any) {
+        console.error(`Service account deployment failed for ${userData.email}:`, saErr.message);
+        deployStatus = 'failed';
+      }
+    } else {
+      console.error(`Google deployment failed for ${userData.email}:`, err.message);
+      deployStatus = 'failed';
+    }
   }
 
   // Record deployment history
