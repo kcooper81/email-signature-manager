@@ -32,45 +32,49 @@ export default function SetupProfilePage() {
   }, []);
 
   const checkAuthStatus = async () => {
-    const supabase = createClient();
+    // BUG-14 fix: Wrap in try/catch to prevent infinite spinner on error
+    try {
+      const supabase = createClient();
 
-    // Force a session refresh to ensure we have the latest auth state,
-    // preventing stale sessions from showing the wrong email
-    await supabase.auth.refreshSession();
+      // Force a session refresh to ensure we have the latest auth state,
+      // preventing stale sessions from showing the wrong email
+      await supabase.auth.refreshSession();
 
-    const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      // Not logged in, redirect to login
-      router.push('/login');
-      return;
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+
+      setUserEmail(user.email || '');
+
+      // Check if user already has a profile
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', user.id)
+        .maybeSingle();
+
+      if (userData) {
+        router.push('/dashboard');
+        return;
+      }
+
+      // Pre-fill from auth metadata if available
+      const metadata = user.user_metadata || {};
+      setFormData({
+        firstName: metadata.first_name || metadata.given_name || '',
+        lastName: metadata.last_name || metadata.family_name || '',
+        organizationName: metadata.organization_name || '',
+      });
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Failed to check auth status:', err);
+      setError('Failed to load your profile. Please try refreshing the page.');
+      setLoading(false);
     }
-
-    setUserEmail(user.email || '');
-
-    // Check if user already has a profile
-    const { data: userData } = await supabase
-      .from('users')
-      .select('id')
-      .eq('auth_id', user.id)
-      .maybeSingle();
-
-    if (userData) {
-      // Profile exists, redirect to dashboard
-      router.push('/dashboard');
-      return;
-    }
-
-    // Pre-fill from auth metadata if available
-    // Support both custom signup fields and Google OAuth fields
-    const metadata = user.user_metadata || {};
-    setFormData({
-      firstName: metadata.first_name || metadata.given_name || '',
-      lastName: metadata.last_name || metadata.family_name || '',
-      organizationName: metadata.organization_name || '',
-    });
-
-    setLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

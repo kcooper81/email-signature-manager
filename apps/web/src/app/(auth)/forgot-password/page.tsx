@@ -29,18 +29,16 @@ export default function ForgotPasswordPage() {
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
       });
 
-      if (error) {
-        setError(error.message);
-        return;
-      }
-
+      // BUG-25 fix: Always show success to prevent user enumeration.
+      // If the email doesn't exist, Supabase won't send anything — that's fine.
       setSent(true);
     } catch (err) {
-      setError('An unexpected error occurred');
+      // Still show success to avoid leaking whether the email exists
+      setSent(true);
     } finally {
       setLoading(false);
     }
