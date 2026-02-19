@@ -61,22 +61,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Store the connection with marketplace auth type
-    const { error: upsertError } = await supabase
+    // Store the marketplace connection — preserve any existing OAuth tokens
+    const { data: existingConnection } = await supabase
       .from('provider_connections')
-      .upsert({
-        organization_id: userData.organization_id,
-        provider: 'google',
-        auth_type: 'marketplace', // Distinguish from OAuth
-        admin_email: adminEmail,
-        domain: domain,
-        is_active: true,
-        // No tokens needed - using service account
-        access_token: null,
-        refresh_token: null,
-      }, {
-        onConflict: 'organization_id,provider',
-      });
+      .select('id, refresh_token')
+      .eq('organization_id', userData.organization_id)
+      .eq('provider', 'google')
+      .maybeSingle();
+
+    let upsertError;
+
+    if (existingConnection) {
+      // Update marketplace fields only — do NOT overwrite OAuth tokens
+      ({ error: upsertError } = await supabase
+        .from('provider_connections')
+        .update({
+          auth_type: 'marketplace',
+          admin_email: adminEmail,
+          domain: domain,
+          is_active: true,
+        })
+        .eq('id', existingConnection.id));
+    } else {
+      // No existing connection — insert new row (no tokens needed for marketplace)
+      ({ error: upsertError } = await supabase
+        .from('provider_connections')
+        .insert({
+          organization_id: userData.organization_id,
+          provider: 'google',
+          auth_type: 'marketplace',
+          admin_email: adminEmail,
+          domain: domain,
+          is_active: true,
+        }));
+    }
 
     if (upsertError) {
       console.error('Failed to save marketplace connection:', upsertError);
