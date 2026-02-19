@@ -130,9 +130,12 @@ export default function SignupPage() {
         return;
       }
 
-      // Supabase returns a fake success with empty identities when the email
-      // is already registered — no confirmation email is sent in this case
-      if (authData?.user?.identities && authData.user.identities.length === 0) {
+      // Detect if the email is already registered:
+      // - Empty identities = exact duplicate (same email/password provider)
+      // - No 'email' identity = email is taken by another provider (e.g., Google OAuth)
+      const identities = authData?.user?.identities || [];
+      const hasEmailIdentity = identities.some((id: any) => id.provider === 'email');
+      if (identities.length === 0 || (!hasEmailIdentity && identities.length > 0)) {
         setError(
           'An account with this email already exists. Please sign in instead.'
         );
