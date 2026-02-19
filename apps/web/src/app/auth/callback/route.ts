@@ -1,5 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+
+const supabaseAdmin = createAdminClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -44,15 +50,49 @@ export async function GET(request: Request) {
         // If user record doesn't exist, this is a new signup - create organization and user
         if (!userData) {
           const metadata = user.user_metadata || {};
-          const firstName = metadata.first_name || '';
-          const lastName = metadata.last_name || '';
-          const organizationName = metadata.organization_name || `${firstName}'s Organization`;
+          // Support both custom signup metadata and Google OAuth metadata
+          const firstName = metadata.first_name || metadata.given_name || '';
+          const lastName = metadata.last_name || metadata.family_name || '';
+          const organizationName = metadata.organization_name || (firstName ? `${firstName}'s Organization` : 'My Organization');
 
-          // Create organization
-          const { data: newOrg, error: orgError } = await supabase
+          // If we don't have enough info for auto-setup (e.g., Google OAuth without org name),
+          // redirect to setup-profile to collect the missing fields
+          if (!metadata.organization_name && !firstName) {
+            return NextResponse.redirect(`${baseUrl}/setup-profile`);
+          }
+
+          // Generate slug from organization name
+          let baseSlug = organizationName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '')
+            .substring(0, 50);
+
+          let slug = baseSlug;
+          let slugExists = true;
+          let attempts = 0;
+
+          while (slugExists && attempts < 5) {
+            const { data: existingOrg } = await supabaseAdmin
+              .from('organizations')
+              .select('id')
+              .eq('slug', slug)
+              .maybeSingle();
+
+            if (!existingOrg) {
+              slugExists = false;
+            } else {
+              slug = `${baseSlug}-${Math.floor(1000 + Math.random() * 9000)}`;
+              attempts++;
+            }
+          }
+
+          // Use admin client to bypass RLS policies
+          const { data: newOrg, error: orgError } = await supabaseAdmin
             .from('organizations')
             .insert({
               name: organizationName,
+              slug: slug,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             })
@@ -64,15 +104,15 @@ export async function GET(request: Request) {
             return NextResponse.redirect(`${baseUrl}/login?error=setup_failed`);
           }
 
-          // Create user record
-          const { error: userError } = await supabase
+          // Create user record using admin client
+          const { error: userError } = await supabaseAdmin
             .from('users')
             .insert({
               auth_id: user.id,
               email: user.email!,
               first_name: firstName,
               last_name: lastName,
-              role: 'owner', // First user in org is owner
+              role: 'owner',
               organization_id: newOrg.id,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
@@ -81,6 +121,21 @@ export async function GET(request: Request) {
           if (userError) {
             console.error('Failed to create user record:', userError);
             return NextResponse.redirect(`${baseUrl}/login?error=setup_failed`);
+          }
+
+          // Create default free subscription
+          const { error: subError } = await supabaseAdmin
+            .from('subscriptions')
+            .insert({
+              organization_id: newOrg.id,
+              plan: 'free',
+              status: 'active',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            });
+
+          if (subError) {
+            console.error('Failed to create subscription:', subError);
           }
 
           // Redirect new owner to dashboard

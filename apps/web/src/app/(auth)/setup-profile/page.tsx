@@ -33,6 +33,11 @@ export default function SetupProfilePage() {
 
   const checkAuthStatus = async () => {
     const supabase = createClient();
+
+    // Force a session refresh to ensure we have the latest auth state,
+    // preventing stale sessions from showing the wrong email
+    await supabase.auth.refreshSession();
+
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -57,10 +62,11 @@ export default function SetupProfilePage() {
     }
 
     // Pre-fill from auth metadata if available
+    // Support both custom signup fields and Google OAuth fields
     const metadata = user.user_metadata || {};
     setFormData({
-      firstName: metadata.first_name || '',
-      lastName: metadata.last_name || '',
+      firstName: metadata.first_name || metadata.given_name || '',
+      lastName: metadata.last_name || metadata.family_name || '',
       organizationName: metadata.organization_name || '',
     });
 
@@ -143,6 +149,20 @@ export default function SetupProfilePage() {
                 disabled
                 className="bg-muted"
               />
+              <p className="text-xs text-muted-foreground">
+                Not your email?{' '}
+                <button
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={async () => {
+                    const supabase = createClient();
+                    await supabase.auth.signOut();
+                    router.push('/signup');
+                  }}
+                >
+                  Sign out and try again
+                </button>
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

@@ -130,6 +130,15 @@ export default function SignupPage() {
         return;
       }
 
+      // Supabase returns a fake success with empty identities when the email
+      // is already registered — no confirmation email is sent in this case
+      if (authData?.user?.identities && authData.user.identities.length === 0) {
+        setError(
+          'An account with this email already exists. Please sign in instead.'
+        );
+        return;
+      }
+
       // Track successful signup
       trackSignUpComplete('email');
       trackEvent('signup_complete', 'conversion', formData.email);
