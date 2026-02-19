@@ -106,6 +106,16 @@ export default function SignupPage() {
       return;
     }
 
+    // BUG-07: Validate input lengths
+    if (formData.firstName.length > 100 || formData.lastName.length > 100) {
+      setError('Name must be 100 characters or less');
+      return;
+    }
+    if (formData.organizationName.length > 200) {
+      setError('Organization name must be 200 characters or less');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -142,9 +152,9 @@ export default function SignupPage() {
         return;
       }
 
-      // Track successful signup
+      // Track successful signup (BUG-06 fix: don't send PII to analytics)
       trackSignUpComplete('email');
-      trackEvent('signup_complete', 'conversion', formData.email);
+      trackEvent('signup_complete', 'conversion', 'email_signup');
 
       // Show success message
       setStep('success');

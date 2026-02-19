@@ -10,24 +10,23 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Loader2, 
-  Check, 
-  Building2, 
-  Users, 
-  Globe, 
+import {
+  Loader2,
+  Check,
+  Users,
   ArrowLeft,
   Zap,
   Shield,
-  Clock,
   DollarSign,
   Palette,
-  BarChart3,
   Headphones,
   RefreshCw,
   CheckCircle2,
-  Mail,
-  ArrowUpRight,
+  ChevronDown,
+  Server,
+  Lock,
+  Plug,
+  HelpCircle,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -410,45 +409,475 @@ export default function PartnerApplyPage() {
           </p>
         </div>
 
-        {/* FAQ / Concerns */}
+        {/* Comprehensive FAQ */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-center mb-8">Common Questions</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <h3 className="font-semibold">How long does onboarding take?</h3>
-              <p className="text-sm text-muted-foreground">
-                Most partners are up and running within 24 hours of approval. Client deployments take 5-10 minutes each via OAuth.
-              </p>
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 bg-violet-100 text-violet-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <HelpCircle className="h-4 w-4" />
+              Frequently Asked Questions
             </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">Do you access email content?</h3>
-              <p className="text-sm text-muted-foreground">
-                No. We only sync user directory data (name, title, department) and deploy signatures. We never read, store, or process email content.
-              </p>
+            <h2 className="text-3xl font-bold mb-2">Everything You Need to Know</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Answers to common questions about the platform, security, integrations, and the partner program.
+            </p>
+          </div>
+
+          {/* Platform & Technology */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Server className="h-5 w-5 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Platform & Technology</h3>
             </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">What if a client wants to leave?</h3>
-              <p className="text-sm text-muted-foreground">
-                No lock-in. Signatures remain in place even if they disconnect. They can export their templates anytime.
-              </p>
+            <div className="border rounded-lg divide-y">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What tech stack does Siggly run on?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Siggly is built on a modern, production-grade stack:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Frontend:</strong> Next.js (React) with TypeScript, deployed on Vercel&apos;s edge network</li>
+                    <li><strong>Backend:</strong> Next.js API Routes + Supabase (PostgreSQL) for database and authentication</li>
+                    <li><strong>Email rendering:</strong> Server-side HTML rendering engine optimized for email client compatibility (Gmail, Outlook, Apple Mail, mobile)</li>
+                    <li><strong>Integrations:</strong> Google Workspace APIs (Admin SDK, Gmail API), Microsoft Graph API, HubSpot API</li>
+                    <li><strong>Payments:</strong> Stripe for subscription billing</li>
+                    <li><strong>Email delivery:</strong> Resend for transactional emails</li>
+                  </ul>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Where is the platform hosted?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Siggly runs on Vercel&apos;s global edge network (powered by AWS) with Supabase cloud (powered by AWS) for database and authentication. Infrastructure is distributed across multiple regions for low latency and high availability. All data is stored in US-based data centers with automated backups.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What&apos;s the uptime and reliability like?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Siggly inherits the reliability of Vercel (99.99% uptime SLA) and Supabase (99.9% uptime). Signature deployments are idempotent — if a deployment fails due to a transient error, it retries automatically. Signatures that have already been deployed continue working even if Siggly is temporarily unreachable, since they live inside the email platform (Gmail/Outlook), not on our servers.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Do you offer an API?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Yes. Professional and Enterprise plans include API access for programmatic signature management, template deployment, and user syncing. This is useful for partners who want to integrate Siggly into their own provisioning workflows, PSA tools, or automation scripts.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How are signatures rendered? Will they break in Outlook?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Signatures are rendered as table-based HTML specifically designed for email client compatibility. We test across Gmail (web, Android, iOS), Outlook (desktop, web, mobile), Apple Mail, Thunderbird, and other clients. The rendering engine uses inline styles, avoids CSS that breaks in Outlook, and handles image sizing for retina displays. What you see in the editor is what your users get in their inbox.</p>
+                </div>
+              </details>
             </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">How do I bill my clients?</h3>
-              <p className="text-sm text-muted-foreground">
-                You receive one consolidated invoice from us. Bill your clients however you prefer — monthly, annually, bundled with other services.
-              </p>
+          </div>
+
+          {/* Security & Compliance */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                <Lock className="h-5 w-5 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Security & Compliance</h3>
             </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">What support do you provide?</h3>
-              <p className="text-sm text-muted-foreground">
-                Email support for all partners. Silver+ tiers get priority response. We also provide documentation and onboarding guides you can share with clients.
-              </p>
+            <div className="border rounded-lg divide-y">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Do you access or read email content?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p><strong>No.</strong> Siggly never reads, stores, or processes email content. We only access:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>User directory data (name, title, department, phone) for populating signature fields</li>
+                    <li>The Gmail/Outlook signature setting to deploy the HTML signature</li>
+                  </ul>
+                  <p className="mt-2">We use the minimum OAuth scopes required. Email body content is never requested or accessible to our application.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What OAuth scopes does Siggly request?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p><strong>Google Workspace:</strong></p>
+                  <ul className="list-disc list-inside mt-1 space-y-1">
+                    <li><code className="bg-muted px-1 rounded text-xs">admin.directory.user.readonly</code> — Read user directory to sync names, titles, departments</li>
+                    <li><code className="bg-muted px-1 rounded text-xs">gmail.settings.basic</code> — Set the email signature in Gmail</li>
+                  </ul>
+                  <p className="mt-3"><strong>Microsoft 365:</strong></p>
+                  <ul className="list-disc list-inside mt-1 space-y-1">
+                    <li><code className="bg-muted px-1 rounded text-xs">User.Read.All</code> — Read user profiles from Azure AD</li>
+                    <li><code className="bg-muted px-1 rounded text-xs">MailboxSettings.ReadWrite</code> — Set the email signature in Outlook</li>
+                  </ul>
+                  <p className="mt-2">No email read scopes. No calendar access. No file access. Just directory and signature settings.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How is data stored and encrypted?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>At rest:</strong> All data is stored in Supabase (PostgreSQL on AWS) with AES-256 encryption at rest</li>
+                    <li><strong>In transit:</strong> All connections use TLS 1.2+ encryption. HTTPS is enforced everywhere</li>
+                    <li><strong>OAuth tokens:</strong> Google/Microsoft refresh tokens are encrypted and stored server-side. They are never exposed to the browser</li>
+                    <li><strong>Passwords:</strong> Hashed with bcrypt via Supabase Auth. We never store plaintext passwords</li>
+                    <li><strong>Row-Level Security:</strong> Database uses Supabase RLS policies so organizations can only access their own data</li>
+                  </ul>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Is Siggly GDPR and privacy compliant?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Yes. Siggly is designed with privacy by default:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>We only collect the minimum data required to render and deploy signatures</li>
+                    <li>Data can be deleted on request (right to erasure)</li>
+                    <li>No email content is ever accessed or stored</li>
+                    <li>Audit logs track all signature deployments for compliance</li>
+                    <li>Built-in legal disclaimer engine supports GDPR, HIPAA, and industry-specific compliance text</li>
+                    <li>Data processing is limited to what&apos;s necessary for the service (data minimization)</li>
+                  </ul>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Do you store Google or Microsoft credentials?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>We store an encrypted OAuth refresh token that allows Siggly to deploy signatures on behalf of the organization. This token can be revoked at any time from the Google Admin Console or Azure AD portal, which instantly disconnects Siggly. We never store admin passwords or service account keys for your Workspace/365 tenant.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What about SOC 2 compliance?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Siggly&apos;s infrastructure providers (Vercel, Supabase, AWS) are SOC 2 Type II compliant. All data processing occurs within these certified environments. Audit logging is built into the platform for signature deployments, user changes, and administrative actions.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Can I get a security questionnaire completed?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Yes. If your organization or your clients require a vendor security assessment, we&apos;re happy to complete security questionnaires and provide documentation about our architecture, data handling, and compliance posture. Contact us at <a href="mailto:security@siggly.com" className="text-primary hover:underline">security@siggly.com</a>.</p>
+                </div>
+              </details>
             </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">Can clients manage their own signatures?</h3>
-              <p className="text-sm text-muted-foreground">
-                Yes, you can grant client admins limited access to manage their own templates while you retain oversight. Or keep full control — your choice.
-              </p>
+          </div>
+
+          {/* Integrations */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                <Plug className="h-5 w-5 text-orange-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Integrations</h3>
+            </div>
+            <div className="border rounded-lg divide-y">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Which email platforms are supported?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>Google Workspace</strong> — Full integration via OAuth or Google Workspace Marketplace. Signatures are pushed directly to Gmail via the Gmail API</li>
+                    <li><strong>Microsoft 365</strong> — Integration via Microsoft Graph API. Signatures are pushed to Outlook (Professional plan and above)</li>
+                  </ul>
+                  <p className="mt-2">Signatures are deployed server-side, so they work across all devices (desktop, mobile, webmail) without users needing to do anything.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How does the Google Workspace integration work?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Two options:</p>
+                  <ol className="list-decimal list-inside mt-2 space-y-2">
+                    <li><strong>Google Workspace Marketplace install</strong> (recommended) — The admin installs Siggly from the <a href="https://workspace.google.com/marketplace/app/siggly_email_signature_manager/485065317326" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Marketplace listing</a>, which grants domain-wide delegation automatically. No manual consent flows needed.</li>
+                    <li><strong>OAuth consent flow</strong> — A Workspace admin clicks "Connect Google Workspace" in Siggly and authorizes the required scopes. Takes about 30 seconds.</li>
+                  </ol>
+                  <p className="mt-2">Once connected, Siggly auto-syncs the user directory and can push signatures to all users in the domain.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What HR and CRM integrations are available?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>HubSpot CRM</strong> — Sync contact data bidirectionally (all plans)</li>
+                    <li><strong>BambooHR</strong> — Auto-sync employee data for signature fields (Professional+)</li>
+                    <li><strong>Gusto</strong> — HR data sync for employee information (Professional+)</li>
+                    <li><strong>Rippling</strong> — HR data sync for employee information (Professional+)</li>
+                  </ul>
+                  <p className="mt-2">HR integrations keep signature fields (title, department, phone) up to date automatically when changes happen in the HR system.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What happens when an employee joins or leaves?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p><strong>New employee:</strong> When they appear in the Google/Microsoft directory, Siggly detects them and automatically deploys the assigned signature template. No manual action needed.</p>
+                  <p className="mt-2"><strong>Departing employee:</strong> Lifecycle automation can automatically replace their signature with a "no longer with the company" message or a generic org signature. This prevents ex-employees from continuing to represent the company in email threads.</p>
+                  <p className="mt-2"><strong>Title/department change:</strong> Directory changes are synced automatically. The signature updates on the next sync cycle without anyone lifting a finger.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          {/* Partner Program */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
+                <Users className="h-5 w-5 text-violet-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Partner Program</h3>
+            </div>
+            <div className="border rounded-lg divide-y">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How long does partner onboarding take?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Most partners are fully set up within 24 hours of application approval. The process:</p>
+                  <ol className="list-decimal list-inside mt-2 space-y-1">
+                    <li>Submit your application (you&apos;re on this page)</li>
+                    <li>We review and approve within 2-3 business days</li>
+                    <li>Your MSP portal is set up with your branding and subdomain</li>
+                    <li>You start adding clients — each one takes about 5 minutes</li>
+                  </ol>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How do I bill my clients?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>You receive one consolidated monthly invoice from Siggly at the partner rate. You bill your clients however you prefer — monthly, annually, bundled with your existing managed services, or as a line item. Many partners include signature management as part of a broader IT package. Set your own retail price and keep the margin.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Can I set my own pricing to clients?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Absolutely. You pay the partner rate to Siggly and charge whatever you want to your clients. Most partners charge $2-3/user/month, which creates a healthy margin on top of the $1.50/user base. Some bundle it for free with other services as a value-add to reduce churn on higher-margin contracts.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What does the white-label include?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>Custom subdomain</strong> — yourcompany.siggly.io</li>
+                    <li><strong>Your logo</strong> — displayed in the dashboard header and login page</li>
+                    <li><strong>Your brand colors</strong> — primary color applied across the interface</li>
+                    <li><strong>Multi-client switcher</strong> — jump between client organizations from one dashboard</li>
+                    <li><strong>&quot;Powered by&quot; removal</strong> — available for Gold partners and Enterprise plans</li>
+                  </ul>
+                  <p className="mt-2">Your clients log into your branded portal and see your company, not Siggly.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Is there a minimum commitment or contract?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>No annual contracts. No minimum commitment. The only minimum is 10 users per client on the Professional plan ($15/month per client). You can cancel any client at any time. We believe partners stay because the product works, not because of lock-in.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What marketing and sales support do you provide?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Co-branded marketing materials (Silver+ tiers)</li>
+                    <li>Onboarding documentation you can share with clients</li>
+                    <li>Sales deck and ROI calculator</li>
+                    <li>Partner directory listing (coming soon)</li>
+                    <li>Dedicated account manager for Gold partners</li>
+                  </ul>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Can clients manage their own signatures?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Flexible access control:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Full MSP control</strong> — You manage everything. Clients don&apos;t log in at all</li>
+                    <li><strong>Client admin access</strong> — Grant the client&apos;s IT admin limited access to edit templates while you retain oversight</li>
+                    <li><strong>Employee self-service</strong> — Individual employees can update personal fields (phone, title) through a self-service portal with optional admin approval</li>
+                  </ul>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What if a client wants to leave or switch providers?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>No lock-in whatsoever:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>Signatures that have already been deployed remain in place inside Gmail/Outlook — they don&apos;t disappear</li>
+                    <li>Templates can be exported</li>
+                    <li>The client&apos;s Google/Microsoft admin can revoke Siggly&apos;s access with one click</li>
+                    <li>No cancellation fees or early termination penalties</li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          {/* Pricing & Billing */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-emerald-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Pricing & Billing</h3>
+            </div>
+            <div className="border rounded-lg divide-y">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What are the exact costs I&apos;ll pay?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Siggly has three tiers for end clients:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Free:</strong> Up to 5 users, 1 template, Google Workspace only. Great for small clients or trials</li>
+                    <li><strong>Professional:</strong> $1.50/user/month, 10-user minimum ($15/mo). Unlimited templates, Microsoft 365, HR integrations, analytics, lifecycle automation</li>
+                    <li><strong>Enterprise:</strong> Custom pricing for large organizations. SSO/SAML, white-label, brand governance, dedicated support</li>
+                  </ul>
+                  <p className="mt-2">As a partner, you receive a 15-25% margin depending on your tier (Partner, Silver, or Gold).</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">Can I start clients on the free plan?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Yes. The free plan supports up to 5 users with Google Workspace and is a great way to demo the product to a client before upgrading. There&apos;s no trial period — the free tier is permanent. When the client is ready for more users, templates, or Microsoft 365 support, upgrade to Professional.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How are partner margins paid out?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Partner margins are applied as a discount on your invoice, not as a separate payout. For example, as a Silver partner (20% margin) with a client at $1.50/user:</p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>Client has 50 users = $75/month retail</li>
+                    <li>Your cost = $60/month (after 20% discount)</li>
+                    <li>You bill the client at your rate and keep the difference</li>
+                  </ul>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What payment methods are accepted?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>All billing is handled through Stripe. We accept all major credit and debit cards (Visa, Mastercard, Amex), as well as ACH bank transfers for US-based partners on annual billing. Invoices are generated monthly and payment is automatic.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          {/* Support */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center">
+                <Headphones className="h-5 w-5 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Support & Onboarding</h3>
+            </div>
+            <div className="border rounded-lg divide-y">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">What support is included?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>All partners:</strong> Email support, knowledge base, onboarding documentation</li>
+                    <li><strong>Silver+:</strong> Priority email support with faster response times, co-branded client onboarding guides</li>
+                    <li><strong>Gold:</strong> Dedicated account manager, direct Slack/Teams channel, quarterly business reviews</li>
+                  </ul>
+                  <p className="mt-2">Partners handle first-line support for their clients. We provide second-line support and escalation paths for technical issues.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">How do I add a new client?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>From your MSP dashboard:</p>
+                  <ol className="list-decimal list-inside mt-2 space-y-1">
+                    <li>Click &quot;Add Client&quot; and enter their organization name</li>
+                    <li>Connect their Google Workspace or Microsoft 365 (OAuth — takes 30 seconds)</li>
+                    <li>Users sync automatically from the directory</li>
+                    <li>Create or assign a signature template</li>
+                    <li>Deploy — signatures are pushed to all users within minutes</li>
+                  </ol>
+                  <p className="mt-2">Total setup time per client: 5-10 minutes.</p>
+                </div>
+              </details>
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer p-4 hover:bg-muted/50 transition-colors">
+                  <span className="font-medium text-sm">I already have a Siggly account. Can I convert it to an MSP partner account?</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="px-4 pb-4 text-sm text-muted-foreground">
+                  <p>Yes! If you&apos;re logged in, you&apos;ll see a checkbox above the application form to convert your existing organization. All your templates, team members, and settings are preserved. Your org is simply upgraded to an MSP partner account with multi-client capabilities.</p>
+                </div>
+              </details>
             </div>
           </div>
         </div>

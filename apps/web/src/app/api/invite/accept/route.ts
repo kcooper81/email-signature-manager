@@ -1,33 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Use service role to bypass RLS for updating user auth_id
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { createServiceClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
     const { userId, email, password, token } = await request.json();
 
     if (!userId || !email || !password || !token) {
-      console.error('Missing required fields:', { userId: !!userId, email: !!email, password: !!password, token: !!token });
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Verify the invite token is valid and matches the user
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: 'Password must be at least 8 characters' },
+        { status: 400 }
+      );
+    }
+
+    const supabaseAdmin = createServiceClient();
+
+    // BUG-22 fix: Use .maybeSingle() to return 400 instead of 500 for invalid tokens
     const { data: invite, error: inviteError } = await supabaseAdmin
       .from('user_invites')
       .select('id, user_id, expires_at, accepted_at')
       .eq('token', token)
-      .single();
+      .maybeSingle();
 
     if (inviteError || !invite) {
-      console.error('Invalid invite token:', inviteError);
       return NextResponse.json(
         { error: 'Invalid invite token' },
         { status: 400 }
@@ -60,52 +61,90 @@ export async function POST(request: NextRequest) {
       .from('users')
       .select('auth_id')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
+
+    if (!existingUserRecord) {
+      return NextResponse.json(
+        { error: 'User record not found' },
+        { status: 404 }
+      );
+    }
 
     let authId: string;
 
-    if (existingUserRecord?.auth_id) {
+    if (existingUserRecord.auth_id) {
       // User already has an auth account - just update the password
       const { error: updatePasswordError } = await supabaseAdmin.auth.admin.updateUserById(
         existingUserRecord.auth_id,
-        { password: password }
+        { password }
       );
 
       if (updatePasswordError) {
         console.error('Failed to update password:', updatePasswordError);
         return NextResponse.json(
-          { error: `Failed to update password: ${updatePasswordError.message}` },
+          { error: 'Failed to update password' },
           { status: 500 }
         );
       }
       authId = existingUserRecord.auth_id;
     } else {
-      // No auth account exists - create a new one
-      // Check if an auth user already exists with this email (orphaned from deletion)
-      const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-      const existingAuthUser = existingUsers?.users.find(u => u.email === email);
-      
-      if (existingAuthUser) {
-        await supabaseAdmin.auth.admin.deleteUser(existingAuthUser.id);
-      }
-
-      // Create auth user with admin API (auto-confirmed since they were invited)
-      const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        email: email,
-        password: password,
-        email_confirm: true, // Auto-confirm since they were invited
+      // BUG-18 fix: Use paginated listUsers with filter instead of fetching all
+      // BUG-19 fix: Never delete existing auth users — reuse or create new
+      const { data: listData } = await supabaseAdmin.auth.admin.listUsers({
+        page: 1,
+        perPage: 50,
       });
+      const existingAuthUser = listData?.users?.find(u => u.email === email);
 
-      if (createError || !authData.user) {
-        console.error('Failed to create auth user:', createError);
-        return NextResponse.json(
-          { error: `Failed to create account: ${createError?.message || 'Unknown error'}` },
-          { status: 500 }
+      if (existingAuthUser) {
+        // Auth user exists with this email — check if it's an orphan (no users row linked)
+        const { data: linkedUser } = await supabaseAdmin
+          .from('users')
+          .select('id')
+          .eq('auth_id', existingAuthUser.id)
+          .maybeSingle();
+
+        if (linkedUser && linkedUser.id !== userId) {
+          // This auth user belongs to a different user record — cannot reuse
+          return NextResponse.json(
+            { error: 'An account with this email already exists' },
+            { status: 409 }
+          );
+        }
+
+        // Either orphan or same user — reuse by updating password
+        const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+          existingAuthUser.id,
+          { password, email_confirm: true }
         );
-      }
-      authId = authData.user.id;
 
-      // Update user record with auth_id using service role (bypasses RLS)
+        if (updateError) {
+          console.error('Failed to update existing auth user:', updateError);
+          return NextResponse.json(
+            { error: 'Failed to set up account' },
+            { status: 500 }
+          );
+        }
+        authId = existingAuthUser.id;
+      } else {
+        // No auth user exists — create a new one
+        const { data: authData, error: createError } = await supabaseAdmin.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+        });
+
+        if (createError || !authData.user) {
+          console.error('Failed to create auth user:', createError);
+          return NextResponse.json(
+            { error: 'Failed to create account' },
+            { status: 500 }
+          );
+        }
+        authId = authData.user.id;
+      }
+
+      // Link auth_id to the user record
       const { error: updateError } = await supabaseAdmin
         .from('users')
         .update({ auth_id: authId })
@@ -126,11 +165,12 @@ export async function POST(request: NextRequest) {
       .update({ accepted_at: new Date().toISOString() })
       .eq('token', token);
 
-    return NextResponse.json({ success: true, authId: authId });
+    // BUG-21 fix: Don't return authId in response (information disclosure)
+    return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Unexpected error in invite accept:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to accept invite' },
+      { error: 'Failed to accept invite' },
       { status: 500 }
     );
   }

@@ -1,17 +1,17 @@
-import { createClient } from '@/lib/supabase/server';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
-
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { createUserWithOrganization } from '@/lib/auth/create-user-org';
 
 export async function POST(request: NextRequest) {
   try {
     const { firstName, lastName, organizationName } = await request.json();
 
-    if (!firstName || !lastName || !organizationName) {
+    // BUG-16: Validate input length and content
+    const trimmedFirst = (firstName || '').trim().substring(0, 100);
+    const trimmedLast = (lastName || '').trim().substring(0, 100);
+    const trimmedOrg = (organizationName || '').trim().substring(0, 200);
+
+    if (!trimmedFirst || !trimmedLast || !trimmedOrg) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -28,6 +28,8 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    const supabaseAdmin = createServiceClient();
 
     // Check if user already has a profile by auth_id
     const { data: existingUser } = await supabaseAdmin
@@ -48,20 +50,19 @@ export async function POST(request: NextRequest) {
     if (user.email) {
       const { data: emailMatch } = await supabaseAdmin
         .from('users')
-        .select('id, organization_id, auth_id')
+        .select('id, organization_id, auth_id, role')
         .eq('email', user.email)
         .is('auth_id', null)
         .maybeSingle();
 
       if (emailMatch) {
-        // Link auth to existing user record
+        // BUG-15 fix: Preserve existing role — don't escalate member to owner
         const { error: linkError } = await supabaseAdmin
           .from('users')
           .update({
             auth_id: user.id,
-            first_name: firstName,
-            last_name: lastName,
-            role: 'owner',
+            first_name: trimmedFirst,
+            last_name: trimmedLast,
             updated_at: new Date().toISOString(),
           })
           .eq('id', emailMatch.id);
@@ -78,98 +79,28 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create organization using service role (bypasses RLS)
-    // Generate slug from organization name
-    let baseSlug = organizationName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-      .substring(0, 50);
-    
-    // Ensure slug is unique by appending random string if needed
-    let slug = baseSlug;
-    let slugExists = true;
-    let attempts = 0;
-    
-    while (slugExists && attempts < 5) {
-      const { data: existingOrg } = await supabaseAdmin
-        .from('organizations')
-        .select('id')
-        .eq('slug', slug)
-        .maybeSingle();
-      
-      if (!existingOrg) {
-        slugExists = false;
-      } else {
-        // Append random 4-digit number
-        slug = `${baseSlug}-${Math.floor(1000 + Math.random() * 9000)}`;
-        attempts++;
-      }
-    }
-    
-    const { data: newOrg, error: orgError } = await supabaseAdmin
-      .from('organizations')
-      .insert({
-        name: organizationName,
-        slug: slug,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .select('id')
-      .single();
+    // BUG-17 fix: Use shared utility with proper cleanup on failure
+    const result = await createUserWithOrganization({
+      supabaseAdmin,
+      authId: user.id,
+      email: user.email!,
+      firstName: trimmedFirst,
+      lastName: trimmedLast,
+      organizationName: trimmedOrg,
+    });
 
-    if (orgError || !newOrg) {
-      console.error('Failed to create organization:', orgError);
+    if (!result.success) {
       return NextResponse.json(
-        { error: 'Failed to create organization' },
+        { error: result.error },
         { status: 500 }
       );
-    }
-
-    // Create user record using service role (bypasses RLS)
-    const { error: userError } = await supabaseAdmin
-      .from('users')
-      .insert({
-        auth_id: user.id,
-        email: user.email!,
-        first_name: firstName,
-        last_name: lastName,
-        role: 'owner',
-        organization_id: newOrg.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-    if (userError) {
-      console.error('Failed to create user record:', userError);
-      return NextResponse.json(
-        { error: 'Failed to create user profile' },
-        { status: 500 }
-      );
-    }
-
-    // Create default free subscription for the organization
-    const { error: subError } = await supabaseAdmin
-      .from('subscriptions')
-      .insert({
-        organization_id: newOrg.id,
-        plan: 'free',
-        status: 'active',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-
-    if (subError) {
-      console.error('Failed to create subscription:', subError);
-      // Don't fail the whole request if subscription creation fails
-      // User can still use the app, just might have issues with billing features
     }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Unexpected error in setup-profile:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to complete setup' },
+      { error: 'Failed to complete setup' },
       { status: 500 }
     );
   }
