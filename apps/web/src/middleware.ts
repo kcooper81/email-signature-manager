@@ -12,7 +12,7 @@ const publicRoutes = [
   '/email-signature-templates', '/email-signatures', '/guides',
   '/glossary', '/migrate-from', '/examples', '/case-studies',
   '/checklists', '/compliance', '/careers', '/security',
-  '/support', '/resources',
+  '/support', '/resources', '/media-assets',
 ];
 
 // Routes that authenticated users should NOT see (redirect to dashboard)
