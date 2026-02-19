@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { sendTeamInviteEmail } from '@/lib/email/resend';
 
 // GET /api/msp/clients - List all clients for the MSP organization
@@ -200,7 +200,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Create subscriptions record (free plan by default)
-    const { error: subscriptionError } = await supabase
+    // Use service client because get_user_org_id() returns the MSP's org ID,
+    // not the new client's org ID, so RLS would block this INSERT
+    const supabaseAdmin = createServiceClient();
+    const { error: subscriptionError } = await supabaseAdmin
       .from('subscriptions')
       .insert({
         organization_id: newClient.id,

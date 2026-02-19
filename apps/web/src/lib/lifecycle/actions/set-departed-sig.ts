@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
-import { setGmailSignature } from '@/lib/google/gmail';
+import { setGmailSignatureWithClient } from '@/lib/google/gmail';
+import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { resolveDisclaimersForUser } from '@/lib/disclaimer-engine';
 import { logAudit } from '@/lib/audit/logger';
 import type { WorkflowRunContext } from '../workflow-runner';
@@ -60,21 +61,15 @@ export async function setDepartedSignature(context: WorkflowRunContext, config: 
   }
 
   // Deploy via Gmail if Google connection exists
-  const { data: connection } = await supabase
-    .from('provider_connections')
-    .select('*')
-    .eq('organization_id', context.organizationId)
-    .eq('provider', 'google')
-    .eq('is_active', true)
-    .single();
-
-  if (connection) {
-    await setGmailSignature(
-      connection.access_token,
-      connection.refresh_token,
-      userData.email,
-      finalHtml
-    );
+  try {
+    const googleAuth = await createOrgGoogleClient(context.organizationId);
+    await setGmailSignatureWithClient(googleAuth, userData.email, finalHtml);
+  } catch (err: any) {
+    // Skip silently if Google isn't connected (org may use Microsoft 365)
+    if (err.message === 'Google Workspace not connected') {
+      return;
+    }
+    console.error(`Google deployment failed for departed user ${userData.email}:`, err.message);
   }
 
   await logAudit({

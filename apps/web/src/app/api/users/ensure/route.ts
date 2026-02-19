@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logException } from '@/lib/error-logging';
 
 export async function POST() {
@@ -55,7 +55,10 @@ export async function POST() {
       organizationId = newOrg.id;
 
       // Create free subscription for the organization
-      const { error: subError } = await supabase
+      // Use service client because the user row doesn't exist yet,
+      // so get_user_org_id() returns null and RLS would block this INSERT
+      const supabaseAdmin = createServiceClient();
+      const { error: subError } = await supabaseAdmin
         .from('subscriptions')
         .insert({
           organization_id: organizationId,
