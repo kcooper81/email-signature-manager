@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { setGmailSignatureWithClient } from '@/lib/google/gmail';
 import { createOrgGoogleClient } from '@/lib/google/oauth';
+import { setSignatureWithServiceAccount } from '@/lib/google/service-account';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { logException } from '@/lib/error-logging';
 import { getTemplateForUserWithFallback } from '@/lib/signature-rules';
@@ -72,15 +73,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create Google client with automatic token refresh
-    let googleAuth;
+    // Create Google client — supports both OAuth and Marketplace (service account) auth
+    let googleAuth: any = null;
+    let useServiceAccount = false;
     try {
       googleAuth = await createOrgGoogleClient(organizationId);
     } catch (err: any) {
-      return NextResponse.json(
-        { error: err.message || 'Google Workspace not connected' },
-        { status: 400 }
-      );
+      if (err.message === 'MARKETPLACE_AUTH') {
+        // Marketplace connection — use service account for deployment
+        useServiceAccount = true;
+      } else {
+        return NextResponse.json(
+          { error: err.message || 'Google Workspace not connected' },
+          { status: 400 }
+        );
+      }
     }
 
     // Get the template - MUST be in user's organization (no fallback for security)
@@ -318,12 +325,16 @@ export async function POST(request: NextRequest) {
           console.error(`Disclaimer resolution failed for ${targetUser.email}:`, disclaimerErr);
         }
 
-        // Deploy to Gmail
-        await setGmailSignatureWithClient(
-          googleAuth,
-          targetUser.email!,
-          finalHtml
-        );
+        // Deploy to Gmail — use service account for Marketplace, OAuth client otherwise
+        if (useServiceAccount) {
+          await setSignatureWithServiceAccount(targetUser.email!, finalHtml);
+        } else {
+          await setGmailSignatureWithClient(
+            googleAuth,
+            targetUser.email!,
+            finalHtml
+          );
+        }
 
         successCount++;
       } catch (err: any) {

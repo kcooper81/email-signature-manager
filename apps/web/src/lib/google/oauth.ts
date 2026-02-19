@@ -45,6 +45,7 @@ export function createAuthenticatedClient(accessToken: string, refreshToken: str
 /**
  * Creates an authenticated Google OAuth2 client for an organization,
  * automatically refreshing and persisting tokens when they expire.
+ * Also returns the connection auth_type so callers can use the service account path.
  */
 export async function createOrgGoogleClient(organizationId: string) {
   const supabase = createSupabaseClient(
@@ -55,7 +56,7 @@ export async function createOrgGoogleClient(organizationId: string) {
 
   const { data: connection } = await supabase
     .from('provider_connections')
-    .select('access_token, refresh_token, token_expires_at')
+    .select('access_token, refresh_token, token_expires_at, auth_type, admin_email, domain')
     .eq('provider', 'google')
     .eq('is_active', true)
     .eq('organization_id', organizationId)
@@ -63,6 +64,15 @@ export async function createOrgGoogleClient(organizationId: string) {
 
   if (!connection) {
     throw new Error('Google Workspace not connected');
+  }
+
+  // Marketplace connections use service account — no OAuth tokens needed
+  if (connection.auth_type === 'marketplace') {
+    const error = new Error('MARKETPLACE_AUTH') as any;
+    error.authType = 'marketplace';
+    error.adminEmail = connection.admin_email;
+    error.domain = connection.domain;
+    throw error;
   }
 
   if (!connection.refresh_token) {
