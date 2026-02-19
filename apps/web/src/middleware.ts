@@ -18,6 +18,11 @@ const publicRoutes = [
 // Routes that authenticated users should NOT see (redirect to dashboard)
 const authRoutes = ['/login', '/signup', '/forgot-password'];
 
+// BUG-29 fix: Routes that should be accessible regardless of auth state
+// reset-password needs a session from callback but should show error if expired
+// setup-profile needs auth but handles its own redirect if not authenticated
+const flexRoutes = ['/reset-password', '/setup-profile'];
+
 // Reserved subdomains that cannot be used by MSPs
 const RESERVED_SUBDOMAINS = ['www', 'app', 'api', 'admin', 'dashboard', 'help', 'support', 'docs', 'blog', 'mail', 'status'];
 
@@ -64,14 +69,13 @@ export async function middleware(request: NextRequest) {
   const subdomain = getSubdomain(hostname);
 
   if (subdomain) {
-    // Look up the organization by subdomain
-    // We use a lightweight Supabase client here (no auth needed for this lookup)
+    // BUG-31 fix: Use service role key for subdomain lookup to bypass RLS
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (supabaseUrl && supabaseAnonKey) {
+    if (supabaseUrl && supabaseServiceKey) {
       try {
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
         const { data: org } = await supabase
           .from('organizations')
@@ -80,11 +84,13 @@ export async function middleware(request: NextRequest) {
           .single();
 
         if (org) {
-          // Set headers for downstream components to read branding
+          // BUG-30 fix: Sanitize header values to prevent header injection
+          const safeName = (org.name || '').replace(/[\r\n]/g, '');
+          const safeType = (org.organization_type || 'standard').replace(/[\r\n]/g, '');
           response.headers.set('x-msp-org-id', org.id);
-          response.headers.set('x-msp-org-name', org.name);
+          response.headers.set('x-msp-org-name', safeName);
           response.headers.set('x-msp-branding', JSON.stringify(org.branding || {}));
-          response.headers.set('x-msp-org-type', org.organization_type || 'standard');
+          response.headers.set('x-msp-org-type', safeType);
         }
       } catch {
         // Subdomain lookup failed, continue without branding
@@ -98,15 +104,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // Auth gating: redirect unauthenticated users to login for protected routes
-  // (skip public routes, auth routes, static files, and API routes)
-  if (!user && !isPublicRoute(pathname) && !isAuthRoute(pathname) && !pathname.startsWith('/api/')) {
+  // (skip public routes, auth routes, flex routes, static files, and API routes)
+  const isFlexRoute = flexRoutes.some(route => pathname === route);
+  if (!user && !isPublicRoute(pathname) && !isAuthRoute(pathname) && !isFlexRoute && !pathname.startsWith('/api/')) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
-
-  // Reset-password requires an active session (from the email link callback)
-  // Don't redirect away from it even though it's technically an auth-style page
 
   return response;
 }

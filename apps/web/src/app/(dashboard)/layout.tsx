@@ -25,45 +25,50 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
-  // Check user role and super admin status
-  const { data: userData, error: userError } = await supabase
+  // BUG-02 fix: Check MFA assurance level — if user has TOTP enrolled but
+  // session is only AAL1, force them back to login to complete MFA
+  try {
+    const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aalData && aalData.nextLevel === 'aal2' && aalData.currentLevel === 'aal1') {
+      // User has MFA enrolled but hasn't verified — sign them out and force re-login
+      await supabase.auth.signOut();
+      redirect('/login?error=mfa_required');
+    }
+  } catch {
+    // MFA check failed — continue (MFA may not be set up)
+  }
+
+  // BUG-26 fix: Single query to get all needed user fields
+  const { data: userData } = await supabase
     .from('users')
-    .select('is_super_admin, email, role')
+    .select('is_super_admin, email, role, organization_id')
     .eq('auth_id', user.id)
-    .single();
+    .maybeSingle();
 
   // If user not found in users table, redirect to setup
   if (!userData) {
     redirect('/setup-profile');
   }
-  
-  // If user is a member (not owner/admin), redirect to employee portal
-  if (userData.role === 'member' || (userData.role !== 'owner' && userData.role !== 'admin')) {
+
+  // BUG-27 fix: Explicit allowlist for dashboard access roles
+  const dashboardRoles = ['owner', 'admin'];
+  if (!dashboardRoles.includes(userData.role)) {
     redirect('/my-profile');
   }
 
   const isSuperAdmin = userData?.is_super_admin === true;
 
-  // Check if org is suspended (non-admins get redirected)
-  // Note: is_suspended column must be added to organizations table for this to work
-  if (!isSuperAdmin) {
+  // BUG-28 fix: Actually fetch is_suspended from organizations table
+  if (!isSuperAdmin && userData.organization_id) {
     try {
-      const { data: orgData } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('auth_id', user.id)
-        .single();
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id, is_suspended')
+        .eq('id', userData.organization_id)
+        .maybeSingle();
 
-      if (orgData?.organization_id) {
-        const { data: org } = await supabase
-          .from('organizations')
-          .select('id')
-          .eq('id', orgData.organization_id)
-          .single();
-
-        if (org && (org as any).is_suspended) {
-          redirect('/suspended');
-        }
+      if (org?.is_suspended) {
+        redirect('/suspended');
       }
     } catch {
       // is_suspended column may not exist yet — skip check

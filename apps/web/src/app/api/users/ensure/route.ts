@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { logException } from '@/lib/error-logging';
+import { createUserWithOrganization } from '@/lib/auth/create-user-org';
 
 export async function POST() {
   try {
@@ -11,96 +12,128 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // BUG-33 fix: Use service client for all DB operations to bypass RLS
+    const supabaseAdmin = createServiceClient();
+
     // Check if user record already exists
-    const { data: existingUser } = await supabase
+    const { data: existingUser } = await supabaseAdmin
       .from('users')
-      .select('id, organization_id')
+      .select('id, organization_id, first_name, last_name')
       .eq('auth_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (existingUser?.organization_id) {
       // User and organization already exist
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         userId: existingUser.id,
         organizationId: existingUser.organization_id,
-        created: false 
+        created: false,
       });
     }
 
-    // Extract user metadata from auth
+    // BUG-32 fix: Check for existing email match (stub record from GWS sync)
+    // before creating a new org, to prevent race condition duplicates
+    if (user.email && !existingUser) {
+      const { data: emailMatch } = await supabaseAdmin
+        .from('users')
+        .select('id, organization_id, auth_id')
+        .eq('email', user.email)
+        .is('auth_id', null)
+        .maybeSingle();
+
+      if (emailMatch) {
+        // Link auth to existing stub record
+        await supabaseAdmin
+          .from('users')
+          .update({
+            auth_id: user.id,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', emailMatch.id);
+
+        return NextResponse.json({
+          success: true,
+          userId: emailMatch.id,
+          organizationId: emailMatch.organization_id,
+          created: false,
+        });
+      }
+    }
+
+    // If user exists but has no org, or user doesn't exist at all — create org + user
     const metadata = user.user_metadata || {};
     const email = user.email || '';
     const firstName = metadata.first_name || metadata.given_name || email.split('@')[0] || '';
     const lastName = metadata.last_name || metadata.family_name || '';
     const organizationName = metadata.organization_name || `${firstName}'s Organization`;
 
-    let organizationId = existingUser?.organization_id;
+    // If user record exists without an org (shouldn't happen, but safety net)
+    if (existingUser && !existingUser.organization_id) {
+      const result = await createUserWithOrganization({
+        supabaseAdmin,
+        authId: user.id,
+        email,
+        firstName: existingUser.first_name || firstName,
+        lastName: existingUser.last_name || lastName,
+        organizationName,
+      });
 
-    // Create organization if needed
-    if (!organizationId) {
-      const { data: newOrg, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: organizationName,
-        })
-        .select('id')
-        .single();
-
-      if (orgError) {
-        console.error('Failed to create organization:', orgError);
-        return NextResponse.json({ error: 'Failed to create organization' }, { status: 500 });
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 500 });
       }
 
-      organizationId = newOrg.id;
+      // BUG-34 fix: Only update organization_id, don't overwrite existing name
+      await supabaseAdmin
+        .from('users')
+        .update({ organization_id: result.organizationId })
+        .eq('id', existingUser.id);
 
-      // Create free subscription for the organization
-      // Use service client because the user row doesn't exist yet,
-      // so get_user_org_id() returns null and RLS would block this INSERT
-      const supabaseAdmin = createServiceClient();
-      const { error: subError } = await supabaseAdmin
-        .from('subscriptions')
-        .insert({
-          organization_id: organizationId,
-          plan: 'free',
-          status: 'active',
-        });
+      // Clean up the duplicate user record created by createUserWithOrganization
+      await supabaseAdmin
+        .from('users')
+        .delete()
+        .eq('auth_id', user.id)
+        .neq('id', existingUser.id);
 
-      if (subError) {
-        console.error('Failed to create subscription:', subError);
-        // Continue anyway - subscription can be created later
-      }
+      return NextResponse.json({
+        success: true,
+        userId: existingUser.id,
+        organizationId: result.organizationId,
+        created: true,
+      });
     }
 
-    // Create or update user record
-    const { data: newUser, error: userError } = await supabase
+    // No user record at all — create everything
+    const result = await createUserWithOrganization({
+      supabaseAdmin,
+      authId: user.id,
+      email,
+      firstName,
+      lastName,
+      organizationName,
+    });
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
+
+    // Fetch the created user to return its ID
+    const { data: newUser } = await supabaseAdmin
       .from('users')
-      .upsert({
-        auth_id: user.id,
-        email: email,
-        first_name: firstName,
-        last_name: lastName,
-        organization_id: organizationId,
-      }, {
-        onConflict: 'auth_id',
-      })
       .select('id')
-      .single();
+      .eq('auth_id', user.id)
+      .maybeSingle();
 
-    if (userError) {
-      console.error('Failed to create user:', userError);
-      return NextResponse.json({ error: 'Failed to create user record' }, { status: 500 });
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      userId: newUser.id,
-      organizationId: organizationId,
-      created: true 
+    return NextResponse.json({
+      success: true,
+      userId: newUser?.id,
+      organizationId: result.organizationId,
+      created: true,
     });
   } catch (error: any) {
     console.error('Ensure user error:', error);
-    
+
     await logException(error, {
       route: '/api/users/ensure',
       method: 'POST',
@@ -108,7 +141,7 @@ export async function POST() {
     });
 
     return NextResponse.json(
-      { error: error.message || 'Failed to ensure user record' },
+      { error: 'Failed to ensure user record' },
       { status: 500 }
     );
   }

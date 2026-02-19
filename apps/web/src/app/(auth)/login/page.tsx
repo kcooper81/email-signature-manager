@@ -18,10 +18,18 @@ import {
 import { Mail, Loader2, Chrome, CheckCircle, ArrowLeft, Shield } from 'lucide-react';
 import { Suspense } from 'react';
 
+// BUG-01 fix: Validate redirect URL to prevent open redirects
+function sanitizeNextUrl(url: string | null): string {
+  if (!url || !url.startsWith('/') || url.startsWith('//') || url.includes('://')) {
+    return '/dashboard';
+  }
+  return url;
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextUrl = searchParams.get('next') || '/dashboard';
+  const nextUrl = sanitizeNextUrl(searchParams.get('next'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -157,15 +165,22 @@ function LoginForm() {
 
     try {
       const supabase = createClient();
+      // BUG-04 fix: Use shouldCreateUser: false to prevent ghost accounts
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          shouldCreateUser: false,
         },
       });
 
       if (error) {
-        setError(error.message);
+        // Don't expose whether the email exists or not
+        if (error.message.includes('Signups not allowed') || error.status === 422) {
+          setMagicLinkSent(true);
+        } else {
+          setError(error.message);
+        }
         return;
       }
 
@@ -273,14 +288,14 @@ function LoginForm() {
           <Button
             variant="ghost"
             className="w-full"
-            onClick={() => {
+            onClick={async () => {
+              // BUG-03 fix: Await signOut to ensure session is cleared
+              const supabase = createClient();
+              await supabase.auth.signOut();
               setMfaRequired(false);
               setMfaCode('');
               setMfaFactorId(null);
               setError(null);
-              // Sign out the partial session
-              const supabase = createClient();
-              supabase.auth.signOut();
             }}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
