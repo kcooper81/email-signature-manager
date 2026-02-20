@@ -3,7 +3,7 @@
  * Automatically logs all important actions for compliance
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 export type AuditAction =
   | 'create'
@@ -44,7 +44,7 @@ interface AuditLogParams {
  */
 export async function logAudit(params: AuditLogParams): Promise<void> {
   try {
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     await supabase.from('audit_logs').insert({
       organization_id: params.organizationId,

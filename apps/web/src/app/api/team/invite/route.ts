@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { sendTeamInviteEmail } from '@/lib/email/resend';
 
 export async function POST(request: NextRequest) {
@@ -86,8 +86,9 @@ export async function POST(request: NextRequest) {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
 
-      // Store invite in database
-      const { error: insertError } = await supabase
+      // Store invite in database — use service client for reliability
+      const serviceClient = createServiceClient();
+      const { error: insertError } = await serviceClient
         .from('user_invites')
         .insert({
           user_id: inviteUser.id,

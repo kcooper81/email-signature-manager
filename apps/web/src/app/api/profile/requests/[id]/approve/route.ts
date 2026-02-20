@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, planDenied } from '@/lib/billing/plan-guard';
 
 export const dynamic = 'force-dynamic';
@@ -32,18 +32,25 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     if (!profileRequest) return NextResponse.json({ error: 'Request not found' }, { status: 404 });
 
-    // Apply changes
+    // Apply changes — use service client for reliability
+    const serviceClient = createServiceClient();
     const updates: Record<string, any> = {};
     for (const fc of (profileRequest.field_changes || [])) {
       updates[fc.field] = fc.newValue;
     }
-    await supabase.from('users').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', profileRequest.user_id);
+    const { error: applyErr } = await serviceClient.from('users').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', profileRequest.user_id).eq('organization_id', userData.organization_id);
+    if (applyErr) {
+      return NextResponse.json({ error: 'Failed to apply profile changes' }, { status: 500 });
+    }
 
     // Mark as approved
-    await supabase
+    const { error: approveErr } = await serviceClient
       .from('user_profile_requests')
       .update({ status: 'approved', reviewed_by: userData.id, reviewed_at: new Date().toISOString() })
       .eq('id', id);
+    if (approveErr) {
+      console.error('Failed to mark request as approved:', approveErr);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

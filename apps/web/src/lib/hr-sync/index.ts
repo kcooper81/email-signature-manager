@@ -3,7 +3,7 @@
  * Coordinates syncing user data from HR providers (BambooHR, Gusto, Rippling)
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { mapFields } from './field-mapper';
 import { detectChanges } from './change-detector';
 import { calculateProfileCompleteness } from './profile-completeness';
@@ -21,7 +21,7 @@ export async function runSync(
   syncConfigId: string,
   organizationId: string
 ): Promise<SyncResult> {
-  const supabase = createClient();
+  const supabase = createServiceClient();
   const result: SyncResult = {
     totalRecords: 0,
     created: 0,

@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { WorkflowRunContext } from '../workflow-runner';
 
 export async function deactivateUser(context: WorkflowRunContext, _config: Record<string, any>) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   await supabase
     .from('users')

@@ -33,6 +33,7 @@ interface TeamMember {
   id: string;
   email: string;
   auth_id: string | null;
+  organization_id: string;
   first_name: string | null;
   last_name: string | null;
   title: string | null;
@@ -537,7 +538,8 @@ export default function TeamMembersPage() {
       const { error } = await supabase
         .from('users')
         .update(updateData)
-        .eq('id', editingMember.id);
+        .eq('id', editingMember.id)
+        .eq('organization_id', editingMember.organization_id);
 
       if (error) throw error;
 
@@ -566,7 +568,8 @@ export default function TeamMembersPage() {
       const { error } = await supabase
         .from('users')
         .delete()
-        .eq('id', editingMember.id);
+        .eq('id', editingMember.id)
+        .eq('organization_id', editingMember.organization_id);
 
       if (error) throw error;
 

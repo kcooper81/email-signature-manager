@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { runSync } from '@/lib/hr-sync';
 
 export const dynamic = 'force-dynamic';
@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
+    // Use service client — cron has no user session
+    const supabase = createServiceClient();
 
     // Get all active sync configs that are due
     const { data: configs } = await supabase

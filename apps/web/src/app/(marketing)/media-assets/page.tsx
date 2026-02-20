@@ -26,7 +26,9 @@ const assets: Asset[] = [
   { name: 'X (Twitter) Banner', file: '/x-banner.png', size: '1500×500', platform: 'X.com', category: 'banner' },
   
   // Icons & Logos
-  { name: 'Siggly Logo', file: '/siggly-logo.png', size: 'Vector', platform: 'All Platforms', category: 'icon' },
+  { name: 'Siggly Logo (Original)', file: '/siggly-logo.png', size: '512×512', platform: 'All Platforms', category: 'icon' },
+  { name: 'Siggly Logo (Dark)', file: '/siggly-logo-dark.png', size: '512×512', platform: 'White Backgrounds', category: 'icon' },
+  { name: 'Siggly Logo (Light)', file: '/siggly-logo-light.png', size: '512×512', platform: 'Dark Backgrounds', category: 'icon' },
 ];
 
 function AssetCard({ asset }: { asset: Asset }) {

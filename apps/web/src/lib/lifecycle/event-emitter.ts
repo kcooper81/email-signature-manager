@@ -3,7 +3,7 @@
  * Creates lifecycle events from various sources (HR sync, directory sync, invites, manual)
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 
 export type LifecycleEventType = 'user_joined' | 'user_left' | 'user_moved' | 'user_updated' | 'invite_accepted';
 export type LifecycleEventSource = 'hr_sync' | 'google_sync' | 'microsoft_sync' | 'manual' | 'invite';
@@ -18,7 +18,7 @@ export interface EmitEventParams {
 
 export async function emitLifecycleEvent(params: EmitEventParams): Promise<string | null> {
   try {
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     const { data: event, error } = await supabase
       .from('lifecycle_events')

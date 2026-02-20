@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { WorkflowRunContext } from '../workflow-runner';
 
 export async function archiveData(context: WorkflowRunContext, _config: Record<string, any>) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   // Remove signature assignments
   await supabase

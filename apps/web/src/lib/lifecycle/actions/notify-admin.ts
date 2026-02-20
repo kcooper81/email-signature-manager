@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { logAudit } from '@/lib/audit/logger';
 import type { WorkflowRunContext } from '../workflow-runner';
 
 export async function notifyAdmin(context: WorkflowRunContext, config: Record<string, any>) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
   const { message, notificationType } = config;
 
   // Get org admins

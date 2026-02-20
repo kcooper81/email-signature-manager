@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, checkLimit, planDenied, limitDenied } from '@/lib/billing/plan-guard';
 import { processEvent, type WorkflowRunContext } from '@/lib/lifecycle/workflow-runner';
 
@@ -45,34 +45,49 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       }
     }
 
+    // Use service client for writes — auth already verified above
+    const serviceClient = createServiceClient();
+
     // Apply the change
     if (change.change_type === 'create') {
       const data: Record<string, any> = { organization_id: userData.organization_id, email: change.user_email, source: 'hr_sync' };
       for (const fc of (change.field_changes || [])) {
         data[fc.field] = fc.newValue;
       }
-      await supabase.from('users').insert(data);
+      const { error: insertErr } = await serviceClient.from('users').insert(data);
+      if (insertErr) {
+        return NextResponse.json({ error: 'Failed to create user', details: insertErr.message }, { status: 500 });
+      }
     } else if (change.change_type === 'update' && change.user_id) {
       const updates: Record<string, any> = {};
       for (const fc of (change.field_changes || [])) {
         updates[fc.field] = fc.newValue;
       }
-      await supabase.from('users').update(updates).eq('id', change.user_id);
+      const { error: updateErr } = await serviceClient.from('users').update(updates).eq('id', change.user_id).eq('organization_id', userData.organization_id);
+      if (updateErr) {
+        return NextResponse.json({ error: 'Failed to update user', details: updateErr.message }, { status: 500 });
+      }
     } else if (change.change_type === 'deactivate' && change.user_id) {
-      await supabase.from('users').update({ is_active: false }).eq('id', change.user_id);
+      const { error: deactivateErr } = await serviceClient.from('users').update({ is_active: false }).eq('id', change.user_id).eq('organization_id', userData.organization_id);
+      if (deactivateErr) {
+        return NextResponse.json({ error: 'Failed to deactivate user', details: deactivateErr.message }, { status: 500 });
+      }
     }
 
     // Mark as approved
-    await supabase
+    const { error: approveErr } = await serviceClient
       .from('sync_change_queue')
       .update({ status: 'approved', reviewed_by: userData.id, reviewed_at: new Date().toISOString() })
       .eq('id', id);
+    if (approveErr) {
+      console.error('Failed to mark change as approved:', approveErr);
+    }
 
     // Fire lifecycle event so workflows trigger
     const eventTypeMap: Record<string, string> = {
-      create: 'user_created',
+      create: 'user_joined',
       update: 'user_updated',
-      deactivate: 'user_offboarded',
+      deactivate: 'user_left',
     };
 
     const eventType = eventTypeMap[change.change_type];
@@ -81,7 +96,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       let targetUserId = change.user_id;
       if (change.change_type === 'create' && !targetUserId) {
         // For new users, look up the just-created user by email
-        const { data: newUser } = await supabase
+        const { data: newUser } = await serviceClient
           .from('users')
           .select('id, department')
           .eq('email', change.user_email)
@@ -92,13 +107,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
       if (targetUserId) {
         // Get user department for workflow filtering
-        const { data: targetUserData } = await supabase
+        const { data: targetUserData } = await serviceClient
           .from('users')
           .select('department')
           .eq('id', targetUserId)
           .single();
 
-        const { data: lifecycleEvent } = await supabase
+        const { data: lifecycleEvent } = await serviceClient
           .from('lifecycle_events')
           .insert({
             organization_id: userData.organization_id,

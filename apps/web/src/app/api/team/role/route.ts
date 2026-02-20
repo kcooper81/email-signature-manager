@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -90,11 +90,13 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Update the user's role
-    const { error: updateError } = await supabase
+    // Update the user's role — use service client, scoped to org
+    const serviceClient = createServiceClient();
+    const { error: updateError } = await serviceClient
       .from('users')
       .update({ role, updated_at: new Date().toISOString() })
-      .eq('id', userId);
+      .eq('id', userId)
+      .eq('organization_id', currentUser.organization_id);
 
     if (updateError) {
       console.error('Failed to update role:', updateError);

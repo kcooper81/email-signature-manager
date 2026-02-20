@@ -1162,7 +1162,7 @@ export default function DeploymentsPage() {
                               </td>
                               <td className="p-3">
                                 {userHistory ? (
-                                  userHistory.status === 'success' ? (
+                                  userHistory.status === 'completed' ? (
                                     <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">
                                       <CheckCircle2 className="h-3 w-3" />
                                       Deployed

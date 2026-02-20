@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { setGmailSignatureWithClient } from '@/lib/google/gmail';
 import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { setSignatureWithServiceAccount } from '@/lib/google/service-account';
@@ -7,7 +7,7 @@ import { logAudit } from '@/lib/audit/logger';
 import type { WorkflowRunContext } from '../workflow-runner';
 
 export async function setDepartedSignature(context: WorkflowRunContext, config: Record<string, any>) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
   const { message } = config;
   const defaultMessage = 'This person is no longer with the organization.';
 

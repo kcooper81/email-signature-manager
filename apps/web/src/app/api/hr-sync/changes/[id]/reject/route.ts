@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, planDenied } from '@/lib/billing/plan-guard';
 
 export const dynamic = 'force-dynamic';
@@ -22,11 +22,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return planDenied('HR integrations', 'professional');
     }
 
-    await supabase
+    const serviceClient = createServiceClient();
+    const { error: rejectErr } = await serviceClient
       .from('sync_change_queue')
       .update({ status: 'rejected', reviewed_by: userData.id, reviewed_at: new Date().toISOString() })
       .eq('id', id)
       .eq('organization_id', userData.organization_id);
+
+    if (rejectErr) {
+      return NextResponse.json({ error: 'Failed to reject change', details: rejectErr.message }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

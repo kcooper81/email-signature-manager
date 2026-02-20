@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,20 +60,28 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
+    const serviceClient = createServiceClient();
+
     if (!settings?.allow_employee_self_manage) {
       // Create a profile request for admin approval
-      await supabase.from('user_profile_requests').insert({
+      const { error: requestErr } = await serviceClient.from('user_profile_requests').insert({
         organization_id: userData.organization_id,
         user_id: userData.id,
         field_changes: fieldChanges,
         status: 'pending',
         requires_approval: true,
       });
+      if (requestErr) {
+        return NextResponse.json({ error: 'Failed to submit profile change request' }, { status: 500 });
+      }
       return NextResponse.json({ success: true, pending: true, message: 'Changes submitted for admin approval' });
     }
 
     // Direct update
-    await supabase.from('users').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', userData.id);
+    const { error: updateErr } = await serviceClient.from('users').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', userData.id);
+    if (updateErr) {
+      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    }
     return NextResponse.json({ success: true, pending: false });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
