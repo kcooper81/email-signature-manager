@@ -3,7 +3,7 @@
  * Matches events to workflows and executes action sequences
  */
 
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import type { WorkflowAction } from '@/lib/db/schema';
 
 export interface WorkflowRunContext {
@@ -17,7 +17,7 @@ export interface WorkflowRunContext {
 }
 
 export async function processEvent(context: WorkflowRunContext): Promise<void> {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   // Plan check: skip if org doesn't have lifecycle access
   const { getOrgPlan, checkFeature } = await import('@/lib/billing/plan-guard');
@@ -87,10 +87,10 @@ export async function processEvent(context: WorkflowRunContext): Promise<void> {
 }
 
 async function executeWorkflow(workflow: any, context: WorkflowRunContext): Promise<void> {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   // Create run record
-  const { data: run } = await supabase
+  const { data: run, error: runError } = await supabase
     .from('lifecycle_workflow_runs')
     .insert({
       organization_id: context.organizationId,
@@ -102,7 +102,10 @@ async function executeWorkflow(workflow: any, context: WorkflowRunContext): Prom
     .select('id')
     .single();
 
-  if (!run) return;
+  if (runError || !run) {
+    console.error('Failed to create workflow run record:', runError);
+    return;
+  }
 
   const actions: WorkflowAction[] = workflow.actions || [];
   const actionResults: { action: string; status: string; error?: string }[] = [];
@@ -119,7 +122,7 @@ async function executeWorkflow(workflow: any, context: WorkflowRunContext): Prom
   }
 
   // Update run status
-  await supabase
+  const { error: updateErr } = await supabase
     .from('lifecycle_workflow_runs')
     .update({
       status: hasFailure ? (actionResults.some(r => r.status === 'completed') ? 'partial' : 'failed') : 'completed',
@@ -127,6 +130,9 @@ async function executeWorkflow(workflow: any, context: WorkflowRunContext): Prom
       completed_at: new Date().toISOString(),
     })
     .eq('id', run.id);
+  if (updateErr) {
+    console.error('Failed to update workflow run status:', updateErr);
+  }
 }
 
 async function executeAction(action: WorkflowAction, context: WorkflowRunContext): Promise<void> {
@@ -163,7 +169,7 @@ async function executeAction(action: WorkflowAction, context: WorkflowRunContext
     case 'webhook':
       // Enterprise-only: check plan before executing webhook
       const { getOrgPlan: getOrgPlanForWebhook, checkFeature: checkWebhookFeature } = await import('@/lib/billing/plan-guard');
-      const webhookSupabase = createClient();
+      const webhookSupabase = createServiceClient();
       const webhookOrgPlan = await getOrgPlanForWebhook(webhookSupabase, context.organizationId);
       if (!checkWebhookFeature(webhookOrgPlan, 'lifecycleWebhooks')) {
         throw new Error('Webhook actions require an Enterprise plan');

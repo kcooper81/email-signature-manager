@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, checkLimit, planDenied, limitDenied } from '@/lib/billing/plan-guard';
 
 export const dynamic = 'force-dynamic';
@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
       return limitDenied('Users', (userCount || 0) + createCount, orgPlan.plan.features.maxUsers);
     }
 
+    const serviceClient = createServiceClient();
     let approved = 0;
     let failed = 0;
 
@@ -52,19 +53,25 @@ export async function POST(request: NextRequest) {
 
         if (!change) { failed++; continue; }
 
+        let writeError = false;
         if (change.change_type === 'create') {
           const data: Record<string, any> = { organization_id: userData.organization_id, email: change.user_email, source: 'hr_sync' };
           for (const fc of (change.field_changes || [])) { data[fc.field] = fc.newValue; }
-          await supabase.from('users').insert(data);
+          const { error } = await serviceClient.from('users').insert(data);
+          if (error) { console.error('Bulk approve user insert failed:', error); writeError = true; }
         } else if (change.change_type === 'update' && change.user_id) {
           const updates: Record<string, any> = {};
           for (const fc of (change.field_changes || [])) { updates[fc.field] = fc.newValue; }
-          await supabase.from('users').update(updates).eq('id', change.user_id);
+          const { error } = await serviceClient.from('users').update(updates).eq('id', change.user_id).eq('organization_id', userData.organization_id);
+          if (error) { console.error('Bulk approve user update failed:', error); writeError = true; }
         } else if (change.change_type === 'deactivate' && change.user_id) {
-          await supabase.from('users').update({ is_active: false }).eq('id', change.user_id);
+          const { error } = await serviceClient.from('users').update({ is_active: false }).eq('id', change.user_id).eq('organization_id', userData.organization_id);
+          if (error) { console.error('Bulk approve user deactivate failed:', error); writeError = true; }
         }
 
-        await supabase
+        if (writeError) { failed++; continue; }
+
+        await serviceClient
           .from('sync_change_queue')
           .update({ status: 'approved', reviewed_by: userData.id, reviewed_at: new Date().toISOString() })
           .eq('id', changeId);

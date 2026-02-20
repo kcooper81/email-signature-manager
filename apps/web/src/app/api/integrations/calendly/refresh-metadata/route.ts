@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
       const newExpiresAt = new Date(Date.now() + tokens.expires_in * 1000);
 
-      await supabase
+      const { error: tokenErr } = await supabase
         .from('provider_connections')
         .update({
           access_token: tokens.access_token,
@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
           token_expires_at: newExpiresAt.toISOString(),
         })
         .eq('id', connection.id);
+      if (tokenErr) console.error('Failed to persist refreshed Calendly token:', tokenErr);
     }
 
     const metadata = await fetchAndBuildMetadata(accessToken);

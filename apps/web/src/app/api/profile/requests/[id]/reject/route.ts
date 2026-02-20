@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, planDenied } from '@/lib/billing/plan-guard';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +24,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const body = await request.json();
 
-    await supabase
+    const serviceClient = createServiceClient();
+    const { error: rejectErr } = await serviceClient
       .from('user_profile_requests')
       .update({
         status: 'rejected',
@@ -34,6 +35,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
       .eq('id', id)
       .eq('organization_id', userData.organization_id);
+
+    if (rejectErr) {
+      return NextResponse.json({ error: 'Failed to reject request' }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

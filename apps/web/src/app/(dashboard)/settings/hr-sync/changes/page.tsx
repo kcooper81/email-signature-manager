@@ -72,8 +72,8 @@ export default function HrSyncChangesPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to approve');
-      setChanges([]);
-      toast.success(`Approved ${ids.length} changes`);
+      toast.success(`Approved ${data.approved} change${data.approved !== 1 ? 's' : ''}${data.failed > 0 ? `, ${data.failed} failed` : ''}`);
+      await loadChanges();
     } catch (err: any) {
       toast.error('Failed to bulk approve', err.message);
     }

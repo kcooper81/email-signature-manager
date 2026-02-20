@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { setGmailSignatureWithClient } from '@/lib/google/gmail';
 import { createOrgGoogleClient } from '@/lib/google/oauth';
 import { setSignatureWithServiceAccount } from '@/lib/google/service-account';
@@ -213,8 +213,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use service client for deployment writes to bypass RLS
+    const serviceClient = createServiceClient();
+
     // Create deployment record (without target tracking columns that may not exist)
-    const { data: deployment, error: deploymentError } = await supabase
+    const { data: deployment, error: deploymentError } = await serviceClient
       .from('signature_deployments')
       .insert({
         organization_id: organizationId,
@@ -346,7 +349,7 @@ export async function POST(request: NextRequest) {
 
       // Record per-user deployment history (if user has an id)
       if (targetUser.id) {
-        await supabase
+        await serviceClient
           .from('user_deployment_history')
           .insert({
             organization_id: organizationId,
@@ -361,7 +364,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update deployment status
-    await supabase
+    await serviceClient
       .from('signature_deployments')
       .update({
         status: failCount === targetUsers.length ? 'failed' : 'completed',

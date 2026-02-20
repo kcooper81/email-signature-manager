@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
 import { renderSignatureToHtml } from '@/lib/signature-renderer';
 import { setGmailSignatureWithClient } from '@/lib/google/gmail';
 import { createOrgGoogleClient } from '@/lib/google/oauth';
@@ -8,7 +8,7 @@ import { logAudit } from '@/lib/audit/logger';
 import type { WorkflowRunContext } from '../workflow-runner';
 
 export async function deploySignature(context: WorkflowRunContext, _config: Record<string, any>) {
-  const supabase = createClient();
+  const supabase = createServiceClient();
 
   // Get user's assigned template
   const { data: assignment } = await supabase

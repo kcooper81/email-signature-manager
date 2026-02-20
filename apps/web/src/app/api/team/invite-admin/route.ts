@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { sendAdminInviteEmail } from '@/lib/email/resend';
 
 export async function POST(request: NextRequest) {
@@ -74,7 +74,8 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        const { error: updateError } = await supabase
+        const serviceClient = createServiceClient();
+        const { error: updateError } = await serviceClient
           .from('users')
           .update({ role: 'admin', updated_at: new Date().toISOString() })
           .eq('id', existingUser.id);
@@ -94,15 +95,21 @@ export async function POST(request: NextRequest) {
       }
 
       // User exists but no account - update their role and send invite
-      await supabase
+      const serviceClient = createServiceClient();
+      const { error: roleErr } = await serviceClient
         .from('users')
         .update({ role: 'admin', updated_at: new Date().toISOString() })
         .eq('id', existingUser.id);
 
+      if (roleErr) {
+        return NextResponse.json({ error: 'Failed to update user role' }, { status: 500 });
+      }
+
       targetUserId = existingUser.id;
     } else {
       // Create new user with admin role
-      const { data: newUser, error: createError } = await supabase
+      const serviceClient = createServiceClient();
+      const { data: newUser, error: createError } = await serviceClient
         .from('users')
         .insert({
           email: email.toLowerCase(),
@@ -131,8 +138,9 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
 
-    // Store invite in database
-    const { error: insertError } = await supabase
+    // Store invite in database — use service client for reliability
+    const svcClient = createServiceClient();
+    const { error: insertError } = await svcClient
       .from('user_invites')
       .insert({
         user_id: targetUserId,

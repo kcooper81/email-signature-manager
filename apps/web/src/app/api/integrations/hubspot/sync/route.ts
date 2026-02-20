@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       const tokens = await refreshHubSpotToken(connection.refresh_token);
       accessToken = tokens.access_token;
 
-      await supabase
+      const { error: tokenErr } = await supabase
         .from('provider_connections')
         .update({
           access_token: tokens.access_token,
@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
           token_expires_at: new Date(Date.now() + tokens.expires_in * 1000).toISOString(),
         })
         .eq('id', connection.id);
+      if (tokenErr) console.error('Failed to persist refreshed HubSpot token:', tokenErr);
     }
 
     // Sync from specific list or all contacts with employee filter
