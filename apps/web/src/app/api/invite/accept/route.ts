@@ -159,11 +159,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Mark invite as accepted
-    await supabaseAdmin
+    // Mark invite as accepted — prevents token reuse
+    const { error: acceptErr } = await supabaseAdmin
       .from('user_invites')
       .update({ accepted_at: new Date().toISOString() })
       .eq('token', token);
+    if (acceptErr) {
+      console.error('Failed to mark invite as accepted:', acceptErr);
+    }
 
     // BUG-21 fix: Don't return authId in response (information disclosure)
     return NextResponse.json({ success: true });
