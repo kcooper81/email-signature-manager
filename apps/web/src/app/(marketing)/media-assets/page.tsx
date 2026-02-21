@@ -28,7 +28,11 @@ const assets: Asset[] = [
   // Icons & Logos
   { name: 'Siggly Logo (Original)', file: '/siggly-logo.png', size: '512×512', platform: 'All Platforms', category: 'icon' },
   { name: 'Siggly Logo (Dark)', file: '/siggly-logo-dark.png', size: '512×512', platform: 'White Backgrounds', category: 'icon' },
-  { name: 'Siggly Logo (Light)', file: '/siggly-logo-light.png', size: '512×512', platform: 'Dark Backgrounds', category: 'icon' },
+  { name: 'Marketplace Icon 128×128', file: '/marketplace-icon-128x128.png', size: '128×128', platform: 'Google Workspace', category: 'icon' },
+  { name: 'Marketplace Icon 96×96', file: '/marketplace-icon-96x96.png', size: '96×96', platform: 'Google Workspace', category: 'icon' },
+  { name: 'Marketplace Icon 48×48', file: '/marketplace-icon-48x48.png', size: '48×48', platform: 'Google Workspace', category: 'icon' },
+  { name: 'Marketplace Icon 32×32', file: '/marketplace-icon-32x32.png', size: '32×32', platform: 'Google Workspace', category: 'icon' },
+  { name: 'Marketplace Banner', file: '/marketplace-banner-220x140.png', size: '220×140', platform: 'Google Workspace', category: 'banner' },
 ];
 
 function AssetCard({ asset }: { asset: Asset }) {
