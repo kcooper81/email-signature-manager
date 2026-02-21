@@ -70,6 +70,53 @@ const providerLabels: Record<string, string> = {
   microsoft: 'Microsoft Directory',
 };
 
+function getApiKeyPlaceholder(provider: string): string {
+  switch (provider) {
+    case 'bamboohr': return 'Enter your BambooHR API key';
+    case 'gusto': return 'Enter OAuth access token';
+    case 'rippling': return 'Enter OAuth access token';
+    default: return 'Enter API key';
+  }
+}
+
+function getApiKeyHint(provider: string): string {
+  switch (provider) {
+    case 'bamboohr': return 'Get from: Settings → API Keys in your BambooHR account';
+    case 'gusto': return 'OAuth token from Gusto developer portal (expires in ~2 hours)';
+    case 'rippling': return 'OAuth token from Rippling (contact support for access)';
+    case 'google': return 'Uses existing Google Workspace connection - no key needed';
+    case 'microsoft': return 'Uses existing Microsoft 365 connection - no key needed';
+    default: return '';
+  }
+}
+
+function getApiUrlLabel(provider: string): string {
+  switch (provider) {
+    case 'bamboohr': return 'Subdomain';
+    case 'gusto': return 'Company ID';
+    case 'rippling': return 'API URL (Optional)';
+    default: return 'API URL (Optional)';
+  }
+}
+
+function getApiUrlPlaceholder(provider: string): string {
+  switch (provider) {
+    case 'bamboohr': return 'yourcompany (just the subdomain)';
+    case 'gusto': return 'demo/1234567890 (for sandbox) or 1234567890 (production)';
+    case 'rippling': return 'Leave blank to use default';
+    default: return '';
+  }
+}
+
+function getApiUrlHint(provider: string): string {
+  switch (provider) {
+    case 'bamboohr': return 'Enter just the subdomain from yourcompany.bamboohr.com';
+    case 'gusto': return 'Include "demo/" prefix for sandbox testing';
+    case 'rippling': return 'Custom API endpoint (optional)';
+    default: return '';
+  }
+}
+
 export default function HrSyncPage() {
   const [configurations, setConfigurations] = useState<SyncConfiguration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -282,11 +329,13 @@ export default function HrSyncPage() {
           </div>
           <div className="space-y-2">
             <Label>{editingId ? 'API Key (leave blank to keep current)' : 'API Key'}</Label>
-            <Input type="password" value={form.apiKey} onChange={(e) => setForm({ ...form, apiKey: e.target.value })} placeholder={editingId ? '••••••••' : 'Enter API key'} />
+            <Input type="password" value={form.apiKey} onChange={(e) => setForm({ ...form, apiKey: e.target.value })} placeholder={editingId ? '••••••••' : getApiKeyPlaceholder(form.provider)} />
+            <p className="text-xs text-muted-foreground">{getApiKeyHint(form.provider)}</p>
           </div>
           <div className="space-y-2">
-            <Label>API URL (Optional)</Label>
-            <Input type="url" value={form.apiUrl} onChange={(e) => setForm({ ...form, apiUrl: e.target.value })} placeholder="https://api.bamboohr.com/api/gateway.php/yourcompany" />
+            <Label>{getApiUrlLabel(form.provider)}</Label>
+            <Input type="text" value={form.apiUrl} onChange={(e) => setForm({ ...form, apiUrl: e.target.value })} placeholder={getApiUrlPlaceholder(form.provider)} />
+            <p className="text-xs text-muted-foreground">{getApiUrlHint(form.provider)}</p>
           </div>
           <div className="flex items-center justify-between">
             <Label>Auto-apply Changes</Label>
