@@ -23,7 +23,7 @@ export const DISCLAIMER_RULE_UPDATABLE = new Set([
 export const SYNC_CONFIG_UPDATABLE = new Set([
   'schedule_type', 'field_mapping', 'conflict_resolution',
   'auto_apply_changes', 'sync_new_users', 'sync_deactivated',
-  'api_key', 'api_url', 'is_active',
+  'api_key', 'api_url', 'webhook_secret', 'is_active',
 ]);
 
 export const LIFECYCLE_WORKFLOW_UPDATABLE = new Set([
