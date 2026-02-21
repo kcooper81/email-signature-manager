@@ -22,6 +22,7 @@ export interface SEOLandingPageData {
   testimonial?: { quote: string; authorName: string; authorTitle: string };
   faqs?: { question: string; answer: string }[];
   cta: { title: string; description: string; variant?: string };
+  status?: 'available' | 'coming-soon';
 }
 
 export type SEOContentSection =

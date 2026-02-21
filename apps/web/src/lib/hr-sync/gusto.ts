@@ -16,13 +16,15 @@ export interface GustoEmployee {
 
 export async function fetchGustoEmployees(
   accessToken: string,
-  companyId: string
+  companyId: string,
+  useSandbox: boolean = false
 ): Promise<GustoEmployee[]> {
   if (!accessToken || !companyId) {
     throw new Error('Gusto access token and company ID are required');
   }
 
-  const url = `https://api.gusto.com/v1/companies/${companyId}/employees`;
+  const baseUrl = useSandbox ? 'https://api.gusto-demo.com' : 'https://api.gusto.com';
+  const url = `${baseUrl}/v1/companies/${companyId}/employees`;
 
   const response = await fetch(url, {
     headers: {

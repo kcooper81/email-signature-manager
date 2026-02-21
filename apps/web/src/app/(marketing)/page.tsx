@@ -526,7 +526,7 @@ export default function HomePage() {
             <DifferentiatorCard
               icon={<RefreshCw className="h-6 w-6" />}
               title="HR System Sync"
-              description="Connect to BambooHR, Gusto, or Workday. When someone gets promoted or changes roles, their signature updates automatically."
+              description="Connect to BambooHR, Gusto, or Rippling. When someone gets promoted or changes roles, their signature updates automatically."
               highlight="Built-in"
               color="green"
             />
