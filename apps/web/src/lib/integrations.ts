@@ -1,4 +1,4 @@
-import { Chrome, Building2, Users, Zap, MessageSquare } from 'lucide-react';
+import { Chrome, Building2, Users, Zap, MessageSquare, Calendar, UserPlus, RefreshCw, DollarSign } from 'lucide-react';
 
 export interface Integration {
   id: string;
@@ -35,8 +35,44 @@ export const INTEGRATIONS: Integration[] = [
     description: 'Sync contact data and enrich signature fields',
     icon: Users,
     status: 'available',
-    href: '/integrations',
+    href: '/integrations/hubspot',
     color: 'orange',
+  },
+  {
+    id: 'calendly',
+    name: 'Calendly',
+    description: 'Embed scheduling links directly in email signatures',
+    icon: Calendar,
+    status: 'available',
+    href: '/integrations/calendly',
+    color: 'blue',
+  },
+  {
+    id: 'bamboohr',
+    name: 'BambooHR',
+    description: 'Auto-update signatures when employee data changes in HR',
+    icon: UserPlus,
+    status: 'available',
+    href: '/integrations/bamboohr',
+    color: 'green',
+  },
+  {
+    id: 'gusto',
+    name: 'Gusto',
+    description: 'Sync employee records from Gusto to keep signatures current',
+    icon: DollarSign,
+    status: 'available',
+    href: '/integrations/gusto',
+    color: 'green',
+  },
+  {
+    id: 'rippling',
+    name: 'Rippling',
+    description: 'HR lifecycle events automatically create and update signatures',
+    icon: RefreshCw,
+    status: 'available',
+    href: '/integrations/rippling',
+    color: 'green',
   },
   {
     id: 'slack',
