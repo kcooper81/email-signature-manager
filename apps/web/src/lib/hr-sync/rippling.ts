@@ -16,18 +16,20 @@ export interface RipplingEmployee {
 }
 
 export async function fetchRipplingEmployees(
-  apiKey: string,
-  _apiUrl?: string
+  apiToken: string,
+  apiUrl?: string
 ): Promise<RipplingEmployee[]> {
-  if (!apiKey) {
-    throw new Error('Rippling API key is required');
+  if (!apiToken) {
+    throw new Error('Rippling API token is required');
   }
 
-  const url = 'https://api.rippling.com/platform/api/employees';
+  // Rippling uses OAuth Bearer tokens, not API keys
+  // Default to production API, allow override for testing
+  const url = apiUrl || 'https://api.rippling.com/platform/api/employees';
 
   const response = await fetch(url, {
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      'Authorization': `Bearer ${apiToken}`,
       'Accept': 'application/json',
     },
   });

@@ -20,10 +20,20 @@ export interface BambooHREmployee {
 
 export async function fetchBambooHREmployees(
   apiKey: string,
-  subdomain: string
+  subdomainOrUrl: string
 ): Promise<BambooHREmployee[]> {
-  if (!apiKey || !subdomain) {
+  if (!apiKey || !subdomainOrUrl) {
     throw new Error('BambooHR API key and subdomain are required');
+  }
+
+  // Extract subdomain from URL if full URL provided, otherwise use as-is
+  let subdomain = subdomainOrUrl;
+  if (subdomainOrUrl.includes('bamboohr.com')) {
+    const match = subdomainOrUrl.match(/https?:\/\/([^.]+)\.bamboohr\.com/);
+    subdomain = match ? match[1] : subdomainOrUrl;
+  } else if (subdomainOrUrl.includes('api.bamboohr.com')) {
+    const match = subdomainOrUrl.match(/gateway\.php\/([^/]+)/);
+    subdomain = match ? match[1] : subdomainOrUrl;
   }
 
   const url = `https://api.bamboohr.com/api/gateway.php/${subdomain}/v1/employees/directory`;

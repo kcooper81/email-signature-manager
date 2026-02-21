@@ -12,6 +12,7 @@ import type { SEOLandingPageData } from './types';
 
 export function SEOLandingPage({ data }: { data: SEOLandingPageData }) {
   const badgeIcon = data.hero.badge ? resolveIcon(data.hero.badge.icon) : undefined;
+  const isComingSoon = data.status === 'coming-soon';
 
   const features = data.features.map((f) => ({
     icon: resolveIcon(f.icon),
@@ -21,6 +22,16 @@ export function SEOLandingPage({ data }: { data: SEOLandingPageData }) {
 
   return (
     <>
+      {isComingSoon && (
+        <div className="bg-amber-50 border-b border-amber-200">
+          <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-center gap-2 text-sm text-amber-800">
+            <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 border border-amber-300">
+              Coming Soon
+            </span>
+            <span>This integration is on our roadmap. Sign up to be notified when it launches.</span>
+          </div>
+        </div>
+      )}
       <MarketingHero
         badge={
           data.hero.badge
@@ -30,7 +41,7 @@ export function SEOLandingPage({ data }: { data: SEOLandingPageData }) {
         title={data.hero.title}
         description={data.hero.description}
         variant={data.hero.variant}
-        primaryButtonText="Get Started Free"
+        primaryButtonText={isComingSoon ? 'Join the Waitlist' : 'Get Started Free'}
         primaryButtonHref="/signup"
         secondaryButtonText="Book a Demo"
         secondaryButtonHref="/demo"

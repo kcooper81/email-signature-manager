@@ -130,7 +130,10 @@ async function fetchHrData(provider: string, apiKey: string | null, apiUrl: stri
       return fetchBambooHREmployees(apiKey || '', apiUrl || '');
     case 'gusto':
       const { fetchGustoEmployees } = await import('./gusto');
-      return fetchGustoEmployees(apiKey || '', apiUrl || '');
+      // For Gusto: apiKey = access_token, apiUrl = company_id or contains 'demo' for sandbox
+      const companyId = apiUrl?.includes('demo') ? apiUrl.split('/').pop() || '' : apiUrl || '';
+      const useSandbox = apiUrl?.includes('demo') || false;
+      return fetchGustoEmployees(apiKey || '', companyId, useSandbox);
     case 'rippling':
       const { fetchRipplingEmployees } = await import('./rippling');
       return fetchRipplingEmployees(apiKey || '', apiUrl || '');

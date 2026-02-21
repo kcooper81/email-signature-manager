@@ -5,6 +5,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'salesforce',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Salesforce Integration | Email Signatures',
       description:
@@ -143,6 +144,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'slack',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Slack Integration | Email Signatures',
       description:
@@ -264,6 +266,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'okta',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Okta Integration | Email Signatures',
       description:
@@ -398,6 +401,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'azure-ad',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Azure AD Integration | Email Signatures',
       description:
@@ -671,6 +675,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'active-directory',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Active Directory Integration | Email Signatures',
       description:
@@ -799,6 +804,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'pipedrive',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Pipedrive Integration | Email Signatures',
       description:
@@ -926,6 +932,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'freshdesk',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Freshdesk Integration | Email Signatures',
       description:
@@ -1047,6 +1054,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'zendesk',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Zendesk Integration | Email Signatures',
       description:
@@ -1304,10 +1312,163 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
   },
 
+  // ─── Gusto ──────────────────────────────────────────────────────────
+  {
+    slug: 'gusto',
+    category: 'integrations',
+    meta: {
+      title: 'Siggly + Gusto Integration | HR-Driven Email Signatures',
+      description:
+        'Sync Gusto employee data with Siggly to auto-generate and update email signatures. New hires, promotions, and offboarding handled automatically.',
+      keywords: [
+        'gusto email signatures',
+        'gusto integration',
+        'gusto HR sync',
+        'payroll email signatures',
+        'small business signature management',
+      ],
+      canonical: '/integrations/gusto',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Integrations', url: '/integrations' },
+      { name: 'Gusto', url: '/integrations/gusto' },
+    ],
+    hero: {
+      badge: { icon: 'users', text: 'Gusto Integration' },
+      title: 'Email Signatures That Stay in Sync with Gusto',
+      description:
+        'Connect Gusto to Siggly and let your payroll system drive your email signatures. When employees are hired, promoted, or leave, their signature updates automatically — no manual work required.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '100%', label: 'Signatures match employee records' },
+      { value: '0', label: 'Manual updates after role changes' },
+      { value: '< 1 hr', label: 'New hire signature ready time' },
+    ],
+    featuresTitle: 'What You Get with Siggly + Gusto',
+    features: [
+      {
+        icon: 'user-plus',
+        title: 'Automatic New Hire Signatures',
+        description:
+          'When a new employee is added in Gusto, Siggly creates and deploys their branded email signature before their first day.',
+      },
+      {
+        icon: 'refresh-cw',
+        title: 'Title & Department Sync',
+        description:
+          'Promotions and department transfers in Gusto trigger automatic signature updates across Gmail and Outlook.',
+      },
+      {
+        icon: 'user-minus',
+        title: 'Offboarding Cleanup',
+        description:
+          'When an employee is terminated in Gusto, Siggly removes their signature from active templates and email clients.',
+      },
+      {
+        icon: 'phone',
+        title: 'Contact Info Always Current',
+        description:
+          'Phone numbers, job titles, and department names flow directly from Gusto into signature templates — always accurate, never stale.',
+      },
+    ],
+    sections: [
+      {
+        type: 'how-it-works',
+        title: 'How to Connect Gusto to Siggly',
+        steps: [
+          {
+            step: '1',
+            title: 'Connect Your Gusto Account',
+            description:
+              'Authenticate with your Gusto admin credentials from the Siggly HR Sync settings page.',
+          },
+          {
+            step: '2',
+            title: 'Map Employee Fields',
+            description:
+              'Select which Gusto fields (name, title, department, phone) map to your signature template placeholders.',
+          },
+          {
+            step: '3',
+            title: 'Set Sync Schedule',
+            description:
+              'Choose how often Siggly pulls updates from Gusto — hourly, daily, or weekly. Or trigger syncs manually anytime.',
+          },
+          {
+            step: '4',
+            title: 'Deploy to Your Team',
+            description:
+              'Push signatures to Gmail or Outlook for your entire team. Changes from Gusto propagate automatically on each sync.',
+          },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Why Small Businesses Love Gusto + Siggly',
+        items: [
+          {
+            icon: 'clock',
+            title: 'Set It and Forget It',
+            description:
+              'Once connected, your team signatures stay current without anyone lifting a finger. Perfect for growing teams without a dedicated IT department.',
+          },
+          {
+            icon: 'check-circle',
+            title: 'Day-One Professional Branding',
+            description:
+              'New employees get a professional, on-brand email signature from their very first email. No waiting for IT to set it up.',
+          },
+          {
+            icon: 'shield-check',
+            title: 'No Stale Signatures',
+            description:
+              'Departed employees are cleaned up automatically. No risk of former staff sending emails with outdated company signatures.',
+          },
+        ],
+      },
+    ],
+    testimonial: {
+      quote:
+        'We used to forget to update signatures for weeks after someone got promoted. Now Gusto and Siggly handle it all automatically. Our team of 30 always has accurate, professional signatures.',
+      authorName: 'Sarah Kim',
+      authorTitle: 'Operations Manager, Pinecrest Marketing',
+    },
+    faqs: [
+      {
+        question: 'Which Gusto plans does Siggly integrate with?',
+        answer:
+          'Siggly works with all Gusto plans that provide API access, including Simple, Plus, and Premium.',
+      },
+      {
+        question: 'How often does Siggly sync data from Gusto?',
+        answer:
+          'You can configure syncs to run hourly, daily, or weekly. Manual syncs are also available anytime from the Siggly dashboard.',
+      },
+      {
+        question: 'Does the integration sync contractor data?',
+        answer:
+          'Yes. Gusto contractors are synced alongside full-time employees. You can filter by employment type to control who gets a managed signature.',
+      },
+      {
+        question: 'What Gusto fields are available for signatures?',
+        answer:
+          'First name, last name, email, job title, department, phone number, start date, and employment status are all available for mapping to signature fields.',
+      },
+    ],
+    cta: {
+      title: 'Connect Gusto to Siggly',
+      description:
+        'Automate email signatures for your growing team. Let Gusto handle the employee data while Siggly handles the signatures.',
+    },
+  },
+
   // ─── Workday ─────────────────────────────────────────────────────────
   {
     slug: 'workday',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Workday Integration | Email Signatures',
       description:
@@ -1442,6 +1603,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'jira',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Jira Integration | Email Signatures',
       description:
@@ -1574,6 +1736,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'monday',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Monday.com Integration | Email Signatures',
       description:
@@ -1721,6 +1884,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'notion',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Notion Integration for Email Signatures | Siggly',
       description:
@@ -1851,6 +2015,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'servicenow',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + ServiceNow Integration | Managed Signatures',
       description:
@@ -2089,6 +2254,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'deel',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Deel Integration | Global Team Signatures',
       description:
@@ -2208,6 +2374,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'personio',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + Personio HR Integration | Email Signatures',
       description:
@@ -2324,6 +2491,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'jumpcloud',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + JumpCloud Directory Integration | Siggly',
       description:
@@ -2447,6 +2615,7 @@ export const integrationsPages: SEOLandingPageData[] = [
   {
     slug: 'onelogin',
     category: 'integrations',
+    status: 'coming-soon',
     meta: {
       title: 'Siggly + OneLogin SSO Integration | Email Signatures',
       description:
