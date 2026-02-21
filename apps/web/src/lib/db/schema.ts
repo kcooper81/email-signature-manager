@@ -1179,6 +1179,7 @@ export const syncConfigurations = pgTable('sync_configurations', {
   syncDeactivated: boolean('sync_deactivated').default(true),
   apiKey: text('api_key'),
   apiUrl: text('api_url'),
+  webhookSecret: text('webhook_secret'),
   lastSyncAt: timestamp('last_sync_at'),
   lastSyncStatus: text('last_sync_status'),
   lastSyncResult: jsonb('last_sync_result'),

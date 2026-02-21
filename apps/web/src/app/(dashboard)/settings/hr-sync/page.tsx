@@ -28,6 +28,7 @@ interface ConfigForm {
   syncDeactivated: boolean;
   apiKey: string;
   apiUrl: string;
+  webhookSecret: string;
 }
 
 const emptyForm: ConfigForm = {
@@ -39,6 +40,7 @@ const emptyForm: ConfigForm = {
   syncDeactivated: true,
   apiKey: '',
   apiUrl: '',
+  webhookSecret: '',
 };
 
 const providerOptions = [
@@ -181,6 +183,7 @@ export default function HrSyncPage() {
       syncDeactivated: config.sync_deactivated,
       apiKey: '', // Don't prefill secret
       apiUrl: config.api_url || '',
+      webhookSecret: '', // Don't prefill secret
     });
     setModalOpen(true);
   }
@@ -337,6 +340,13 @@ export default function HrSyncPage() {
             <Input type="text" value={form.apiUrl} onChange={(e) => setForm({ ...form, apiUrl: e.target.value })} placeholder={getApiUrlPlaceholder(form.provider)} />
             <p className="text-xs text-muted-foreground">{getApiUrlHint(form.provider)}</p>
           </div>
+          {form.provider === 'gusto' && (
+            <div className="space-y-2">
+              <Label>{editingId ? 'Webhook Secret (leave blank to keep current)' : 'Webhook Secret (Optional)'}</Label>
+              <Input type="password" value={form.webhookSecret} onChange={(e) => setForm({ ...form, webhookSecret: e.target.value })} placeholder={editingId ? '••••••••' : 'Enter webhook signing secret from Gusto'} />
+              <p className="text-xs text-muted-foreground">Get from Gusto developer portal after creating webhook subscription</p>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <Label>Auto-apply Changes</Label>
             <Switch checked={form.autoApplyChanges} onCheckedChange={(c) => setForm({ ...form, autoApplyChanges: c })} />
