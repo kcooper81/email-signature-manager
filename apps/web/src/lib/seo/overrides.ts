@@ -59,7 +59,7 @@ export async function getContentOverrides(
 
   for (const o of overrides || []) {
     const url = o.page_url.replace(/\/$/, '');
-    overrideCache.set(url, {
+    const entry = {
       meta_title: o.meta_title,
       meta_description: o.meta_description,
       meta_keywords: o.meta_keywords,
@@ -68,7 +68,18 @@ export async function getContentOverrides(
       internal_links: o.internal_links as any,
       override_hero: o.override_hero as any,
       override_features: o.override_features as any,
-    });
+    };
+    overrideCache.set(url, entry);
+
+    // Also index by pathname so lookups work with either full URL or path
+    try {
+      const path = new URL(url).pathname.replace(/\/$/, '');
+      if (path !== url) {
+        overrideCache.set(path, entry);
+      }
+    } catch {
+      // url is already a pathname, no additional indexing needed
+    }
   }
 
   return overrideCache.get(normalizedUrl) || null;

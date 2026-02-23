@@ -9,17 +9,12 @@ import { FAQSection } from './faq-section';
  */
 export async function BlogFAQOverride() {
   const headersList = await headers();
-  const pathname = headersList.get('x-pathname') || headersList.get('x-next-url') || '';
+  const pathname = headersList.get('x-pathname') || '';
 
   if (!pathname || !pathname.startsWith('/blog/')) return null;
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
-  const fullUrl = `${baseUrl}${pathname}`;
-
-  // Try both full URL and pathname
-  const overrides =
-    (await getContentOverrides(fullUrl)) ||
-    (await getContentOverrides(pathname));
+  // getContentOverrides indexes by both full URL and pathname
+  const overrides = await getContentOverrides(pathname);
 
   if (!overrides?.additional_faqs || overrides.additional_faqs.length === 0) {
     return null;
