@@ -341,6 +341,20 @@ export default function SEODashboardPage() {
     setActionLoading(null);
   }
 
+  async function publishGeneratedPage(pageId: string, recId: string) {
+    setActionLoading(recId);
+    try {
+      const res = await fetch(`/api/admin/seo/generated-pages/${pageId}/publish`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('Publish failed:', data.error || res.statusText);
+      } else {
+        await loadRecommendations();
+      }
+    } catch (e) { console.error(e); }
+    setActionLoading(null);
+  }
+
   async function updateNotes(id: string, notes: string) {
     await fetch(`/api/admin/seo/recommendations/${id}/notes`, {
       method: 'PATCH',
@@ -839,16 +853,46 @@ export default function SEODashboardPage() {
                       </div>
                     )}
                     {rec.status === 'applied' && (
-                      <div className="flex gap-2 mt-3">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => rollbackRecommendation(rec.id)}
-                          disabled={actionLoading === rec.id}
-                          className="text-red-600 border-red-200 hover:bg-red-50"
-                        >
-                          <Undo2 className="h-3 w-3 mr-1" /> Rollback
-                        </Button>
+                      <div className="mt-3 space-y-2">
+                        {/* Show generated page link for new_page recommendations */}
+                        {rec.recommendation_type === 'new_page' && rec.suggested_value?.generated_page_url && (
+                          <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
+                            <Globe className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                            <a
+                              href={rec.suggested_value.generated_page_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:text-blue-800 underline truncate"
+                            >
+                              {rec.suggested_value.generated_page_url}
+                            </a>
+                            <ExternalLink className="h-3 w-3 text-blue-400 flex-shrink-0" />
+                            <span className="text-xs text-blue-500 ml-auto flex-shrink-0">Draft</span>
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          {/* Publish button for new_page with generated page */}
+                          {rec.recommendation_type === 'new_page' && rec.suggested_value?.generated_page_id && (
+                            <Button
+                              size="sm"
+                              onClick={() => publishGeneratedPage(rec.suggested_value.generated_page_id, rec.id)}
+                              disabled={actionLoading === rec.id}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              {actionLoading === rec.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Globe className="h-3 w-3 mr-1" />}
+                              Publish Page
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => rollbackRecommendation(rec.id)}
+                            disabled={actionLoading === rec.id}
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            <Undo2 className="h-3 w-3 mr-1" /> Rollback
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </CardContent>
