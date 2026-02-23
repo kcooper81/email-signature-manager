@@ -8,6 +8,7 @@ import {
   type GA4PageData,
 } from './google-clients';
 import { searchSERP, type SERPResponse } from './serp-client';
+import { type SEOEngineConfig, DEFAULT_CONFIG } from './config';
 
 // Import all 17 SEO data arrays (same as sitemap.ts)
 import { industriesPages } from '@/lib/seo-pages/data/industries';
@@ -155,7 +156,8 @@ export interface CollectionResult {
  * Collect Search Console + GA4 data and upsert into seo_snapshots.
  */
 export async function collectSearchData(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  config: SEOEngineConfig = DEFAULT_CONFIG
 ): Promise<{ upserted: number; errors: string[] }> {
   const errors: string[] = [];
   const siteUrl = process.env.SEARCH_CONSOLE_SITE_URL;
@@ -166,7 +168,7 @@ export async function collectSearchData(
   }
 
   const yesterday = daysAgo(1);
-  const thirtyDaysAgo = daysAgo(30);
+  const thirtyDaysAgo = daysAgo(config.dataCollectionWindowDays);
 
   // Fetch Search Console data
   let pageData: SearchConsoleRow[] = [];
@@ -212,7 +214,7 @@ export async function collectSearchData(
     const ga4 = ga4ByPath.get(pagePath);
     const topQueries = (queriesByPage.get(page.page) || [])
       .sort((a, b) => b.impressions - a.impressions)
-      .slice(0, 20)
+      .slice(0, config.topQueriesPerPage)
       .map((q) => ({
         query: q.query,
         clicks: q.clicks,
@@ -241,7 +243,7 @@ export async function collectSearchData(
 
   // Upsert in batches
   let upserted = 0;
-  const BATCH_SIZE = 50;
+  const BATCH_SIZE = config.snapshotBatchSize;
 
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
@@ -264,7 +266,8 @@ export async function collectSearchData(
  */
 export async function collectCompetitorData(
   supabase: SupabaseClient,
-  queryLimit: number = 50
+  queryLimit: number = 50,
+  config: SEOEngineConfig = DEFAULT_CONFIG
 ): Promise<{ queriesRun: number; errors: string[] }> {
   const errors: string[] = [];
 
@@ -273,7 +276,7 @@ export async function collectCompetitorData(
     .from('seo_snapshots')
     .select('top_queries, page_url')
     .order('snapshot_date', { ascending: false })
-    .limit(500);
+    .limit(config.maxSnapshotsForAnalysis);
 
   if (!recentSnapshots || recentSnapshots.length === 0) {
     return { queriesRun: 0, errors: ['No snapshots available for competitor analysis'] };
@@ -315,7 +318,7 @@ export async function collectCompetitorData(
       // Determine search volume bucket based on impressions
       const impressions = queryMap.get(query)?.impressions || 0;
       const volumeBucket =
-        impressions > 1000 ? 'high' : impressions > 200 ? 'medium' : 'low';
+        impressions > config.highVolumeThreshold ? 'high' : impressions > config.mediumVolumeThreshold ? 'medium' : 'low';
 
       const row = {
         keyword: query,
@@ -350,7 +353,7 @@ export async function collectCompetitorData(
     }
 
     // Rate limit
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    await new Promise((resolve) => setTimeout(resolve, config.serpRateLimitMs));
   }
 
   return { queriesRun, errors };

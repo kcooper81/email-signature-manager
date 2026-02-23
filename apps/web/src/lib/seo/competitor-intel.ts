@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { type SEOEngineConfig, DEFAULT_CONFIG } from './config';
 
 /**
  * Competitor Intelligence Engine — identifies content gaps,
@@ -75,7 +76,8 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
  * Identify keywords where competitors rank but we don't.
  */
 export async function identifyContentGaps(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  config: SEOEngineConfig = DEFAULT_CONFIG
 ): Promise<ContentGap[]> {
   const { data: rankings } = await supabase
     .from('competitor_rankings')
@@ -96,8 +98,8 @@ export async function identifyContentGaps(
   const gaps: ContentGap[] = [];
 
   for (const [keyword, ranking] of byKeyword) {
-    // We're absent or ranking poorly (>20)
-    if (ranking.our_position !== null && ranking.our_position <= 20) continue;
+    // We're absent or ranking poorly (beyond max position)
+    if (ranking.our_position !== null && ranking.our_position <= config.contentGapMaxPosition) continue;
 
     const knownCompetitors = (ranking.competitors || []).filter((c: any) =>
       COMPETITOR_DOMAINS.has(c.domain)

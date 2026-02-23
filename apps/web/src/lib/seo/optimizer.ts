@@ -7,6 +7,7 @@ import {
   suggestNewPageTopics,
   type ContentGap,
 } from './competitor-intel';
+import { type SEOEngineConfig, DEFAULT_CONFIG } from './config';
 
 /**
  * Template-based SEO Optimizer — generates recommendation cards from issues + data.
@@ -46,7 +47,8 @@ interface SnapshotRow {
  * Generate recommendations from all open issues + competitor data.
  */
 export async function generateRecommendations(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  config: SEOEngineConfig = DEFAULT_CONFIG
 ): Promise<{ created: number; errors: string[] }> {
   const errors: string[] = [];
   const recommendations: Recommendation[] = [];
@@ -63,7 +65,7 @@ export async function generateRecommendations(
     .from('seo_snapshots')
     .select('*')
     .order('snapshot_date', { ascending: false })
-    .limit(500);
+    .limit(config.maxSnapshotsForAnalysis);
 
   const snapshotByUrl = new Map<string, SnapshotRow>();
   for (const s of snapshots || []) {
@@ -88,34 +90,34 @@ export async function generateRecommendations(
 
     switch (issue.issue_type) {
       case 'meta_too_long':
-        handleMetaTooLong(issue, snapshot, recommendations);
+        handleMetaTooLong(issue, snapshot, recommendations, config);
         break;
       case 'meta_too_short':
-        handleMetaTooShort(issue, snapshot, recommendations);
+        handleMetaTooShort(issue, snapshot, recommendations, config);
         break;
       case 'low_ctr':
-        await handleLowCTR(issue, snapshot, supabase, recommendations);
+        await handleLowCTR(issue, snapshot, supabase, recommendations, config);
         break;
       case 'missing_faq_schema':
-        handleMissingFAQ(issue, snapshot, recommendations);
+        handleMissingFAQ(issue, snapshot, recommendations, config);
         break;
       case 'opportunity_zone':
-        handleOpportunityZone(issue, snapshot, recommendations);
+        handleOpportunityZone(issue, snapshot, recommendations, config);
         break;
       case 'high_bounce':
-        handleHighBounce(issue, snapshot, recommendations);
+        handleHighBounce(issue, snapshot, recommendations, config);
         break;
     }
   }
 
   // --- Content gap recommendations ---
   try {
-    const gaps = await identifyContentGaps(supabase);
+    const gaps = await identifyContentGaps(supabase, config);
     const ranked = rankOpportunities(gaps);
     const newPageTopics = suggestNewPageTopics(gaps);
 
     // Existing page improvements
-    for (const opp of ranked.filter((r) => r.recommendedAction === 'optimize_existing').slice(0, 20)) {
+    for (const opp of ranked.filter((r) => r.recommendedAction === 'optimize_existing').slice(0, config.maxExpandContentRecs)) {
       const snapshot = snapshotByUrl.get(opp.topCompetitors[0]?.domain || '');
       recommendations.push({
         page_url: opp.topCompetitors[0]?.domain
@@ -129,7 +131,7 @@ export async function generateRecommendations(
           competitorTitles: opp.topCompetitors.map((c) => c.title),
         },
         rationale: `Competitors rank in top ${opp.topCompetitors[0]?.position || 10} for "${opp.keyword}" while we rank at position ${opp.ourPosition || 'N/A'}. Expanding content could improve ranking.`,
-        confidence: 0.6,
+        confidence: config.confidenceExpandContent,
         data_basis: {
           keyword: opp.keyword,
           ourPosition: opp.ourPosition,
@@ -140,7 +142,7 @@ export async function generateRecommendations(
     }
 
     // New page recommendations
-    for (const topic of newPageTopics.slice(0, 10)) {
+    for (const topic of newPageTopics.slice(0, config.maxNewPageRecs)) {
       recommendations.push({
         page_url: null,
         recommendation_type: 'new_page',
@@ -152,7 +154,7 @@ export async function generateRecommendations(
           suggestedSlug: keywordToSlug(topic.keyword),
         },
         rationale: `No page targets "${topic.keyword}" but ${topic.competitorTitles.length} competitors rank for it. Creating a page in the "${topic.category}" category could capture this traffic.`,
-        confidence: 0.5,
+        confidence: config.confidenceNewPage,
         data_basis: {
           keyword: topic.keyword,
           opportunityScore: topic.opportunityScore,
@@ -197,12 +199,13 @@ export async function generateRecommendations(
 function handleMetaTooLong(
   issue: IssueRow,
   snapshot: SnapshotRow | undefined,
-  out: Recommendation[]
+  out: Recommendation[],
+  config: SEOEngineConfig
 ) {
   const details = issue.details;
   const field = details.field as 'title' | 'description';
   const currentValue = details.value as string;
-  const maxLen = field === 'title' ? 60 : 155;
+  const maxLen = field === 'title' ? config.metaTitleMaxLength : config.metaDescMaxLength - 5;
 
   // Trim at sentence boundary
   let suggested = currentValue;
@@ -221,7 +224,7 @@ function handleMetaTooLong(
     current_value: { [field]: currentValue, length: currentValue.length },
     suggested_value: { [field]: suggested, length: suggested.length },
     rationale: `${field === 'title' ? 'Title' : 'Description'} is ${currentValue.length} characters (max ${maxLen}). May get truncated in search results.`,
-    confidence: 0.9,
+    confidence: config.confidenceMetaTooLong,
     data_basis: {
       impressions: snapshot?.impressions || 0,
       clicks: snapshot?.clicks || 0,
@@ -233,7 +236,8 @@ function handleMetaTooLong(
 function handleMetaTooShort(
   issue: IssueRow,
   snapshot: SnapshotRow | undefined,
-  out: Recommendation[]
+  out: Recommendation[],
+  config: SEOEngineConfig
 ) {
   const details = issue.details;
   const field = details.field as 'title' | 'description';
@@ -263,7 +267,7 @@ function handleMetaTooShort(
     current_value: { [field]: currentValue, length: currentValue.length },
     suggested_value: { [field]: suggested, length: suggested.length },
     rationale: `${field === 'title' ? 'Title' : 'Description'} is only ${currentValue.length} characters. Expanding with relevant keywords could improve CTR.`,
-    confidence: 0.85,
+    confidence: config.confidenceMetaTooShort,
     data_basis: {
       topQueries: topQueries.slice(0, 3),
       impressions: snapshot?.impressions || 0,
@@ -275,7 +279,8 @@ async function handleLowCTR(
   issue: IssueRow,
   snapshot: SnapshotRow | undefined,
   supabase: SupabaseClient,
-  out: Recommendation[]
+  out: Recommendation[],
+  config: SEOEngineConfig
 ) {
   const topQueries = (issue.details.topQueries || snapshot?.top_queries || []).slice(0, 5);
   const currentTitle = snapshot?.meta_title || '';
@@ -316,7 +321,7 @@ async function handleLowCTR(
         competitorAvgTitleLength: competitorPatterns?.patterns?.avgTitleLength || null,
       },
       rationale: `CTR is ${(issue.details.ctr * 100).toFixed(1)}% despite ${issue.details.impressions} impressions. Title may not be compelling enough for searchers.`,
-      confidence: 0.6,
+      confidence: config.confidenceLowCTR,
       data_basis: {
         impressions: issue.details.impressions,
         ctr: issue.details.ctr,
@@ -337,10 +342,10 @@ async function handleLowCTR(
       recommendation_type: 'meta_description',
       current_value: { description: currentDesc, ctr: issue.details.ctr },
       suggested_value: {
-        description: suggestedDesc.length <= 160 ? suggestedDesc : suggestedDesc.substring(0, 157) + '...',
+        description: suggestedDesc.length <= config.metaDescMaxLength ? suggestedDesc : suggestedDesc.substring(0, config.metaDescMaxLength - 3) + '...',
       },
       rationale: `Low CTR (${(issue.details.ctr * 100).toFixed(1)}%) with strong position (${issue.details.position.toFixed(1)}). Description may not match search intent.`,
-      confidence: 0.6,
+      confidence: config.confidenceLowCTR,
       data_basis: {
         impressions: issue.details.impressions,
         ctr: issue.details.ctr,
@@ -353,7 +358,8 @@ async function handleLowCTR(
 function handleMissingFAQ(
   issue: IssueRow,
   snapshot: SnapshotRow | undefined,
-  out: Recommendation[]
+  out: Recommendation[],
+  config: SEOEngineConfig
 ) {
   const topQueries = snapshot?.top_queries || [];
   const keyword = issue.details.keyword;
@@ -385,7 +391,7 @@ function handleMissingFAQ(
     current_value: { faqs: [] },
     suggested_value: { faqs: templateFaqs },
     rationale: `Competitors have FAQ schema in search results for "${keyword}". Adding FAQs could improve visibility and capture featured snippets.`,
-    confidence: 0.7,
+    confidence: config.confidenceMissingFAQ,
     data_basis: {
       keyword,
       topQueries: topQueries.slice(0, 5),
@@ -397,7 +403,8 @@ function handleMissingFAQ(
 function handleOpportunityZone(
   issue: IssueRow,
   snapshot: SnapshotRow | undefined,
-  out: Recommendation[]
+  out: Recommendation[],
+  config: SEOEngineConfig
 ) {
   // Page ranks 5-20 — could be improved with content additions
   const url = new URL(issue.page_url);
@@ -417,7 +424,7 @@ function handleOpportunityZone(
         suggestedSections: ['benefits', 'how-it-works', 'checklist'],
       },
       rationale: `Page ranks at position ${issue.details.position.toFixed(1)} with ${issue.details.impressions} impressions but only has ${page.sections?.length || 0} content sections. Adding more depth could push it into the top 5.`,
-      confidence: 0.65,
+      confidence: config.confidenceOpportunityZone,
       data_basis: {
         position: issue.details.position,
         impressions: issue.details.impressions,
@@ -430,7 +437,8 @@ function handleOpportunityZone(
 function handleHighBounce(
   issue: IssueRow,
   snapshot: SnapshotRow | undefined,
-  out: Recommendation[]
+  out: Recommendation[],
+  config: SEOEngineConfig
 ) {
   out.push({
     page_url: issue.page_url,
@@ -438,10 +446,10 @@ function handleHighBounce(
     current_value: { bounceRate: issue.details.bounceRate },
     suggested_value: {
       action: 'Add internal links to related pages to reduce bounce rate',
-      suggestedLinkCount: 3,
+      suggestedLinkCount: config.suggestedInternalLinks,
     },
     rationale: `Bounce rate is ${(issue.details.bounceRate * 100).toFixed(0)}% with ${issue.details.sessions} sessions. Adding internal links and CTAs could improve engagement.`,
-    confidence: 0.6,
+    confidence: config.confidenceHighBounce,
     data_basis: {
       bounceRate: issue.details.bounceRate,
       sessions: issue.details.sessions,
