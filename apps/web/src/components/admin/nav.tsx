@@ -20,6 +20,7 @@ import {
   Cog,
   MousePointerClick,
   BarChart3,
+  Search,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -27,6 +28,7 @@ interface NavBadgeCounts {
   newTickets: number;
   unresolvedErrors: number;
   pendingPartners: number;
+  pendingSEO: number;
 }
 
 const navItems = [
@@ -36,6 +38,7 @@ const navItems = [
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets' as const },
   { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null },
   { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null },
+  { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO' as const },
   { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null },
   { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null },
   { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null },
@@ -49,6 +52,7 @@ export function AdminNav() {
     newTickets: 0,
     unresolvedErrors: 0,
     pendingPartners: 0,
+    pendingSEO: 0,
   });
 
   useEffect(() => {
@@ -61,16 +65,18 @@ export function AdminNav() {
   const loadBadgeCounts = async () => {
     const supabase = createClient();
 
-    const [ticketsResult, errorsResult, partnersResult] = await Promise.all([
+    const [ticketsResult, errorsResult, partnersResult, seoResult] = await Promise.all([
       supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('status', 'new'),
       supabase.from('error_logs').select('*', { count: 'exact', head: true }).eq('resolved', false),
       supabase.from('partner_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'under_review']),
+      supabase.from('seo_recommendations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     ]);
 
     setBadges({
       newTickets: ticketsResult.count || 0,
       unresolvedErrors: errorsResult.count || 0,
       pendingPartners: partnersResult.count || 0,
+      pendingSEO: seoResult.count || 0,
     });
   };
 
