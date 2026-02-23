@@ -62,7 +62,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify webhook signature if webhook_secret is configured
-    if (config.webhook_secret && signature) {
+    if (config.webhook_secret) {
+      if (!signature) {
+        return NextResponse.json({ error: 'Missing signature header' }, { status: 401 });
+      }
       const isValid = verifyGustoSignature(body, signature, config.webhook_secret);
       if (!isValid) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });

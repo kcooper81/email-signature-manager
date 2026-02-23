@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     const { data: configs } = await supabase
       .from('sync_configurations')
-      .select('*')
+      .select('id, organization_id, provider, schedule_type, field_mapping, conflict_resolution, auto_apply_changes, sync_new_users, sync_deactivated, api_url, is_active, last_sync_at, last_sync_status, last_sync_result, created_at, updated_at')
       .eq('organization_id', userData.organization_id)
       .order('created_at', { ascending: false });
 
