@@ -31,6 +31,7 @@ import {
   Zap,
   Clock,
   Filter,
+  RotateCcw,
 } from 'lucide-react';
 
 type Tab = 'overview' | 'competitors' | 'action-queue' | 'change-log' | 'settings';
@@ -85,6 +86,58 @@ interface ChangeLogEntry {
   created_at: string;
 }
 
+interface AlgorithmConfig {
+  // Data Maturity
+  minPageAgeDays: number;
+  minImpressionsForCTR: number;
+  comparisonWindowDays: number;
+  changeLockoutDays: number;
+  positionFluctuationTolerance: number;
+  recentSnapshotDays: number;
+  // Issue Detection
+  lowCTRThreshold: number;
+  lowCTRMaxPosition: number;
+  trafficDeclineMedium: number;
+  trafficDeclineHigh: number;
+  opportunityZoneMinPosition: number;
+  opportunityZoneMaxPosition: number;
+  opportunityZoneMinImpressions: number;
+  highBounceThreshold: number;
+  highBounceMinSessions: number;
+  metaTitleMinLength: number;
+  metaTitleMaxLength: number;
+  metaDescMinLength: number;
+  metaDescMaxLength: number;
+  contentGapMaxPosition: number;
+  competitorTopPosition: number;
+  outrankedMinPosition: number;
+  outrankedMaxPosition: number;
+  outrankedByPosition: number;
+  // Confidence
+  confidenceMetaTooLong: number;
+  confidenceMetaTooShort: number;
+  confidenceLowCTR: number;
+  confidenceMissingFAQ: number;
+  confidenceOpportunityZone: number;
+  confidenceHighBounce: number;
+  confidenceExpandContent: number;
+  confidenceNewPage: number;
+  // Data Collection
+  dataCollectionWindowDays: number;
+  topQueriesPerPage: number;
+  snapshotBatchSize: number;
+  maxSnapshotsForAnalysis: number;
+  highVolumeThreshold: number;
+  mediumVolumeThreshold: number;
+  serpRateLimitMs: number;
+  // Optimizer Limits
+  maxExpandContentRecs: number;
+  maxNewPageRecs: number;
+  suggestedInternalLinks: number;
+  // Cache
+  overrideCacheTTLMinutes: number;
+}
+
 interface SEOSettings {
   id: string;
   claude_api_enabled: boolean;
@@ -93,6 +146,7 @@ interface SEOSettings {
   competitors: any[];
   daily_serp_query_limit: number;
   auto_run_types: string[];
+  algorithm_config: AlgorithmConfig;
 }
 
 interface SEOIssue {
@@ -131,6 +185,12 @@ export default function SEODashboardPage() {
 
   // Settings state
   const [settings, setSettings] = useState<SEOSettings | null>(null);
+
+  // Algorithm config state
+  const [algoConfig, setAlgoConfig] = useState<AlgorithmConfig | null>(null);
+  const [algoConfigDirty, setAlgoConfigDirty] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [savingAlgoConfig, setSavingAlgoConfig] = useState(false);
 
   // Loading states
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -212,6 +272,10 @@ export default function SEODashboardPage() {
     const res = await fetch('/api/admin/seo/settings');
     const data = await res.json();
     setSettings(data);
+    if (data?.algorithm_config) {
+      setAlgoConfig(data.algorithm_config);
+      setAlgoConfigDirty(false);
+    }
   }
 
   // --- Actions ---
@@ -232,7 +296,11 @@ export default function SEODashboardPage() {
   async function approveRecommendation(id: string) {
     setActionLoading(id);
     try {
-      await fetch(`/api/admin/seo/recommendations/${id}/approve`, { method: 'POST' });
+      const res = await fetch(`/api/admin/seo/recommendations/${id}/approve`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('Approve failed:', data.error || res.statusText);
+      }
       await loadRecommendations();
     } catch (e) { console.error(e); }
     setActionLoading(null);
@@ -241,7 +309,11 @@ export default function SEODashboardPage() {
   async function dismissRecommendation(id: string) {
     setActionLoading(id);
     try {
-      await fetch(`/api/admin/seo/recommendations/${id}/dismiss`, { method: 'POST' });
+      const res = await fetch(`/api/admin/seo/recommendations/${id}/dismiss`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('Dismiss failed:', data.error || res.statusText);
+      }
       await loadRecommendations();
     } catch (e) { console.error(e); }
     setActionLoading(null);
@@ -250,7 +322,11 @@ export default function SEODashboardPage() {
   async function rollbackRecommendation(id: string) {
     setActionLoading(id);
     try {
-      await fetch(`/api/admin/seo/recommendations/${id}/rollback`, { method: 'POST' });
+      const res = await fetch(`/api/admin/seo/recommendations/${id}/rollback`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('Rollback failed:', data.error || res.statusText);
+      }
       await loadRecommendations();
     } catch (e) { console.error(e); }
     setActionLoading(null);
@@ -944,6 +1020,36 @@ export default function SEODashboardPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Algorithm Parameters */}
+              {algoConfig && (
+                <AlgorithmConfigPanel
+                  config={algoConfig}
+                  onChange={(updated) => { setAlgoConfig(updated); setAlgoConfigDirty(true); }}
+                  expandedSections={expandedSections}
+                  onToggleSection={(section) => {
+                    setExpandedSections((prev) => {
+                      const next = new Set(prev);
+                      next.has(section) ? next.delete(section) : next.add(section);
+                      return next;
+                    });
+                  }}
+                  saving={savingAlgoConfig}
+                  dirty={algoConfigDirty}
+                  onSave={async () => {
+                    setSavingAlgoConfig(true);
+                    await updateSettings({ algorithm_config: algoConfig } as any);
+                    setAlgoConfigDirty(false);
+                    setSavingAlgoConfig(false);
+                  }}
+                  onResetAll={async () => {
+                    setSavingAlgoConfig(true);
+                    await updateSettings({ algorithm_config: {} } as any);
+                    await loadSettings();
+                    setSavingAlgoConfig(false);
+                  }}
+                />
+              )}
             </div>
           )}
         </>
@@ -981,5 +1087,328 @@ function MetricCard({
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+// --- Algorithm Config Defaults (must match server config.ts) ---
+
+const ALGO_DEFAULTS: AlgorithmConfig = {
+  minPageAgeDays: 28, minImpressionsForCTR: 200, comparisonWindowDays: 28,
+  changeLockoutDays: 28, positionFluctuationTolerance: 3, recentSnapshotDays: 7,
+  lowCTRThreshold: 0.02, lowCTRMaxPosition: 10, trafficDeclineMedium: 0.30,
+  trafficDeclineHigh: 0.50, opportunityZoneMinPosition: 5, opportunityZoneMaxPosition: 20,
+  opportunityZoneMinImpressions: 50, highBounceThreshold: 0.80, highBounceMinSessions: 10,
+  metaTitleMinLength: 30, metaTitleMaxLength: 60, metaDescMinLength: 70, metaDescMaxLength: 160,
+  contentGapMaxPosition: 20, competitorTopPosition: 5, outrankedMinPosition: 5,
+  outrankedMaxPosition: 20, outrankedByPosition: 3,
+  confidenceMetaTooLong: 0.90, confidenceMetaTooShort: 0.85, confidenceLowCTR: 0.60,
+  confidenceMissingFAQ: 0.70, confidenceOpportunityZone: 0.65, confidenceHighBounce: 0.60,
+  confidenceExpandContent: 0.60, confidenceNewPage: 0.50,
+  dataCollectionWindowDays: 30, topQueriesPerPage: 20, snapshotBatchSize: 50,
+  maxSnapshotsForAnalysis: 500, highVolumeThreshold: 1000, mediumVolumeThreshold: 200,
+  serpRateLimitMs: 250,
+  maxExpandContentRecs: 20, maxNewPageRecs: 10, suggestedInternalLinks: 3,
+  overrideCacheTTLMinutes: 5,
+};
+
+// --- Algorithm Config Panel ---
+
+interface ConfigFieldDef {
+  key: keyof AlgorithmConfig;
+  label: string;
+  type: 'number' | 'slider' | 'percent-slider';
+  min?: number;
+  max?: number;
+  step?: number;
+  hint?: string;
+}
+
+interface ConfigSectionDef {
+  id: string;
+  title: string;
+  fields: ConfigFieldDef[];
+}
+
+const CONFIG_SECTIONS: ConfigSectionDef[] = [
+  {
+    id: 'data-maturity',
+    title: 'Data Maturity',
+    fields: [
+      { key: 'minPageAgeDays', label: 'Min page age (days)', type: 'slider', min: 7, max: 90, step: 1, hint: 'Skip pages younger than this' },
+      { key: 'minImpressionsForCTR', label: 'Min impressions for CTR analysis', type: 'number', min: 10, max: 5000, hint: 'Require this many impressions before CTR analysis' },
+      { key: 'comparisonWindowDays', label: 'Comparison window (days)', type: 'slider', min: 7, max: 90, step: 1, hint: 'Compare current vs prior period' },
+      { key: 'changeLockoutDays', label: 'Change lockout (days)', type: 'slider', min: 7, max: 90, step: 1, hint: 'Skip pages recently changed' },
+      { key: 'positionFluctuationTolerance', label: 'Position fluctuation tolerance', type: 'number', min: 1, max: 20, hint: 'Ignore position changes within this range' },
+      { key: 'recentSnapshotDays', label: 'Recent snapshot window (days)', type: 'slider', min: 3, max: 30, step: 1, hint: 'Window for "recent" data' },
+    ],
+  },
+  {
+    id: 'issue-detection',
+    title: 'Issue Detection Thresholds',
+    fields: [
+      { key: 'lowCTRThreshold', label: 'Low CTR threshold', type: 'percent-slider', min: 0.005, max: 0.10, step: 0.005, hint: 'Flag pages below this CTR' },
+      { key: 'lowCTRMaxPosition', label: 'Low CTR max position', type: 'number', min: 1, max: 50, hint: 'Only check CTR for pages ranking within this' },
+      { key: 'trafficDeclineMedium', label: 'Traffic decline medium', type: 'percent-slider', min: 0.10, max: 0.80, step: 0.05, hint: 'Decline % to flag as medium severity' },
+      { key: 'trafficDeclineHigh', label: 'Traffic decline high', type: 'percent-slider', min: 0.20, max: 0.90, step: 0.05, hint: 'Decline % to flag as high severity' },
+      { key: 'opportunityZoneMinPosition', label: 'Opportunity zone min position', type: 'number', min: 1, max: 50 },
+      { key: 'opportunityZoneMaxPosition', label: 'Opportunity zone max position', type: 'number', min: 5, max: 100 },
+      { key: 'opportunityZoneMinImpressions', label: 'Opportunity zone min impressions', type: 'number', min: 1, max: 1000 },
+      { key: 'highBounceThreshold', label: 'High bounce threshold', type: 'percent-slider', min: 0.50, max: 0.95, step: 0.05, hint: 'Flag pages above this bounce rate' },
+      { key: 'highBounceMinSessions', label: 'High bounce min sessions', type: 'number', min: 1, max: 100, hint: 'Require this many sessions before flagging' },
+    ],
+  },
+  {
+    id: 'meta-tags',
+    title: 'Meta Tag Rules',
+    fields: [
+      { key: 'metaTitleMinLength', label: 'Title min length', type: 'number', min: 10, max: 60 },
+      { key: 'metaTitleMaxLength', label: 'Title max length', type: 'number', min: 40, max: 100 },
+      { key: 'metaDescMinLength', label: 'Description min length', type: 'number', min: 30, max: 160 },
+      { key: 'metaDescMaxLength', label: 'Description max length', type: 'number', min: 100, max: 320 },
+    ],
+  },
+  {
+    id: 'content-gap',
+    title: 'Content Gap Detection',
+    fields: [
+      { key: 'contentGapMaxPosition', label: 'Our max position (content gap)', type: 'number', min: 5, max: 100, hint: "We're absent or ranking worse than this" },
+      { key: 'competitorTopPosition', label: 'Competitor top position', type: 'number', min: 1, max: 20, hint: 'Competitor must rank within this to flag gap' },
+      { key: 'outrankedMinPosition', label: 'Outranked min position', type: 'number', min: 1, max: 50 },
+      { key: 'outrankedMaxPosition', label: 'Outranked max position', type: 'number', min: 5, max: 100 },
+      { key: 'outrankedByPosition', label: 'Outranked by position', type: 'number', min: 1, max: 10, hint: 'Competitor position threshold' },
+    ],
+  },
+  {
+    id: 'confidence',
+    title: 'Recommendation Confidence Scores',
+    fields: [
+      { key: 'confidenceMetaTooLong', label: 'Meta too long', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceMetaTooShort', label: 'Meta too short', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceLowCTR', label: 'Low CTR', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceMissingFAQ', label: 'Missing FAQ', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceOpportunityZone', label: 'Opportunity zone', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceHighBounce', label: 'High bounce', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceExpandContent', label: 'Expand content', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+      { key: 'confidenceNewPage', label: 'New page', type: 'percent-slider', min: 0, max: 1, step: 0.05 },
+    ],
+  },
+  {
+    id: 'data-collection',
+    title: 'Data Collection',
+    fields: [
+      { key: 'dataCollectionWindowDays', label: 'Collection window (days)', type: 'slider', min: 7, max: 90, step: 1 },
+      { key: 'topQueriesPerPage', label: 'Top queries per page', type: 'number', min: 5, max: 100 },
+      { key: 'snapshotBatchSize', label: 'Snapshot batch size', type: 'number', min: 10, max: 200 },
+      { key: 'maxSnapshotsForAnalysis', label: 'Max snapshots for analysis', type: 'number', min: 50, max: 5000 },
+      { key: 'highVolumeThreshold', label: 'High volume threshold (impressions)', type: 'number', min: 100, max: 10000 },
+      { key: 'mediumVolumeThreshold', label: 'Medium volume threshold (impressions)', type: 'number', min: 10, max: 5000 },
+      { key: 'serpRateLimitMs', label: 'SERP rate limit (ms)', type: 'number', min: 50, max: 2000, hint: 'Delay between SERP API calls' },
+    ],
+  },
+  {
+    id: 'optimizer-limits',
+    title: 'Optimizer Limits',
+    fields: [
+      { key: 'maxExpandContentRecs', label: 'Max expand content recommendations', type: 'number', min: 1, max: 100 },
+      { key: 'maxNewPageRecs', label: 'Max new page recommendations', type: 'number', min: 1, max: 50 },
+      { key: 'suggestedInternalLinks', label: 'Suggested internal links count', type: 'number', min: 1, max: 20 },
+    ],
+  },
+  {
+    id: 'cache',
+    title: 'Cache',
+    fields: [
+      { key: 'overrideCacheTTLMinutes', label: 'Override cache TTL (minutes)', type: 'number', min: 1, max: 60, hint: 'How long to cache content overrides' },
+    ],
+  },
+];
+
+function AlgorithmConfigPanel({
+  config,
+  onChange,
+  expandedSections,
+  onToggleSection,
+  saving,
+  dirty,
+  onSave,
+  onResetAll,
+}: {
+  config: AlgorithmConfig;
+  onChange: (updated: AlgorithmConfig) => void;
+  expandedSections: Set<string>;
+  onToggleSection: (section: string) => void;
+  saving: boolean;
+  dirty: boolean;
+  onSave: () => void;
+  onResetAll: () => void;
+}) {
+  function updateField(key: keyof AlgorithmConfig, value: number) {
+    onChange({ ...config, [key]: value });
+  }
+
+  function resetSection(section: ConfigSectionDef) {
+    const updated = { ...config };
+    for (const field of section.fields) {
+      (updated as any)[field.key] = ALGO_DEFAULTS[field.key];
+    }
+    onChange(updated);
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Algorithm Parameters
+            </CardTitle>
+            <CardDescription>Fine-tune the SEO engine detection thresholds and limits</CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onResetAll}
+              disabled={saving}
+              className="text-red-600 border-red-200 hover:bg-red-50"
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-1" />
+              Reset All to Defaults
+            </Button>
+            <Button
+              size="sm"
+              onClick={onSave}
+              disabled={saving || !dirty}
+              className="bg-violet-600 hover:bg-violet-700"
+            >
+              {saving ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : null}
+              {dirty ? 'Save Changes' : 'Saved'}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {CONFIG_SECTIONS.map((section) => {
+          const isExpanded = expandedSections.has(section.id);
+          return (
+            <div key={section.id} className="border rounded-lg">
+              <button
+                onClick={() => onToggleSection(section.id)}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                <span>{section.title}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); resetSection(section); }}
+                    className="text-xs text-slate-400 hover:text-red-600 px-2 py-0.5 rounded hover:bg-red-50"
+                    title="Reset section to defaults"
+                  >
+                    Reset
+                  </button>
+                  {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                </div>
+              </button>
+              {isExpanded && (
+                <div className="px-4 pb-4 space-y-4 border-t">
+                  {section.fields.map((field) => (
+                    <ConfigField
+                      key={field.key}
+                      field={field}
+                      value={config[field.key]}
+                      defaultValue={ALGO_DEFAULTS[field.key]}
+                      onChange={(v) => updateField(field.key, v)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ConfigField({
+  field,
+  value,
+  defaultValue,
+  onChange,
+}: {
+  field: ConfigFieldDef;
+  value: number;
+  defaultValue: number;
+  onChange: (v: number) => void;
+}) {
+  const isModified = value !== defaultValue;
+
+  if (field.type === 'slider') {
+    return (
+      <div className="pt-2">
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-sm text-slate-700">
+            {field.label}
+            {isModified && <span className="ml-1.5 text-xs text-violet-600">(modified)</span>}
+          </label>
+          <span className="text-sm font-medium text-slate-900">{value}</span>
+        </div>
+        <input
+          type="range"
+          min={field.min}
+          max={field.max}
+          step={field.step || 1}
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        {field.hint && <p className="text-xs text-slate-400 mt-0.5">{field.hint}</p>}
+      </div>
+    );
+  }
+
+  if (field.type === 'percent-slider') {
+    return (
+      <div className="pt-2">
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-sm text-slate-700">
+            {field.label}
+            {isModified && <span className="ml-1.5 text-xs text-violet-600">(modified)</span>}
+          </label>
+          <span className="text-sm font-medium text-slate-900">{Math.round(value * 100)}%</span>
+        </div>
+        <input
+          type="range"
+          min={field.min}
+          max={field.max}
+          step={field.step || 0.01}
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        {field.hint && <p className="text-xs text-slate-400 mt-0.5">{field.hint}</p>}
+      </div>
+    );
+  }
+
+  // number input
+  return (
+    <div className="pt-2">
+      <div className="flex items-center gap-3">
+        <label className="text-sm text-slate-700 flex-1">
+          {field.label}
+          {isModified && <span className="ml-1.5 text-xs text-violet-600">(modified)</span>}
+        </label>
+        <Input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+          className="w-28"
+          min={field.min}
+          max={field.max}
+        />
+      </div>
+      {field.hint && <p className="text-xs text-slate-400 mt-0.5">{field.hint}</p>}
+    </div>
   );
 }

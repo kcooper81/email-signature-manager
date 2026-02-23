@@ -50,6 +50,8 @@ export async function POST(
     if (recommendation.page_url) {
       const overrideData: Record<string, unknown> = {
         page_url: recommendation.page_url,
+        is_active: true,
+        recommendation_id: id,
         updated_at: now,
       };
 
