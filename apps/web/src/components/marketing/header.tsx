@@ -296,16 +296,45 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
           </Link>
         </nav>
 
-        {/* Mobile menu button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className={cn(
-            "lg:hidden p-2 transition-colors",
-            !scrolled ? "text-white hover:text-white/80" : "text-gray-700 hover:text-gray-900"
-          )}
-        >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        {/* Mobile: Sign in + Get Started + Hamburger */}
+        <div className="flex lg:hidden items-center gap-2">
+          <Link href="/login">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "text-sm",
+                !scrolled
+                  ? "text-white hover:text-white hover:bg-white/10"
+                  : "text-gray-700 hover:text-gray-900"
+              )}
+            >
+              Sign in
+            </Button>
+          </Link>
+          <Link href="/signup">
+            <Button
+              size="sm"
+              className={cn(
+                "text-sm",
+                !scrolled
+                  ? "bg-white text-violet-600 hover:bg-white/90"
+                  : "bg-gradient-to-r from-violet-600 to-blue-600 hover:opacity-90"
+              )}
+            >
+              Get Started
+            </Button>
+          </Link>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={cn(
+              "p-2 transition-colors",
+              !scrolled ? "text-white hover:text-white/80" : "text-gray-700 hover:text-gray-900"
+            )}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
 
         {/* Desktop buttons */}
         <div className="hidden lg:flex items-center gap-3">
@@ -335,14 +364,39 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
         </div>
       </div>
 
+      {/* Mobile scrollable nav bar - shows when scrolled */}
+      {scrolled && !mobileMenuOpen && (
+        <div className="lg:hidden border-t border-gray-100 bg-white/95 backdrop-blur-xl">
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-1 px-4 py-1.5 min-w-max">
+              <Link href="/features" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded-full transition-colors whitespace-nowrap">
+                Features
+              </Link>
+              <Link href="/for/it-admins" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded-full transition-colors whitespace-nowrap">
+                Solutions
+              </Link>
+              <Link href="/google-workspace" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded-full transition-colors whitespace-nowrap">
+                Integrations
+              </Link>
+              <Link href="/blog" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded-full transition-colors whitespace-nowrap">
+                Resources
+              </Link>
+              <Link href="/pricing" className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-violet-600 hover:bg-violet-50 rounded-full transition-colors whitespace-nowrap">
+                Pricing
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-[57px] bottom-0 bg-white z-50 flex flex-col">
-          <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="lg:hidden fixed inset-x-0 top-[57px] sm:top-[73px] bottom-0 bg-white z-50 flex flex-col">
+          <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4">
             {/* Primary navigation */}
             <div className="space-y-1 pb-4 border-b border-gray-100">
-              <Link 
-                href="/features" 
+              <Link
+                href="/features"
                 className="flex items-center gap-3 px-3 py-3 text-base font-medium text-gray-900 hover:bg-violet-50 hover:text-violet-700 rounded-lg transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -358,7 +412,7 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
                 Pricing
               </Link>
             </div>
-            
+
             {/* Solutions section */}
             <div className="py-4 border-b border-gray-100">
               <div className="px-3 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Solutions</div>
