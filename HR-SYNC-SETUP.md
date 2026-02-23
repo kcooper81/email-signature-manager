@@ -134,6 +134,31 @@ curl -X POST https://api.gusto-demo.com/oauth/token \
 - `expires_in` - Token expiration (typically 7200 seconds)
 - `company_id` - Your test company ID
 
+#### 3b. Find Your Company ID
+
+**Method 1: From OAuth Token Response**
+- The `company_id` is included in the OAuth token response (see above)
+- Copy this value directly
+
+**Method 2: From Gusto Developer Portal**
+- Go to https://dev.gusto.com
+- Click "Demo Companies" in sidebar
+- Your company ID is shown next to each company
+- Example: `1234567890`
+
+**Method 3: From API Call**
+- Make a test API call to get current user info:
+```bash
+curl -X GET https://api.gusto-demo.com/v1/me \
+  -H "Authorization: Bearer {ACCESS_TOKEN}"
+```
+- Response includes `company_id` field
+
+**Method 4: From URL**
+- When viewing your company in Gusto, check the URL
+- Format: `https://app.gusto-demo.com/companies/{COMPANY_ID}/...`
+- Extract the numeric ID from the URL
+
 #### 4. Configure in Siggly (Temporary Workaround)
 - Go to: Settings → HR & Directory Sync
 - Click "Add Integration"

@@ -24,6 +24,8 @@ export const SYNC_CONFIG_UPDATABLE = new Set([
   'schedule_type', 'field_mapping', 'conflict_resolution',
   'auto_apply_changes', 'sync_new_users', 'sync_deactivated',
   'api_key', 'api_url', 'webhook_secret', 'is_active',
+  'oauth_access_token', 'oauth_refresh_token', 'oauth_token_expires_at',
+  'oauth_company_id', 'oauth_subdomain',
 ]);
 
 export const LIFECYCLE_WORKFLOW_UPDATABLE = new Set([
