@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { type SEOEngineConfig, DEFAULT_CONFIG } from './config';
 
 /**
  * SEO Issue Analyzer — detects problems from snapshot + competitor data.
@@ -33,18 +34,12 @@ interface CompetitorRow {
   serp_features: Record<string, boolean>;
 }
 
-// Data maturity constants
-const MIN_PAGE_AGE_DAYS = 28;
-const MIN_IMPRESSIONS_FOR_CTR = 200;
-const COMPARISON_WINDOW_DAYS = 28;
-const CHANGE_LOCKOUT_DAYS = 28;
-const POSITION_FLUCTUATION_TOLERANCE = 3;
-
 /**
  * Run all issue detection rules against current data.
  */
 export async function analyzeIssues(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  config: SEOEngineConfig = DEFAULT_CONFIG
 ): Promise<{ issuesFound: number; errors: string[] }> {
   const errors: string[] = [];
   const allIssues: SEOIssue[] = [];
@@ -55,15 +50,15 @@ export async function analyzeIssues(
   const yesterdayStr = yesterday.toISOString().split('T')[0];
 
   const comparisonStart = new Date();
-  comparisonStart.setDate(comparisonStart.getDate() - COMPARISON_WINDOW_DAYS * 2);
+  comparisonStart.setDate(comparisonStart.getDate() - config.comparisonWindowDays * 2);
   const comparisonEnd = new Date();
-  comparisonEnd.setDate(comparisonEnd.getDate() - COMPARISON_WINDOW_DAYS);
+  comparisonEnd.setDate(comparisonEnd.getDate() - config.comparisonWindowDays);
 
   // Get most recent snapshots
   const { data: currentSnapshots } = await supabase
     .from('seo_snapshots')
     .select('*')
-    .gte('snapshot_date', new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0])
+    .gte('snapshot_date', new Date(Date.now() - config.recentSnapshotDays * 86400000).toISOString().split('T')[0])
     .order('snapshot_date', { ascending: false });
 
   // Get comparison period snapshots
@@ -77,7 +72,7 @@ export async function analyzeIssues(
   const { data: competitorData } = await supabase
     .from('competitor_rankings')
     .select('*')
-    .gte('captured_at', new Date(Date.now() - 7 * 86400000).toISOString())
+    .gte('captured_at', new Date(Date.now() - config.recentSnapshotDays * 86400000).toISOString())
     .order('captured_at', { ascending: false });
 
   // Get recently changed pages (within lockout window) to skip
@@ -87,7 +82,7 @@ export async function analyzeIssues(
     .in('action', ['override_applied', 'page_published'])
     .gte(
       'created_at',
-      new Date(Date.now() - CHANGE_LOCKOUT_DAYS * 86400000).toISOString()
+      new Date(Date.now() - config.changeLockoutDays * 86400000).toISOString()
     );
 
   const lockedPages = new Set(
@@ -115,11 +110,11 @@ export async function analyzeIssues(
   for (const [pageUrl, current] of latestByPage) {
     if (lockedPages.has(pageUrl)) continue;
 
-    // 1. Low CTR (high impressions, position in top 10, but low CTR)
+    // 1. Low CTR (high impressions, position in top N, but low CTR)
     if (
-      current.impressions >= MIN_IMPRESSIONS_FOR_CTR &&
-      current.ctr < 0.02 &&
-      current.position <= 10
+      current.impressions >= config.minImpressionsForCTR &&
+      current.ctr < config.lowCTRThreshold &&
+      current.position <= config.lowCTRMaxPosition
     ) {
       allIssues.push({
         page_url: pageUrl,
@@ -138,11 +133,11 @@ export async function analyzeIssues(
     const prior = priorByPage.get(pageUrl);
     if (prior && prior.clicks > 0) {
       const decline = (prior.clicks - current.clicks) / prior.clicks;
-      if (decline > 0.3) {
+      if (decline > config.trafficDeclineMedium) {
         allIssues.push({
           page_url: pageUrl,
           issue_type: 'declining_traffic',
-          severity: decline > 0.5 ? 'high' : 'medium',
+          severity: decline > config.trafficDeclineHigh ? 'high' : 'medium',
           details: {
             currentClicks: current.clicks,
             priorClicks: prior.clicks,
@@ -152,11 +147,11 @@ export async function analyzeIssues(
       }
     }
 
-    // 3. Opportunity zone (position 5-20, decent impressions)
+    // 3. Opportunity zone (configurable position range, decent impressions)
     if (
-      current.position >= 5 &&
-      current.position <= 20 &&
-      current.impressions >= 50
+      current.position >= config.opportunityZoneMinPosition &&
+      current.position <= config.opportunityZoneMaxPosition &&
+      current.impressions >= config.opportunityZoneMinImpressions
     ) {
       allIssues.push({
         page_url: pageUrl,
@@ -171,7 +166,7 @@ export async function analyzeIssues(
     }
 
     // 4. High bounce rate
-    if (current.bounce_rate > 0.8 && current.sessions > 10) {
+    if (current.bounce_rate > config.highBounceThreshold && current.sessions > config.highBounceMinSessions) {
       allIssues.push({
         page_url: pageUrl,
         issue_type: 'high_bounce',
@@ -184,7 +179,7 @@ export async function analyzeIssues(
     }
 
     // 5. Meta too short
-    if (current.meta_title && current.meta_title.length < 30) {
+    if (current.meta_title && current.meta_title.length < config.metaTitleMinLength) {
       allIssues.push({
         page_url: pageUrl,
         issue_type: 'meta_too_short',
@@ -196,7 +191,7 @@ export async function analyzeIssues(
         },
       });
     }
-    if (current.meta_description && current.meta_description.length < 70) {
+    if (current.meta_description && current.meta_description.length < config.metaDescMinLength) {
       allIssues.push({
         page_url: pageUrl,
         issue_type: 'meta_too_short',
@@ -210,7 +205,7 @@ export async function analyzeIssues(
     }
 
     // 6. Meta too long
-    if (current.meta_title && current.meta_title.length > 60) {
+    if (current.meta_title && current.meta_title.length > config.metaTitleMaxLength) {
       allIssues.push({
         page_url: pageUrl,
         issue_type: 'meta_too_long',
@@ -222,7 +217,7 @@ export async function analyzeIssues(
         },
       });
     }
-    if (current.meta_description && current.meta_description.length > 160) {
+    if (current.meta_description && current.meta_description.length > config.metaDescMaxLength) {
       allIssues.push({
         page_url: pageUrl,
         issue_type: 'meta_too_long',
@@ -258,10 +253,10 @@ export async function analyzeIssues(
   }
 
   for (const [keyword, cr] of competitorByKeyword) {
-    // 8. Content gap — competitor ranks top 5, we're absent or >20
-    if (cr.our_position === null || cr.our_position > 20) {
+    // 8. Content gap — competitor ranks in top positions, we're absent or beyond max
+    if (cr.our_position === null || cr.our_position > config.contentGapMaxPosition) {
       const topCompetitors = (cr.competitors || []).filter(
-        (c: any) => c.position <= 5
+        (c: any) => c.position <= config.competitorTopPosition
       );
       if (topCompetitors.length > 0) {
         allIssues.push({
@@ -281,10 +276,10 @@ export async function analyzeIssues(
       }
     }
 
-    // 9. Competitor outranking — we rank 5-20, competitor ranks 1-3
-    if (cr.our_position && cr.our_position >= 5 && cr.our_position <= 20) {
+    // 9. Competitor outranking — we rank in configurable range, competitor outranks us
+    if (cr.our_position && cr.our_position >= config.outrankedMinPosition && cr.our_position <= config.outrankedMaxPosition) {
       const topCompetitors = (cr.competitors || []).filter(
-        (c: any) => c.position <= 3
+        (c: any) => c.position <= config.outrankedByPosition
       );
       if (topCompetitors.length > 0) {
         allIssues.push({

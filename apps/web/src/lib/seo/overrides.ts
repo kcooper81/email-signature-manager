@@ -20,10 +20,17 @@ interface ContentOverride {
 // Simple cache
 let overrideCache = new Map<string, ContentOverride | null>();
 let cacheTimestamp = 0;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+let cacheTTLMs = 5 * 60 * 1000; // 5 minutes default
 
 function isCacheValid(): boolean {
-  return Date.now() - cacheTimestamp < CACHE_TTL_MS;
+  return Date.now() - cacheTimestamp < cacheTTLMs;
+}
+
+/**
+ * Update the cache TTL from config. Called when settings are loaded.
+ */
+export function setCacheTTL(minutes: number): void {
+  cacheTTLMs = minutes * 60 * 1000;
 }
 
 /**

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySuperAdmin } from '@/lib/seo/admin-auth';
+import { mergeConfig } from '@/lib/seo/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +17,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data);
+    // Return algorithm_config merged with defaults so UI always sees full config
+    return NextResponse.json({
+      ...data,
+      algorithm_config: mergeConfig(data?.algorithm_config),
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -29,6 +34,7 @@ const ALLOWED_FIELDS = [
   'competitors',
   'daily_serp_query_limit',
   'auto_run_types',
+  'algorithm_config',
 ] as const;
 
 export async function PUT(request: NextRequest) {

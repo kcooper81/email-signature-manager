@@ -3,6 +3,7 @@ import { verifySuperAdmin } from '@/lib/seo/admin-auth';
 import { collectSearchData, collectCompetitorData } from '@/lib/seo/data-collector';
 import { analyzeIssues } from '@/lib/seo/analyzer';
 import { generateRecommendations } from '@/lib/seo/optimizer';
+import { mergeConfig } from '@/lib/seo/config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,20 +14,30 @@ export async function POST(request: NextRequest) {
     const startTime = Date.now();
     const allErrors: string[] = [];
 
+    // Load algorithm config from settings
+    const { data: settings } = await supabaseAdmin
+      .from('seo_settings')
+      .select('algorithm_config, daily_serp_query_limit')
+      .limit(1)
+      .single();
+
+    const config = mergeConfig(settings?.algorithm_config);
+    const serpQueryLimit = settings?.daily_serp_query_limit || 50;
+
     // Step 1: Collect search data (Search Console + GA4)
-    const searchResult = await collectSearchData(supabaseAdmin);
+    const searchResult = await collectSearchData(supabaseAdmin, config);
     allErrors.push(...searchResult.errors);
 
     // Step 2: Collect competitor SERP data
-    const competitorResult = await collectCompetitorData(supabaseAdmin);
+    const competitorResult = await collectCompetitorData(supabaseAdmin, serpQueryLimit, config);
     allErrors.push(...competitorResult.errors);
 
     // Step 3: Analyze issues from collected data
-    const analysisResult = await analyzeIssues(supabaseAdmin);
+    const analysisResult = await analyzeIssues(supabaseAdmin, config);
     allErrors.push(...analysisResult.errors);
 
     // Step 4: Generate recommendations from issues
-    const recommendationResult = await generateRecommendations(supabaseAdmin);
+    const recommendationResult = await generateRecommendations(supabaseAdmin, config);
     allErrors.push(...recommendationResult.errors);
 
     const duration = Date.now() - startTime;

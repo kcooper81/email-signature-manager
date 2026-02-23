@@ -4,6 +4,7 @@ import { collectSearchData, collectCompetitorData } from '@/lib/seo/data-collect
 import { analyzeIssues } from '@/lib/seo/analyzer';
 import { generateRecommendations } from '@/lib/seo/optimizer';
 import { enhanceRecommendation, isClaudeConfigured } from '@/lib/seo/ai-enhancer';
+import { mergeConfig } from '@/lib/seo/config';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes max (Vercel Pro)
@@ -34,9 +35,10 @@ export async function GET(request: NextRequest) {
     const autoRunEnabled = settings?.auto_run_enabled && settings?.claude_api_enabled;
     const autoRunMinConfidence = settings?.auto_run_min_confidence || 0.85;
     const autoRunTypes: string[] = settings?.auto_run_types || ['meta_title', 'meta_description'];
+    const config = mergeConfig(settings?.algorithm_config);
 
     // Step 1: Collect Search Console + GA4 data
-    const searchResult = await collectSearchData(supabase);
+    const searchResult = await collectSearchData(supabase, config);
     summary.searchData = {
       snapshotsUpserted: searchResult.upserted,
       errors: searchResult.errors,
@@ -44,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     // Step 2: Collect SERP competitor data (if configured)
     if (process.env.SERPER_API_KEY) {
-      const serpResult = await collectCompetitorData(supabase, serpQueryLimit);
+      const serpResult = await collectCompetitorData(supabase, serpQueryLimit, config);
       summary.competitorData = {
         queriesRun: serpResult.queriesRun,
         errors: serpResult.errors,
@@ -54,14 +56,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Step 3: Run analyzer
-    const analysisResult = await analyzeIssues(supabase);
+    const analysisResult = await analyzeIssues(supabase, config);
     summary.analysis = {
       issuesFound: analysisResult.issuesFound,
       errors: analysisResult.errors,
     };
 
     // Step 4: Generate recommendations
-    const optimizerResult = await generateRecommendations(supabase);
+    const optimizerResult = await generateRecommendations(supabase, config);
     summary.recommendations = {
       created: optimizerResult.created,
       errors: optimizerResult.errors,
