@@ -1,4 +1,4 @@
-import { MarketingHeader } from '@/components/marketing/header';
+import { BlogFAQOverride } from '@/components/seo/blog-faq-override';
 
 export default function BlogLayout({
   children,
@@ -8,6 +8,7 @@ export default function BlogLayout({
   return (
     <>
       {children}
+      <BlogFAQOverride />
     </>
   );
 }
