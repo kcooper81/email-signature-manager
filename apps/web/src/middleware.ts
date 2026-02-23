@@ -98,6 +98,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Pass pathname to server components via header
+  response.headers.set('x-pathname', pathname);
+
   // Auth gating: redirect authenticated users away from auth routes
   if (user && isAuthRoute(pathname)) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
