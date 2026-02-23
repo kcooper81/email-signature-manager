@@ -4,6 +4,10 @@ import { generateMetadata as genMeta, generateBreadcrumbSchema, generateFAQSchem
 import { JsonLd } from '@/components/seo/json-ld';
 import { SEOLandingPage } from '@/lib/seo-pages/renderer';
 import { useCasesPages } from '@/lib/seo-pages/data/use-cases';
+import { getPageWithOverrides, getGeneratedPage, getMetaOverrides } from '@/lib/seo/overrides';
+
+export const dynamicParams = true;
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -15,30 +19,39 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const page = useCasesPages.find((p) => p.slug === slug);
+  let page = useCasesPages.find((p) => p.slug === slug);
+  if (!page) {
+    page = await getGeneratedPage('use-cases', slug) ?? undefined;
+  }
   if (!page) return {};
+  const overrides = await getMetaOverrides(page.meta.canonical);
   return genMeta({
-    title: page.meta.title,
-    description: page.meta.description,
-    keywords: page.meta.keywords,
+    title: overrides?.title || page.meta.title,
+    description: overrides?.description || page.meta.description,
+    keywords: overrides?.keywords || page.meta.keywords,
     canonical: page.meta.canonical,
   });
 }
 
 export default async function UseCasePage({ params }: PageProps) {
   const { slug } = await params;
-  const page = useCasesPages.find((p) => p.slug === slug);
+  let page = useCasesPages.find((p) => p.slug === slug);
+  if (!page) {
+    page = await getGeneratedPage('use-cases', slug) ?? undefined;
+  }
   if (!page) notFound();
 
-  const schemas: Record<string, unknown>[] = [generateBreadcrumbSchema(page.breadcrumbs)];
-  if (page.faqs && page.faqs.length > 0) {
-    schemas.push(generateFAQSchema(page.faqs));
+  const merged = await getPageWithOverrides(page);
+
+  const schemas: Record<string, unknown>[] = [generateBreadcrumbSchema(merged.breadcrumbs)];
+  if (merged.faqs && merged.faqs.length > 0) {
+    schemas.push(generateFAQSchema(merged.faqs));
   }
 
   return (
     <>
       <JsonLd data={schemas} />
-      <SEOLandingPage data={page} />
+      <SEOLandingPage data={merged} />
     </>
   );
 }

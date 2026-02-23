@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { createServiceClient } from '@/lib/supabase/server';
 import { industriesPages } from '@/lib/seo-pages/data/industries';
 import { useCasesPages } from '@/lib/seo-pages/data/use-cases';
 import { solutionsPages } from '@/lib/seo-pages/data/solutions';
@@ -132,7 +133,7 @@ const blogPosts = [
   { slug: 'why-email-signatures-matter', date: '2026-01-28' },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
   
   // Core pages
@@ -265,6 +266,31 @@ export default function sitemap(): MetadataRoute.Sitemap {
       }))
   );
 
+  // Auto-generated SEO pages from DB
+  let generatedPages: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = createServiceClient();
+    const { data: dbPages } = await supabase
+      .from('seo_generated_pages')
+      .select('category, slug, page_data, published_at')
+      .eq('status', 'published');
+
+    if (dbPages) {
+      generatedPages = dbPages.map((gp) => {
+        const pageData = gp.page_data as any;
+        const canonical = pageData?.meta?.canonical || `/${gp.category}/${gp.slug}`;
+        return {
+          url: `${baseUrl}${canonical}`,
+          lastModified: gp.published_at ? new Date(gp.published_at) : new Date(),
+          changeFrequency: 'monthly' as const,
+          priority: 0.7,
+        };
+      });
+    }
+  } catch {
+    // Silently skip if DB not available (build time)
+  }
+
   return [
     ...corePages,
     ...solutionPages,
@@ -274,5 +300,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...industryPages,
     ...otherPages,
     ...seoLandingPages,
+    ...generatedPages,
   ];
 }
