@@ -60,9 +60,13 @@ function getSubdomain(hostname: string): string | null {
 }
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Set pathname on request headers so server components can read it via headers()
+  request.headers.set('x-pathname', pathname);
+
   const { response, user } = await updateSession(request);
 
-  const { pathname } = request.nextUrl;
   const hostname = request.headers.get('host') || '';
 
   // Check for custom subdomain (white-label)
@@ -97,9 +101,6 @@ export async function middleware(request: NextRequest) {
       }
     }
   }
-
-  // Pass pathname to server components via header
-  response.headers.set('x-pathname', pathname);
 
   // Auth gating: redirect authenticated users away from auth routes
   if (user && isAuthRoute(pathname)) {
