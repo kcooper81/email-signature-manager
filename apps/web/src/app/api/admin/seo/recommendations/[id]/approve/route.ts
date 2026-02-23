@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySuperAdmin } from '@/lib/seo/admin-auth';
+import { generateAndStorePage } from '@/lib/seo/page-generator';
 
 export async function POST(
   request: NextRequest,
@@ -31,6 +32,7 @@ export async function POST(
     }
 
     const now = new Date().toISOString();
+    const suggestedValue = recommendation.suggested_value as Record<string, unknown>;
 
     // Update recommendation status
     const { error: updateError } = await supabaseAdmin
@@ -46,7 +48,92 @@ export async function POST(
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    // Create content override based on recommendation type
+    // --- Handle new_page: generate a draft page ---
+    let generatedPageId: string | null = null;
+    let generatedPageUrl: string | null = null;
+
+    if (recommendation.recommendation_type === 'new_page') {
+      const category = (suggestedValue.category as string) || 'guides';
+      const slug = (suggestedValue.suggestedSlug as string) || 'untitled';
+      const keyword = (suggestedValue.keyword as string) || slug;
+      const competitorTitles = (suggestedValue.competitorTitles as string[]) || [];
+
+      // Check if Claude is enabled for AI generation
+      const { data: settings } = await supabaseAdmin
+        .from('seo_settings')
+        .select('claude_api_enabled')
+        .limit(1)
+        .single();
+
+      const useAI = settings?.claude_api_enabled && !!process.env.ANTHROPIC_API_KEY;
+
+      const result = await generateAndStorePage(
+        supabaseAdmin,
+        category,
+        slug,
+        keyword,
+        competitorTitles.map((t) => ({ title: t, description: '' })),
+        useAI,
+        id
+      );
+
+      if (result.success && result.pageId) {
+        generatedPageId = result.pageId;
+        // Build the preview URL based on category routing
+        const routePrefixes: Record<string, string> = {
+          alternatives: '/alternatives', features: '/features',
+          industries: '/industries', 'use-cases': '/use-cases',
+          integrations: '/integrations', guides: '/guides',
+          compare: '/compare', compliance: '/compliance',
+          'migrate-from': '/migrate-from', glossary: '/glossary',
+          examples: '/examples', 'case-studies': '/case-studies',
+          checklists: '/checklists', platforms: '/platforms',
+          for: '/for', 'email-signature-templates': '/email-signature-templates',
+          'email-signatures': '/email-signatures',
+        };
+        const prefix = routePrefixes[category] || `/${category}`;
+        generatedPageUrl = `${prefix}/${slug}`;
+
+        // Store generated page info back on the recommendation for UI access
+        await supabaseAdmin
+          .from('seo_recommendations')
+          .update({
+            suggested_value: {
+              ...suggestedValue,
+              generated_page_id: generatedPageId,
+              generated_page_url: generatedPageUrl,
+            },
+          })
+          .eq('id', id);
+      }
+
+      // Log the action
+      await supabaseAdmin.from('seo_change_log').insert({
+        action: 'page_generated',
+        page_url: generatedPageUrl,
+        details: {
+          recommendation_id: id,
+          generated_page_id: generatedPageId,
+          category,
+          slug,
+          keyword,
+          status: result.success ? 'draft' : 'failed',
+          error: result.error || null,
+          applied_by_user: userId,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        recommendation_id: id,
+        type: 'new_page',
+        generated_page_id: generatedPageId,
+        generated_page_url: generatedPageUrl,
+        page_status: 'draft',
+      });
+    }
+
+    // --- Handle content overrides for existing pages ---
     if (recommendation.page_url) {
       const overrideData: Record<string, unknown> = {
         page_url: recommendation.page_url,
@@ -54,8 +141,6 @@ export async function POST(
         recommendation_id: id,
         updated_at: now,
       };
-
-      const suggestedValue = recommendation.suggested_value as Record<string, unknown>;
 
       switch (recommendation.recommendation_type) {
         case 'meta_title':
@@ -68,12 +153,11 @@ export async function POST(
           overrideData.additional_faqs = suggestedValue.faqs || [];
           break;
         default:
-          // Other types don't create content overrides directly
           break;
       }
 
       // Only upsert if we have something to override
-      if (Object.keys(overrideData).length > 2) {
+      if (Object.keys(overrideData).length > 4) {
         const { error: upsertError } = await supabaseAdmin
           .from('seo_content_overrides')
           .upsert(overrideData, { onConflict: 'page_url' });
