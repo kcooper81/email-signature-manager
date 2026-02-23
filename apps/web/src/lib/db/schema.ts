@@ -1177,9 +1177,16 @@ export const syncConfigurations = pgTable('sync_configurations', {
   autoApplyChanges: boolean('auto_apply_changes').default(false),
   syncNewUsers: boolean('sync_new_users').default(true),
   syncDeactivated: boolean('sync_deactivated').default(true),
-  apiKey: text('api_key'),
-  apiUrl: text('api_url'),
+  apiKey: text('api_key'), // Legacy: for manual API keys or temporary OAuth tokens
+  apiUrl: text('api_url'), // Legacy: subdomain or company ID
   webhookSecret: text('webhook_secret'),
+  // OAuth fields
+  oauthAccessToken: text('oauth_access_token'), // Encrypted OAuth access token
+  oauthRefreshToken: text('oauth_refresh_token'), // Encrypted OAuth refresh token
+  oauthTokenExpiresAt: timestamp('oauth_token_expires_at'), // When access token expires
+  oauthCompanyId: text('oauth_company_id'), // Company/tenant ID from OAuth
+  oauthSubdomain: text('oauth_subdomain'), // Subdomain from OAuth (BambooHR)
+  // Sync status
   lastSyncAt: timestamp('last_sync_at'),
   lastSyncStatus: text('last_sync_status'),
   lastSyncResult: jsonb('last_sync_result'),

@@ -37,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
       .eq('organization_id', userData.organization_id)
-      .select()
+      .select('id, organization_id, provider, schedule_type, field_mapping, conflict_resolution, auto_apply_changes, sync_new_users, sync_deactivated, api_url, is_active, last_sync_at, last_sync_status, last_sync_result, created_at, updated_at')
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

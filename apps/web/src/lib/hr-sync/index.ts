@@ -48,7 +48,7 @@ export async function runSync(
     // Fetch data from HR provider
     let hrRecords: any[] = [];
     try {
-      hrRecords = await fetchHrData(config.provider, config.api_key, config.api_url);
+      hrRecords = await fetchHrData(config.provider, config.api_key, config.api_url, config);
     } catch (err: any) {
       result.errors.push(`Failed to fetch HR data: ${err.message}`);
       await updateSyncStatus(supabase, syncConfigId, 'failed', result);
@@ -121,24 +121,71 @@ export async function runSync(
   }
 }
 
-async function fetchHrData(provider: string, apiKey: string | null, apiUrl: string | null): Promise<any[]> {
-  // Provider-specific API calls would go here
-  // For now, return empty array — actual implementations in provider-specific files
-  switch (provider) {
-    case 'bamboohr':
-      const { fetchBambooHREmployees } = await import('./bamboohr');
-      return fetchBambooHREmployees(apiKey || '', apiUrl || '');
-    case 'gusto':
-      const { fetchGustoEmployees } = await import('./gusto');
-      // For Gusto: apiKey = access_token, apiUrl = company_id or contains 'demo' for sandbox
-      const companyId = apiUrl?.includes('demo') ? apiUrl.split('/').pop() || '' : apiUrl || '';
-      const useSandbox = apiUrl?.includes('demo') || false;
-      return fetchGustoEmployees(apiKey || '', companyId, useSandbox);
-    case 'rippling':
-      const { fetchRipplingEmployees } = await import('./rippling');
-      return fetchRipplingEmployees(apiKey || '', apiUrl || '');
-    default:
-      return [];
+async function fetchHrData(
+  provider: string, 
+  apiKey: string | null, 
+  apiUrl: string | null,
+  config: any
+): Promise<any[]> {
+  // Check if OAuth tokens are available, otherwise fall back to legacy API key
+  const hasOAuth = config.oauth_access_token && config.oauth_refresh_token;
+  
+  if (hasOAuth) {
+    // Use OAuth with automatic token refresh
+    const { getValidAccessToken } = await import('../oauth/token-refresh');
+    const accessToken = await getValidAccessToken(config);
+    
+    switch (provider) {
+      case 'bamboohr': {
+        const { fetchBambooHREmployees } = await import('./bamboohr');
+        const subdomain = config.oauth_subdomain || apiUrl || '';
+        return fetchBambooHREmployees(accessToken, subdomain);
+      }
+      case 'gusto': {
+        const { fetchGustoEmployees } = await import('./gusto');
+        const companyId = config.oauth_company_id || apiUrl || '';
+        const useSandbox = apiUrl?.includes('demo') || false;
+        return fetchGustoEmployees(accessToken, companyId, useSandbox);
+      }
+      case 'rippling': {
+        const { fetchRipplingEmployees } = await import('./rippling');
+        return fetchRipplingEmployees(accessToken, apiUrl || '');
+      }
+      case 'adp': {
+        const { fetchADPEmployees } = await import('./adp');
+        // ADP uses client credentials, stored in api_key field as "clientId:clientSecret"
+        const [clientId, clientSecret] = (apiKey || '').split(':');
+        return fetchADPEmployees(clientId, clientSecret, apiUrl || '');
+      }
+      default:
+        return [];
+    }
+  } else {
+    // Legacy API key flow
+    switch (provider) {
+      case 'bamboohr': {
+        const { fetchBambooHREmployees } = await import('./bamboohr');
+        return fetchBambooHREmployees(apiKey || '', apiUrl || '');
+      }
+      case 'gusto': {
+        const { fetchGustoEmployees } = await import('./gusto');
+        const companyId = apiUrl?.includes('demo') ? apiUrl.split('/').pop() || '' : apiUrl || '';
+        const useSandbox = apiUrl?.includes('demo') || false;
+        return fetchGustoEmployees(apiKey || '', companyId, useSandbox);
+      }
+      case 'rippling': {
+        const { fetchRipplingEmployees } = await import('./rippling');
+        return fetchRipplingEmployees(apiKey || '', apiUrl || '');
+      }
+      case 'adp': {
+        const { fetchADPEmployees } = await import('./adp');
+        // ADP uses client credentials, stored in api_key field as "clientId:clientSecret"
+        const [clientId, clientSecret] = (apiKey || '').split(':');
+        return fetchADPEmployees(clientId, clientSecret, apiUrl || '');
+      }
+      default:
+        return [];
+    }
   }
 }
 

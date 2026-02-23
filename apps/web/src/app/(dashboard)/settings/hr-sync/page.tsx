@@ -47,6 +47,7 @@ const providerOptions = [
   { value: 'bamboohr', label: 'BambooHR' },
   { value: 'gusto', label: 'Gusto' },
   { value: 'rippling', label: 'Rippling' },
+  { value: 'adp', label: 'ADP Workforce Now' },
   { value: 'google', label: 'Google Directory' },
   { value: 'microsoft', label: 'Microsoft Directory' },
 ];
@@ -68,6 +69,7 @@ const providerLabels: Record<string, string> = {
   bamboohr: 'BambooHR',
   gusto: 'Gusto',
   rippling: 'Rippling',
+  adp: 'ADP Workforce Now',
   google: 'Google Directory',
   microsoft: 'Microsoft Directory',
 };
@@ -77,6 +79,7 @@ function getApiKeyPlaceholder(provider: string): string {
     case 'bamboohr': return 'Enter your BambooHR API key';
     case 'gusto': return 'Enter OAuth access token';
     case 'rippling': return 'Enter OAuth access token';
+    case 'adp': return 'clientId:clientSecret';
     default: return 'Enter API key';
   }
 }
@@ -86,6 +89,7 @@ function getApiKeyHint(provider: string): string {
     case 'bamboohr': return 'Get from: Settings → API Keys in your BambooHR account';
     case 'gusto': return 'OAuth token from Gusto developer portal (expires in ~2 hours)';
     case 'rippling': return 'OAuth token from Rippling (contact support for access)';
+    case 'adp': return 'Format: clientId:clientSecret (get from ADP Marketplace or contact ADP support)';
     case 'google': return 'Uses existing Google Workspace connection - no key needed';
     case 'microsoft': return 'Uses existing Microsoft 365 connection - no key needed';
     default: return '';
@@ -97,6 +101,7 @@ function getApiUrlLabel(provider: string): string {
     case 'bamboohr': return 'Subdomain';
     case 'gusto': return 'Company ID';
     case 'rippling': return 'API URL (Optional)';
+    case 'adp': return 'API URL (Optional)';
     default: return 'API URL (Optional)';
   }
 }
@@ -106,6 +111,7 @@ function getApiUrlPlaceholder(provider: string): string {
     case 'bamboohr': return 'yourcompany (just the subdomain)';
     case 'gusto': return 'demo/1234567890 (for sandbox) or 1234567890 (production)';
     case 'rippling': return 'Leave blank to use default';
+    case 'adp': return 'Leave blank to use default';
     default: return '';
   }
 }
@@ -113,8 +119,9 @@ function getApiUrlPlaceholder(provider: string): string {
 function getApiUrlHint(provider: string): string {
   switch (provider) {
     case 'bamboohr': return 'Enter just the subdomain from yourcompany.bamboohr.com';
-    case 'gusto': return 'Include "demo/" prefix for sandbox testing';
+    case 'gusto': return 'Find in Gusto: Go to any API endpoint URL (e.g., https://api.gusto.com/v1/companies/YOUR_ID). For sandbox, prefix with "demo/" (e.g., demo/1234567890)';
     case 'rippling': return 'Custom API endpoint (optional)';
+    case 'adp': return 'Custom API endpoint (optional, defaults to https://api.adp.com/hr/v2/workers)';
     default: return '';
   }
 }
@@ -133,6 +140,23 @@ export default function HrSyncPage() {
 
   useEffect(() => {
     loadConfigurations();
+    
+    // Handle OAuth callback success/error messages
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get('success');
+    const error = params.get('error');
+    
+    if (success === 'gusto_connected') {
+      toast.success('Gusto connected successfully', 'Your integration is ready to use');
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (success === 'bamboohr_connected') {
+      toast.success('BambooHR connected successfully', 'Your integration is ready to use');
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (error) {
+      toast.error('Connection failed', decodeURIComponent(error));
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, []);
 
   async function loadConfigurations() {
@@ -201,6 +225,7 @@ export default function HrSyncPage() {
     try {
       const payload: any = { ...form };
       if (editingId && !payload.apiKey) delete payload.apiKey; // Don't overwrite if not changed
+      if (editingId && !payload.webhookSecret) delete payload.webhookSecret; // Don't overwrite if not changed
 
       const url = editingId
         ? `/api/hr-sync/configurations/${editingId}`
