@@ -51,6 +51,19 @@ export function MarketingFooter() {
               <li><Link href="/compare/codetwo" className="hover:text-gray-900 transition-colors">vs CodeTwo</Link></li>
             </ul>
           </div>
+
+          <div>
+            <h4 className="font-semibold text-sm mb-4 text-gray-900">Free Tools</h4>
+            <ul className="space-y-3 text-sm text-gray-600">
+              <li><Link href="/tools/signature-generator" className="hover:text-gray-900 transition-colors">Signature Generator</Link></li>
+              <li><Link href="/tools/signature-templates" className="hover:text-gray-900 transition-colors">Signature Templates</Link></li>
+              <li><Link href="/tools/roi-calculator" className="hover:text-gray-900 transition-colors">ROI Calculator</Link></li>
+              <li><Link href="/tools/signature-audit" className="hover:text-gray-900 transition-colors">Signature Audit</Link></li>
+              <li><Link href="/tools/disclaimer-generator" className="hover:text-gray-900 transition-colors">Disclaimer Generator</Link></li>
+              <li><Link href="/tools/email-preview" className="hover:text-gray-900 transition-colors">Email Preview</Link></li>
+              <li><Link href="/tools/html-signature-converter" className="hover:text-gray-900 transition-colors">HTML Converter</Link></li>
+            </ul>
+          </div>
           
           <div>
             <h4 className="font-semibold text-sm mb-4 text-gray-900">Company</h4>

@@ -271,6 +271,14 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
                 <Wrench className="h-4 w-4 text-gray-400 group-hover/item:text-violet-600" />
                 <span className="text-sm text-gray-700">HTML Converter</span>
               </Link>
+              <Link href="/tools/roi-calculator" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 group/item transition-colors">
+                <Zap className="h-4 w-4 text-gray-400 group-hover/item:text-violet-600" />
+                <span className="text-sm text-gray-700">ROI Calculator</span>
+              </Link>
+              <Link href="/tools/signature-audit" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 group/item transition-colors">
+                <Wrench className="h-4 w-4 text-gray-400 group-hover/item:text-violet-600" />
+                <span className="text-sm text-gray-700">Signature Audit</span>
+              </Link>
               <div className="h-px bg-gray-200 my-2"></div>
               <Link href="/help" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 group/item transition-colors">
                 <FileText className="h-4 w-4 text-gray-400 group-hover/item:text-violet-600" />
@@ -495,6 +503,14 @@ export function MarketingHeader({ transparent = true, variant = 'default' }: Mar
                 <Link href="/tools/signature-templates" className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                   <FileText className="h-4 w-4 text-gray-400" />
                   Templates
+                </Link>
+                <Link href="/tools/roi-calculator" className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+                  <Zap className="h-4 w-4 text-gray-400" />
+                  ROI Calculator
+                </Link>
+                <Link href="/tools/signature-audit" className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+                  <Wrench className="h-4 w-4 text-gray-400" />
+                  Signature Audit
                 </Link>
                 <Link href="/help" className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg" onClick={() => setMobileMenuOpen(false)}>
                   <FileText className="h-4 w-4 text-gray-400" />
