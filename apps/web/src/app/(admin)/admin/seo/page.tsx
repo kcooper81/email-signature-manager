@@ -34,6 +34,7 @@ import {
   RotateCcw,
   Award,
   CheckSquare,
+  Wrench,
 } from 'lucide-react';
 
 type Tab = 'overview' | 'competitors' | 'action-queue' | 'content-scores' | 'change-log' | 'settings';
@@ -63,6 +64,7 @@ interface PageScoreEntry {
       structure: { score: number; issues: string[] };
       faqCoverage: { score: number; issues: string[] };
       readability: { score: number; issues: string[]; avgSentenceLength: number };
+      freshness: { score: number; issues: string[]; lastModified: string | null };
     };
   };
 }
@@ -233,6 +235,10 @@ export default function SEODashboardPage() {
   // Bulk selection state
   const [selectedRecs, setSelectedRecs] = useState<Set<string>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
+
+  // Content score fix state
+  const [fixLoading, setFixLoading] = useState<string | null>(null);
+  const [fixMessage, setFixMessage] = useState<{ url: string; text: string; type: 'success' | 'info' } | null>(null);
 
   // Loading states
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -461,6 +467,67 @@ export default function SEODashboardPage() {
     }
   }
 
+  // --- Content Score Fix Actions ---
+
+  async function fixIssue(pageUrl: string, issueCategory: string) {
+    const key = `${pageUrl}::${issueCategory}`;
+    setFixLoading(key);
+    setFixMessage(null);
+    try {
+      const res = await fetch('/api/admin/seo/content-scores/fix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page_url: pageUrl, issue_category: issueCategory }),
+      });
+      const data = await res.json();
+      if (data.created) {
+        setFixMessage({ url: pageUrl, text: `Recommendation created! View in Action Queue.`, type: 'success' });
+      } else if (data.existing_id) {
+        setFixMessage({ url: pageUrl, text: 'A recommendation already exists for this issue.', type: 'info' });
+      } else if (data.error) {
+        setFixMessage({ url: pageUrl, text: data.error, type: 'info' });
+      }
+    } catch (e: any) {
+      console.error('Fix failed:', e);
+    }
+    setFixLoading(null);
+  }
+
+  async function fixAllIssues(pageUrl: string) {
+    setFixLoading(`${pageUrl}::all`);
+    setFixMessage(null);
+    const categories = ['metaTitle', 'metaDescription', 'faqCoverage', 'contentDepth'];
+    let created = 0;
+    for (const cat of categories) {
+      try {
+        const res = await fetch('/api/admin/seo/content-scores/fix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ page_url: pageUrl, issue_category: cat }),
+        });
+        const data = await res.json();
+        if (data.created) created++;
+      } catch { /* continue */ }
+    }
+    setFixMessage({
+      url: pageUrl,
+      text: created > 0 ? `${created} recommendation(s) created! View in Action Queue.` : 'No fixable issues found or recommendations already exist.',
+      type: created > 0 ? 'success' : 'info',
+    });
+    setFixLoading(null);
+  }
+
+  // Map issue label to API category
+  function getIssueCategoryFromLabel(label: string): string | null {
+    const map: Record<string, string> = {
+      'Meta Title': 'metaTitle',
+      'Meta Description': 'metaDescription',
+      'FAQ Coverage': 'faqCoverage',
+      'Content Depth': 'contentDepth',
+    };
+    return map[label] || null;
+  }
+
   // --- Helper renderers ---
 
   function severityBadge(severity: string) {
@@ -494,6 +561,8 @@ export default function SEODashboardPage() {
       add_internal_links: 'Internal Links',
       add_comparison_table: 'Comparison Table',
       add_checklist: 'Add Checklist',
+      consolidate_content: 'Consolidate',
+      refresh_content: 'Refresh Content',
     };
     return (
       <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-violet-100 text-violet-700">
@@ -1176,6 +1245,42 @@ export default function SEODashboardPage() {
                           {/* Score breakdown */}
                           {expandedScore === ps.url && (
                             <div className="mt-4 pt-4 border-t space-y-3">
+                              {/* Fix All button */}
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-medium text-slate-500">Score Breakdown</span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => { e.stopPropagation(); fixAllIssues(ps.url); }}
+                                  disabled={fixLoading === `${ps.url}::all`}
+                                  className="text-violet-600 border-violet-200 hover:bg-violet-50"
+                                >
+                                  {fixLoading === `${ps.url}::all` ? (
+                                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                  ) : (
+                                    <Wrench className="h-3 w-3 mr-1" />
+                                  )}
+                                  Fix All Issues
+                                </Button>
+                              </div>
+
+                              {/* Fix message */}
+                              {fixMessage && fixMessage.url === ps.url && (
+                                <div className={`text-xs px-3 py-2 rounded-md ${
+                                  fixMessage.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                                }`}>
+                                  {fixMessage.text}
+                                  {fixMessage.type === 'success' && (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setActiveTab('action-queue'); }}
+                                      className="ml-2 underline font-medium"
+                                    >
+                                      Go to Action Queue
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+
                               {/* Score bars */}
                               <div className="grid gap-2">
                                 {([
@@ -1186,33 +1291,54 @@ export default function SEODashboardPage() {
                                   { label: 'Structure', score: ps.score.breakdown.structure.score, max: 15, issues: ps.score.breakdown.structure.issues },
                                   { label: 'FAQ Coverage', score: ps.score.breakdown.faqCoverage.score, max: 10, issues: ps.score.breakdown.faqCoverage.issues },
                                   { label: 'Readability', score: ps.score.breakdown.readability.score, max: 10, issues: ps.score.breakdown.readability.issues },
-                                ] as { label: string; score: number; max: number; issues: string[] }[]).map((item) => (
-                                  <div key={item.label}>
-                                    <div className="flex items-center justify-between text-xs mb-0.5">
-                                      <span className="text-slate-600">{item.label}</span>
-                                      <span className="font-medium">{item.score}/{item.max}</span>
+                                  { label: 'Freshness (bonus)', score: ps.score.breakdown.freshness.score, max: 5, issues: ps.score.breakdown.freshness.issues },
+                                ] as { label: string; score: number; max: number; issues: string[] }[]).map((item) => {
+                                  const fixCategory = getIssueCategoryFromLabel(item.label);
+                                  const fixKey = `${ps.url}::${fixCategory}`;
+                                  return (
+                                    <div key={item.label}>
+                                      <div className="flex items-center justify-between text-xs mb-0.5">
+                                        <span className="text-slate-600">{item.label}</span>
+                                        <span className="font-medium">{item.score}/{item.max}</span>
+                                      </div>
+                                      <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full ${
+                                            item.score / item.max >= 0.8 ? 'bg-green-500' :
+                                            item.score / item.max >= 0.5 ? 'bg-yellow-500' : 'bg-red-500'
+                                          }`}
+                                          style={{ width: `${(item.score / item.max) * 100}%` }}
+                                        />
+                                      </div>
+                                      {item.issues.length > 0 && (
+                                        <div className="mt-1 space-y-0.5">
+                                          {item.issues.map((issue, i) => (
+                                            <div key={i} className="flex items-center justify-between gap-2">
+                                              <span className="text-xs text-slate-500 flex items-start gap-1 flex-1">
+                                                <AlertTriangle className="h-3 w-3 text-amber-500 mt-0.5 flex-shrink-0" />
+                                                {issue}
+                                              </span>
+                                              {fixCategory && i === 0 && (
+                                                <button
+                                                  onClick={(e) => { e.stopPropagation(); fixIssue(ps.url, fixCategory); }}
+                                                  disabled={fixLoading === fixKey}
+                                                  className="flex-shrink-0 flex items-center gap-0.5 text-[10px] font-medium text-violet-600 hover:text-violet-800 bg-violet-50 hover:bg-violet-100 px-1.5 py-0.5 rounded transition-colors disabled:opacity-50"
+                                                >
+                                                  {fixLoading === fixKey ? (
+                                                    <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                                                  ) : (
+                                                    <Wrench className="h-2.5 w-2.5" />
+                                                  )}
+                                                  Fix
+                                                </button>
+                                              )}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
                                     </div>
-                                    <div className="w-full bg-slate-100 rounded-full h-1.5">
-                                      <div
-                                        className={`h-1.5 rounded-full ${
-                                          item.score / item.max >= 0.8 ? 'bg-green-500' :
-                                          item.score / item.max >= 0.5 ? 'bg-yellow-500' : 'bg-red-500'
-                                        }`}
-                                        style={{ width: `${(item.score / item.max) * 100}%` }}
-                                      />
-                                    </div>
-                                    {item.issues.length > 0 && (
-                                      <ul className="mt-1 space-y-0.5">
-                                        {item.issues.map((issue, i) => (
-                                          <li key={i} className="text-xs text-slate-500 flex items-start gap-1">
-                                            <AlertTriangle className="h-3 w-3 text-amber-500 mt-0.5 flex-shrink-0" />
-                                            {issue}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    )}
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
 
                               {/* Quick stats */}
