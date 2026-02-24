@@ -37,6 +37,7 @@ interface Organization {
   isSuspended: boolean;
   organizationType: string;
   partnerTier: string | null;
+  ownerEmail: string | null;
 }
 
 interface OrphanedUser {
@@ -114,13 +115,42 @@ export default function AccountsPage() {
 
     const { data: orgs, count } = await query;
 
-    if (!orgs) {
+    // Also search by owner email if the search looks like an email
+    let emailOrgIds: string[] = [];
+    if (debouncedSearch && debouncedSearch.includes('@')) {
+      const { data: emailMatches } = await supabase
+        .from('users')
+        .select('organization_id')
+        .eq('role', 'owner')
+        .ilike('email', `%${debouncedSearch}%`);
+      if (emailMatches) {
+        const existingIds = new Set(orgs?.map(o => o.id) || []);
+        emailOrgIds = emailMatches
+          .map(m => m.organization_id)
+          .filter(id => !existingIds.has(id));
+      }
+    }
+
+    // Fetch any extra orgs found via email search
+    let extraOrgs: typeof orgs = [];
+    if (emailOrgIds.length > 0) {
+      const { data: extra } = await supabase
+        .from('organizations')
+        .select('id, name, slug, domain, created_at, organization_type, partner_tier')
+        .in('id', emailOrgIds);
+      extraOrgs = extra || [];
+    }
+
+    const allOrgs = [...(orgs || []), ...extraOrgs];
+    if (allOrgs.length === 0) {
+      setOrganizations([]);
+      setTotalCount(0);
       setLoading(false);
       return;
     }
 
-    setTotalCount(count || 0);
-    const orgIds = orgs.map(o => o.id);
+    setTotalCount((count || 0) + extraOrgs.length);
+    const orgIds = allOrgs.map(o => o.id);
 
     // Get subscriptions
     const { data: subscriptions } = await supabase
@@ -130,16 +160,20 @@ export default function AccountsPage() {
 
     const subsByOrg = new Map(subscriptions?.map(s => [s.organization_id, s.plan]) || []);
 
-    // Get user counts per org
+    // Get user counts and owner emails per org
     const { data: users } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, email, role')
       .in('organization_id', orgIds);
 
     const userCountByOrg = new Map<string, number>();
+    const ownerEmailByOrg = new Map<string, string>();
     users?.forEach(u => {
       const count = userCountByOrg.get(u.organization_id) || 0;
       userCountByOrg.set(u.organization_id, count + 1);
+      if (u.role === 'owner' && !ownerEmailByOrg.has(u.organization_id)) {
+        ownerEmailByOrg.set(u.organization_id, u.email);
+      }
     });
 
     // Get template counts per org
@@ -168,7 +202,7 @@ export default function AccountsPage() {
       }
     });
 
-    const enrichedOrgs: Organization[] = orgs.map(org => ({
+    const enrichedOrgs: Organization[] = allOrgs.map(org => ({
       id: org.id,
       name: org.name,
       slug: org.slug,
@@ -181,6 +215,7 @@ export default function AccountsPage() {
       isSuspended: (org as any).is_suspended || false,
       organizationType: (org as any).organization_type || 'standard',
       partnerTier: (org as any).partner_tier || null,
+      ownerEmail: ownerEmailByOrg.get(org.id) || null,
     }));
 
     setOrganizations(enrichedOrgs);
@@ -239,6 +274,7 @@ export default function AccountsPage() {
   const handleExport = () => {
     const columns: CSVColumn<Organization>[] = [
       { label: 'Name', accessor: (r) => r.name },
+      { label: 'Owner Email', accessor: (r) => r.ownerEmail },
       { label: 'Slug', accessor: (r) => r.slug },
       { label: 'Domain', accessor: (r) => r.domain },
       { label: 'Plan', accessor: (r) => r.plan },
@@ -321,7 +357,7 @@ export default function AccountsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Search by name, slug, or domain..."
+                placeholder="Search by name, slug, domain, or owner email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -504,6 +540,7 @@ export default function AccountsPage() {
                       <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
                         <span>{org.slug}</span>
                         {org.domain && <span>• {org.domain}</span>}
+                        {org.ownerEmail && <span>• {org.ownerEmail}</span>}
                       </div>
                     </div>
                     <div className="flex items-center gap-6 text-sm text-slate-500">
