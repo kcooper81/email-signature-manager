@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-security',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Email Signature Security: Protect Your Brand | Siggly',
+    description: 'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
+    url: '/blog/email-signature-security',
+    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',
+    datePublished: '2025-12-24',
+    author: 'Siggly Team',
+    readTime: '6 min',
+    category: 'Security',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -72,5 +88,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

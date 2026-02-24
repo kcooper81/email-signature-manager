@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-professional-services',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Professional Services Email Signatures | Siggly',
+    description: 'Email signature best practices for professional services firms. Consultants, advisors, and service providers.',
+    url: '/blog/email-signature-professional-services',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop',
+    datePublished: '2025-11-30',
+    author: 'Siggly Team',
+    readTime: '5 min',
+    category: 'Professional Services',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -66,5 +82,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-best-practices',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Email Signature Best Practices: The Complete Guide | Siggly',
+    description: 'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
+    url: '/blog/email-signature-best-practices',
+    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop',
+    datePublished: '2026-02-02',
+    author: 'Siggly Team',
+    readTime: '10 min',
+    category: 'Best Practices',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -274,5 +290,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

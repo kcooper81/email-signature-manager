@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-html-basics',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'HTML Email Signatures: A Technical Guide | Siggly',
+    description: 'Understand HTML email signature basics. Tables, inline styles, and email client compatibility for custom signature development.',
+    url: '/blog/email-signature-html-basics',
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',
+    datePublished: '2025-11-14',
+    author: 'Siggly Team',
+    readTime: '7 min',
+    category: 'Technical',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -75,5 +91,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

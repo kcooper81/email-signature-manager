@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-rebranding',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Updating Email Signatures During Rebranding | Siggly',
+    description: 'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
+    url: '/blog/email-signature-rebranding',
+    image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
+    datePublished: '2025-12-13',
+    author: 'Siggly Team',
+    readTime: '6 min',
+    category: 'Rebranding',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -80,5 +96,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

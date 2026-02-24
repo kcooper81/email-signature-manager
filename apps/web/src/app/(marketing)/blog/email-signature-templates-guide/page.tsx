@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-templates-guide',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Email Signature Templates: Free Designs for Every Industry | Siggly',
+    description: 'Download free email signature templates for professionals. Includes designs for corporate, creative, legal, healthcare, and real estate industries.',
+    url: '/blog/email-signature-templates-guide',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
+    datePublished: '2026-01-20',
+    author: 'Siggly Team',
+    readTime: '6 min',
+    category: 'Templates',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -113,5 +129,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }
