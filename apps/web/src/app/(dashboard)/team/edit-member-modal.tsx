@@ -1,10 +1,12 @@
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label, Input, Button, Switch, Textarea } from '@/components/ui';
-import { Loader2, Save, Trash2, AlertTriangle, UserX, UserCheck, Calendar, Link as LinkIcon } from 'lucide-react';
+import { Loader2, Save, Trash2, AlertTriangle, UserX, UserCheck, Calendar, Link as LinkIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
+import { calculateProfileCompleteness, getIncompleteFields } from '@/lib/hr-sync/profile-completeness';
 
 interface EditMemberModalProps {
   open: boolean;
   onClose: () => void;
+  member: Record<string, any> | null;
   memberName: string;
   memberEmail: string;
   canEditEmail: boolean;
@@ -40,6 +42,7 @@ interface EditMemberModalProps {
 export function EditMemberModal({
   open,
   onClose,
+  member,
   memberName,
   memberEmail,
   canEditEmail,
@@ -69,6 +72,38 @@ export function EditMemberModal({
       </ModalHeader>
       <ModalContent className="max-h-[70vh]">
         <div className="space-y-4">
+        {/* Profile Completeness */}
+        {member && (() => {
+          const score = calculateProfileCompleteness(member);
+          const missing = getIncompleteFields(member);
+          const barColor = score <= 30 ? 'bg-red-500' : score <= 60 ? 'bg-amber-500' : score < 100 ? 'bg-blue-500' : 'bg-emerald-500';
+          const textColor = score <= 30 ? 'text-red-600' : score <= 60 ? 'text-amber-600' : score < 100 ? 'text-blue-600' : 'text-emerald-600';
+          return (
+            <div className="rounded-lg border p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {score === 100 ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  ) : (
+                    <AlertCircle className={`h-4 w-4 ${textColor}`} />
+                  )}
+                  <span className={`text-sm font-medium ${textColor}`}>
+                    Profile {score}% complete
+                  </span>
+                </div>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${score}%` }} />
+              </div>
+              {missing.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Missing: {missing.map(f => f.replace(/_/g, ' ')).join(', ')}
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-3">

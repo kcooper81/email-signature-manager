@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import { useMspContext } from '@/hooks/use-msp-context';
+import { calculateProfileCompleteness } from '@/lib/hr-sync/profile-completeness';
 
 interface TeamMember {
   id: string;
@@ -40,6 +41,11 @@ interface TeamMember {
   department: string | null;
   company: string | null;
   office_location: string | null;
+  phone: string | null;
+  mobile: string | null;
+  avatar_url: string | null;
+  region: string | null;
+  is_active: boolean;
   role: string;
   source: 'manual' | 'google' | 'microsoft' | 'hubspot' | null;
   calendly_url: string | null;
@@ -76,9 +82,24 @@ interface GeneratedSignature {
   html: string;
 }
 
-type SortField = 'name' | 'email' | 'department' | 'company' | 'office_location' | 'title' | 'created_at' | 'source' | 'role';
+type SortField = 'name' | 'email' | 'department' | 'company' | 'office_location' | 'title' | 'created_at' | 'source' | 'status' | 'role';
 type SortOrder = 'asc' | 'desc';
 type SourceFilter = 'all' | 'manual' | 'synced';
+
+function getMemberStatus(member: TeamMember): { label: string; variant: 'inactive' | 'pending' | 'incomplete' | 'active'; priority: number } {
+  if (member.is_active === false) return { label: 'Inactive', variant: 'inactive', priority: 0 };
+  if (!member.auth_id) return { label: 'Pending', variant: 'pending', priority: 1 };
+  const score = calculateProfileCompleteness(member);
+  if (score < 50) return { label: 'Incomplete', variant: 'incomplete', priority: 2 };
+  return { label: 'Active', variant: 'active', priority: 3 };
+}
+
+const statusColors = {
+  inactive: 'bg-red-500/15 text-red-600 border-red-500/20',
+  pending: 'bg-amber-500/15 text-amber-600 border-amber-500/20',
+  incomplete: 'bg-yellow-500/15 text-yellow-700 border-yellow-500/20',
+  active: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/20',
+} as const;
 
 export default function TeamMembersPage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -787,6 +808,12 @@ export default function TeamMembersPage() {
           aVal = a.role;
           bVal = b.role;
           break;
+        case 'status': {
+          const aPriority = getMemberStatus(a).priority;
+          const bPriority = getMemberStatus(b).priority;
+          const comp = aPriority - bPriority;
+          return sortOrder === 'asc' ? comp : -comp;
+        }
       }
 
       const comparison = aVal.localeCompare(bVal);
@@ -1210,6 +1237,22 @@ export default function TeamMembersPage() {
                         <ArrowUpDown className={`h-3 w-3 ${sortField === 'source' ? 'text-primary' : 'text-muted-foreground'}`} />
                       </button>
                     </th>
+                    <th className="p-3 text-left hidden md:table-cell">
+                      <button
+                        onClick={() => {
+                          if (sortField === 'status') {
+                            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField('status');
+                            setSortOrder('asc');
+                          }
+                        }}
+                        className="flex items-center gap-1 font-medium text-sm hover:text-primary"
+                      >
+                        Status
+                        <ArrowUpDown className={`h-3 w-3 ${sortField === 'status' ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </button>
+                    </th>
                     <th className="p-3 text-left">
                       <button
                         onClick={() => {
@@ -1243,20 +1286,29 @@ export default function TeamMembersPage() {
                         />
                       </td>
                       <td className="p-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar
-                            alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
-                            fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
-                          />
-                          <div>
-                            <span className="font-medium">
-                              {emp.first_name && emp.last_name
-                                ? `${emp.first_name} ${emp.last_name}`
-                                : emp.email}
-                            </span>
-                            <p className="text-xs text-muted-foreground md:hidden">{emp.email}</p>
-                          </div>
-                        </div>
+                        {(() => {
+                          const score = calculateProfileCompleteness(emp);
+                          const barColor = score <= 30 ? 'bg-red-500' : score <= 60 ? 'bg-amber-500' : score < 100 ? 'bg-blue-500' : 'bg-emerald-500';
+                          return (
+                            <div className="flex items-center gap-3">
+                              <Avatar
+                                alt={`${emp.first_name || ''} ${emp.last_name || ''}`}
+                                fallback={`${(emp.first_name?.[0] || emp.email[0]).toUpperCase()}${emp.last_name?.[0]?.toUpperCase() || ''}`}
+                              />
+                              <div className="min-w-0">
+                                <span className="font-medium">
+                                  {emp.first_name && emp.last_name
+                                    ? `${emp.first_name} ${emp.last_name}`
+                                    : emp.email}
+                                </span>
+                                <p className="text-xs text-muted-foreground md:hidden">{emp.email}</p>
+                                <div className="mt-1 h-1 w-full max-w-[120px] rounded-full bg-muted overflow-hidden" title={`Profile ${score}% complete`}>
+                                  <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${score}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">{emp.email}</td>
                       <td className="p-3 text-sm">{emp.department || '-'}</td>
@@ -1274,6 +1326,16 @@ export default function TeamMembersPage() {
                             <><UserIcon className="h-3 w-3 mr-1" />Manual</>
                           )}
                         </Badge>
+                      </td>
+                      <td className="p-3 hidden md:table-cell">
+                        {(() => {
+                          const status = getMemberStatus(emp);
+                          return (
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusColors[status.variant]}`}>
+                              {status.label}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="p-3">
                         {canChangeRole(emp) ? (
@@ -1469,6 +1531,7 @@ export default function TeamMembersPage() {
           setShowEditModal(false);
           setEditingMember(null);
         }}
+        member={editingMember}
         memberName={editingMember ? `${editingMember.first_name || ''} ${editingMember.last_name || ''}`.trim() || editingMember.email : ''}
         memberEmail={editingMember?.email || ''}
         canEditEmail={canEditMemberEmail(editingMember)}
