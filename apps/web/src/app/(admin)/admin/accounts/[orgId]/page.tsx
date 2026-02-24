@@ -32,6 +32,8 @@ import {
   UserPlus,
   Network,
 } from 'lucide-react';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortButton } from '@/components/admin/sortable-header';
 import Link from 'next/link';
 import { PLANS } from '@/lib/billing/plans';
 
@@ -129,6 +131,11 @@ export default function OrgDetailPage() {
   // Suspend state
   const [showSuspendDialog, setShowSuspendDialog] = useState(false);
   const [suspendLoading, setSuspendLoading] = useState(false);
+
+  // Sorting for sub-tables
+  const userSort = useSortableTable<User>('createdAt', 'desc');
+  const templateSort = useSortableTable<Template>('createdAt', 'desc');
+  const deploymentSort = useSortableTable<Deployment>('createdAt', 'desc');
 
   useEffect(() => {
     loadOrgDetails();
@@ -579,8 +586,14 @@ export default function OrgDetailPage() {
             <CardDescription>{users.length} users</CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="flex items-center gap-3 pb-2 mb-2 border-b">
+              <span className="text-xs text-slate-400 font-medium">Sort:</span>
+              <SortButton field="email" label="Email" currentSort={userSort.sortField} currentDir={userSort.sortDir} onToggle={userSort.toggleSort} />
+              <SortButton field="role" label="Role" currentSort={userSort.sortField} currentDir={userSort.sortDir} onToggle={userSort.toggleSort} />
+              <SortButton field="createdAt" label="Joined" currentSort={userSort.sortField} currentDir={userSort.sortDir} onToggle={userSort.toggleSort} />
+            </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {users.map((user) => (
+              {userSort.sortData(users).map((user) => (
                 <div key={user.id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg">
                   <div>
                     <p className="font-medium text-sm">
@@ -613,8 +626,13 @@ export default function OrgDetailPage() {
             <CardDescription>{templates.length} templates</CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="flex items-center gap-3 pb-2 mb-2 border-b">
+              <span className="text-xs text-slate-400 font-medium">Sort:</span>
+              <SortButton field="name" label="Name" currentSort={templateSort.sortField} currentDir={templateSort.sortDir} onToggle={templateSort.toggleSort} />
+              <SortButton field="createdAt" label="Created" currentSort={templateSort.sortField} currentDir={templateSort.sortDir} onToggle={templateSort.toggleSort} />
+            </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {templates.map((template) => (
+              {templateSort.sortData(templates).map((template) => (
                 <div key={template.id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg">
                   <div>
                     <p className="font-medium text-sm">{template.name}</p>
@@ -675,8 +693,13 @@ export default function OrgDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="flex items-center gap-3 pb-2 mb-2 border-b">
+              <span className="text-xs text-slate-400 font-medium">Sort:</span>
+              <SortButton field="status" label="Status" currentSort={deploymentSort.sortField} currentDir={deploymentSort.sortDir} onToggle={deploymentSort.toggleSort} />
+              <SortButton field="createdAt" label="Date" currentSort={deploymentSort.sortField} currentDir={deploymentSort.sortDir} onToggle={deploymentSort.toggleSort} />
+            </div>
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {deployments.map((deployment) => (
+              {deploymentSort.sortData(deployments).map((deployment) => (
                 <div key={deployment.id} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-2">
                     {deployment.status === 'completed' ? (

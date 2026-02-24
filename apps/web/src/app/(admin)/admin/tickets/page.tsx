@@ -29,6 +29,8 @@ import {
   Minus,
   StickyNote,
 } from 'lucide-react';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortButton } from '@/components/admin/sortable-header';
 
 interface TicketNote {
   id: string;
@@ -116,6 +118,7 @@ export default function TicketsPage() {
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isInternalNote, setIsInternalNote] = useState(false);
+  const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
 
   const filteredTicketIds = useMemo(() => {
     const searchLower = search.toLowerCase();
@@ -342,14 +345,14 @@ export default function TicketsPage() {
     setAddingNote(false);
   };
 
-  const filteredTickets = tickets.filter(ticket => {
+  const filteredTickets = sort.sortData(tickets.filter(ticket => {
     if (search === '') return true;
     const searchLower = search.toLowerCase();
     return (
       ticket.message.toLowerCase().includes(searchLower) ||
       (ticket.userEmail?.toLowerCase().includes(searchLower) ?? false)
     );
-  });
+  }));
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -559,6 +562,13 @@ export default function TicketsPage() {
             </div>
           ) : (
             <>
+              <div className="flex items-center gap-4 pb-3 mb-3 border-b text-xs">
+                <span className="text-slate-400 font-medium">Sort by:</span>
+                <SortButton field="priority" label="Priority" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="type" label="Type" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="status" label="Status" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="createdAt" label="Date" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+              </div>
               <div className="space-y-3">
                 {filteredTickets.map((ticket) => {
                   const TypeIcon = typeIcons[ticket.type];

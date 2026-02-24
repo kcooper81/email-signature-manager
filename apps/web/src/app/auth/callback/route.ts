@@ -73,8 +73,9 @@ export async function GET(request: Request) {
           const lastName = metadata.last_name || metadata.family_name || '';
           const organizationName = metadata.organization_name || (firstName ? `${firstName}'s Organization` : 'My Organization');
 
-          // BUG-12 fix: Redirect to setup-profile if org name OR first name is missing
-          if (!metadata.organization_name || !firstName) {
+          // Redirect to setup-profile only if we have no name at all
+          // (Google SSO provides given_name but never organization_name, so we auto-generate one)
+          if (!firstName) {
             return NextResponse.redirect(`${baseUrl}/setup-profile`);
           }
 
