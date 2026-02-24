@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { Mail, ArrowRight, Check, X, Zap, DollarSign, Cloud, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { generateMetadata as genMeta, generateComparisonSchema } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/json-ld';
 
-export const metadata = {
-  title: 'Siggly vs CodeTwo - Email Signature Comparison | Siggly',
+export const metadata = genMeta({
+  title: 'Siggly vs CodeTwo - Email Signature Comparison',
   description: 'Compare Siggly and CodeTwo for email signature management. See why teams choose Siggly for cloud-native simplicity and better pricing.',
-};
+  keywords: ['CodeTwo alternative', 'CodeTwo vs Siggly', 'email signature comparison', 'CodeTwo pricing'],
+  canonical: '/compare/codetwo',
+});
 
 const comparisonData = [
   { feature: 'Starting Price', siggly: 'Free (5 users)', codetwo: '$2.00/user/mo', winner: 'siggly' },
@@ -29,9 +33,16 @@ const switchReasons = [
   { icon: Smartphone, title: 'Mobile-First Design', description: 'Signatures that look perfect on every device, including mobile apps.' },
 ];
 
+const comparisonFeatures = comparisonData.map(item => ({
+  name: item.feature,
+  siggly: item.siggly === true || typeof item.siggly === 'string',
+  competitor: item.codetwo === true || typeof item.codetwo === 'string',
+}));
+
 export default function CodeTwoComparisonPage() {
   return (
     <>
+      <JsonLd data={generateComparisonSchema({ competitor: 'CodeTwo', features: comparisonFeatures })} />
       {/* Hero */}
       <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
         <div className="max-w-4xl mx-auto px-6 text-center">

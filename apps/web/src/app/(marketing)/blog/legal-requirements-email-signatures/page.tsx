@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, AlertTriangle, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'legal-requirements-email-signatures',
@@ -11,8 +11,24 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Legal Requirements for Business Email Signatures | Siggly Blog',
+    description: 'What your business email signatures legally need to include, by country and industry.',
+    url: '/blog/legal-requirements-email-signatures',
+    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
+    datePublished: '2025-12-21',
+    author: 'Siggly Team',
+    readTime: '6 min',
+    category: 'Email Signatures',
+  });
+
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
       <article className="py-12">
         <div className="max-w-3xl mx-auto px-6">
           <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'deploy-signatures-google-workspace',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'How to Deploy Email Signatures in Google Workspace | Siggly',
+    description: 'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
+    url: '/blog/deploy-signatures-google-workspace',
+    image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
+    datePublished: '2026-01-22',
+    author: 'Siggly Team',
+    readTime: '10 min',
+    category: 'Google Workspace',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -105,5 +121,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }
