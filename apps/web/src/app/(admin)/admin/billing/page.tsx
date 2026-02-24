@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { PLANS } from '@/lib/billing/plans';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortableHeader } from '@/components/admin/sortable-header';
 
 interface SubscriptionEntry {
   id: string;
@@ -67,6 +69,7 @@ export default function SubscriptionsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'events'>('subscriptions');
+  const sort = useSortableTable<SubscriptionEntry>('orgName', 'asc');
 
   useEffect(() => {
     loadBillingData();
@@ -204,7 +207,7 @@ export default function SubscriptionsPage() {
     setLoading(false);
   };
 
-  const filteredSubs = subscriptions.filter(sub => {
+  const filteredSubs = sort.sortData(subscriptions.filter(sub => {
     const matchesSearch = search === '' ||
       sub.orgName.toLowerCase().includes(search.toLowerCase()) ||
       sub.stripeCustomerId.toLowerCase().includes(search.toLowerCase());
@@ -212,7 +215,7 @@ export default function SubscriptionsPage() {
     const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
 
     return matchesSearch && matchesStatus;
-  });
+  }));
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -494,11 +497,11 @@ export default function SubscriptionsPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b text-left">
-                        <th className="pb-3 font-medium text-slate-500">Organization</th>
-                        <th className="pb-3 font-medium text-slate-500">Plan</th>
-                        <th className="pb-3 font-medium text-slate-500">Status</th>
-                        <th className="pb-3 font-medium text-slate-500">Users</th>
-                        <th className="pb-3 font-medium text-slate-500">MRR</th>
+                        <SortableHeader field="orgName" label="Organization" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                        <SortableHeader field="plan" label="Plan" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                        <SortableHeader field="status" label="Status" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                        <SortableHeader field="userCount" label="Users" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                        <SortableHeader field="mrr" label="MRR" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                         <th className="pb-3 font-medium text-slate-500">Period End</th>
                         <th className="pb-3 font-medium text-slate-500">Stripe</th>
                       </tr>

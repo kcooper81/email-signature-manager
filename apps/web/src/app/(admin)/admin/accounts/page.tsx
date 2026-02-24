@@ -16,6 +16,8 @@ import {
   ShieldAlert,
   Network,
 } from 'lucide-react';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortButton } from '@/components/admin/sortable-header';
 import Link from 'next/link';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 
@@ -48,6 +50,7 @@ export default function AccountsPage() {
   const [orgTypeFilter, setOrgTypeFilter] = useState<OrgTypeFilter>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const sort = useSortableTable<Organization>('createdAt', 'desc');
 
   const filteredOrgIds = useMemo(() => {
     return organizations
@@ -169,12 +172,12 @@ export default function AccountsPage() {
     setLoading(false);
   };
 
-  // Plan and org type filters are client-side
-  const filteredOrgs = organizations.filter(org => {
+  // Plan and org type filters are client-side, then sort
+  const filteredOrgs = sort.sortData(organizations.filter(org => {
     if (planFilter !== 'all' && org.plan !== planFilter) return false;
     if (orgTypeFilter !== 'all' && org.organizationType !== orgTypeFilter) return false;
     return true;
-  });
+  }));
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -336,6 +339,14 @@ export default function AccountsPage() {
             </div>
           ) : (
             <>
+              <div className="flex items-center gap-4 pb-3 mb-3 border-b text-xs">
+                <span className="text-slate-400 font-medium">Sort by:</span>
+                <SortButton field="name" label="Name" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="plan" label="Plan" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="userCount" label="Users" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="templateCount" label="Templates" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="createdAt" label="Created" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+              </div>
               <div className="divide-y">
                 {filteredOrgs.map((org) => (
                   <div

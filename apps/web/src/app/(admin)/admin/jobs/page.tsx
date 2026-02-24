@@ -22,6 +22,8 @@ import {
   RotateCcw,
   ListTodo,
 } from 'lucide-react';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortableHeader } from '@/components/admin/sortable-header';
 
 interface JobLog {
   id: string;
@@ -66,6 +68,7 @@ export default function AdminJobsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+  const sort = useSortableTable<JobLog>('created_at', 'desc');
 
   const filteredJobIds = useMemo(() => {
     const searchLower = search.toLowerCase();
@@ -177,7 +180,7 @@ export default function AdminJobsPage() {
     setRetryingId(null);
   };
 
-  const filteredJobs = jobs.filter(job => {
+  const filteredJobs = sort.sortData(jobs.filter(job => {
     if (search === '') return true;
     const searchLower = search.toLowerCase();
     return (
@@ -185,7 +188,7 @@ export default function AdminJobsPage() {
       job.orgName.toLowerCase().includes(searchLower) ||
       (job.error_message?.toLowerCase().includes(searchLower) ?? false)
     );
-  });
+  }));
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -396,13 +399,13 @@ export default function AdminJobsPage() {
                         />
                       </th>
                       <th className="pb-3 font-medium text-slate-500 w-8"></th>
-                      <th className="pb-3 font-medium text-slate-500">Job Type</th>
-                      <th className="pb-3 font-medium text-slate-500">Status</th>
+                      <SortableHeader field="job_type" label="Job Type" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                      <SortableHeader field="status" label="Status" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                       <th className="pb-3 font-medium text-slate-500">Organization</th>
                       <th className="pb-3 font-medium text-slate-500">Retries</th>
-                      <th className="pb-3 font-medium text-slate-500">Created</th>
+                      <SortableHeader field="created_at" label="Created" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                       <th className="pb-3 font-medium text-slate-500">Started</th>
-                      <th className="pb-3 font-medium text-slate-500">Completed</th>
+                      <SortableHeader field="completed_at" label="Completed" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                       <th className="pb-3 font-medium text-slate-500">Error</th>
                       <th className="pb-3 font-medium text-slate-500 w-20">Actions</th>
                     </tr>

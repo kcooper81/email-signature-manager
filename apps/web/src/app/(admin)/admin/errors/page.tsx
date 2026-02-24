@@ -22,6 +22,8 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortButton } from '@/components/admin/sortable-header';
 
 interface ErrorLog {
   id: string;
@@ -60,6 +62,7 @@ export default function AdminErrorLogsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+  const sort = useSortableTable<ErrorLog>('created_at', 'desc');
 
   const filteredErrorIds = useMemo(() => {
     const query = searchQuery.toLowerCase();
@@ -141,7 +144,7 @@ export default function AdminErrorLogsPage() {
     }
   };
 
-  const filteredErrors = errors.filter(e => {
+  const filteredErrors = sort.sortData(errors.filter(e => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -149,7 +152,7 @@ export default function AdminErrorLogsPage() {
       e.route?.toLowerCase().includes(query) ||
       e.error_type.toLowerCase().includes(query)
     );
-  });
+  }));
 
   const errorTypes = [...new Set(errors.map(e => e.error_type))];
 
@@ -322,13 +325,22 @@ export default function AdminErrorLogsPage() {
       ) : (
         <div className="space-y-3">
           {filteredErrors.length > 0 && (
-            <div className="flex items-center gap-3 px-1">
-              <Checkbox
-                checked={bulk.allSelected}
-                onCheckedChange={bulk.toggleAll}
-                aria-label="Select all errors"
-              />
-              <span className="text-sm text-muted-foreground">Select all</span>
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  checked={bulk.allSelected}
+                  onCheckedChange={bulk.toggleAll}
+                  aria-label="Select all errors"
+                />
+                <span className="text-sm text-muted-foreground">Select all</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-slate-400 font-medium">Sort by:</span>
+                <SortButton field="error_type" label="Error Type" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="route" label="Route" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="created_at" label="Created" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="resolved" label="Status" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+              </div>
             </div>
           )}
           {filteredErrors.map((error) => (
