@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Colors: Brand Color Best Practices | Siggly',
-  description: 'Choose the right colors for email signatures. Learn about brand colors, contrast, and what works across all email clients.',
-  keywords: ['email signature colors', 'signature color scheme', 'brand colors email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-colors',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-colors',
+  'Email Signature Colors: Brand Color Best Practices | Siggly',
+  'Choose the right colors for email signatures. Learn about brand colors, contrast, and what works across all email clients.',
+  ['email signature colors', 'signature color scheme', 'brand colors email']
+);
 
 export default function BlogPost() {
   return (

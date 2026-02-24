@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature CTA Examples: Drive Action | Siggly',
-  description: 'Effective call-to-action examples for email signatures. Book meetings, drive downloads, and generate leads from your signature.',
-  keywords: ['email signature cta', 'signature call to action', 'email signature button'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-cta-examples',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-cta-examples',
+  'Email Signature CTA Examples: Drive Action | Siggly',
+  'Effective call-to-action examples for email signatures. Book meetings, drive downloads, and generate leads from your signature.',
+  ['email signature cta', 'signature call to action', 'email signature button']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Adding Video Links to Email Signatures | Siggly',
-  description: 'Include video content links in your email signature. Product demos, introductions, and video CTAs that engage recipients.',
-  keywords: ['email signature video', 'video link signature', 'signature video CTA'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-video-links',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-video-links',
+  'Adding Video Links to Email Signatures | Siggly',
+  'Include video content links in your email signature. Product demos, introductions, and video CTAs that engage recipients.',
+  ['email signature video', 'video link signature', 'signature video CTA']
+);
 
 export default function BlogPost() {
   return (

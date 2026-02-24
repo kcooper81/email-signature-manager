@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Sales Team Email Signatures: Convert More Leads | Siggly',
-  description: 'Create high-converting email signatures for sales teams. Includes meeting links, social proof, and CTA best practices for sales professionals.',
-  keywords: ['sales email signature', 'sales team signature', 'email signature for salespeople'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/sales-team-email-signatures',
-  },
-};
+export const metadata = createBlogMetadata(
+  'sales-team-email-signatures',
+  'Sales Team Email Signatures: Convert More Leads | Siggly',
+  'Create high-converting email signatures for sales teams. Includes meeting links, social proof, and CTA best practices for sales professionals.',
+  ['sales email signature', 'sales team signature', 'email signature for salespeople']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Banner Campaigns: Design & Strategy Guide | Siggly',
-  description: 'Create effective email signature banner campaigns. Learn design best practices, campaign ideas, and how to measure banner performance.',
-  keywords: ['email signature banner', 'signature campaign banner', 'email signature marketing banner'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-banner-campaigns',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-banner-campaigns',
+  'Email Signature Banner Campaigns: Design & Strategy Guide | Siggly',
+  'Create effective email signature banner campaigns. Learn design best practices, campaign ideas, and how to measure banner performance.',
+  ['email signature banner', 'signature campaign banner', 'email signature marketing banner']
+);
 
 export default function BlogPost() {
   return (

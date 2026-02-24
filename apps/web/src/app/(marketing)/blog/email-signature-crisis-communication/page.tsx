@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures in Crisis Communication | Siggly',
-  description: 'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
-  keywords: ['crisis communication email', 'emergency signature update', 'company crisis email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-crisis-communication',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-crisis-communication',
+  'Email Signatures in Crisis Communication | Siggly',
+  'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
+  ['crisis communication email', 'emergency signature update', 'company crisis email']
+);
 
 export default function BlogPost() {
   return (

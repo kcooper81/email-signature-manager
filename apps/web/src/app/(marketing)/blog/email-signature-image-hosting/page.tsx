@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Image Hosting: Best Practices Guide | Siggly',
-  description: 'Learn where and how to host images for email signatures. Compare hosting options and avoid common image display problems.',
-  keywords: ['email signature image hosting', 'host signature logo', 'email signature image url'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-image-hosting',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-image-hosting',
+  'Email Signature Image Hosting: Best Practices Guide | Siggly',
+  'Learn where and how to host images for email signatures. Compare hosting options and avoid common image display problems.',
+  ['email signature image hosting', 'host signature logo', 'email signature image url']
+);
 
 export default function BlogPost() {
   return (

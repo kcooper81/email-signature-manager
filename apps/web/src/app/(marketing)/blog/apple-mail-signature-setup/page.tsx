@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Apple Mail Signature Setup: Mac & iPhone Guide | Siggly',
-  description: 'Set up email signatures in Apple Mail on Mac and iPhone. Step-by-step instructions for creating and managing signatures.',
-  keywords: ['apple mail signature', 'mac email signature', 'iphone signature setup'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/apple-mail-signature-setup',
-  },
-};
+export const metadata = createBlogMetadata(
+  'apple-mail-signature-setup',
+  'Apple Mail Signature Setup: Mac & iPhone Guide | Siggly',
+  'Set up email signatures in Apple Mail on Mac and iPhone. Step-by-step instructions for creating and managing signatures.',
+  ['apple mail signature', 'mac email signature', 'iphone signature setup']
+);
 
 export default function BlogPost() {
   return (

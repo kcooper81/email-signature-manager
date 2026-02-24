@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: '15 Email Signature Mistakes That Hurt Your Brand | Siggly',
-  description: 'Avoid these common email signature mistakes that make you look unprofessional. From broken images to quote overload, learn what to fix.',
-  keywords: ['email signature mistakes', 'bad email signature', 'email signature problems', 'email signature dont'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-mistakes',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-mistakes',
+  '15 Email Signature Mistakes That Hurt Your Brand | Siggly',
+  'Avoid these common email signature mistakes that make you look unprofessional. From broken images to quote overload, learn what to fix.',
+  ['email signature mistakes', 'bad email signature', 'email signature problems', 'email signature dont']
+);
 
 export default function BlogPost() {
   return (

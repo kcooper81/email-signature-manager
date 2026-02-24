@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Choosing an Email Signature Vendor: Buyer Guide | Siggly',
-  description: 'How to evaluate and select an email signature management vendor. RFP questions, feature comparison, and decision criteria.',
-  keywords: ['email signature vendor', 'signature software selection', 'choose signature tool'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-vendor-selection',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-vendor-selection',
+  'Choosing an Email Signature Vendor: Buyer Guide | Siggly',
+  'How to evaluate and select an email signature management vendor. RFP questions, feature comparison, and decision criteria.',
+  ['email signature vendor', 'signature software selection', 'choose signature tool']
+);
 
 export default function BlogPost() {
   return (

@@ -2,14 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, AlertTriangle, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Legal Requirements for Business Email Signatures | Siggly Blog',
-  description: 'What your business email signatures legally need to include, by country and industry.',
-  alternates: {
-    canonical: 'https://siggly.io/blog/legal-requirements-email-signatures',
-  },
-};
+export const metadata = createBlogMetadata(
+  'legal-requirements-email-signatures',
+  'Legal Requirements for Business Email Signatures | Siggly Blog',
+  'What your business email signatures legally need to include, by country and industry.'
+);
 
 export default function BlogPost() {
   return (

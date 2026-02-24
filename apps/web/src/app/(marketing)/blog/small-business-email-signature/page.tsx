@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Small Business Email Signatures: Complete Guide 2026 | Siggly',
-  description: 'Create professional email signatures for your small business. Learn what to include, design tips, and free tools to get started.',
-  keywords: ['small business email signature', 'business email signature', 'professional email signature small business'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/small-business-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'small-business-email-signature',
+  'Small Business Email Signatures: Complete Guide 2026 | Siggly',
+  'Create professional email signatures for your small business. Learn what to include, design tips, and free tools to get started.',
+  ['small business email signature', 'business email signature', 'professional email signature small business']
+);
 
 export default function BlogPost() {
   return (

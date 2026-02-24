@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Fonts: Web-Safe Typography Guide | Siggly',
-  description: 'Choose the right fonts for email signatures. Learn which fonts work across all email clients and how to use them effectively.',
-  keywords: ['email signature font', 'web safe fonts email', 'signature typography'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-fonts',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-fonts',
+  'Email Signature Fonts: Web-Safe Typography Guide | Siggly',
+  'Choose the right fonts for email signatures. Learn which fonts work across all email clients and how to use them effectively.',
+  ['email signature font', 'web safe fonts email', 'signature typography']
+);
 
 export default function BlogPost() {
   return (

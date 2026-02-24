@@ -2,14 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Why Email Signatures Matter More Than You Think | Siggly Blog',
-  description: 'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.',
-  alternates: {
-    canonical: 'https://siggly.io/blog/why-email-signatures-matter',
-  },
-};
+export const metadata = createBlogMetadata(
+  'why-email-signatures-matter',
+  'Why Email Signatures Matter More Than You Think | Siggly Blog',
+  'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.'
+);
 
 export default function BlogPost() {
   return (

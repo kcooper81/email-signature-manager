@@ -2,11 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, ArrowRight, Building2, Users, Layers, Globe, CheckCircle, Palette, Shield, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { generateMetadata as genMeta } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = genMeta({
   title: 'Email Signature Management for Agencies | Siggly',
   description: 'Manage email signatures for multiple clients from one dashboard. White-label options, bulk management, and multi-tenant support for agencies.',
-};
+  keywords: ['agency email signatures', 'multi-client signature management', 'white-label signatures', 'agency email branding'],
+  canonical: '/for/agencies',
+});
 
 const painPoints = [
   {

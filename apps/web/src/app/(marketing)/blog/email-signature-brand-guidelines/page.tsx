@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Brand Guidelines: A Template | Siggly',
-  description: 'Create brand guidelines for email signatures. Document standards for logos, colors, fonts, and signature elements.',
-  keywords: ['email signature guidelines', 'signature brand standards', 'email signature policy'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-brand-guidelines',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-brand-guidelines',
+  'Email Signature Brand Guidelines: A Template | Siggly',
+  'Create brand guidelines for email signatures. Document standards for logos, colors, fonts, and signature elements.',
+  ['email signature guidelines', 'signature brand standards', 'email signature policy']
+);
 
 export default function BlogPost() {
   return (

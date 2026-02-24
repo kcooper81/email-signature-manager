@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Using Testimonials in Email Signatures | Siggly',
-  description: 'Include customer testimonials and reviews in email signatures. Social proof that builds trust with every email sent.',
-  keywords: ['testimonial email signature', 'customer review signature', 'social proof email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-customer-testimonials',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-customer-testimonials',
+  'Using Testimonials in Email Signatures | Siggly',
+  'Include customer testimonials and reviews in email signatures. Social proof that builds trust with every email sent.',
+  ['testimonial email signature', 'customer review signature', 'social proof email']
+);
 
 export default function BlogPost() {
   return (

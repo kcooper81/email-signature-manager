@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Social Media Icons in Email Signatures: Best Practices | Siggly',
-  description: 'Add social media icons to your email signature the right way. Learn which platforms to include, icon sizing, and linking best practices.',
-  keywords: ['email signature social icons', 'social media email signature', 'linkedin email signature', 'email signature icons'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-social-icons',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-social-icons',
+  'Social Media Icons in Email Signatures: Best Practices | Siggly',
+  'Add social media icons to your email signature the right way. Learn which platforms to include, icon sizing, and linking best practices.',
+  ['email signature social icons', 'social media email signature', 'linkedin email signature', 'email signature icons']
+);
 
 export default function BlogPost() {
   return (

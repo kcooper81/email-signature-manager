@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Retail Business Email Signatures: Store & Ecommerce | Siggly',
-  description: 'Create email signatures for retail businesses. Drive store visits and online sales with strategic signature elements.',
-  keywords: ['retail email signature', 'store email signature', 'ecommerce email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/retail-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'retail-email-signature',
+  'Retail Business Email Signatures: Store & Ecommerce | Siggly',
+  'Create email signatures for retail businesses. Drive store visits and online sales with strategic signature elements.',
+  ['retail email signature', 'store email signature', 'ecommerce email signature']
+);
 
 export default function BlogPost() {
   return (

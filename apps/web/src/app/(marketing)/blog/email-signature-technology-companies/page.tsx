@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Tech Company Email Signatures: Modern Design Guide | Siggly',
-  description: 'Create modern email signatures for technology companies. Balance innovation with professionalism in your tech startup or enterprise.',
-  keywords: ['tech company email signature', 'startup signature', 'saas email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-technology-companies',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-technology-companies',
+  'Tech Company Email Signatures: Modern Design Guide | Siggly',
+  'Create modern email signatures for technology companies. Balance innovation with professionalism in your tech startup or enterprise.',
+  ['tech company email signature', 'startup signature', 'saas email signature']
+);
 
 export default function BlogPost() {
   return (

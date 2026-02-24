@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Animated GIFs in Email Signatures: Pros & Cons | Siggly',
-  description: 'Should you use animated GIFs in email signatures? Technical considerations, file size issues, and when animation makes sense.',
-  keywords: ['animated email signature', 'gif email signature', 'moving signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-animated-gifs',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-animated-gifs',
+  'Animated GIFs in Email Signatures: Pros & Cons | Siggly',
+  'Should you use animated GIFs in email signatures? Technical considerations, file size issues, and when animation makes sense.',
+  ['animated email signature', 'gif email signature', 'moving signature']
+);
 
 export default function BlogPost() {
   return (

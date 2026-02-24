@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Software Comparison 2026 | Siggly',
-  description: 'Compare the top email signature management tools. Features, pricing, and pros/cons of leading signature software solutions.',
-  keywords: ['email signature software', 'signature management tools', 'compare email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-software-comparison',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-software-comparison',
+  'Email Signature Software Comparison 2026 | Siggly',
+  'Compare the top email signature management tools. Features, pricing, and pros/cons of leading signature software solutions.',
+  ['email signature software', 'signature management tools', 'compare email signature']
+);
 
 export default function BlogPost() {
   return (

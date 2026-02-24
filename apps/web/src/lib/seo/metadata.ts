@@ -339,7 +339,7 @@ export function generateBlogIndexMetadata(page: number, totalPages: number): Met
 }
 
 /**
- * Creates metadata for a blog post with proper canonical URL.
+ * Creates metadata for a blog post with proper canonical URL, OG tags, and Twitter cards.
  * Use this in individual blog post pages to ensure proper SEO indexing.
  */
 export function createBlogMetadata(
@@ -348,23 +348,56 @@ export function createBlogMetadata(
   description: string,
   keywords: string[] = []
 ): Metadata {
+  const url = `${SITE_URL}/blog/${slug}`;
+  const baseKeywords = [
+    'email signature',
+    'signature management',
+    'email branding',
+  ];
+
   return {
     title,
     description,
-    keywords,
+    keywords: [...baseKeywords, ...keywords],
+    authors: [{ name: SITE_NAME }],
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     alternates: {
-      canonical: `https://siggly.io/blog/${slug}`,
+      canonical: url,
     },
     openGraph: {
       title,
       description,
       type: 'article',
-      url: `https://siggly.io/blog/${slug}`,
+      url,
+      siteName: SITE_NAME,
+      locale: 'en_US',
+      images: [
+        {
+          url: `${SITE_URL}${DEFAULT_OG_IMAGE}`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: [`${SITE_URL}${DEFAULT_OG_IMAGE}`],
+      creator: '@siggly',
     },
   };
 }

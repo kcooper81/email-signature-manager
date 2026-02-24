@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Construction Company Email Signatures: Contractor Guide | Siggly',
-  description: 'Create professional email signatures for construction companies and contractors. Include license info and build client trust.',
-  keywords: ['construction email signature', 'contractor email signature', 'builder email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/construction-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'construction-email-signature',
+  'Construction Company Email Signatures: Contractor Guide | Siggly',
+  'Create professional email signatures for construction companies and contractors. Include license info and build client trust.',
+  ['construction email signature', 'contractor email signature', 'builder email signature']
+);
 
 export default function BlogPost() {
   return (

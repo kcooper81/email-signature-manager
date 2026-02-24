@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Analytics: Track Performance & ROI | Siggly',
-  description: 'Measure email signature performance with analytics. Track clicks, conversions, and ROI from signature links and campaign banners.',
-  keywords: ['email signature analytics', 'signature tracking', 'email signature metrics', 'signature click tracking'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-analytics',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-analytics',
+  'Email Signature Analytics: Track Performance & ROI | Siggly',
+  'Measure email signature performance with analytics. Track clicks, conversions, and ROI from signature links and campaign banners.',
+  ['email signature analytics', 'signature tracking', 'email signature metrics', 'signature click tracking']
+);
 
 export default function BlogPost() {
   return (

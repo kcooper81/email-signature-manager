@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Manufacturing Company Email Signatures | Siggly',
-  description: 'Email signature best practices for manufacturing companies. Professional signatures for sales, engineering, and plant management.',
-  keywords: ['manufacturing email signature', 'industrial email signature', 'factory email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-manufacturing',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-manufacturing',
+  'Manufacturing Company Email Signatures | Siggly',
+  'Email signature best practices for manufacturing companies. Professional signatures for sales, engineering, and plant management.',
+  ['manufacturing email signature', 'industrial email signature', 'factory email']
+);
 
 export default function BlogPost() {
   return (

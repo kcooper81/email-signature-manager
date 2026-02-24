@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Enterprise Email Signature Management: Complete Guide | Siggly',
-  description: 'Manage email signatures at scale for large organizations. Learn about centralized control, compliance, and deployment strategies.',
-  keywords: ['enterprise email signature', 'corporate email signature management', 'email signature at scale'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/enterprise-email-signature-management',
-  },
-};
+export const metadata = createBlogMetadata(
+  'enterprise-email-signature-management',
+  'Enterprise Email Signature Management: Complete Guide | Siggly',
+  'Manage email signatures at scale for large organizations. Learn about centralized control, compliance, and deployment strategies.',
+  ['enterprise email signature', 'corporate email signature management', 'email signature at scale']
+);
 
 export default function BlogPost() {
   return (

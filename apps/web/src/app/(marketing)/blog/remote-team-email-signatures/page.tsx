@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures for Remote Teams: Best Practices | Siggly',
-  description: 'Manage email signatures for distributed and remote teams. Learn deployment strategies, consistency tips, and tools for remote workforce.',
-  keywords: ['remote team email signature', 'distributed team signatures', 'work from home email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/remote-team-email-signatures',
-  },
-};
+export const metadata = createBlogMetadata(
+  'remote-team-email-signatures',
+  'Email Signatures for Remote Teams: Best Practices | Siggly',
+  'Manage email signatures for distributed and remote teams. Learn deployment strategies, consistency tips, and tools for remote workforce.',
+  ['remote team email signature', 'distributed team signatures', 'work from home email signature']
+);
 
 export default function BlogPost() {
   return (

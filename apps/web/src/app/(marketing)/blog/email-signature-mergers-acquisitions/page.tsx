@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures During M&A: Transition Guide | Siggly',
-  description: 'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
-  keywords: ['email signature merger', 'acquisition rebrand signature', 'company merger email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-mergers-acquisitions',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-mergers-acquisitions',
+  'Email Signatures During M&A: Transition Guide | Siggly',
+  'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
+  ['email signature merger', 'acquisition rebrand signature', 'company merger email']
+);
 
 export default function BlogPost() {
   return (

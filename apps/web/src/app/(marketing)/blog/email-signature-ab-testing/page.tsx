@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'A/B Testing Email Signatures: Optimize Performance | Siggly',
-  description: 'Learn to A/B test email signatures for better results. Test CTAs, designs, and content to find what converts best.',
-  keywords: ['ab test email signature', 'signature testing', 'optimize email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-ab-testing',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-ab-testing',
+  'A/B Testing Email Signatures: Optimize Performance | Siggly',
+  'Learn to A/B test email signatures for better results. Test CTAs, designs, and content to find what converts best.',
+  ['ab test email signature', 'signature testing', 'optimize email signature']
+);
 
 export default function BlogPost() {
   return (

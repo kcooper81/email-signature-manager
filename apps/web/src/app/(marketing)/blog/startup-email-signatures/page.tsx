@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Startup Email Signatures: Build Credibility on a Budget | Siggly',
-  description: 'Create professional email signatures for your startup. Budget-friendly tips to look established and build trust with investors and customers.',
-  keywords: ['startup email signature', 'tech startup signature', 'email signature early stage'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/startup-email-signatures',
-  },
-};
+export const metadata = createBlogMetadata(
+  'startup-email-signatures',
+  'Startup Email Signatures: Build Credibility on a Budget | Siggly',
+  'Create professional email signatures for your startup. Budget-friendly tips to look established and build trust with investors and customers.',
+  ['startup email signature', 'tech startup signature', 'email signature early stage']
+);
 
 export default function BlogPost() {
   return (

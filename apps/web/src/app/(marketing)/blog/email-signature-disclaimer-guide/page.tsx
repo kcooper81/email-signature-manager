@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Disclaimers: When & What to Include | Siggly',
-  description: 'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
-  keywords: ['email signature disclaimer', 'email confidentiality notice', 'legal email disclaimer'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-disclaimer-guide',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-disclaimer-guide',
+  'Email Signature Disclaimers: When & What to Include | Siggly',
+  'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
+  ['email signature disclaimer', 'email confidentiality notice', 'legal email disclaimer']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Photo Guidelines: Look Professional | Siggly',
-  description: 'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
-  keywords: ['email signature photo', 'signature headshot', 'professional photo email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-photo-guidelines',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-photo-guidelines',
+  'Email Signature Photo Guidelines: Look Professional | Siggly',
+  'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
+  ['email signature photo', 'signature headshot', 'professional photo email']
+);
 
 export default function BlogPost() {
   return (

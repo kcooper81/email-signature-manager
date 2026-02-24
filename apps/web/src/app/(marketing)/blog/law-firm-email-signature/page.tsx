@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Law Firm Email Signatures: Attorney Requirements Guide | Siggly',
-  description: 'Create compliant email signatures for law firms. Includes bar number requirements, confidentiality disclaimers, and professional design tips.',
-  keywords: ['law firm email signature', 'attorney email signature', 'legal email signature', 'lawyer email disclaimer'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/law-firm-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'law-firm-email-signature',
+  'Law Firm Email Signatures: Attorney Requirements Guide | Siggly',
+  'Create compliant email signatures for law firms. Includes bar number requirements, confidentiality disclaimers, and professional design tips.',
+  ['law firm email signature', 'attorney email signature', 'legal email signature', 'lawyer email disclaimer']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Add Calendar Booking Links to Email Signatures | Siggly',
-  description: 'Add Calendly, HubSpot, or Cal.com booking links to your email signature. Reduce scheduling friction and book more meetings.',
-  keywords: ['email signature calendar link', 'calendly signature', 'meeting link email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-calendar-links',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-calendar-links',
+  'Add Calendar Booking Links to Email Signatures | Siggly',
+  'Add Calendly, HubSpot, or Cal.com booking links to your email signature. Reduce scheduling friction and book more meetings.',
+  ['email signature calendar link', 'calendly signature', 'meeting link email signature']
+);
 
 export default function BlogPost() {
   return (

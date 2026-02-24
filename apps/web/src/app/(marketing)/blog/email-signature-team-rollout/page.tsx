@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Rolling Out Email Signatures to Your Team | Siggly',
-  description: 'Step-by-step guide to rolling out new email signatures across your organization. Communication, timing, and change management.',
-  keywords: ['email signature rollout', 'deploy signatures team', 'signature change management'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-team-rollout',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-team-rollout',
+  'Rolling Out Email Signatures to Your Team | Siggly',
+  'Step-by-step guide to rolling out new email signatures across your organization. Communication, timing, and change management.',
+  ['email signature rollout', 'deploy signatures team', 'signature change management']
+);
 
 export default function BlogPost() {
   return (

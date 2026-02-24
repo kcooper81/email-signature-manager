@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Operations Department Email Signatures | Siggly',
-  description: 'Email signature best practices for operations teams. Practical signatures for logistics, facilities, and operational roles.',
-  keywords: ['operations email signature', 'logistics signature', 'ops team email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-operations-department',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-operations-department',
+  'Operations Department Email Signatures | Siggly',
+  'Email signature best practices for operations teams. Practical signatures for logistics, facilities, and operational roles.',
+  ['operations email signature', 'logistics signature', 'ops team email']
+);
 
 export default function BlogPost() {
   return (

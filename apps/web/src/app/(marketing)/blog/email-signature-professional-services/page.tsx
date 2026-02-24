@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Professional Services Email Signatures | Siggly',
-  description: 'Email signature best practices for professional services firms. Consultants, advisors, and service providers.',
-  keywords: ['professional services signature', 'consultant email signature', 'advisor signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-professional-services',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-professional-services',
+  'Professional Services Email Signatures | Siggly',
+  'Email signature best practices for professional services firms. Consultants, advisors, and service providers.',
+  ['professional services signature', 'consultant email signature', 'advisor signature']
+);
 
 export default function BlogPost() {
   return (

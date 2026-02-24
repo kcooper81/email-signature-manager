@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'HR Department Email Signatures: Best Practices | Siggly',
-  description: 'Email signature guidelines for HR teams. Professional signatures for recruiting, employee communications, and HR branding.',
-  keywords: ['hr email signature', 'human resources signature', 'recruiting email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-hr-department',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-hr-department',
+  'HR Department Email Signatures: Best Practices | Siggly',
+  'Email signature guidelines for HR teams. Professional signatures for recruiting, employee communications, and HR branding.',
+  ['hr email signature', 'human resources signature', 'recruiting email']
+);
 
 export default function BlogPost() {
   return (

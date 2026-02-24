@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Financial Advisor Email Signatures: Compliance Guide | Siggly',
-  description: 'Create compliant email signatures for financial advisors. Covers FINRA requirements, CRD numbers, disclosures, and regulatory disclaimers.',
-  keywords: ['financial advisor email signature', 'FINRA email signature', 'investment advisor signature', 'wealth management email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/financial-advisor-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'financial-advisor-email-signature',
+  'Financial Advisor Email Signatures: Compliance Guide | Siggly',
+  'Create compliant email signatures for financial advisors. Covers FINRA requirements, CRD numbers, disclosures, and regulatory disclaimers.',
+  ['financial advisor email signature', 'FINRA email signature', 'investment advisor signature', 'wealth management email']
+);
 
 export default function BlogPost() {
   return (

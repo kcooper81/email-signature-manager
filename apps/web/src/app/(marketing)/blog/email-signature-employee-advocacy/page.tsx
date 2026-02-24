@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures for Employee Advocacy Programs | Siggly',
-  description: 'Leverage email signatures for employee advocacy. Amplify company content and brand through every employee email.',
-  keywords: ['employee advocacy email', 'signature advocacy', 'amplify brand email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-employee-advocacy',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-employee-advocacy',
+  'Email Signatures for Employee Advocacy Programs | Siggly',
+  'Leverage email signatures for employee advocacy. Amplify company content and brand through every employee email.',
+  ['employee advocacy email', 'signature advocacy', 'amplify brand email']
+);
 
 export default function BlogPost() {
   return (

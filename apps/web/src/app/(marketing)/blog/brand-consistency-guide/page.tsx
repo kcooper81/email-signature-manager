@@ -2,14 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'The Complete Guide to Brand Consistency in Email | Siggly Blog',
-  description: 'How to ensure every email your team sends reinforces your brand identity and professionalism.',
-  alternates: {
-    canonical: 'https://siggly.io/blog/brand-consistency-guide',
-  },
-};
+export const metadata = createBlogMetadata(
+  'brand-consistency-guide',
+  'The Complete Guide to Brand Consistency in Email | Siggly Blog',
+  'How to ensure every email your team sends reinforces your brand identity and professionalism.'
+);
 
 export default function BlogPost() {
   return (

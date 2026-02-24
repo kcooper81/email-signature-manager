@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Adding Pronouns to Email Signatures: Best Practices | Siggly',
-  description: 'How to add pronouns to your email signature professionally. Formatting tips and considerations for inclusive signatures.',
-  keywords: ['pronouns in email signature', 'email signature pronouns', 'inclusive email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-pronouns',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-pronouns',
+  'Adding Pronouns to Email Signatures: Best Practices | Siggly',
+  'How to add pronouns to your email signature professionally. Formatting tips and considerations for inclusive signatures.',
+  ['pronouns in email signature', 'email signature pronouns', 'inclusive email signature']
+);
 
 export default function BlogPost() {
   return (

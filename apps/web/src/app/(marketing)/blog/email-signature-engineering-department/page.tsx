@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Engineering Department Email Signatures | Siggly',
-  description: 'Email signature best practices for engineering and technical teams. Developer-friendly signatures that balance professionalism with tech culture.',
-  keywords: ['engineering email signature', 'developer signature', 'tech team email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-engineering-department',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-engineering-department',
+  'Engineering Department Email Signatures | Siggly',
+  'Email signature best practices for engineering and technical teams. Developer-friendly signatures that balance professionalism with tech culture.',
+  ['engineering email signature', 'developer signature', 'tech team email']
+);
 
 export default function BlogPost() {
   return (
