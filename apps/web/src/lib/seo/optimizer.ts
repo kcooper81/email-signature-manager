@@ -8,6 +8,7 @@ import {
   type ContentGap,
 } from './competitor-intel';
 import { type SEOEngineConfig, DEFAULT_CONFIG } from './config';
+import { findRelatedPages } from './internal-links';
 
 /**
  * Template-based SEO Optimizer — generates recommendation cards from issues + data.
@@ -440,6 +441,9 @@ function handleHighBounce(
   out: Recommendation[],
   config: SEOEngineConfig
 ) {
+  // Find specific related pages to suggest as internal link targets
+  const relatedPages = findRelatedPages(issue.page_url, config.suggestedInternalLinks);
+
   out.push({
     page_url: issue.page_url,
     recommendation_type: 'add_internal_links',
@@ -447,12 +451,18 @@ function handleHighBounce(
     suggested_value: {
       action: 'Add internal links to related pages to reduce bounce rate',
       suggestedLinkCount: config.suggestedInternalLinks,
+      suggestedLinks: relatedPages.map((link) => ({
+        url: link.url,
+        title: link.title,
+        reason: link.reason,
+      })),
     },
-    rationale: `Bounce rate is ${(issue.details.bounceRate * 100).toFixed(0)}% with ${issue.details.sessions} sessions. Adding internal links and CTAs could improve engagement.`,
+    rationale: `Bounce rate is ${(issue.details.bounceRate * 100).toFixed(0)}% with ${issue.details.sessions} sessions. Adding internal links to ${relatedPages.length} related pages could improve engagement.`,
     confidence: config.confidenceHighBounce,
     data_basis: {
       bounceRate: issue.details.bounceRate,
       sessions: issue.details.sessions,
+      relatedPageCount: relatedPages.length,
     },
   });
 }
