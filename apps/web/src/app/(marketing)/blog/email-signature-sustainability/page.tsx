@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Sustainability Messaging in Email Signatures | Siggly',
-  description: 'Include sustainability and environmental messaging in email signatures. Green initiatives, certifications, and eco-friendly messaging.',
-  keywords: ['sustainability email signature', 'green signature', 'environmental messaging email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-sustainability',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-sustainability',
+  'Sustainability Messaging in Email Signatures | Siggly',
+  'Include sustainability and environmental messaging in email signatures. Green initiatives, certifications, and eco-friendly messaging.',
+  ['sustainability email signature', 'green signature', 'environmental messaging email']
+);
 
 export default function BlogPost() {
   return (

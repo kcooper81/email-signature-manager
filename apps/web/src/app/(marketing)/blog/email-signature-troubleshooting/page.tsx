@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Troubleshooting: Fix Common Problems | Siggly',
-  description: 'Fix common email signature problems. Solutions for broken images, formatting issues, missing signatures, and display problems across email clients.',
-  keywords: ['email signature not working', 'fix email signature', 'signature troubleshooting', 'email signature problems'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-troubleshooting',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-troubleshooting',
+  'Email Signature Troubleshooting: Fix Common Problems | Siggly',
+  'Fix common email signature problems. Solutions for broken images, formatting issues, missing signatures, and display problems across email clients.',
+  ['email signature not working', 'fix email signature', 'signature troubleshooting', 'email signature problems']
+);
 
 export default function BlogPost() {
   return (

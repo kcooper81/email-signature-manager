@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Law Firm Email Signature Policies: Best Practices | Siggly',
-  description: 'Develop email signature policies for law firms. Standardize attorney signatures while meeting compliance requirements.',
-  keywords: ['law firm signature policy', 'attorney email standards', 'legal firm email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-legal-firm',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-legal-firm',
+  'Law Firm Email Signature Policies: Best Practices | Siggly',
+  'Develop email signature policies for law firms. Standardize attorney signatures while meeting compliance requirements.',
+  ['law firm signature policy', 'attorney email standards', 'legal firm email']
+);
 
 export default function BlogPost() {
   return (

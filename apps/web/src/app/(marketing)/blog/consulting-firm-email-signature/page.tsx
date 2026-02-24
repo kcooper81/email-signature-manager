@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Consulting Firm Email Signatures: Professional Guide | Siggly',
-  description: 'Create polished email signatures for consultants and consulting firms. Build credibility and make it easy for clients to connect.',
-  keywords: ['consulting email signature', 'consultant signature', 'management consulting email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/consulting-firm-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'consulting-firm-email-signature',
+  'Consulting Firm Email Signatures: Professional Guide | Siggly',
+  'Create polished email signatures for consultants and consulting firms. Build credibility and make it easy for clients to connect.',
+  ['consulting email signature', 'consultant signature', 'management consulting email']
+);
 
 export default function BlogPost() {
   return (

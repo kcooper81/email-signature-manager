@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Microsoft 365 Email Signature Management Guide | Siggly',
-  description: 'Deploy and manage email signatures across your Microsoft 365 organization. Learn about transport rules, OWA signatures, and centralized management.',
-  keywords: ['microsoft 365 email signature', 'office 365 signature management', 'outlook signature deployment'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/microsoft-365-signature-management',
-  },
-};
+export const metadata = createBlogMetadata(
+  'microsoft-365-signature-management',
+  'Microsoft 365 Email Signature Management Guide | Siggly',
+  'Deploy and manage email signatures across your Microsoft 365 organization. Learn about transport rules, OWA signatures, and centralized management.',
+  ['microsoft 365 email signature', 'office 365 signature management', 'outlook signature deployment']
+);
 
 export default function BlogPost() {
   return (

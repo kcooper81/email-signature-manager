@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Showcasing Awards in Email Signatures | Siggly',
-  description: 'Display company awards and recognition in email signatures. Badges, certifications, and trust signals that build credibility.',
-  keywords: ['awards email signature', 'recognition signature', 'badges email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-awards-recognition',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-awards-recognition',
+  'Showcasing Awards in Email Signatures | Siggly',
+  'Display company awards and recognition in email signatures. Badges, certifications, and trust signals that build credibility.',
+  ['awards email signature', 'recognition signature', 'badges email signature']
+);
 
 export default function BlogPost() {
   return (

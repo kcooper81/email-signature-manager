@@ -2,14 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, TrendingUp, Target, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Using Email Signatures for Marketing Campaigns | Siggly Blog',
-  description: 'How to leverage your team\'s email signatures as a powerful, free marketing channel.',
-  alternates: {
-    canonical: 'https://siggly.io/blog/signature-marketing-campaigns',
-  },
-};
+export const metadata = createBlogMetadata(
+  'signature-marketing-campaigns',
+  'Using Email Signatures for Marketing Campaigns | Siggly Blog',
+  'How to leverage your team\'s email signatures as a powerful, free marketing channel.'
+);
 
 export default function BlogPost() {
   return (

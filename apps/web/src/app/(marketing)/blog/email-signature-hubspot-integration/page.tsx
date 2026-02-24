@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures with HubSpot CRM Integration | Siggly',
-  description: 'Connect your email signatures to HubSpot CRM. Sync contact data, personalize signatures, and track engagement.',
-  keywords: ['hubspot email signature', 'crm email signature', 'hubspot signature integration'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-hubspot-integration',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-hubspot-integration',
+  'Email Signatures with HubSpot CRM Integration | Siggly',
+  'Connect your email signatures to HubSpot CRM. Sync contact data, personalize signatures, and track engagement.',
+  ['hubspot email signature', 'crm email signature', 'hubspot signature integration']
+);
 
 export default function BlogPost() {
   return (

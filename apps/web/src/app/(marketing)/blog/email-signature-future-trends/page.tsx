@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'The Future of Email Signatures: 2026 Trends | Siggly',
-  description: 'Emerging trends in email signatures. AI personalization, dynamic content, analytics, and what to expect in the coming years.',
-  keywords: ['email signature trends', 'future email signature', 'signature innovation'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-future-trends',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-future-trends',
+  'The Future of Email Signatures: 2026 Trends | Siggly',
+  'Emerging trends in email signatures. AI personalization, dynamic content, analytics, and what to expect in the coming years.',
+  ['email signature trends', 'future email signature', 'signature innovation']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Freelancer Email Signatures: Stand Out Professionally | Siggly',
-  description: 'Create professional email signatures as a freelancer. Build credibility with clients and showcase your services effectively.',
-  keywords: ['freelancer email signature', 'freelance signature', 'independent contractor email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-for-freelancers',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-for-freelancers',
+  'Freelancer Email Signatures: Stand Out Professionally | Siggly',
+  'Create professional email signatures as a freelancer. Build credibility with clients and showcase your services effectively.',
+  ['freelancer email signature', 'freelance signature', 'independent contractor email']
+);
 
 export default function BlogPost() {
   return (

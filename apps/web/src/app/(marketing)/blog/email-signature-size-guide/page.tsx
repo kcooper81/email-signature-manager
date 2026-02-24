@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Size Guide: Dimensions & File Sizes | Siggly',
-  description: 'The complete guide to email signature dimensions. Learn optimal image sizes, logo dimensions, and file size limits for all email clients.',
-  keywords: ['email signature size', 'email signature dimensions', 'email signature image size', 'logo size email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-size-guide',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-size-guide',
+  'Email Signature Size Guide: Dimensions & File Sizes | Siggly',
+  'The complete guide to email signature dimensions. Learn optimal image sizes, logo dimensions, and file size limits for all email clients.',
+  ['email signature size', 'email signature dimensions', 'email signature image size', 'logo size email signature']
+);
 
 export default function BlogPost() {
   return (

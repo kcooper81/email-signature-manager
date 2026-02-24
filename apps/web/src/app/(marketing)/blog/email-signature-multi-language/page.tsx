@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Multi-Language Email Signatures for Global Teams | Siggly',
-  description: 'Create email signatures for international teams. Multiple languages, localization, and regional variations.',
-  keywords: ['multi-language email signature', 'international signature', 'global email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-multi-language',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-multi-language',
+  'Multi-Language Email Signatures for Global Teams | Siggly',
+  'Create email signatures for international teams. Multiple languages, localization, and regional variations.',
+  ['multi-language email signature', 'international signature', 'global email signature']
+);
 
 export default function BlogPost() {
   return (

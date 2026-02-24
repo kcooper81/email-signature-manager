@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Education Email Signatures: Teachers & Administrators | Siggly',
-  description: 'Create professional email signatures for educators, teachers, and school administrators. Include credentials and contact info appropriately.',
-  keywords: ['teacher email signature', 'education email signature', 'school administrator signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/education-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'education-email-signature',
+  'Education Email Signatures: Teachers & Administrators | Siggly',
+  'Create professional email signatures for educators, teachers, and school administrators. Include credentials and contact info appropriately.',
+  ['teacher email signature', 'education email signature', 'school administrator signature']
+);
 
 export default function BlogPost() {
   return (

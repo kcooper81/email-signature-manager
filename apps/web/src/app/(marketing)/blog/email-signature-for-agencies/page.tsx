@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures for Marketing Agencies: Client Management | Siggly',
-  description: 'Manage email signatures for agency teams and clients. Learn multi-brand strategies and how agencies use signatures for client services.',
-  keywords: ['agency email signature', 'marketing agency signature', 'email signature client management'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-for-agencies',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-for-agencies',
+  'Email Signatures for Marketing Agencies: Client Management | Siggly',
+  'Manage email signatures for agency teams and clients. Learn multi-brand strategies and how agencies use signatures for client services.',
+  ['agency email signature', 'marketing agency signature', 'email signature client management']
+);
 
 export default function BlogPost() {
   return (

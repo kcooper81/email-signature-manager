@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Executive Email Signatures: CEO & C-Suite Guide | Siggly',
-  description: 'Create executive email signatures that convey authority. Guidance for CEOs, C-suite executives, and senior leadership.',
-  keywords: ['executive email signature', 'ceo email signature', 'c-suite signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/executive-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'executive-email-signature',
+  'Executive Email Signatures: CEO & C-Suite Guide | Siggly',
+  'Create executive email signatures that convey authority. Guidance for CEOs, C-suite executives, and senior leadership.',
+  ['executive email signature', 'ceo email signature', 'c-suite signature']
+);
 
 export default function BlogPost() {
   return (

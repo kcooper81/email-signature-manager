@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Best Exclaimer Alternatives 2026: Compare Features & Pricing | Siggly',
-  description: 'Looking for an Exclaimer alternative? Compare the top email signature management tools with better pricing, easier setup, and modern features.',
-  keywords: ['exclaimer alternative', 'exclaimer competitor', 'exclaimer vs', 'email signature software comparison'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/exclaimer-alternative',
-  },
-};
+export const metadata = createBlogMetadata(
+  'exclaimer-alternative',
+  'Best Exclaimer Alternatives 2026: Compare Features & Pricing | Siggly',
+  'Looking for an Exclaimer alternative? Compare the top email signature management tools with better pricing, easier setup, and modern features.',
+  ['exclaimer alternative', 'exclaimer competitor', 'exclaimer vs', 'email signature software comparison']
+);
 
 export default function BlogPost() {
   return (

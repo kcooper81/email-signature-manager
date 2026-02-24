@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Directory Sync: Automate Updates | Siggly',
-  description: 'Sync email signatures with your user directory. Automatically update signatures when employee info changes in AD or Google Directory.',
-  keywords: ['email signature directory sync', 'active directory signature', 'auto update signatures'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-directory-sync',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-directory-sync',
+  'Email Signature Directory Sync: Automate Updates | Siggly',
+  'Sync email signatures with your user directory. Automatically update signatures when employee info changes in AD or Google Directory.',
+  ['email signature directory sync', 'active directory signature', 'auto update signatures']
+);
 
 export default function BlogPost() {
   return (

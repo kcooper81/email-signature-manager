@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Security: Protect Your Brand | Siggly',
-  description: 'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
-  keywords: ['email signature security', 'signature spoofing', 'email brand protection'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-security',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-security',
+  'Email Signature Security: Protect Your Brand | Siggly',
+  'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
+  ['email signature security', 'signature spoofing', 'email brand protection']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures in Dark Mode: Design Tips | Siggly',
-  description: 'Design email signatures that work in dark mode. Tips for logos, colors, and images that look good on both light and dark backgrounds.',
-  keywords: ['email signature dark mode', 'dark mode email', 'signature dark theme'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-dark-mode',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-dark-mode',
+  'Email Signatures in Dark Mode: Design Tips | Siggly',
+  'Design email signatures that work in dark mode. Tips for logos, colors, and images that look good on both light and dark backgrounds.',
+  ['email signature dark mode', 'dark mode email', 'signature dark theme']
+);
 
 export default function BlogPost() {
   return (

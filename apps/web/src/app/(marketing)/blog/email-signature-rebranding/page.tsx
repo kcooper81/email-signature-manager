@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Updating Email Signatures During Rebranding | Siggly',
-  description: 'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
-  keywords: ['email signature rebrand', 'update company signature', 'signature brand refresh'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-rebranding',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-rebranding',
+  'Updating Email Signatures During Rebranding | Siggly',
+  'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
+  ['email signature rebrand', 'update company signature', 'signature brand refresh']
+);
 
 export default function BlogPost() {
   return (

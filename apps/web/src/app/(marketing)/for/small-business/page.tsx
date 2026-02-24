@@ -2,11 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, ArrowRight, Briefcase, Clock, DollarSign, Smile, CheckCircle, Zap, Heart, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { generateMetadata as genMeta } from '@/lib/seo';
 
-export const metadata = {
+export const metadata = genMeta({
   title: 'Email Signatures for Small Business | Siggly',
   description: 'Professional email signatures for small teams. Easy setup, affordable pricing, and no technical skills required.',
-};
+  keywords: ['small business email signatures', 'affordable signature management', 'easy email signatures', 'small team branding'],
+  canonical: '/for/small-business',
+});
 
 const painPoints = [
   {

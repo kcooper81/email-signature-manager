@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'QR Codes in Email Signatures: Do They Work? | Siggly',
-  description: 'Should you add QR codes to email signatures? Pros, cons, and use cases for QR codes in professional email signatures.',
-  keywords: ['qr code email signature', 'signature qr code', 'email qr code'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-qr-codes',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-qr-codes',
+  'QR Codes in Email Signatures: Do They Work? | Siggly',
+  'Should you add QR codes to email signatures? Pros, cons, and use cases for QR codes in professional email signatures.',
+  ['qr code email signature', 'signature qr code', 'email qr code']
+);
 
 export default function BlogPost() {
   return (

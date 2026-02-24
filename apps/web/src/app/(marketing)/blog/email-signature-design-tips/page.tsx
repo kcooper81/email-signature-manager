@@ -2,14 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: '10 Email Signature Design Tips for 2026 | Siggly Blog',
-  description: 'Modern design principles to make your email signatures stand out while remaining professional.',
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-design-tips',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-design-tips',
+  '10 Email Signature Design Tips for 2026 | Siggly Blog',
+  'Modern design principles to make your email signatures stand out while remaining professional.'
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: '25 Professional Email Signature Examples for 2026 | Siggly',
-  description: 'Get inspired by these 25 professional email signature examples. See what works for different industries, roles, and company sizes.',
-  keywords: ['email signature examples', 'professional email signature', 'email signature design', 'business email signature examples'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-examples',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-examples',
+  '25 Professional Email Signature Examples for 2026 | Siggly',
+  'Get inspired by these 25 professional email signature examples. See what works for different industries, roles, and company sizes.',
+  ['email signature examples', 'professional email signature', 'email signature design', 'business email signature examples']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signatures for Product Launch Campaigns | Siggly',
-  description: 'Use email signatures to amplify product launches. Create excitement, drive signups, and coordinate team messaging.',
-  keywords: ['product launch email signature', 'launch announcement signature', 'new product email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-product-launch',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-product-launch',
+  'Email Signatures for Product Launch Campaigns | Siggly',
+  'Use email signatures to amplify product launches. Create excitement, drive signups, and coordinate team messaging.',
+  ['product launch email signature', 'launch announcement signature', 'new product email']
+);
 
 export default function BlogPost() {
   return (
