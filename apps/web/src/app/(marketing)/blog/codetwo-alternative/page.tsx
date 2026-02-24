@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Best CodeTwo Alternatives 2026: Compare Features & Pricing | Siggly',
-  description: 'Looking for a CodeTwo alternative? Compare email signature tools with Google Workspace support, easier pricing, and modern features.',
-  keywords: ['codetwo alternative', 'codetwo competitor', 'codetwo vs', 'email signature software'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/codetwo-alternative',
-  },
-};
+export const metadata = createBlogMetadata(
+  'codetwo-alternative',
+  'Best CodeTwo Alternatives 2026: Compare Features & Pricing | Siggly',
+  'Looking for a CodeTwo alternative? Compare email signature tools with Google Workspace support, easier pricing, and modern features.',
+  ['codetwo alternative', 'codetwo competitor', 'codetwo vs', 'email signature software']
+);
 
 export default function BlogPost() {
   return (

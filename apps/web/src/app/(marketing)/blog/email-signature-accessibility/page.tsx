@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Accessible Email Signatures: Inclusive Design | Siggly',
-  description: 'Create accessible email signatures for all users. Alt text, color contrast, screen readers, and inclusive design practices.',
-  keywords: ['accessible email signature', 'email signature accessibility', 'inclusive signature design'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-accessibility',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-accessibility',
+  'Accessible Email Signatures: Inclusive Design | Siggly',
+  'Create accessible email signatures for all users. Alt text, color contrast, screen readers, and inclusive design practices.',
+  ['accessible email signature', 'email signature accessibility', 'inclusive signature design']
+);
 
 export default function BlogPost() {
   return (

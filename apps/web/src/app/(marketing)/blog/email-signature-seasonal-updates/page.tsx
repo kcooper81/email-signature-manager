@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Seasonal Email Signature Updates: Holiday & Event Ideas | Siggly',
-  description: 'Update your email signatures for seasons and holidays. Ideas for holiday banners, event promotions, and timely messaging.',
-  keywords: ['holiday email signature', 'seasonal signature', 'email signature holiday banner'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-seasonal-updates',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-seasonal-updates',
+  'Seasonal Email Signature Updates: Holiday & Event Ideas | Siggly',
+  'Update your email signatures for seasons and holidays. Ideas for holiday banners, event promotions, and timely messaging.',
+  ['holiday email signature', 'seasonal signature', 'email signature holiday banner']
+);
 
 export default function BlogPost() {
   return (

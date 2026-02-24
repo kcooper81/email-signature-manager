@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Healthcare Email Signatures: HIPAA Compliant Guide | Siggly',
-  description: 'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
-  keywords: ['healthcare email signature', 'HIPAA email signature', 'medical email signature', 'doctor email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/healthcare-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'healthcare-email-signature',
+  'Healthcare Email Signatures: HIPAA Compliant Guide | Siggly',
+  'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
+  ['healthcare email signature', 'HIPAA email signature', 'medical email signature', 'doctor email signature']
+);
 
 export default function BlogPost() {
   return (

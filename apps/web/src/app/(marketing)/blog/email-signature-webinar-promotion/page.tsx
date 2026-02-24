@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Promoting Webinars Through Email Signatures | Siggly',
-  description: 'Use email signatures to promote webinars and virtual events. Banners, CTAs, and timing strategies for event promotion.',
-  keywords: ['email signature webinar', 'promote webinar signature', 'event banner email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-webinar-promotion',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-webinar-promotion',
+  'Promoting Webinars Through Email Signatures | Siggly',
+  'Use email signatures to promote webinars and virtual events. Banners, CTAs, and timing strategies for event promotion.',
+  ['email signature webinar', 'promote webinar signature', 'event banner email']
+);
 
 export default function BlogPost() {
   return (

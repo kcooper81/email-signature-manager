@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature ROI: Calculate Your Return | Siggly',
-  description: 'Calculate the ROI of email signature management. Understand the value of consistent branding, banner clicks, and time savings.',
-  keywords: ['email signature ROI', 'signature value calculator', 'signature marketing ROI'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-roi-calculator',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-roi-calculator',
+  'Email Signature ROI: Calculate Your Return | Siggly',
+  'Calculate the ROI of email signature management. Understand the value of consistent branding, banner clicks, and time savings.',
+  ['email signature ROI', 'signature value calculator', 'signature marketing ROI']
+);
 
 export default function BlogPost() {
   return (

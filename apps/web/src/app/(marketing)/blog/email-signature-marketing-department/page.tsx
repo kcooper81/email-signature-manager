@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Marketing Department Email Signatures | Siggly',
-  description: 'Email signature best practices for marketing teams. Brand consistency, campaign promotion, and creative signature design.',
-  keywords: ['marketing email signature', 'brand signature', 'marketing team email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-marketing-department',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-marketing-department',
+  'Marketing Department Email Signatures | Siggly',
+  'Email signature best practices for marketing teams. Brand consistency, campaign promotion, and creative signature design.',
+  ['marketing email signature', 'brand signature', 'marketing team email']
+);
 
 export default function BlogPost() {
   return (

@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'How to Set Up Gmail Signature: Complete 2026 Guide | Siggly',
-  description: 'Learn how to create and set up a professional Gmail signature step-by-step. Includes tips for images, formatting, and mobile optimization.',
-  keywords: ['gmail signature', 'gmail signature setup', 'how to add signature in gmail', 'gmail email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/gmail-signature-setup-guide',
-  },
-};
+export const metadata = createBlogMetadata(
+  'gmail-signature-setup-guide',
+  'How to Set Up Gmail Signature: Complete 2026 Guide | Siggly',
+  'Learn how to create and set up a professional Gmail signature step-by-step. Includes tips for images, formatting, and mobile optimization.',
+  ['gmail signature', 'gmail signature setup', 'how to add signature in gmail', 'gmail email signature']
+);
 
 export default function BlogPost() {
   return (

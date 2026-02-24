@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Onboarding: New Employee Setup Guide | Siggly',
-  description: 'Streamline email signature setup for new hires. Create an efficient onboarding process that gets signatures right from day one.',
-  keywords: ['email signature onboarding', 'new employee signature', 'signature setup process'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-onboarding',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-onboarding',
+  'Email Signature Onboarding: New Employee Setup Guide | Siggly',
+  'Streamline email signature setup for new hires. Create an efficient onboarding process that gets signatures right from day one.',
+  ['email signature onboarding', 'new employee signature', 'signature setup process']
+);
 
 export default function BlogPost() {
   return (

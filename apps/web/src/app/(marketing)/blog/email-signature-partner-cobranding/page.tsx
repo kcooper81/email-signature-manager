@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Partner Co-Branding in Email Signatures | Siggly',
-  description: 'Include partner logos and co-branding in email signatures. Best practices for technology partners, resellers, and strategic alliances.',
-  keywords: ['partner email signature', 'co-branding signature', 'partner logo email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-partner-cobranding',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-partner-cobranding',
+  'Partner Co-Branding in Email Signatures | Siggly',
+  'Include partner logos and co-branding in email signatures. Best practices for technology partners, resellers, and strategic alliances.',
+  ['partner email signature', 'co-branding signature', 'partner logo email']
+);
 
 export default function BlogPost() {
   return (

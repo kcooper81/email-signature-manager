@@ -2,6 +2,7 @@ const createMDX = require('@next/mdx');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  trailingSlash: false,
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   transpilePackages: ['@esm/shared'],

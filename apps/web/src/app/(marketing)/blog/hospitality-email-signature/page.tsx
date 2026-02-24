@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Hospitality Email Signatures: Hotels & Restaurants | Siggly',
-  description: 'Create welcoming email signatures for hospitality businesses. Hotels, restaurants, and event venues can build guest relationships.',
-  keywords: ['hotel email signature', 'hospitality signature', 'restaurant email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/hospitality-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'hospitality-email-signature',
+  'Hospitality Email Signatures: Hotels & Restaurants | Siggly',
+  'Create welcoming email signatures for hospitality businesses. Hotels, restaurants, and event venues can build guest relationships.',
+  ['hotel email signature', 'hospitality signature', 'restaurant email signature']
+);
 
 export default function BlogPost() {
   return (

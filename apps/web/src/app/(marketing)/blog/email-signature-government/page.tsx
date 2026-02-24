@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Government Email Signatures: Compliance Guide | Siggly',
-  description: 'Email signature requirements for government agencies. Official formatting, compliance, and accessibility considerations.',
-  keywords: ['government email signature', 'public sector signature', 'agency email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-government',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-government',
+  'Government Email Signatures: Compliance Guide | Siggly',
+  'Email signature requirements for government agencies. Official formatting, compliance, and accessibility considerations.',
+  ['government email signature', 'public sector signature', 'agency email']
+);
 
 export default function BlogPost() {
   return (

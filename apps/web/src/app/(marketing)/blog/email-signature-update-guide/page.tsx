@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'How to Update Email Signatures: Complete Guide | Siggly',
-  description: 'Update email signatures across Gmail, Outlook, and Apple Mail. Step-by-step instructions for changing your signature on any platform.',
-  keywords: ['update email signature', 'change email signature', 'edit email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-update-guide',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-update-guide',
+  'How to Update Email Signatures: Complete Guide | Siggly',
+  'Update email signatures across Gmail, Outlook, and Apple Mail. Step-by-step instructions for changing your signature on any platform.',
+  ['update email signature', 'change email signature', 'edit email signature']
+);
 
 export default function BlogPost() {
   return (

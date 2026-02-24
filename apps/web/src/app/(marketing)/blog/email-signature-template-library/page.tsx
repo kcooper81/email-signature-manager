@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Building an Email Signature Template Library | Siggly',
-  description: 'Create a library of email signature templates for your organization. Templates for different roles, departments, and use cases.',
-  keywords: ['email signature template', 'signature library', 'template management'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-template-library',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-template-library',
+  'Building an Email Signature Template Library | Siggly',
+  'Create a library of email signature templates for your organization. Templates for different roles, departments, and use cases.',
+  ['email signature template', 'signature library', 'template management']
+);
 
 export default function BlogPost() {
   return (

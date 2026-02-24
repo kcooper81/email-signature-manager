@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Accounting Firm Email Signatures: CPA Credential Guide | Siggly',
-  description: 'Create professional email signatures for CPAs and accounting firms. Include credentials, firm info, and compliance elements.',
-  keywords: ['cpa email signature', 'accounting firm signature', 'accountant email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/accounting-firm-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'accounting-firm-email-signature',
+  'Accounting Firm Email Signatures: CPA Credential Guide | Siggly',
+  'Create professional email signatures for CPAs and accounting firms. Include credentials, firm info, and compliance elements.',
+  ['cpa email signature', 'accounting firm signature', 'accountant email signature']
+);
 
 export default function BlogPost() {
   return (

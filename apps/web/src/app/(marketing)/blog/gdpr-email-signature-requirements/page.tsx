@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'GDPR Email Signature Requirements: EU Compliance Guide | Siggly',
-  description: 'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
-  keywords: ['GDPR email signature', 'EU email compliance', 'email signature privacy', 'GDPR disclaimer email'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/gdpr-email-signature-requirements',
-  },
-};
+export const metadata = createBlogMetadata(
+  'gdpr-email-signature-requirements',
+  'GDPR Email Signature Requirements: EU Compliance Guide | Siggly',
+  'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
+  ['GDPR email signature', 'EU email compliance', 'email signature privacy', 'GDPR disclaimer email']
+);
 
 export default function BlogPost() {
   return (

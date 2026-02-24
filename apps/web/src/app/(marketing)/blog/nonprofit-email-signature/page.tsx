@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Nonprofit Email Signatures: Boost Donations & Awareness | Siggly',
-  description: 'Create impactful email signatures for nonprofits. Include donation links, mission statements, and build supporter engagement.',
-  keywords: ['nonprofit email signature', 'charity email signature', 'ngo email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/nonprofit-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'nonprofit-email-signature',
+  'Nonprofit Email Signatures: Boost Donations & Awareness | Siggly',
+  'Create impactful email signatures for nonprofits. Include donation links, mission statements, and build supporter engagement.',
+  ['nonprofit email signature', 'charity email signature', 'ngo email signature']
+);
 
 export default function BlogPost() {
   return (

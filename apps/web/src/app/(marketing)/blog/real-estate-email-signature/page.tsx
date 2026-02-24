@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Real Estate Email Signatures: Stand Out to Clients | Siggly',
-  description: 'Create professional real estate email signatures with property listings, virtual tour links, and trust-building elements for agents and brokers.',
-  keywords: ['real estate email signature', 'realtor email signature', 'real estate agent signature', 'broker email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/real-estate-email-signature',
-  },
-};
+export const metadata = createBlogMetadata(
+  'real-estate-email-signature',
+  'Real Estate Email Signatures: Stand Out to Clients | Siggly',
+  'Create professional real estate email signatures with property listings, virtual tour links, and trust-building elements for agents and brokers.',
+  ['real estate email signature', 'realtor email signature', 'real estate agent signature', 'broker email signature']
+);
 
 export default function BlogPost() {
   return (

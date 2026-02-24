@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Customer Support Email Signatures: Build Trust | Siggly',
-  description: 'Create effective email signatures for customer support teams. Include helpful links, build rapport, and improve customer experience.',
-  keywords: ['customer support email signature', 'support team signature', 'help desk email signature'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-customer-support',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-customer-support',
+  'Customer Support Email Signatures: Build Trust | Siggly',
+  'Create effective email signatures for customer support teams. Include helpful links, build rapport, and improve customer experience.',
+  ['customer support email signature', 'support team signature', 'help desk email signature']
+);
 
 export default function BlogPost() {
   return (

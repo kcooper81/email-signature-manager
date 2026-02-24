@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Adding Social Proof to Email Signatures | Siggly',
-  description: 'Include social proof in your email signatures. Awards, ratings, certifications, and trust signals that build credibility.',
-  keywords: ['email signature social proof', 'trust signals email', 'signature awards badges'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-social-proof',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-social-proof',
+  'Adding Social Proof to Email Signatures | Siggly',
+  'Include social proof in your email signatures. Awards, ratings, certifications, and trust signals that build credibility.',
+  ['email signature social proof', 'trust signals email', 'signature awards badges']
+);
 
 export default function BlogPost() {
   return (

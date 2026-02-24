@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Best Practices: The Complete Guide | Siggly',
-  description: 'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
-  keywords: ['email signature best practices', 'professional email signature', 'email signature tips', 'email signature guidelines'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-best-practices',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-best-practices',
+  'Email Signature Best Practices: The Complete Guide | Siggly',
+  'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
+  ['email signature best practices', 'professional email signature', 'email signature tips', 'email signature guidelines']
+);
 
 export default function BlogPost() {
   return (

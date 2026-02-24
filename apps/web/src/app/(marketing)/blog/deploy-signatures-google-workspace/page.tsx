@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'How to Deploy Email Signatures in Google Workspace | Siggly',
-  description: 'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
-  keywords: ['google workspace email signature', 'deploy gmail signatures', 'google admin signature', 'gmail signature all users'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/deploy-signatures-google-workspace',
-  },
-};
+export const metadata = createBlogMetadata(
+  'deploy-signatures-google-workspace',
+  'How to Deploy Email Signatures in Google Workspace | Siggly',
+  'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
+  ['google workspace email signature', 'deploy gmail signatures', 'google admin signature', 'gmail signature all users']
+);
 
 export default function BlogPost() {
   return (

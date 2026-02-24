@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Email Signature Marketing: Measure ROI & Drive Results | Siggly',
-  description: 'Turn email signatures into a marketing channel. Learn to measure ROI, add campaign banners, and track clicks from employee signatures.',
-  keywords: ['email signature marketing', 'email signature ROI', 'signature banner campaigns', 'email signature analytics'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-marketing-roi',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-marketing-roi',
+  'Email Signature Marketing: Measure ROI & Drive Results | Siggly',
+  'Turn email signatures into a marketing channel. Learn to measure ROI, add campaign banners, and track clicks from employee signatures.',
+  ['email signature marketing', 'email signature ROI', 'signature banner campaigns', 'email signature analytics']
+);
 
 export default function BlogPost() {
   return (

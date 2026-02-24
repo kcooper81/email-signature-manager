@@ -291,7 +291,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Silently skip if DB not available (build time)
   }
 
-  return [
+  // Combine all entries and deduplicate by URL
+  const allPages = [
     ...corePages,
     ...solutionPages,
     ...comparisonPages,
@@ -302,4 +303,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...seoLandingPages,
     ...generatedPages,
   ];
+
+  // Deduplicate: keep the first occurrence of each URL
+  const seen = new Set<string>();
+  return allPages.filter((page) => {
+    const url = page.url.replace(/\/$/, ''); // normalize trailing slash
+    if (seen.has(url)) return false;
+    seen.add(url);
+    return true;
+  });
 }

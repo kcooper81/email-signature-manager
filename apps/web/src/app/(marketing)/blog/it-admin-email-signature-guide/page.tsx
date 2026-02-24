@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'IT Admin Guide to Email Signature Management | Siggly',
-  description: 'Everything IT admins need to know about deploying and managing email signatures. Covers Google Workspace, Microsoft 365, and best practices.',
-  keywords: ['it admin email signature', 'deploy email signatures', 'email signature management it'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/it-admin-email-signature-guide',
-  },
-};
+export const metadata = createBlogMetadata(
+  'it-admin-email-signature-guide',
+  'IT Admin Guide to Email Signature Management | Siggly',
+  'Everything IT admins need to know about deploying and managing email signatures. Covers Google Workspace, Microsoft 365, and best practices.',
+  ['it admin email signature', 'deploy email signatures', 'email signature management it']
+);
 
 export default function BlogPost() {
   return (

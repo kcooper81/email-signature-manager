@@ -2,15 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createBlogMetadata } from '@/lib/seo';
 
-export const metadata = {
-  title: 'HTML Email Signatures: A Technical Guide | Siggly',
-  description: 'Understand HTML email signature basics. Tables, inline styles, and email client compatibility for custom signature development.',
-  keywords: ['html email signature', 'signature html code', 'email signature coding'],
-  alternates: {
-    canonical: 'https://siggly.io/blog/email-signature-html-basics',
-  },
-};
+export const metadata = createBlogMetadata(
+  'email-signature-html-basics',
+  'HTML Email Signatures: A Technical Guide | Siggly',
+  'Understand HTML email signature basics. Tables, inline styles, and email client compatibility for custom signature development.',
+  ['html email signature', 'signature html code', 'email signature coding']
+);
 
 export default function BlogPost() {
   return (
