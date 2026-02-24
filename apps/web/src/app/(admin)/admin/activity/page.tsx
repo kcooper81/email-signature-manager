@@ -18,6 +18,8 @@ import {
   Download,
 } from 'lucide-react';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortableHeader } from '@/components/admin/sortable-header';
 
 interface AuditLogEntry {
   id: string;
@@ -56,6 +58,7 @@ export default function ActivityPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [actions, setActions] = useState<string[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const sort = useSortableTable<AuditLogEntry>('createdAt', 'desc');
 
   // Debounce search for server-side filtering
   useEffect(() => {
@@ -279,15 +282,15 @@ export default function ActivityPage() {
                   <thead>
                     <tr className="border-b text-left">
                       <th className="pb-3 font-medium text-slate-500 w-8"></th>
-                      <th className="pb-3 font-medium text-slate-500">Timestamp</th>
-                      <th className="pb-3 font-medium text-slate-500">Action</th>
+                      <SortableHeader field="createdAt" label="Timestamp" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                      <SortableHeader field="action" label="Action" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                       <th className="pb-3 font-medium text-slate-500">Resource</th>
-                      <th className="pb-3 font-medium text-slate-500">Organization</th>
+                      <SortableHeader field="orgName" label="Organization" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                       <th className="pb-3 font-medium text-slate-500">User</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {logs.map((log) => (
+                    {sort.sortData(logs).map((log) => (
                       <>
                         <tr
                           key={log.id}

@@ -30,6 +30,8 @@ import {
   Download,
 } from 'lucide-react';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortButton } from '@/components/admin/sortable-header';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All Applications' },
@@ -112,7 +114,9 @@ export default function PartnerApplicationsPage() {
   const [newTier, setNewTier] = useState('registered');
   const [tierChanging, setTierChanging] = useState(false);
 
-  const applicationIds = useMemo(() => applications.map(a => a.id), [applications]);
+  const sort = useSortableTable<PartnerApplication>('submitted_at', 'desc');
+  const sortedApplications = sort.sortData(applications);
+  const applicationIds = useMemo(() => sortedApplications.map(a => a.id), [sortedApplications]);
   const bulk = useBulkSelection({ itemIds: applicationIds });
 
   useEffect(() => {
@@ -451,23 +455,31 @@ export default function PartnerApplicationsPage() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          ) : applications.length === 0 ? (
+          ) : sortedApplications.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               No applications found
             </div>
           ) : (
             <div className="divide-y">
-              {applications.length > 0 && (
-                <div className="p-4 flex items-center gap-3 border-b">
-                  <Checkbox
-                    checked={bulk.allSelected}
-                    onCheckedChange={bulk.toggleAll}
-                    aria-label="Select all applications"
-                  />
-                  <span className="text-sm text-muted-foreground">Select all</span>
+              {sortedApplications.length > 0 && (
+                <div className="p-4 flex items-center justify-between border-b">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={bulk.allSelected}
+                      onCheckedChange={bulk.toggleAll}
+                      aria-label="Select all applications"
+                    />
+                    <span className="text-sm text-muted-foreground">Select all</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-slate-400 font-medium">Sort by:</span>
+                    <SortButton field="company_name" label="Company" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                    <SortButton field="status" label="Status" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                    <SortButton field="submitted_at" label="Submitted" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                  </div>
                 </div>
               )}
-              {applications.map((app) => (
+              {sortedApplications.map((app) => (
                 <div key={app.id} className="p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-start justify-between gap-4">
                     <div className="pt-1 flex-shrink-0">

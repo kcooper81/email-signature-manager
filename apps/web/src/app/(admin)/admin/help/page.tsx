@@ -18,6 +18,8 @@ import {
   FileText,
   BookOpen,
 } from 'lucide-react';
+import { useSortableTable } from '@/hooks/use-sortable-table';
+import { SortButton } from '@/components/admin/sortable-header';
 
 interface HelpArticle {
   id: string;
@@ -234,9 +236,11 @@ export default function AdminHelpPage() {
     }
   };
 
-  const filteredArticles = selectedCategory
+  const sort = useSortableTable<HelpArticle>('sort_order', 'asc');
+
+  const filteredArticles = sort.sortData(selectedCategory
     ? articles.filter(a => a.category === selectedCategory)
-    : articles;
+    : articles);
 
   const filteredArticleIds = useMemo(() => filteredArticles.map(a => a.id), [filteredArticles]);
   const bulk = useBulkSelection({ itemIds: filteredArticleIds });
@@ -483,13 +487,21 @@ export default function AdminHelpPage() {
               </div>
             ) : (
               <>
-                <div className="p-4 flex items-center gap-3">
-                  <Checkbox
-                    checked={bulk.allSelected}
-                    onCheckedChange={bulk.toggleAll}
-                    aria-label="Select all articles"
-                  />
-                  <span className="text-sm text-muted-foreground">Select all</span>
+                <div className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={bulk.allSelected}
+                      onCheckedChange={bulk.toggleAll}
+                      aria-label="Select all articles"
+                    />
+                    <span className="text-sm text-muted-foreground">Select all</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-slate-400 font-medium">Sort by:</span>
+                    <SortButton field="title" label="Title" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                    <SortButton field="category" label="Category" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                    <SortButton field="article_type" label="Type" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                  </div>
                 </div>
                 {filteredArticles.map(article => (
                   <div key={article.id} className="p-4 flex items-center justify-between hover:bg-muted/50">
