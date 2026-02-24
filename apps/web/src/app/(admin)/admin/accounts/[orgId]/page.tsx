@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge } from '@/components/ui';
@@ -31,6 +31,8 @@ import {
   Mail,
   UserPlus,
   Network,
+  AlertTriangle,
+  Info,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -75,6 +77,8 @@ interface User {
   lastName: string | null;
   role: string;
   department: string | null;
+  authId: string | null;
+  isActive: boolean;
   createdAt: string;
 }
 
@@ -192,7 +196,7 @@ export default function OrgDetailPage() {
     // Get users
     const { data: userData } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, role, department, created_at')
+      .select('id, email, first_name, last_name, role, department, auth_id, is_active, created_at')
       .eq('organization_id', orgId)
       .order('created_at', { ascending: false });
 
@@ -204,6 +208,8 @@ export default function OrgDetailPage() {
         lastName: u.last_name,
         role: u.role,
         department: u.department,
+        authId: (u as any).auth_id || null,
+        isActive: (u as any).is_active !== false,
         createdAt: u.created_at,
       })) || []
     );
@@ -368,6 +374,28 @@ export default function OrgDetailPage() {
 
   const plan = PLANS[subscription?.plan || 'free'];
 
+  // Compute profile issues for this org's users
+  const profileIssues = useMemo(() => {
+    const issues: { user: User; problems: string[] }[] = [];
+    for (const u of users) {
+      const problems: string[] = [];
+      if (!u.authId) problems.push('No auth link (cannot sign in)');
+      if (!u.firstName?.trim()) problems.push('Missing first name');
+      if (!u.lastName?.trim()) problems.push('Missing last name');
+      if (!u.email?.trim()) problems.push('Missing email');
+      if (!u.isActive) problems.push('Account deactivated');
+      if (problems.length > 0) issues.push({ user: u, problems });
+    }
+    // Also check org-level issues
+    const orgIssues: string[] = [];
+    if (!subscription) orgIssues.push('No subscription record');
+    if (users.length === 0) orgIssues.push('No users in organization');
+    if (!users.some(u => u.role === 'owner')) orgIssues.push('No owner assigned');
+    return { userIssues: issues, orgIssues };
+  }, [users, subscription]);
+
+  const hasAnyIssues = profileIssues.userIssues.length > 0 || profileIssues.orgIssues.length > 0;
+
   return (
     <div className="space-y-6">
       {/* Suspended Banner */}
@@ -481,6 +509,65 @@ export default function OrgDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Profile / Setup Issues */}
+      {hasAnyIssues && (
+        <Card className="border-amber-200 bg-amber-50/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-amber-800">
+              <AlertTriangle className="h-5 w-5" />
+              Setup Issues
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {profileIssues.orgIssues.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {profileIssues.orgIssues.map((issue) => (
+                  <span
+                    key={issue}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700"
+                  >
+                    <Info className="h-3 w-3" />
+                    {issue}
+                  </span>
+                ))}
+              </div>
+            )}
+            {profileIssues.userIssues.length > 0 && (
+              <div className="divide-y divide-amber-200">
+                {profileIssues.userIssues.map(({ user: u, problems }) => (
+                  <div key={u.id} className="flex items-start justify-between py-2 gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-900">
+                        {u.firstName || u.lastName
+                          ? `${u.firstName || ''} ${u.lastName || ''}`.trim()
+                          : <span className="text-slate-400 italic">No name</span>
+                        }
+                        <span className="text-slate-500 font-normal ml-2">{u.email}</span>
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {problems.map((p) => (
+                          <span
+                            key={p}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full ${
+                              p.includes('No auth') || p.includes('deactivated')
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}
+                          >
+                            <Info className="h-3 w-3" />
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Organization Details */}
       <Card>

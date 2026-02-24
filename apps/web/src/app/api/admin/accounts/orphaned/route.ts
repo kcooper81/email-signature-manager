@@ -3,24 +3,9 @@ import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { createUserWithOrganization } from '@/lib/auth/create-user-org';
 import type { User } from '@supabase/supabase-js';
 
-interface ProfileIssue {
-  userId: string;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  role: string;
-  organizationId: string | null;
-  organizationName: string | null;
-  authId: string | null;
-  isActive: boolean;
-  createdAt: string;
-  issues: string[];
-}
-
 /**
- * GET: List orphaned auth users AND users with profile/setup issues.
- * Orphaned = exists in auth.users but no users record.
- * Profile issues = users record exists but has incomplete data or missing links.
+ * GET: List auth users who don't have a corresponding users/organizations record.
+ * These are "orphaned" signups — typically from Google SSO where setup-profile was never completed.
  */
 export async function GET() {
   try {
@@ -54,13 +39,13 @@ export async function GET() {
 
     const authUsers = authData?.users || [];
 
-    // Get ALL user records for cross-referencing
+    // Get all auth_ids that have user records
     const { data: allUsers } = await supabaseAdmin
       .from('users')
-      .select('id, auth_id, email, first_name, last_name, role, organization_id, is_active, created_at');
+      .select('auth_id');
 
     const linkedAuthIds = new Set(
-      allUsers?.map((u: any) => u.auth_id).filter(Boolean) || []
+      allUsers?.map((u: { auth_id: string | null }) => u.auth_id).filter(Boolean) || []
     );
 
     const orphaned = authUsers
@@ -74,81 +59,7 @@ export async function GET() {
         createdAt: au.created_at,
       }));
 
-    // --- Profile issues: users with incomplete/broken records ---
-    // Get org names for users that have an org
-    const orgIds = [...new Set(
-      (allUsers || []).map((u: any) => u.organization_id).filter(Boolean)
-    )];
-
-    let orgNameMap = new Map<string, string>();
-    if (orgIds.length > 0) {
-      const { data: orgs } = await supabaseAdmin
-        .from('organizations')
-        .select('id, name')
-        .in('id', orgIds);
-      orgs?.forEach((o: any) => orgNameMap.set(o.id, o.name));
-    }
-
-    // Check which orgs have subscriptions
-    let orgSubMap = new Map<string, boolean>();
-    if (orgIds.length > 0) {
-      const { data: subs } = await supabaseAdmin
-        .from('subscriptions')
-        .select('organization_id')
-        .in('organization_id', orgIds);
-      subs?.forEach((s: any) => orgSubMap.set(s.organization_id, true));
-    }
-
-    const profileIssues: ProfileIssue[] = [];
-
-    for (const u of (allUsers || []) as any[]) {
-      const issues: string[] = [];
-
-      if (!u.organization_id) {
-        issues.push('No organization');
-      }
-      if (!u.auth_id) {
-        issues.push('No auth link (cannot sign in)');
-      }
-      if (!u.first_name?.trim()) {
-        issues.push('Missing first name');
-      }
-      if (!u.last_name?.trim()) {
-        issues.push('Missing last name');
-      }
-      if (!u.email?.trim()) {
-        issues.push('Missing email');
-      }
-      if (u.is_active === false) {
-        issues.push('Account deactivated');
-      }
-      // Check if their org actually exists (dangling FK)
-      if (u.organization_id && !orgNameMap.has(u.organization_id)) {
-        issues.push('Organization not found (dangling reference)');
-      }
-      // Check if org is missing a subscription
-      if (u.organization_id && u.role === 'owner' && !orgSubMap.has(u.organization_id)) {
-        issues.push('Organization has no subscription');
-      }
-
-      if (issues.length > 0) {
-        profileIssues.push({
-          userId: u.id,
-          email: u.email || '',
-          firstName: u.first_name,
-          lastName: u.last_name,
-          role: u.role || 'unknown',
-          organizationId: u.organization_id,
-          organizationName: u.organization_id ? (orgNameMap.get(u.organization_id) || null) : null,
-          authId: u.auth_id,
-          isActive: u.is_active !== false,
-          createdAt: u.created_at,
-          issues,
-        });
-      }
-    }
-
-    return NextResponse.json({ orphaned, profileIssues });
+    return NextResponse.json({ orphaned });
   } catch (error: any) {
     console.error('Orphaned users error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
