@@ -32,9 +32,40 @@ import {
   Clock,
   Filter,
   RotateCcw,
+  Award,
+  CheckSquare,
 } from 'lucide-react';
 
-type Tab = 'overview' | 'competitors' | 'action-queue' | 'change-log' | 'settings';
+type Tab = 'overview' | 'competitors' | 'action-queue' | 'content-scores' | 'change-log' | 'settings';
+
+interface ContentScoreSummary {
+  totalPages: number;
+  avgScore: number;
+  excellent: number;
+  good: number;
+  needsWork: number;
+  poor: number;
+}
+
+interface PageScoreEntry {
+  url: string;
+  slug: string;
+  category: string;
+  title: string;
+  source: 'static' | 'generated';
+  score: {
+    overall: number;
+    breakdown: {
+      metaTitle: { score: number; issues: string[] };
+      metaDescription: { score: number; issues: string[] };
+      contentDepth: { score: number; issues: string[]; wordCount: number };
+      keywordUsage: { score: number; issues: string[]; density: number };
+      structure: { score: number; issues: string[] };
+      faqCoverage: { score: number; issues: string[] };
+      readability: { score: number; issues: string[]; avgSentenceLength: number };
+    };
+  };
+}
 
 interface SEOSnapshot {
   id: string;
@@ -192,6 +223,17 @@ export default function SEODashboardPage() {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [savingAlgoConfig, setSavingAlgoConfig] = useState(false);
 
+  // Content scores state
+  const [contentScoreSummary, setContentScoreSummary] = useState<ContentScoreSummary | null>(null);
+  const [contentScores, setContentScores] = useState<PageScoreEntry[]>([]);
+  const [expandedScore, setExpandedScore] = useState<string | null>(null);
+  const [scoreFilter, setScoreFilter] = useState<'all' | 'poor' | 'needs-work' | 'good' | 'excellent'>('all');
+  const [scoreCategoryFilter, setScoreCategoryFilter] = useState<string>('');
+
+  // Bulk selection state
+  const [selectedRecs, setSelectedRecs] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
+
   // Loading states
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [auditRunning, setAuditRunning] = useState(false);
@@ -211,6 +253,9 @@ export default function SEODashboardPage() {
           break;
         case 'change-log':
           await loadChangeLogs();
+          break;
+        case 'content-scores':
+          await loadContentScores();
           break;
         case 'settings':
           await loadSettings();
@@ -278,7 +323,48 @@ export default function SEODashboardPage() {
     }
   }
 
+  async function loadContentScores() {
+    const res = await fetch('/api/admin/seo/content-scores');
+    const data = await res.json();
+    setContentScoreSummary(data.summary || null);
+    setContentScores(data.pages || []);
+  }
+
   // --- Actions ---
+
+  async function bulkAction(action: 'approve' | 'dismiss') {
+    if (selectedRecs.size === 0) return;
+    setBulkLoading(true);
+    try {
+      const res = await fetch('/api/admin/seo/recommendations/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ids: [...selectedRecs] }),
+      });
+      if (res.ok) {
+        setSelectedRecs(new Set());
+        await loadRecommendations();
+      }
+    } catch (e) { console.error(e); }
+    setBulkLoading(false);
+  }
+
+  function toggleRecSelection(id: string) {
+    setSelectedRecs((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedRecs.size === recommendations.filter((r) => r.status === 'pending').length) {
+      setSelectedRecs(new Set());
+    } else {
+      setSelectedRecs(new Set(recommendations.filter((r) => r.status === 'pending').map((r) => r.id)));
+    }
+  }
 
   async function runAudit() {
     setAuditRunning(true);
@@ -446,6 +532,7 @@ export default function SEODashboardPage() {
     { key: 'overview', label: 'Overview', icon: BarChart3 },
     { key: 'competitors', label: 'Competitors', icon: Globe },
     { key: 'action-queue', label: 'Action Queue', icon: Zap },
+    { key: 'content-scores', label: 'Content Scores', icon: Award },
     { key: 'change-log', label: 'Change Log', icon: Clock },
     { key: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -702,7 +789,7 @@ export default function SEODashboardPage() {
                   {['pending', 'applied', 'dismissed', 'rolled_back'].map((s) => (
                     <button
                       key={s}
-                      onClick={() => setRecFilter(s)}
+                      onClick={() => { setRecFilter(s); setSelectedRecs(new Set()); }}
                       className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                         recFilter === s ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
@@ -730,6 +817,45 @@ export default function SEODashboardPage() {
                 <span className="text-sm text-slate-400 ml-auto">{recTotal} recommendations</span>
               </div>
 
+              {/* Bulk actions bar */}
+              {recFilter === 'pending' && recommendations.length > 0 && (
+                <div className="flex items-center gap-3 bg-slate-50 border rounded-lg px-4 py-2.5">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedRecs.size > 0 && selectedRecs.size === recommendations.filter((r) => r.status === 'pending').length}
+                      onChange={toggleSelectAll}
+                      className="rounded border-slate-300"
+                    />
+                    <span className="text-slate-600">
+                      {selectedRecs.size > 0 ? `${selectedRecs.size} selected` : 'Select all'}
+                    </span>
+                  </label>
+                  {selectedRecs.size > 0 && (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => bulkAction('approve')}
+                        disabled={bulkLoading}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CheckCircle className="h-3 w-3 mr-1" />}
+                        Bulk Apply ({selectedRecs.size})
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => bulkAction('dismiss')}
+                        disabled={bulkLoading}
+                      >
+                        {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
+                        Bulk Dismiss ({selectedRecs.size})
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+
               {/* Recommendation cards */}
               {recommendations.map((rec) => (
                 <Card key={rec.id} className="border-l-4" style={{ borderLeftColor: rec.confidence >= 0.8 ? '#22c55e' : rec.confidence >= 0.6 ? '#eab308' : '#ef4444' }}>
@@ -737,6 +863,14 @@ export default function SEODashboardPage() {
                     {/* Header row */}
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex items-center gap-2 flex-wrap">
+                        {rec.status === 'pending' && (
+                          <input
+                            type="checkbox"
+                            checked={selectedRecs.has(rec.id)}
+                            onChange={() => toggleRecSelection(rec.id)}
+                            className="rounded border-slate-300 mr-1"
+                          />
+                        )}
                         {recTypeBadge(rec.recommendation_type)}
                         <span className="text-sm text-slate-500">Confidence: {confidenceBadge(rec.confidence)}</span>
                         {rec.applied_by && (
@@ -901,6 +1035,202 @@ export default function SEODashboardPage() {
               {recommendations.length === 0 && (
                 <div className="text-center py-12 text-slate-500">No recommendations matching filters. Run an audit to generate recommendations.</div>
               )}
+            </div>
+          )}
+
+          {/* ==================== CONTENT SCORES TAB ==================== */}
+          {activeTab === 'content-scores' && (
+            <div className="space-y-6">
+              {/* Summary cards */}
+              {contentScoreSummary && (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-slate-900">{contentScoreSummary.avgScore}</p>
+                        <p className="text-xs text-slate-500 mt-1">Avg Score / 100</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-green-600">{contentScoreSummary.excellent}</p>
+                        <p className="text-xs text-slate-500 mt-1">Excellent (80+)</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-blue-600">{contentScoreSummary.good}</p>
+                        <p className="text-xs text-slate-500 mt-1">Good (60-79)</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-yellow-600">{contentScoreSummary.needsWork}</p>
+                        <p className="text-xs text-slate-500 mt-1">Needs Work (40-59)</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="text-center">
+                        <p className="text-3xl font-bold text-red-600">{contentScoreSummary.poor}</p>
+                        <p className="text-xs text-slate-500 mt-1">Poor (&lt;40)</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Filters */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-slate-400" />
+                  <span className="text-sm text-slate-500">Score:</span>
+                  {([
+                    { key: 'all' as const, label: 'All' },
+                    { key: 'poor' as const, label: 'Poor' },
+                    { key: 'needs-work' as const, label: 'Needs Work' },
+                    { key: 'good' as const, label: 'Good' },
+                    { key: 'excellent' as const, label: 'Excellent' },
+                  ]).map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => setScoreFilter(key)}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                        scoreFilter === key ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-slate-500">Category:</span>
+                  <select
+                    value={scoreCategoryFilter}
+                    onChange={(e) => setScoreCategoryFilter(e.target.value)}
+                    className="text-xs border rounded-lg px-2 py-1.5 bg-white"
+                  >
+                    <option value="">All categories</option>
+                    {[...new Set(contentScores.map((s) => s.category))].sort().map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <span className="text-sm text-slate-400 ml-auto">
+                  {contentScores.length} pages scored
+                </span>
+              </div>
+
+              {/* Page scores list */}
+              <div className="space-y-3">
+                {contentScores
+                  .filter((ps) => {
+                    if (scoreFilter === 'poor') return ps.score.overall < 40;
+                    if (scoreFilter === 'needs-work') return ps.score.overall >= 40 && ps.score.overall < 60;
+                    if (scoreFilter === 'good') return ps.score.overall >= 60 && ps.score.overall < 80;
+                    if (scoreFilter === 'excellent') return ps.score.overall >= 80;
+                    return true;
+                  })
+                  .filter((ps) => !scoreCategoryFilter || ps.category === scoreCategoryFilter)
+                  .map((ps) => {
+                    const scoreColor =
+                      ps.score.overall >= 80 ? 'text-green-600' :
+                      ps.score.overall >= 60 ? 'text-blue-600' :
+                      ps.score.overall >= 40 ? 'text-yellow-600' : 'text-red-600';
+                    const scoreBg =
+                      ps.score.overall >= 80 ? 'bg-green-100' :
+                      ps.score.overall >= 60 ? 'bg-blue-100' :
+                      ps.score.overall >= 40 ? 'bg-yellow-100' : 'bg-red-100';
+
+                    return (
+                      <Card key={ps.url} className="cursor-pointer hover:shadow-sm transition-shadow" onClick={() => setExpandedScore(expandedScore === ps.url ? null : ps.url)}>
+                        <CardContent className="pt-4">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`inline-flex items-center justify-center w-10 h-10 rounded-lg text-lg font-bold ${scoreBg} ${scoreColor}`}>
+                                  {ps.score.overall}
+                                </span>
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-slate-700 truncate">{ps.title}</p>
+                                  <p className="text-xs text-slate-400 truncate">{ps.url}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-500">{ps.category}</span>
+                              {ps.source === 'generated' && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-violet-100 text-violet-600">AI</span>
+                              )}
+                              {expandedScore === ps.url ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                            </div>
+                          </div>
+
+                          {/* Score breakdown */}
+                          {expandedScore === ps.url && (
+                            <div className="mt-4 pt-4 border-t space-y-3">
+                              {/* Score bars */}
+                              <div className="grid gap-2">
+                                {([
+                                  { label: 'Meta Title', score: ps.score.breakdown.metaTitle.score, max: 15, issues: ps.score.breakdown.metaTitle.issues },
+                                  { label: 'Meta Description', score: ps.score.breakdown.metaDescription.score, max: 15, issues: ps.score.breakdown.metaDescription.issues },
+                                  { label: 'Content Depth', score: ps.score.breakdown.contentDepth.score, max: 20, issues: ps.score.breakdown.contentDepth.issues },
+                                  { label: 'Keyword Usage', score: ps.score.breakdown.keywordUsage.score, max: 15, issues: ps.score.breakdown.keywordUsage.issues },
+                                  { label: 'Structure', score: ps.score.breakdown.structure.score, max: 15, issues: ps.score.breakdown.structure.issues },
+                                  { label: 'FAQ Coverage', score: ps.score.breakdown.faqCoverage.score, max: 10, issues: ps.score.breakdown.faqCoverage.issues },
+                                  { label: 'Readability', score: ps.score.breakdown.readability.score, max: 10, issues: ps.score.breakdown.readability.issues },
+                                ] as { label: string; score: number; max: number; issues: string[] }[]).map((item) => (
+                                  <div key={item.label}>
+                                    <div className="flex items-center justify-between text-xs mb-0.5">
+                                      <span className="text-slate-600">{item.label}</span>
+                                      <span className="font-medium">{item.score}/{item.max}</span>
+                                    </div>
+                                    <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                      <div
+                                        className={`h-1.5 rounded-full ${
+                                          item.score / item.max >= 0.8 ? 'bg-green-500' :
+                                          item.score / item.max >= 0.5 ? 'bg-yellow-500' : 'bg-red-500'
+                                        }`}
+                                        style={{ width: `${(item.score / item.max) * 100}%` }}
+                                      />
+                                    </div>
+                                    {item.issues.length > 0 && (
+                                      <ul className="mt-1 space-y-0.5">
+                                        {item.issues.map((issue, i) => (
+                                          <li key={i} className="text-xs text-slate-500 flex items-start gap-1">
+                                            <AlertTriangle className="h-3 w-3 text-amber-500 mt-0.5 flex-shrink-0" />
+                                            {issue}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Quick stats */}
+                              <div className="flex gap-4 text-xs text-slate-500 pt-2 border-t">
+                                <span>Words: {ps.score.breakdown.contentDepth.wordCount}</span>
+                                <span>Keyword density: {ps.score.breakdown.keywordUsage.density}%</span>
+                                <span>Avg sentence: {ps.score.breakdown.readability.avgSentenceLength} words</span>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                {contentScores.length === 0 && (
+                  <div className="text-center py-12 text-slate-500">Loading content scores...</div>
+                )}
+              </div>
             </div>
           )}
 
