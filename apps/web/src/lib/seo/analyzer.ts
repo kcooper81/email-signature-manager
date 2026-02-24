@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { type SEOEngineConfig, DEFAULT_CONFIG } from './config';
+import { detectCannibalization } from './cannibalization';
 
 /**
  * SEO Issue Analyzer — detects problems from snapshot + competitor data.
@@ -311,6 +312,121 @@ export async function analyzeIssues(
         },
       });
     }
+
+    // 11. SERP feature opportunities — How-to snippets
+    if (cr.serp_features?.howTo && cr.our_url) {
+      allIssues.push({
+        page_url: cr.our_url,
+        issue_type: 'missing_howto_schema',
+        severity: 'low',
+        details: {
+          keyword,
+          message: 'Competitors have How-to snippets in SERP. Adding a how-it-works section could capture this feature.',
+        },
+      });
+    }
+
+    // 12. SERP feature opportunities — Video snippets
+    if (cr.serp_features?.videos && cr.our_url) {
+      allIssues.push({
+        page_url: cr.our_url,
+        issue_type: 'missing_video_content',
+        severity: 'low',
+        details: {
+          keyword,
+          message: 'Competitors have Video snippets in SERP results for this keyword.',
+        },
+      });
+    }
+  }
+
+  // --- Keyword cannibalization detection ---
+  try {
+    const cannibalizationGroups = await detectCannibalization(supabase);
+
+    for (const group of cannibalizationGroups) {
+      // Create an issue for each page in the cannibalization group (except the best-performing one)
+      const sortedPages = group.gscDetails
+        ? [...group.pages].sort((a, b) => {
+            const aGsc = group.gscDetails!.find((g) => g.url.endsWith(a.url));
+            const bGsc = group.gscDetails!.find((g) => g.url.endsWith(b.url));
+            // Keep the page with best position (lowest number)
+            return (aGsc?.position || 100) - (bGsc?.position || 100);
+          })
+        : group.pages;
+
+      // Skip first page (best performer), flag the rest
+      for (const page of sortedPages.slice(1)) {
+        if (lockedPages.has(page.url)) continue;
+
+        allIssues.push({
+          page_url: page.url,
+          issue_type: 'keyword_cannibalization',
+          severity: group.confirmedByGSC ? 'high' : 'medium',
+          details: {
+            keyword: group.keyword,
+            conflictingPages: group.pages.map((p) => ({ url: p.url, title: p.title })),
+            confirmedByGSC: group.confirmedByGSC,
+            bestPerformer: sortedPages[0].url,
+            gscDetails: group.gscDetails || null,
+          },
+        });
+      }
+    }
+  } catch (err: any) {
+    errors.push(`Cannibalization detection failed: ${err.message}`);
+  }
+
+  // --- Stale content detection (generated pages with old timestamps + declining metrics) ---
+  try {
+    const { data: generatedPages } = await supabase
+      .from('seo_generated_pages')
+      .select('slug, category, page_data, status, updated_at')
+      .in('status', ['draft', 'published']);
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+    const now = new Date();
+    const sixMonthsAgo = new Date(now.getTime() - 180 * 86400000);
+
+    for (const gp of generatedPages || []) {
+      if (!gp.updated_at) continue;
+      const updatedAt = new Date(gp.updated_at);
+      if (updatedAt > sixMonthsAgo) continue;
+
+      const pageData = gp.page_data as any;
+      const canonical = pageData?.meta?.canonical;
+      if (!canonical) continue;
+
+      const fullUrl = `${baseUrl}${canonical}`;
+      if (lockedPages.has(fullUrl)) continue;
+
+      // Check if page also has declining metrics
+      const prior = priorByPage.get(fullUrl);
+      const current = latestByPage.get(fullUrl);
+      const decliningMetrics =
+        prior && current && prior.clicks > 0
+          ? (prior.clicks - current.clicks) / prior.clicks > 0.2
+          : false;
+
+      const daysSinceUpdate = Math.floor(
+        (now.getTime() - updatedAt.getTime()) / 86400000
+      );
+
+      allIssues.push({
+        page_url: fullUrl,
+        issue_type: 'stale_content',
+        severity: decliningMetrics ? 'medium' : 'low',
+        details: {
+          lastModified: gp.updated_at,
+          daysSinceUpdate,
+          decliningMetrics,
+          currentClicks: current?.clicks || 0,
+          priorClicks: prior?.clicks || 0,
+        },
+      });
+    }
+  } catch (err: any) {
+    errors.push(`Stale content detection failed: ${err.message}`);
   }
 
   // --- Persist issues ---

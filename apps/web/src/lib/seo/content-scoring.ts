@@ -31,6 +31,7 @@ export interface ContentScoreBreakdown {
   structure: { score: number; issues: string[] };
   faqCoverage: { score: number; issues: string[] };
   readability: { score: number; issues: string[]; avgSentenceLength: number };
+  freshness: { score: number; issues: string[]; lastModified: string | null };
 }
 
 export interface ContentScore {
@@ -156,7 +157,7 @@ function getSentenceLengths(text: string): number[] {
 // Scoring functions (total max = 100)
 // ---------------------------------------------------------------------------
 
-function scoreMetaTitle(page: SEOLandingPageData): ContentScoreBreakdown['metaTitle'] {
+export function scoreMetaTitle(page: SEOLandingPageData): ContentScoreBreakdown['metaTitle'] {
   const title = page.meta.title;
   const len = title.length;
   const issues: string[] = [];
@@ -188,7 +189,7 @@ function scoreMetaTitle(page: SEOLandingPageData): ContentScoreBreakdown['metaTi
   return { score: Math.min(score, 15), issues };
 }
 
-function scoreMetaDescription(page: SEOLandingPageData): ContentScoreBreakdown['metaDescription'] {
+export function scoreMetaDescription(page: SEOLandingPageData): ContentScoreBreakdown['metaDescription'] {
   const desc = page.meta.description;
   const len = desc.length;
   const issues: string[] = [];
@@ -222,7 +223,7 @@ function scoreMetaDescription(page: SEOLandingPageData): ContentScoreBreakdown['
   return { score: Math.min(score, 15), issues };
 }
 
-function scoreContentDepth(page: SEOLandingPageData): ContentScoreBreakdown['contentDepth'] {
+export function scoreContentDepth(page: SEOLandingPageData): ContentScoreBreakdown['contentDepth'] {
   const allText = extractAllText(page);
   const wordCount = countWords(allText);
   const issues: string[] = [];
@@ -294,7 +295,7 @@ function scoreKeywordUsage(page: SEOLandingPageData): ContentScoreBreakdown['key
   return { score: Math.min(score, 15), issues, density: densityRounded };
 }
 
-function scoreStructure(page: SEOLandingPageData): ContentScoreBreakdown['structure'] {
+export function scoreStructure(page: SEOLandingPageData): ContentScoreBreakdown['structure'] {
   const issues: string[] = [];
   let score = 0;
 
@@ -335,7 +336,7 @@ function scoreStructure(page: SEOLandingPageData): ContentScoreBreakdown['struct
   return { score: Math.min(score, 15), issues };
 }
 
-function scoreFaqCoverage(page: SEOLandingPageData): ContentScoreBreakdown['faqCoverage'] {
+export function scoreFaqCoverage(page: SEOLandingPageData): ContentScoreBreakdown['faqCoverage'] {
   const faqCount = page.faqs?.length || 0;
   const issues: string[] = [];
   let score: number;
@@ -388,10 +389,45 @@ function scoreReadability(page: SEOLandingPageData): ContentScoreBreakdown['read
 }
 
 // ---------------------------------------------------------------------------
+// Freshness scoring (bonus points, doesn't reduce base max of 100)
+// ---------------------------------------------------------------------------
+
+export function scoreFreshness(
+  lastModified: string | null
+): ContentScoreBreakdown['freshness'] {
+  if (!lastModified) {
+    return { score: 0, issues: [], lastModified: null };
+  }
+
+  const modifiedDate = new Date(lastModified);
+  const now = new Date();
+  const daysSinceUpdate = Math.floor(
+    (now.getTime() - modifiedDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const issues: string[] = [];
+  let score: number;
+
+  if (daysSinceUpdate <= 90) {
+    score = 5; // Updated within 3 months
+  } else if (daysSinceUpdate <= 180) {
+    score = 2; // Updated within 6 months
+    issues.push(`Content last updated ${daysSinceUpdate} days ago (3-6 months)`);
+  } else {
+    score = 0;
+    issues.push(`Content is stale — last updated ${daysSinceUpdate} days ago (6+ months)`);
+  }
+
+  return { score, issues, lastModified };
+}
+
+// ---------------------------------------------------------------------------
 // Main scoring function
 // ---------------------------------------------------------------------------
 
-export function scorePageContent(pageData: SEOLandingPageData): ContentScore {
+export function scorePageContent(
+  pageData: SEOLandingPageData,
+  lastModified?: string | null
+): ContentScore {
   const metaTitle = scoreMetaTitle(pageData);
   const metaDescription = scoreMetaDescription(pageData);
   const contentDepth = scoreContentDepth(pageData);
@@ -399,8 +435,10 @@ export function scorePageContent(pageData: SEOLandingPageData): ContentScore {
   const structure = scoreStructure(pageData);
   const faqCoverage = scoreFaqCoverage(pageData);
   const readability = scoreReadability(pageData);
+  const freshness = scoreFreshness(lastModified ?? null);
 
-  const overall =
+  // Base score (max 100) + freshness bonus (max +5)
+  const baseScore =
     metaTitle.score +
     metaDescription.score +
     contentDepth.score +
@@ -408,6 +446,8 @@ export function scorePageContent(pageData: SEOLandingPageData): ContentScore {
     structure.score +
     faqCoverage.score +
     readability.score;
+
+  const overall = Math.min(baseScore + freshness.score, 100);
 
   return {
     overall,
@@ -419,6 +459,7 @@ export function scorePageContent(pageData: SEOLandingPageData): ContentScore {
       structure,
       faqCoverage,
       readability,
+      freshness,
     },
   };
 }
@@ -427,7 +468,7 @@ export function scorePageContent(pageData: SEOLandingPageData): ContentScore {
 // Batch scoring
 // ---------------------------------------------------------------------------
 
-function getAllStaticPages(): SEOLandingPageData[] {
+export function getAllStaticPages(): SEOLandingPageData[] {
   return [
     ...alternativesPages,
     ...featuresPages,
@@ -467,7 +508,7 @@ export async function scoreAllPages(supabase: SupabaseClient): Promise<PageScore
 
   const { data: generatedPages, error } = await supabase
     .from('seo_generated_pages')
-    .select('slug, category, page_data, status')
+    .select('slug, category, page_data, status, updated_at')
     .in('status', ['draft', 'published']);
 
   if (!error && generatedPages) {
@@ -475,7 +516,7 @@ export async function scoreAllPages(supabase: SupabaseClient): Promise<PageScore
       const pageData = row.page_data as SEOLandingPageData;
       if (!pageData?.meta) continue;
 
-      const score = scorePageContent(pageData);
+      const score = scorePageContent(pageData, row.updated_at || null);
       results.push({
         url: pageData.meta.canonical,
         slug: row.slug,

@@ -3,6 +3,7 @@ import { verifySuperAdmin } from '@/lib/seo/admin-auth';
 import { collectSearchData, collectCompetitorData } from '@/lib/seo/data-collector';
 import { analyzeIssues } from '@/lib/seo/analyzer';
 import { generateRecommendations } from '@/lib/seo/optimizer';
+import { generateRecsFromContentScores } from '@/lib/seo/score-to-recs';
 import { mergeConfig } from '@/lib/seo/config';
 
 /**
@@ -163,6 +164,14 @@ export async function POST(request: NextRequest) {
       allErrors.push(...autoApplyResult.errors);
     }
 
+    // Step 6: Generate recommendations from content score issues
+    let contentScoreResult = { created: 0, skipped: 0 };
+    try {
+      contentScoreResult = await generateRecsFromContentScores(supabaseAdmin);
+    } catch (err: any) {
+      allErrors.push(`Content score recs failed: ${err.message}`);
+    }
+
     const duration = Date.now() - startTime;
 
     // Log the audit run
@@ -174,6 +183,8 @@ export async function POST(request: NextRequest) {
         competitor_queries_run: competitorResult.queriesRun,
         issues_found: analysisResult.issuesFound,
         recommendations_created: recommendationResult.created,
+        content_score_recs_created: contentScoreResult.created,
+        content_score_recs_skipped: contentScoreResult.skipped,
         auto_applied: autoApplyResult.applied,
         duration_ms: duration,
         errors: allErrors,
@@ -187,6 +198,7 @@ export async function POST(request: NextRequest) {
         competitor_queries_run: competitorResult.queriesRun,
         issues_found: analysisResult.issuesFound,
         recommendations_created: recommendationResult.created,
+        content_score_recs_created: contentScoreResult.created,
         auto_applied: autoApplyResult.applied,
         duration_ms: duration,
         errors: allErrors,

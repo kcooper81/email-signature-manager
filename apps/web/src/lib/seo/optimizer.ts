@@ -108,6 +108,18 @@ export async function generateRecommendations(
       case 'high_bounce':
         handleHighBounce(issue, snapshot, recommendations, config);
         break;
+      case 'keyword_cannibalization':
+        handleKeywordCannibalization(issue, snapshot, recommendations);
+        break;
+      case 'missing_howto_schema':
+        handleMissingHowTo(issue, snapshot, recommendations);
+        break;
+      case 'missing_video_content':
+        // Low priority — log but don't generate automated rec
+        break;
+      case 'stale_content':
+        handleStaleContent(issue, snapshot, recommendations);
+        break;
     }
   }
 
@@ -463,6 +475,103 @@ function handleHighBounce(
       bounceRate: issue.details.bounceRate,
       sessions: issue.details.sessions,
       relatedPageCount: relatedPages.length,
+    },
+  });
+}
+
+function handleKeywordCannibalization(
+  issue: IssueRow,
+  snapshot: SnapshotRow | undefined,
+  out: Recommendation[]
+) {
+  const details = issue.details;
+  const keyword = details.keyword as string;
+  const bestPerformer = details.bestPerformer as string;
+  const conflictingPages = details.conflictingPages as Array<{ url: string; title: string }>;
+
+  out.push({
+    page_url: issue.page_url,
+    recommendation_type: 'consolidate_content',
+    current_value: {
+      keyword,
+      thisPage: issue.page_url,
+      bestPerformer,
+      conflictingPages,
+    },
+    suggested_value: {
+      action: 'Consolidate or differentiate content to resolve keyword cannibalization',
+      keyword,
+      bestPerformer,
+      options: [
+        `Redirect ${issue.page_url} to ${bestPerformer} if content overlaps significantly`,
+        `Differentiate by targeting a more specific long-tail variant of "${keyword}"`,
+        `Add canonical tag pointing to ${bestPerformer} if this is a secondary page`,
+      ],
+    },
+    rationale: `Pages "${issue.page_url}" and "${bestPerformer}" both target "${keyword}". ${details.confirmedByGSC ? 'GSC confirms both receive impressions for this query, diluting ranking signals.' : 'Both share the same primary keyword which may confuse search engines.'}`,
+    confidence: details.confirmedByGSC ? 0.75 : 0.55,
+    data_basis: {
+      keyword,
+      confirmedByGSC: details.confirmedByGSC,
+      gscDetails: details.gscDetails,
+      impressions: snapshot?.impressions || 0,
+    },
+  });
+}
+
+function handleStaleContent(
+  issue: IssueRow,
+  snapshot: SnapshotRow | undefined,
+  out: Recommendation[]
+) {
+  out.push({
+    page_url: issue.page_url,
+    recommendation_type: 'refresh_content',
+    current_value: {
+      lastModified: issue.details.lastModified || null,
+      daysSinceUpdate: issue.details.daysSinceUpdate || null,
+    },
+    suggested_value: {
+      action: 'Review and refresh content to improve freshness signals',
+      suggestions: [
+        'Update statistics and claims with current data',
+        'Add new sections covering recent developments',
+        'Refresh examples and screenshots',
+        'Update internal links to newly published content',
+      ],
+    },
+    rationale: `Content hasn't been updated in ${issue.details.daysSinceUpdate || '180+'} days${issue.details.decliningMetrics ? ' and shows declining search metrics' : ''}. Search engines favor fresh content, especially for competitive queries.`,
+    confidence: 0.55,
+    data_basis: {
+      lastModified: issue.details.lastModified,
+      impressions: snapshot?.impressions || 0,
+      clicks: snapshot?.clicks || 0,
+    },
+  });
+}
+
+function handleMissingHowTo(
+  issue: IssueRow,
+  snapshot: SnapshotRow | undefined,
+  out: Recommendation[]
+) {
+  const keyword = issue.details.keyword as string;
+
+  out.push({
+    page_url: issue.page_url,
+    recommendation_type: 'expand_content',
+    current_value: { keyword, hasHowTo: false },
+    suggested_value: {
+      action: 'Add a how-it-works section to capture How-to SERP feature',
+      keyword,
+      suggestedSections: ['how-it-works'],
+    },
+    rationale: `Competitors have How-to rich snippets for "${keyword}". Adding a structured how-it-works section could help capture this SERP feature.`,
+    confidence: 0.60,
+    data_basis: {
+      keyword,
+      impressions: snapshot?.impressions || 0,
+      serpFeature: 'howTo',
     },
   });
 }
