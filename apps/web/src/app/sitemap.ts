@@ -207,6 +207,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Tool pages (for organic traffic)
   const toolPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/tools`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/tools/signature-generator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tools/signature-templates`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tools/html-signature-converter`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },

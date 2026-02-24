@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'brand-consistency-guide',
@@ -11,8 +11,24 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'The Complete Guide to Brand Consistency in Email | Siggly Blog',
+    description: 'How to ensure every email your team sends reinforces your brand identity and professionalism.',
+    url: '/blog/brand-consistency-guide',
+    image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
+    datePublished: '2026-01-21',
+    author: 'Siggly Team',
+    readTime: '8 min',
+    category: 'Email Signatures',
+  });
+
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
       <article className="py-12">
         <div className="max-w-3xl mx-auto px-6">
           <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">

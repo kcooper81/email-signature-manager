@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'outlook-signature-setup-guide',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'How to Set Up Outlook Signature: Step-by-Step Guide 2026 | Siggly',
+    description: 'Create a professional Outlook email signature with this complete guide. Covers Outlook desktop, web, and mobile signature setup.',
+    url: '/blog/outlook-signature-setup-guide',
+    image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',
+    datePublished: '2026-02-04',
+    author: 'Siggly Team',
+    readTime: '9 min',
+    category: 'Tutorials',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -194,5 +210,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

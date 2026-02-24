@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-hiring-banners',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Using Email Signatures for Recruiting & Hiring | Siggly',
+    description: 'Turn employee emails into a recruiting channel. Add job posting banners to signatures and attract candidates organically.',
+    url: '/blog/email-signature-hiring-banners',
+    image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop',
+    datePublished: '2025-12-09',
+    author: 'Siggly Team',
+    readTime: '5 min',
+    category: 'Recruiting',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -65,5 +81,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

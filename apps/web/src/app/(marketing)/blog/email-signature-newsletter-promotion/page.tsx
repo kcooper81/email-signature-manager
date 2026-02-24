@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-newsletter-promotion',
@@ -12,7 +12,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Growing Your Newsletter with Email Signatures | Siggly',
+    description: 'Use email signatures to grow newsletter subscribers. Add signup CTAs, promote content, and convert contacts to subscribers.',
+    url: '/blog/email-signature-newsletter-promotion',
+    image: 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=1200&h=600&fit=crop',
+    datePublished: '2025-11-07',
+    author: 'Siggly Team',
+    readTime: '5 min',
+    category: 'Newsletters',
+  });
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
         <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
@@ -68,5 +84,6 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    </>
   );
 }

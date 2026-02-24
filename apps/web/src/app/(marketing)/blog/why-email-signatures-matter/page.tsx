@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'why-email-signatures-matter',
@@ -11,8 +11,23 @@ export const metadata = createBlogMetadata(
 );
 
 export default function BlogPost() {
+  const blogSchema = generateBlogPostSchema({
+    title: 'Why Email Signatures Matter More Than You Think | Siggly Blog',
+    description: 'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.',
+    url: '/blog/why-email-signatures-matter',
+    image: 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=1200&h=600&fit=crop',
+    datePublished: '2026-01-28',
+    author: 'Siggly Team',
+    readTime: '5 min',
+    category: 'Best Practices',
+  });
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
       <article className="py-12">
         <div className="max-w-3xl mx-auto px-6">
           <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
