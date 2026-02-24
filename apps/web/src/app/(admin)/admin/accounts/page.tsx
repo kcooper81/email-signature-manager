@@ -15,6 +15,11 @@ import {
   Download,
   ShieldAlert,
   Network,
+  AlertTriangle,
+  UserPlus,
+  Check,
+  UserX,
+  Info,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -36,6 +41,29 @@ interface Organization {
   partnerTier: string | null;
 }
 
+interface OrphanedUser {
+  authId: string;
+  email: string;
+  provider: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+}
+
+interface ProfileIssue {
+  userId: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  role: string;
+  organizationId: string | null;
+  organizationName: string | null;
+  authId: string | null;
+  isActive: boolean;
+  createdAt: string;
+  issues: string[];
+}
+
 type PlanFilter = 'all' | 'free' | 'starter' | 'professional' | 'enterprise';
 type OrgTypeFilter = 'all' | 'standard' | 'msp' | 'msp_client';
 
@@ -50,6 +78,11 @@ export default function AccountsPage() {
   const [orgTypeFilter, setOrgTypeFilter] = useState<OrgTypeFilter>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [orphanedUsers, setOrphanedUsers] = useState<OrphanedUser[]>([]);
+  const [profileIssues, setProfileIssues] = useState<ProfileIssue[]>([]);
+  const [issuesLoading, setIssuesLoading] = useState(false);
+  const [fixingUsers, setFixingUsers] = useState<Set<string>>(new Set());
+  const [fixedUsers, setFixedUsers] = useState<Set<string>>(new Set());
   const sort = useSortableTable<Organization>('createdAt', 'desc');
 
   const filteredOrgIds = useMemo(() => {
@@ -170,6 +203,49 @@ export default function AccountsPage() {
 
     setOrganizations(enrichedOrgs);
     setLoading(false);
+  };
+
+  const loadAccountIssues = async () => {
+    setIssuesLoading(true);
+    try {
+      const res = await fetch('/api/admin/accounts/orphaned');
+      if (res.ok) {
+        const data = await res.json();
+        setOrphanedUsers(data.orphaned || []);
+        setProfileIssues(data.profileIssues || []);
+      }
+    } catch (err) {
+      console.error('Failed to load account issues:', err);
+    }
+    setIssuesLoading(false);
+  };
+
+  useEffect(() => {
+    loadAccountIssues();
+  }, []);
+
+  const fixOrphanedUser = async (authId: string) => {
+    setFixingUsers(prev => new Set(prev).add(authId));
+    try {
+      const res = await fetch('/api/admin/accounts/orphaned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authId }),
+      });
+      if (res.ok) {
+        setFixedUsers(prev => new Set(prev).add(authId));
+        // Refresh the org list and issues to reflect the fix
+        loadOrganizations();
+        loadAccountIssues();
+      }
+    } catch (err) {
+      console.error('Failed to fix orphaned user:', err);
+    }
+    setFixingUsers(prev => {
+      const next = new Set(prev);
+      next.delete(authId);
+      return next;
+    });
   };
 
   // Plan and org type filters are client-side, then sort
@@ -309,6 +385,142 @@ export default function AccountsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Orphaned Auth Users */}
+      {orphanedUsers.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-amber-800">
+              <AlertTriangle className="h-5 w-5" />
+              Orphaned Signups ({orphanedUsers.length})
+            </CardTitle>
+            <CardDescription className="text-amber-700">
+              These users signed up but never completed profile setup. They exist in auth but have no organization.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y divide-amber-200">
+              {orphanedUsers.map((ou) => (
+                <div key={ou.authId} className="flex items-center justify-between py-3">
+                  <div className="min-w-0">
+                    <p className="font-medium text-slate-900">
+                      {ou.firstName} {ou.lastName}
+                      {!ou.firstName && <span className="text-slate-400 italic">No name</span>}
+                    </p>
+                    <div className="flex items-center gap-3 text-sm text-slate-500">
+                      <span>{ou.email}</span>
+                      <span className="px-1.5 py-0.5 text-xs rounded bg-slate-100 capitalize">{ou.provider}</span>
+                      <span>{new Date(ou.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  {fixedUsers.has(ou.authId) ? (
+                    <span className="flex items-center gap-1.5 text-sm text-green-700 font-medium">
+                      <Check className="h-4 w-4" />
+                      Fixed
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => fixOrphanedUser(ou.authId)}
+                      disabled={fixingUsers.has(ou.authId)}
+                      className="border-amber-300 hover:bg-amber-100"
+                    >
+                      {fixingUsers.has(ou.authId) ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                      ) : (
+                        <UserPlus className="h-4 w-4 mr-1.5" />
+                      )}
+                      Create Org
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Profile Issues */}
+      {profileIssues.length > 0 && (
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <UserX className="h-5 w-5" />
+              Profile Issues ({profileIssues.length})
+            </CardTitle>
+            <CardDescription className="text-blue-700">
+              Users with incomplete profiles, missing organization links, or other setup problems.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y divide-blue-200">
+              {profileIssues.map((pi) => (
+                <div key={pi.userId} className="flex items-start justify-between py-3 gap-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-slate-900">
+                        {pi.firstName || pi.lastName
+                          ? `${pi.firstName || ''} ${pi.lastName || ''}`.trim()
+                          : <span className="text-slate-400 italic">No name</span>
+                        }
+                      </p>
+                      <span className={`px-1.5 py-0.5 text-xs rounded capitalize ${
+                        pi.role === 'owner' ? 'bg-violet-100 text-violet-700' :
+                        pi.role === 'admin' ? 'bg-blue-100 text-blue-700' :
+                        'bg-slate-100 text-slate-600'
+                      }`}>
+                        {pi.role}
+                      </span>
+                      {!pi.isActive && (
+                        <span className="px-1.5 py-0.5 text-xs rounded bg-red-100 text-red-700">
+                          Inactive
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5 text-sm text-slate-500">
+                      <span>{pi.email || 'No email'}</span>
+                      {pi.organizationName && (
+                        <>
+                          <span>•</span>
+                          {pi.organizationId ? (
+                            <Link href={`/admin/accounts/${pi.organizationId}`} className="text-blue-600 hover:underline">
+                              {pi.organizationName}
+                            </Link>
+                          ) : (
+                            <span>{pi.organizationName}</span>
+                          )}
+                        </>
+                      )}
+                      <span>•</span>
+                      <span>{new Date(pi.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {pi.issues.map((issue) => (
+                        <span
+                          key={issue}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full ${
+                            issue.includes('No organization') || issue.includes('dangling')
+                              ? 'bg-red-100 text-red-700'
+                              : issue.includes('No auth') || issue.includes('deactivated')
+                              ? 'bg-orange-100 text-orange-700'
+                              : issue.includes('no subscription')
+                              ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          <Info className="h-3 w-3" />
+                          {issue}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Results */}
       <Card>
