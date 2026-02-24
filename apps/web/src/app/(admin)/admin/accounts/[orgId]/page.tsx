@@ -175,12 +175,12 @@ export default function OrgDetailPage() {
       hubspotConnected: (orgData as any).hubspot_connected || false,
     });
 
-    // Get subscription
+    // Get subscription (maybeSingle because orgs on free plan may have no row)
     const { data: subData } = await supabase
       .from('subscriptions')
       .select('plan, status, stripe_customer_id, stripe_subscription_id, current_period_end')
       .eq('organization_id', orgId)
-      .single();
+      .maybeSingle();
 
     if (subData) {
       setSubscription({
@@ -277,23 +277,31 @@ export default function OrgDetailPage() {
       })) || []
     );
 
-    // Get pending invites
-    const { data: inviteData } = await supabase
-      .from('user_invites')
-      .select('id, email, role, created_at, expires_at')
-      .eq('organization_id', orgId)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+    // Get pending invites — user_invites links via user_id, not organization_id
+    const orgUserIds = userData?.map(u => u.id) || [];
+    let pendingInvitesList: typeof pendingInvites = [];
+    if (orgUserIds.length > 0) {
+      const { data: inviteData } = await supabase
+        .from('user_invites')
+        .select('id, email, created_at, expires_at, accepted_at, user_id')
+        .in('user_id', orgUserIds)
+        .is('accepted_at', null)
+        .order('created_at', { ascending: false });
 
-    setPendingInvites(
-      inviteData?.map(i => ({
-        id: i.id,
-        email: i.email,
-        role: i.role,
-        createdAt: i.created_at,
-        expiresAt: i.expires_at,
-      })) || []
-    );
+      pendingInvitesList = (inviteData || [])
+        .filter(i => !i.expires_at || new Date(i.expires_at) > new Date())
+        .map(i => {
+          const user = userData?.find(u => u.id === (i as any).user_id);
+          return {
+            id: i.id,
+            email: i.email,
+            role: user?.role || 'member',
+            createdAt: i.created_at,
+            expiresAt: i.expires_at,
+          };
+        });
+    }
+    setPendingInvites(pendingInvitesList);
 
     setLoading(false);
   };
