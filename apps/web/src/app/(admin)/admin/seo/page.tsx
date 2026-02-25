@@ -35,7 +35,19 @@ import {
   Award,
   CheckSquare,
   Wrench,
+  Trash2,
+  RotateCw,
+  Shield,
+  Scale,
+  Rocket,
+  Star,
 } from 'lucide-react';
+import {
+  SEO_PRESETS,
+  buildPresetConfig,
+  detectActivePreset,
+  type SEOPreset,
+} from '@/lib/seo/config';
 
 type Tab = 'overview' | 'competitors' | 'action-queue' | 'content-scores' | 'change-log' | 'settings';
 
@@ -338,7 +350,7 @@ export default function SEODashboardPage() {
 
   // --- Actions ---
 
-  async function bulkAction(action: 'approve' | 'dismiss') {
+  async function bulkAction(action: 'approve' | 'dismiss' | 'delete') {
     if (selectedRecs.size === 0) return;
     setBulkLoading(true);
     try {
@@ -365,10 +377,12 @@ export default function SEODashboardPage() {
   }
 
   function toggleSelectAll() {
-    if (selectedRecs.size === recommendations.filter((r) => r.status === 'pending').length) {
+    const selectableStatuses = ['pending', 'dismissed', 'rolled_back'];
+    const selectable = recommendations.filter((r) => selectableStatuses.includes(r.status));
+    if (selectedRecs.size === selectable.length) {
       setSelectedRecs(new Set());
     } else {
-      setSelectedRecs(new Set(recommendations.filter((r) => r.status === 'pending').map((r) => r.id)));
+      setSelectedRecs(new Set(selectable.map((r) => r.id)));
     }
   }
 
@@ -418,6 +432,32 @@ export default function SEODashboardPage() {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         console.error('Rollback failed:', data.error || res.statusText);
+      }
+      await loadRecommendations();
+    } catch (e) { console.error(e); }
+    setActionLoading(null);
+  }
+
+  async function restoreRecommendation(id: string) {
+    setActionLoading(id);
+    try {
+      const res = await fetch(`/api/admin/seo/recommendations/${id}/restore`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('Restore failed:', data.error || res.statusText);
+      }
+      await loadRecommendations();
+    } catch (e) { console.error(e); }
+    setActionLoading(null);
+  }
+
+  async function deleteRecommendation(id: string) {
+    setActionLoading(id);
+    try {
+      const res = await fetch(`/api/admin/seo/recommendations/${id}/delete`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('Delete failed:', data.error || res.statusText);
       }
       await loadRecommendations();
     } catch (e) { console.error(e); }
@@ -887,12 +927,12 @@ export default function SEODashboardPage() {
               </div>
 
               {/* Bulk actions bar */}
-              {recFilter === 'pending' && recommendations.length > 0 && (
+              {['pending', 'dismissed', 'rolled_back'].includes(recFilter) && recommendations.length > 0 && (
                 <div className="flex items-center gap-3 bg-slate-50 border rounded-lg px-4 py-2.5">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedRecs.size > 0 && selectedRecs.size === recommendations.filter((r) => r.status === 'pending').length}
+                      checked={selectedRecs.size > 0 && selectedRecs.size === recommendations.filter((r) => ['pending', 'dismissed', 'rolled_back'].includes(r.status)).length}
                       onChange={toggleSelectAll}
                       className="rounded border-slate-300"
                     />
@@ -902,24 +942,51 @@ export default function SEODashboardPage() {
                   </label>
                   {selectedRecs.size > 0 && (
                     <>
-                      <Button
-                        size="sm"
-                        onClick={() => bulkAction('approve')}
-                        disabled={bulkLoading}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CheckCircle className="h-3 w-3 mr-1" />}
-                        Bulk Apply ({selectedRecs.size})
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => bulkAction('dismiss')}
-                        disabled={bulkLoading}
-                      >
-                        {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
-                        Bulk Dismiss ({selectedRecs.size})
-                      </Button>
+                      {recFilter === 'pending' && (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() => bulkAction('approve')}
+                            disabled={bulkLoading}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <CheckCircle className="h-3 w-3 mr-1" />}
+                            Bulk Apply ({selectedRecs.size})
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => bulkAction('dismiss')}
+                            disabled={bulkLoading}
+                          >
+                            {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
+                            Bulk Dismiss ({selectedRecs.size})
+                          </Button>
+                        </>
+                      )}
+                      {recFilter === 'rolled_back' && (
+                        <Button
+                          size="sm"
+                          onClick={() => bulkAction('approve')}
+                          disabled={bulkLoading}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RotateCw className="h-3 w-3 mr-1" />}
+                          Bulk Re-apply ({selectedRecs.size})
+                        </Button>
+                      )}
+                      {(recFilter === 'dismissed' || recFilter === 'rolled_back') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => bulkAction('delete')}
+                          disabled={bulkLoading}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          {bulkLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Trash2 className="h-3 w-3 mr-1" />}
+                          Bulk Delete ({selectedRecs.size})
+                        </Button>
+                      )}
                     </>
                   )}
                 </div>
@@ -932,7 +999,7 @@ export default function SEODashboardPage() {
                     {/* Header row */}
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex items-center gap-2 flex-wrap">
-                        {rec.status === 'pending' && (
+                        {['pending', 'dismissed', 'rolled_back'].includes(rec.status) && (
                           <input
                             type="checkbox"
                             checked={selectedRecs.has(rec.id)}
@@ -1096,6 +1163,50 @@ export default function SEODashboardPage() {
                             <Undo2 className="h-3 w-3 mr-1" /> Rollback
                           </Button>
                         </div>
+                      </div>
+                    )}
+                    {rec.status === 'rolled_back' && (
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          size="sm"
+                          onClick={() => approveRecommendation(rec.id)}
+                          disabled={actionLoading === rec.id}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          {actionLoading === rec.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCw className="h-3 w-3 mr-1" />}
+                          Re-apply
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteRecommendation(rec.id)}
+                          disabled={actionLoading === rec.id}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" /> Delete
+                        </Button>
+                      </div>
+                    )}
+                    {rec.status === 'dismissed' && (
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          size="sm"
+                          onClick={() => restoreRecommendation(rec.id)}
+                          disabled={actionLoading === rec.id}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          {actionLoading === rec.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3 mr-1" />}
+                          Restore to Pending
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteRecommendation(rec.id)}
+                          disabled={actionLoading === rec.id}
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" /> Delete
+                        </Button>
                       </div>
                     )}
                   </CardContent>
@@ -1376,7 +1487,9 @@ export default function SEODashboardPage() {
                     {changeLogs.map((log) => (
                       <div key={log.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border">
                         <div className="mt-0.5">
-                          {log.action.includes('applied') ? <CheckCircle className="h-4 w-4 text-green-500" /> :
+                          {log.action.includes('deleted') ? <Trash2 className="h-4 w-4 text-red-500" /> :
+                           log.action.includes('restored') ? <RotateCcw className="h-4 w-4 text-blue-500" /> :
+                           log.action.includes('applied') ? <CheckCircle className="h-4 w-4 text-green-500" /> :
                            log.action.includes('rolled_back') ? <Undo2 className="h-4 w-4 text-red-500" /> :
                            log.action.includes('dismissed') ? <XCircle className="h-4 w-4 text-slate-400" /> :
                            log.action.includes('published') ? <Globe className="h-4 w-4 text-blue-500" /> :
@@ -1520,6 +1633,71 @@ export default function SEODashboardPage() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Goal-Based Presets */}
+              {algoConfig && settings && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Zap className="h-5 w-5 text-amber-500" />
+                      Quick Presets
+                    </CardTitle>
+                    <CardDescription>Apply a goal-based configuration in one click. This will update algorithm parameters and auto-run settings.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                      {SEO_PRESETS.map((preset) => {
+                        const presetIcons: Record<string, typeof Shield> = { shield: Shield, scale: Scale, rocket: Rocket, star: Star };
+                        const PresetIcon = presetIcons[preset.icon] || Zap;
+                        const activePreset = detectActivePreset(
+                          algoConfig as any,
+                          settings.auto_run_enabled,
+                          settings.auto_run_min_confidence,
+                          settings.auto_run_types
+                        );
+                        const isActive = activePreset === preset.id;
+                        return (
+                          <button
+                            key={preset.id}
+                            onClick={async () => {
+                              const fullConfig = buildPresetConfig(preset);
+                              setAlgoConfig(fullConfig as any);
+                              setSavingAlgoConfig(true);
+                              await updateSettings({
+                                algorithm_config: fullConfig as any,
+                                auto_run_enabled: preset.autoRun.enabled,
+                                auto_run_min_confidence: preset.autoRun.minConfidence,
+                                auto_run_types: preset.autoRun.types,
+                              } as any);
+                              setAlgoConfigDirty(false);
+                              setSavingAlgoConfig(false);
+                            }}
+                            disabled={savingAlgoConfig}
+                            className={`text-left p-4 rounded-lg border-2 transition-all hover:shadow-sm ${
+                              isActive
+                                ? 'border-violet-500 bg-violet-50'
+                                : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <PresetIcon className={`h-5 w-5 ${isActive ? 'text-violet-600' : 'text-slate-500'}`} />
+                              <span className={`text-sm font-semibold ${isActive ? 'text-violet-700' : 'text-slate-700'}`}>
+                                {preset.name}
+                              </span>
+                              {isActive && (
+                                <span className="ml-auto text-[10px] font-bold uppercase tracking-wider text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded">
+                                  Active
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 leading-relaxed">{preset.description}</p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Algorithm Parameters */}
               {algoConfig && (
