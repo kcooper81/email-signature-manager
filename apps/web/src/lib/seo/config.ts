@@ -117,6 +117,136 @@ export const DEFAULT_CONFIG: SEOEngineConfig = {
   overrideCacheTTLMinutes: 5,
 };
 
+// --- Goal-Based Presets ---
+
+export interface SEOPreset {
+  id: string;
+  name: string;
+  description: string;
+  icon: 'shield' | 'scale' | 'rocket' | 'star';
+  /** Partial config overrides — keys not listed use DEFAULT_CONFIG values */
+  config: Partial<SEOEngineConfig>;
+  /** Auto-run settings applied alongside the config */
+  autoRun: {
+    enabled: boolean;
+    minConfidence: number;
+    types: string[];
+  };
+}
+
+export const SEO_PRESETS: SEOPreset[] = [
+  {
+    id: 'conservative',
+    name: 'Conservative',
+    description: 'Protect existing rankings. High confidence thresholds, longer lockout periods, auto-run disabled.',
+    icon: 'shield',
+    config: {
+      changeLockoutDays: 45,
+      minPageAgeDays: 42,
+      minImpressionsForCTR: 500,
+      confidenceMetaTooLong: 0.95,
+      confidenceMetaTooShort: 0.90,
+      confidenceLowCTR: 0.80,
+      confidenceMissingFAQ: 0.85,
+      confidenceOpportunityZone: 0.80,
+      confidenceHighBounce: 0.80,
+      confidenceExpandContent: 0.80,
+      confidenceNewPage: 0.75,
+      maxExpandContentRecs: 10,
+      maxNewPageRecs: 5,
+    },
+    autoRun: { enabled: false, minConfidence: 0.95, types: [] },
+  },
+  {
+    id: 'balanced',
+    name: 'Balanced',
+    description: 'Standard configuration with sensible defaults. Good starting point for most sites.',
+    icon: 'scale',
+    config: {}, // All defaults
+    autoRun: { enabled: false, minConfidence: 0.80, types: [] },
+  },
+  {
+    id: 'aggressive',
+    name: 'Aggressive Growth',
+    description: 'Grow quickly with lower thresholds, shorter lockouts, and auto-run enabled for all fixable types.',
+    icon: 'rocket',
+    config: {
+      changeLockoutDays: 14,
+      minPageAgeDays: 14,
+      minImpressionsForCTR: 50,
+      confidenceMetaTooLong: 0.50,
+      confidenceMetaTooShort: 0.45,
+      confidenceLowCTR: 0.40,
+      confidenceMissingFAQ: 0.45,
+      confidenceOpportunityZone: 0.40,
+      confidenceHighBounce: 0.40,
+      confidenceExpandContent: 0.40,
+      confidenceNewPage: 0.35,
+      maxExpandContentRecs: 50,
+      maxNewPageRecs: 25,
+      suggestedInternalLinks: 5,
+    },
+    autoRun: {
+      enabled: true,
+      minConfidence: 0.50,
+      types: ['meta_title', 'meta_description', 'add_faq', 'expand_content'],
+    },
+  },
+  {
+    id: 'content-quality',
+    name: 'Content Quality',
+    description: 'Prioritize content quality. Stricter meta rules, high FAQ confidence, more internal links.',
+    icon: 'star',
+    config: {
+      metaTitleMinLength: 35,
+      metaTitleMaxLength: 55,
+      metaDescMinLength: 80,
+      metaDescMaxLength: 150,
+      confidenceMetaTooLong: 0.95,
+      confidenceMetaTooShort: 0.90,
+      confidenceMissingFAQ: 0.90,
+      confidenceExpandContent: 0.75,
+      suggestedInternalLinks: 5,
+      highBounceThreshold: 0.70,
+      highBounceMinSessions: 5,
+    },
+    autoRun: { enabled: false, minConfidence: 0.85, types: [] },
+  },
+];
+
+/**
+ * Build a full config from a preset by merging its overrides on top of defaults.
+ */
+export function buildPresetConfig(preset: SEOPreset): SEOEngineConfig {
+  return { ...DEFAULT_CONFIG, ...preset.config };
+}
+
+/**
+ * Detect which preset (if any) matches the current config + auto-run settings.
+ * Returns the preset id or null if no preset matches.
+ */
+export function detectActivePreset(
+  currentConfig: SEOEngineConfig,
+  autoRunEnabled: boolean,
+  autoRunMinConfidence: number,
+  autoRunTypes: string[]
+): string | null {
+  for (const preset of SEO_PRESETS) {
+    const fullConfig = buildPresetConfig(preset);
+    const configMatches = (Object.keys(DEFAULT_CONFIG) as (keyof SEOEngineConfig)[]).every(
+      (key) => currentConfig[key] === fullConfig[key]
+    );
+    const autoRunMatches =
+      preset.autoRun.enabled === autoRunEnabled &&
+      Math.abs(preset.autoRun.minConfidence - autoRunMinConfidence) < 0.001 &&
+      preset.autoRun.types.length === autoRunTypes.length &&
+      preset.autoRun.types.every((t) => autoRunTypes.includes(t));
+
+    if (configMatches && autoRunMatches) return preset.id;
+  }
+  return null;
+}
+
 /**
  * Merge DB-stored overrides over code defaults.
  * Only known keys are merged; unknown keys in dbConfig are ignored.
