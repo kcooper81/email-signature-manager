@@ -24,13 +24,14 @@ export async function POST(
       return NextResponse.json({ error: 'Recommendation not found' }, { status: 404 });
     }
 
-    if (recommendation.status !== 'pending') {
+    if (recommendation.status !== 'pending' && recommendation.status !== 'rolled_back') {
       return NextResponse.json(
         { error: `Recommendation is already ${recommendation.status}` },
         { status: 400 }
       );
     }
 
+    const isReapply = recommendation.status === 'rolled_back';
     const now = new Date().toISOString();
     const suggestedValue = recommendation.suggested_value as Record<string, unknown>;
 
@@ -39,7 +40,7 @@ export async function POST(
       .from('seo_recommendations')
       .update({
         status: 'applied',
-        applied_by: 'manual',
+        applied_by: isReapply ? 're-apply' : 'manual',
         applied_at: now,
       })
       .eq('id', id);

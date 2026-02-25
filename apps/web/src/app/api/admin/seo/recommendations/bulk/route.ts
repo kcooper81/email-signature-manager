@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, ids } = body as { action: string; ids: string[] };
 
-    if (!action || !['approve', 'dismiss'].includes(action)) {
+    if (!action || !['approve', 'dismiss', 'delete'].includes(action)) {
       return NextResponse.json(
-        { error: 'Invalid action. Must be "approve" or "dismiss".' },
+        { error: 'Invalid action. Must be "approve", "dismiss", or "delete".' },
         { status: 400 }
       );
     }
@@ -100,6 +100,53 @@ export async function POST(request: NextRequest) {
           errors.push(`${id}: ${err.message}`);
         }
       }
+    } else if (action === 'delete') {
+      // Bulk Delete — only dismissed or rolled_back
+      for (const id of ids) {
+        try {
+          const { data: rec, error: fetchError } = await supabaseAdmin
+            .from('seo_recommendations')
+            .select('id, status, recommendation_type, page_url')
+            .eq('id', id)
+            .single();
+
+          if (fetchError || !rec) {
+            errors.push(`${id}: not found`);
+            continue;
+          }
+
+          if (rec.status !== 'dismissed' && rec.status !== 'rolled_back') {
+            errors.push(`${id}: can only delete dismissed or rolled_back recommendations`);
+            continue;
+          }
+
+          const { error: deleteError } = await supabaseAdmin
+            .from('seo_recommendations')
+            .delete()
+            .eq('id', id);
+
+          if (deleteError) {
+            errors.push(`${id}: ${deleteError.message}`);
+            continue;
+          }
+
+          await supabaseAdmin.from('seo_change_log').insert({
+            action: 'recommendation_deleted',
+            page_url: rec.page_url,
+            details: {
+              recommendation_id: id,
+              recommendation_type: rec.recommendation_type,
+              previous_status: rec.status,
+              deleted_by_user: userId,
+              bulk: true,
+            },
+          });
+
+          processed++;
+        } catch (err: any) {
+          errors.push(`${id}: ${err.message}`);
+        }
+      }
     } else {
       // Bulk Approve
       const { data: settings } = await supabaseAdmin
@@ -123,11 +170,12 @@ export async function POST(request: NextRequest) {
             continue;
           }
 
-          if (recommendation.status !== 'pending') {
+          if (recommendation.status !== 'pending' && recommendation.status !== 'rolled_back') {
             errors.push(`${id}: already ${recommendation.status}`);
             continue;
           }
 
+          const isReapply = recommendation.status === 'rolled_back';
           const now = new Date().toISOString();
           const suggestedValue = recommendation.suggested_value as Record<string, unknown>;
 
@@ -135,7 +183,7 @@ export async function POST(request: NextRequest) {
             .from('seo_recommendations')
             .update({
               status: 'applied',
-              applied_by: 'bulk',
+              applied_by: isReapply ? 'bulk-re-apply' : 'bulk',
               applied_at: now,
             })
             .eq('id', id);
