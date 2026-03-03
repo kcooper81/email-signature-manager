@@ -3,17 +3,19 @@
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
 import { Shield, ArrowLeft } from 'lucide-react';
+import type { SuperAdminRole } from '@/app/(admin)/layout';
 
 interface AdminHeaderProps {
   user: User;
+  role: SuperAdminRole;
 }
 
-export function AdminHeader({ user }: AdminHeaderProps) {
+export function AdminHeader({ user, role }: AdminHeaderProps) {
   return (
     <header className="h-16 bg-slate-900 border-b border-slate-800 px-3 sm:px-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center gap-2 sm:gap-4">
-        <Link 
-          href="/dashboard" 
+        <Link
+          href="/dashboard"
           className="flex items-center gap-1.5 sm:gap-2 text-slate-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -26,6 +28,11 @@ export function AdminHeader({ user }: AdminHeaderProps) {
         </div>
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
+        {role === 'support' && (
+          <span className="rounded-full bg-blue-500/20 px-2.5 py-0.5 text-xs font-medium text-blue-400 border border-blue-500/30">
+            Support
+          </span>
+        )}
         <span className="text-xs sm:text-sm text-slate-400 hidden sm:inline">{user.email}</span>
         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-amber-500 flex items-center justify-center text-slate-900 font-medium text-xs sm:text-sm">
           {user.email?.charAt(0).toUpperCase()}

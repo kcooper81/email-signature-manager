@@ -10,7 +10,6 @@ import {
   Building2,
   ScrollText,
   CreditCard,
-  Users,
   AlertTriangle,
   Ticket,
   Menu,
@@ -19,10 +18,11 @@ import {
   UserPlus,
   Cog,
   MousePointerClick,
-  BarChart3,
   Search,
+  ClipboardCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import type { SuperAdminRole } from '@/app/(admin)/layout';
 
 interface NavBadgeCounts {
   newTickets: number;
@@ -31,21 +31,36 @@ interface NavBadgeCounts {
   pendingSEO: number;
 }
 
-const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null },
-  { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: null },
-  { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners' as const },
-  { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets' as const },
-  { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null },
-  { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null },
-  { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO' as const },
-  { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null },
-  { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null },
-  { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null },
-  { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors' as const },
+type BadgeKey = keyof NavBadgeCounts;
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  badgeKey: BadgeKey | null;
+  supportVisible: boolean;
+}
+
+const navItems: NavItem[] = [
+  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null, supportVisible: false },
+  { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: null, supportVisible: false },
+  { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners', supportVisible: false },
+  { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets', supportVisible: true },
+  { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null, supportVisible: false },
+  { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null, supportVisible: false },
+  { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO', supportVisible: false },
+  { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null, supportVisible: false },
+  { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null, supportVisible: false },
+  { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null, supportVisible: false },
+  { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors', supportVisible: false },
+  { href: '/admin/testing-guide', label: 'Testing Guide', icon: ClipboardCheck, badgeKey: null, supportVisible: true },
 ];
 
-export function AdminNav() {
+interface AdminNavProps {
+  role: SuperAdminRole;
+}
+
+export function AdminNav({ role }: AdminNavProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [badges, setBadges] = useState<NavBadgeCounts>({
@@ -55,15 +70,36 @@ export function AdminNav() {
     pendingSEO: 0,
   });
 
+  const isSupport = role === 'support';
+  const visibleItems = isSupport
+    ? navItems.filter((item) => item.supportVisible)
+    : navItems;
+
   useEffect(() => {
     loadBadgeCounts();
-    // Refresh badge counts every 60 seconds
     const interval = setInterval(loadBadgeCounts, 60000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadBadgeCounts = async () => {
     const supabase = createClient();
+
+    // Support users only need ticket counts
+    if (isSupport) {
+      const ticketsResult = await supabase
+        .from('feedback')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'new');
+
+      setBadges({
+        newTickets: ticketsResult.count || 0,
+        unresolvedErrors: 0,
+        pendingPartners: 0,
+        pendingSEO: 0,
+      });
+      return;
+    }
 
     const [ticketsResult, errorsResult, partnersResult, seoResult] = await Promise.all([
       supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('status', 'new'),
@@ -80,7 +116,7 @@ export function AdminNav() {
     });
   };
 
-  const renderNavItem = (item: typeof navItems[0], mobile?: boolean) => {
+  const renderNavItem = (item: NavItem, mobile?: boolean) => {
     const isActive = pathname === item.href ||
       (item.href !== '/admin' && pathname.startsWith(item.href));
 
@@ -136,14 +172,14 @@ export function AdminNav() {
         )}
       >
         <div className="space-y-1">
-          {navItems.map((item) => renderNavItem(item, true))}
+          {visibleItems.map((item) => renderNavItem(item, true))}
         </div>
       </nav>
 
       {/* Desktop Sidebar */}
       <nav className="hidden lg:block w-64 min-h-[calc(100vh-64px)] bg-slate-900 text-white p-4">
         <div className="space-y-1">
-          {navItems.map((item) => renderNavItem(item))}
+          {visibleItems.map((item) => renderNavItem(item))}
         </div>
       </nav>
     </>

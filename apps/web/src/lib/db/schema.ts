@@ -138,6 +138,7 @@ export const users = pgTable('users', {
   role: userRoleEnum('role').default('member').notNull(),
   isAdmin: boolean('is_admin').default(false).notNull(),
   isSuperAdmin: boolean('is_super_admin').default(false),
+  superAdminRole: text('super_admin_role'),
   source: text('source').default('manual'),
   company: text('company'),
   officeLocation: text('office_location'),
