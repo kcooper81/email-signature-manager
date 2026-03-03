@@ -51,12 +51,16 @@ export async function PATCH(
 
     const { data: userData } = await supabaseAdmin
       .from('users')
-      .select('id, is_super_admin')
+      .select('id, is_super_admin, super_admin_role')
       .eq('auth_id', user.id)
       .single();
 
     if (!userData?.is_super_admin) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+    }
+
+    if (userData.super_admin_role !== 'super_admin') {
+      return NextResponse.json({ error: 'Full admin access required' }, { status: 403 });
     }
 
     // Get the application
