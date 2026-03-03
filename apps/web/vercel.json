@@ -4,14 +4,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install",
-  "redirects": [
-    {
-      "source": "/:path(.*)",
-      "has": [{ "type": "host", "value": "www.siggly.io" }],
-      "destination": "https://siggly.io/:path",
-      "permanent": true
-    }
-  ],
   "crons": [
     {
       "path": "/api/cron/seo-audit",
