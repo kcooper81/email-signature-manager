@@ -60,14 +60,21 @@ function getSubdomain(hostname: string): string | null {
 }
 
 export async function middleware(request: NextRequest) {
+  const hostname = request.headers.get('host') || '';
+
+  // SEO: 301 redirect www → non-www to prevent duplicate content
+  if (hostname.startsWith('www.')) {
+    const url = request.nextUrl.clone();
+    url.host = hostname.replace('www.', '');
+    return NextResponse.redirect(url, 301);
+  }
+
   const { pathname } = request.nextUrl;
 
   // Set pathname on request headers so server components can read it via headers()
   request.headers.set('x-pathname', pathname);
 
   const { response, user } = await updateSession(request);
-
-  const hostname = request.headers.get('host') || '';
 
   // Check for custom subdomain (white-label)
   const subdomain = getSubdomain(hostname);
