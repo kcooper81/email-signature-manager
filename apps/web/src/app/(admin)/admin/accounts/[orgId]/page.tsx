@@ -141,6 +141,27 @@ export default function OrgDetailPage() {
   const templateSort = useSortableTable<Template>('createdAt', 'desc');
   const deploymentSort = useSortableTable<Deployment>('createdAt', 'desc');
 
+  // Compute profile issues for this org's users (must be before any early returns)
+  const profileIssues = useMemo(() => {
+    const issues: { user: User; problems: string[] }[] = [];
+    for (const u of users) {
+      const problems: string[] = [];
+      if (!u.authId) problems.push('No auth link (cannot sign in)');
+      if (!u.firstName?.trim()) problems.push('Missing first name');
+      if (!u.lastName?.trim()) problems.push('Missing last name');
+      if (!u.email?.trim()) problems.push('Missing email');
+      if (!u.isActive) problems.push('Account deactivated');
+      if (problems.length > 0) issues.push({ user: u, problems });
+    }
+    const orgIssues: string[] = [];
+    if (!subscription) orgIssues.push('No subscription record');
+    if (users.length === 0) orgIssues.push('No users in organization');
+    if (!users.some(u => u.role === 'owner')) orgIssues.push('No owner assigned');
+    return { userIssues: issues, orgIssues };
+  }, [users, subscription]);
+
+  const hasAnyIssues = profileIssues.userIssues.length > 0 || profileIssues.orgIssues.length > 0;
+
   useEffect(() => {
     loadOrgDetails();
   }, [orgId]);
@@ -259,11 +280,10 @@ export default function OrgDetailPage() {
       .limit(20);
 
     // Get user emails for audit logs
-    const userIds = [...new Set(auditData?.map(a => a.user_id) || [])];
-    const { data: auditUsers } = await supabase
-      .from('users')
-      .select('id, email')
-      .in('id', userIds);
+    const userIds = [...new Set(auditData?.map(a => a.user_id).filter(Boolean) || [])];
+    const auditUsers = userIds.length > 0
+      ? (await supabase.from('users').select('id, email').in('id', userIds)).data
+      : [];
 
     const userEmailMap = new Map(auditUsers?.map(u => [u.id, u.email]) || []);
 
@@ -381,28 +401,6 @@ export default function OrgDetailPage() {
   }
 
   const plan = PLANS[subscription?.plan || 'free'];
-
-  // Compute profile issues for this org's users
-  const profileIssues = useMemo(() => {
-    const issues: { user: User; problems: string[] }[] = [];
-    for (const u of users) {
-      const problems: string[] = [];
-      if (!u.authId) problems.push('No auth link (cannot sign in)');
-      if (!u.firstName?.trim()) problems.push('Missing first name');
-      if (!u.lastName?.trim()) problems.push('Missing last name');
-      if (!u.email?.trim()) problems.push('Missing email');
-      if (!u.isActive) problems.push('Account deactivated');
-      if (problems.length > 0) issues.push({ user: u, problems });
-    }
-    // Also check org-level issues
-    const orgIssues: string[] = [];
-    if (!subscription) orgIssues.push('No subscription record');
-    if (users.length === 0) orgIssues.push('No users in organization');
-    if (!users.some(u => u.role === 'owner')) orgIssues.push('No owner assigned');
-    return { userIssues: issues, orgIssues };
-  }, [users, subscription]);
-
-  const hasAnyIssues = profileIssues.userIssues.length > 0 || profileIssues.orgIssues.length > 0;
 
   return (
     <div className="space-y-6">
