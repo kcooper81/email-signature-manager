@@ -40,7 +40,7 @@ export default async function AdminLayout({
 
   // Block support users from restricted admin routes via direct URL
   if (role === 'support') {
-    const headerStore = await headers();
+    const headerStore = headers();
     const pathname = headerStore.get('x-pathname') || '';
     const isAllowed = SUPPORT_ALLOWED_ROUTES.some(
       (route) => pathname === route || pathname.startsWith(route + '/')
