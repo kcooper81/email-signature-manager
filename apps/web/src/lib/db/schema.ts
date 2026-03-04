@@ -76,6 +76,7 @@ export const organizations = pgTable('organizations', {
   googleWorkspaceConnected: boolean('google_workspace_connected').default(false),
   microsoft365Connected: boolean('microsoft_365_connected').default(false),
   hubspotConnected: boolean('hubspot_connected').default(false),
+  isSuspended: boolean('is_suspended').default(false),
   createdAt: timestamp('created_at', { withTimezone: false }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: false }).defaultNow().notNull(),
 });

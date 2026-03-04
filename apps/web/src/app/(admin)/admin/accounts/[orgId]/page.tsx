@@ -151,7 +151,7 @@ export default function OrgDetailPage() {
     // Get organization
     const { data: orgData } = await supabase
       .from('organizations')
-      .select('id, name, slug, domain, industry, created_at, organization_type, partner_tier, google_workspace_connected, microsoft_365_connected, hubspot_connected')
+      .select('id, name, slug, domain, industry, created_at, is_suspended, organization_type, partner_tier, google_workspace_connected, microsoft_365_connected, hubspot_connected')
       .eq('id', orgId)
       .single();
 
@@ -167,12 +167,12 @@ export default function OrgDetailPage() {
       domain: orgData.domain,
       industry: orgData.industry,
       createdAt: orgData.created_at,
-      isSuspended: (orgData as any).is_suspended || false,
-      organizationType: (orgData as any).organization_type || 'standard',
-      partnerTier: (orgData as any).partner_tier || null,
-      googleWorkspaceConnected: (orgData as any).google_workspace_connected || false,
-      microsoft365Connected: (orgData as any).microsoft_365_connected || false,
-      hubspotConnected: (orgData as any).hubspot_connected || false,
+      isSuspended: orgData.is_suspended || false,
+      organizationType: orgData.organization_type || 'standard',
+      partnerTier: orgData.partner_tier || null,
+      googleWorkspaceConnected: orgData.google_workspace_connected || false,
+      microsoft365Connected: orgData.microsoft_365_connected || false,
+      hubspotConnected: orgData.hubspot_connected || false,
     });
 
     // Get subscription (maybeSingle because orgs on free plan may have no row)

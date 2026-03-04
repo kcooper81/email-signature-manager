@@ -20,6 +20,7 @@ import {
   MousePointerClick,
   Search,
   ClipboardCheck,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { SuperAdminRole } from '@/app/(admin)/layout';
@@ -53,6 +54,7 @@ const navItems: NavItem[] = [
   { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null, supportVisible: false },
   { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null, supportVisible: false },
   { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors', supportVisible: false },
+  { href: '/admin/platform-admins', label: 'Platform Admins', icon: Shield, badgeKey: null, supportVisible: false },
   { href: '/admin/testing-guide', label: 'Testing Guide', icon: ClipboardCheck, badgeKey: null, supportVisible: true },
 ];
 
