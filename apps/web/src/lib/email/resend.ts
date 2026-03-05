@@ -21,6 +21,30 @@ const EMAIL_FROM = {
   sales: process.env.RESEND_FROM_SALES || 'Siggly <sales@siggly.io>',
 };
 
+// All mailboxes that can receive and send replies
+// Key = the local part before @, value = the formatted "From" address
+export const MAILBOXES: Record<string, string> = {
+  support: 'Siggly Support <support@siggly.io>',
+  team: 'Siggly Team <team@siggly.io>',
+  kade: 'Kade <kade@siggly.io>',
+  sales: 'Siggly Sales <sales@siggly.io>',
+  help: 'Siggly Help <help@siggly.io>',
+  contact: 'Siggly <contact@siggly.io>',
+  info: 'Siggly <info@siggly.io>',
+};
+
+/**
+ * Resolve the "from" address for a ticket reply.
+ * Matches the mailbox the user originally emailed.
+ */
+export function resolveReplyFrom(receivedAt: string | null | undefined): string {
+  if (!receivedAt) return EMAIL_FROM.support;
+  // Extract local part: "help@siggly.io" → "help", "Siggly Help <help@siggly.io>" → "help"
+  const match = receivedAt.match(/<?([^@<\s]+)@/);
+  const local = match?.[1]?.toLowerCase();
+  return (local && MAILBOXES[local]) || EMAIL_FROM.support;
+}
+
 export interface TicketResponseEmailData {
   to: string;
   ticketId: string;
@@ -28,6 +52,8 @@ export interface TicketResponseEmailData {
   originalMessage: string;
   responseMessage: string;
   adminEmail: string;
+  /** The mailbox address to send from (e.g. "help@siggly.io"). Falls back to support. */
+  replyAs?: string | null;
 }
 
 export interface ContactFormEmailData {
@@ -301,17 +327,18 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
 }
 
 export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
-  const { to, ticketId, adminEmail } = data;
+  const { to, ticketId, adminEmail, replyAs } = data;
   const ticketType = escapeHtml(data.ticketType);
   const originalMessage = escapeHtml(data.originalMessage);
   const responseMessage = escapeHtml(data.responseMessage);
+  const fromAddress = resolveReplyFrom(replyAs);
 
   try {
     const client = getResendClient();
     const { data: emailData, error } = await client.emails.send({
-      from: EMAIL_FROM.support,
+      from: fromAddress,
       to: [to],
-      subject: `Re: Your ${ticketType} submission`,
+      subject: `Re: [#${ticketId.slice(0, 8)}] Your ${ticketType} submission`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -354,7 +381,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
           </body>
         </html>
       `,
-      replyTo: 'support@siggly.io',
+      replyTo: replyAs || 'support@siggly.io',
     });
 
     if (error) {
