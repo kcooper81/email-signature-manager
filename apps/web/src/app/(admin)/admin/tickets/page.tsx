@@ -187,13 +187,18 @@ export default function TicketsPage() {
             receivedAtMailbox: item.inbox_email || null,
           };
 
-          // Add to the top of the list if on page 0 with no filters
-          if (page === 0) {
-            setTickets(prev => [newEntry, ...prev]);
-            setTotalCount(prev => prev + 1);
-          }
+          // Check if the new ticket matches active filters
+          const matchesType = typeFilter === 'all' || item.type === typeFilter;
+          const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+          const matchesPriority = priorityFilter === 'all' || (item.priority || 'normal') === priorityFilter;
 
-          // Browser notification
+          // Add to the top of the list if on page 0 and matches filters
+          if (page === 0 && matchesType && matchesStatus && matchesPriority) {
+            setTickets(prev => [newEntry, ...prev]);
+          }
+          setTotalCount(prev => prev + 1);
+
+          // Browser notification (always, regardless of filters)
           if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             new Notification('New Support Ticket', {
               body: `${item.type} from ${item.user_email || 'anonymous'}: ${item.message?.slice(0, 100)}`,
@@ -213,13 +218,30 @@ export default function TicketsPage() {
       )
       .on(
         'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'feedback' },
+        (payload) => {
+          const item = payload.new as any;
+          setTickets(prev => prev.map(t => t.id === item.id ? {
+            ...t,
+            status: item.status,
+            priority: item.priority || t.priority,
+            updatedAt: item.updated_at,
+          } : t));
+          // Also update the detail panel if this ticket is open
+          setSelectedTicket(prev => {
+            if (!prev || prev.id !== item.id) return prev;
+            return { ...prev, status: item.status, priority: item.priority || prev.priority, updatedAt: item.updated_at };
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'ticket_notes' },
         (payload) => {
           const note = payload.new as any;
           // If we have a ticket detail open for this note, refresh it
           setSelectedTicket(prev => {
             if (!prev || prev.id !== note.ticket_id) return prev;
-            // Re-load notes for the open ticket
             loadTicketNotes(note.ticket_id).then(notes => {
               setSelectedTicket(p => p && p.id === note.ticket_id ? { ...p, notes } : p);
             });
@@ -232,7 +254,7 @@ export default function TicketsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [page, notificationsEnabled]);
+  }, [page, typeFilter, statusFilter, priorityFilter, notificationsEnabled]);
 
   const toggleNotifications = async () => {
     if (!notificationsEnabled && typeof Notification !== 'undefined') {
