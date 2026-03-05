@@ -1151,7 +1151,7 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
 export const ticketNotes = pgTable('ticket_notes', {
   id: uuid('id').primaryKey().defaultRandom(),
   ticketId: uuid('ticket_id').notNull(),
-  authorId: uuid('author_id').references(() => users.id).notNull(),
+  authorId: uuid('author_id').references(() => users.id),
   content: text('content').notNull(),
   isInternal: boolean('is_internal').default(true),
   createdAt: timestamp('created_at').defaultNow(),

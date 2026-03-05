@@ -370,6 +370,109 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
 }
 
 // ============================================================
+// Admin Ticket Notification
+// ============================================================
+
+export interface NewTicketNotificationData {
+  ticketId: string;
+  type: string;
+  senderEmail: string;
+  message: string;
+  source: 'feedback_widget' | 'inbound_email' | 'contact_form';
+}
+
+/**
+ * Sends a notification email to all super admins when a new ticket arrives.
+ * Queries the users table for is_super_admin = true to get email addresses.
+ */
+export async function notifyAdminsOfNewTicket(data: NewTicketNotificationData) {
+  const { senderEmail, source } = data;
+  const ticketId = escapeHtml(data.ticketId);
+  const type = escapeHtml(data.type);
+  const message = escapeHtml(data.message);
+
+  // Look up admin emails from the database
+  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data: admins } = await supabase
+    .from('users')
+    .select('email')
+    .eq('is_super_admin', true)
+    .not('email', 'is', null);
+
+  const adminEmails = admins?.map(a => a.email).filter(Boolean) || [];
+  if (adminEmails.length === 0) return;
+
+  const sourceLabel = source === 'inbound_email' ? 'Inbound Email'
+    : source === 'contact_form' ? 'Contact Form'
+    : 'Feedback Widget';
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+
+  try {
+    const client = getResendClient();
+    await client.emails.send({
+      from: EMAIL_FROM.support,
+      to: adminEmails,
+      subject: `[New Ticket] ${type} from ${senderEmail}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">New Support Ticket</h1>
+            </div>
+
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; width: 100px;">Type:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; text-transform: capitalize;">${type}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">From:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><a href="mailto:${senderEmail}" style="color: #4d52de;">${senderEmail}</a></td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Source:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${sourceLabel}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Ticket:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">#${ticketId.slice(0, 8)}</td>
+                </tr>
+              </table>
+
+              <div style="margin-top: 20px;">
+                <p style="font-weight: 600; margin-bottom: 10px;">Message:</p>
+                <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-size: 14px;">${message}</div>
+              </div>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${appUrl}/admin/tickets" style="display: inline-block; background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  View in Admin Panel
+                </a>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+  } catch (error) {
+    console.error('Failed to send admin notification:', error);
+    throw error;
+  }
+}
+
+// ============================================================
 // Partner / MSP Email Functions
 // ============================================================
 
