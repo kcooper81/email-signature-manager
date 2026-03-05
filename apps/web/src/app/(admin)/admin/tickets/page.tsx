@@ -5,8 +5,8 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Textarea, Checkbox } from '@/components/ui';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
-import { 
-  Search, 
+import {
+  Search,
   Ticket,
   Loader2,
   Filter,
@@ -14,6 +14,7 @@ import {
   Lightbulb,
   HelpCircle,
   MessageSquare,
+  Mail,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -28,6 +29,8 @@ import {
   ArrowDown,
   Minus,
   StickyNote,
+  Bell,
+  BellOff,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -40,10 +43,12 @@ interface TicketNote {
   createdAt: string;
 }
 
+type TicketType = 'bug' | 'feature' | 'question' | 'email' | 'other';
+
 interface FeedbackEntry {
   id: string;
   userEmail: string | null;
-  type: 'bug' | 'feature' | 'question' | 'other';
+  type: TicketType;
   message: string;
   pageUrl: string | null;
   status: 'new' | 'reviewed' | 'resolved' | 'archived';
@@ -60,17 +65,19 @@ interface FeedbackEntry {
 
 const PAGE_SIZE = 20;
 
-const typeIcons = {
+const typeIcons: Record<TicketType, typeof Bug> = {
   bug: Bug,
   feature: Lightbulb,
   question: HelpCircle,
+  email: Mail,
   other: MessageSquare,
 };
 
-const typeColors = {
+const typeColors: Record<TicketType, string> = {
   bug: 'bg-red-100 text-red-700',
   feature: 'bg-blue-100 text-blue-700',
   question: 'bg-amber-100 text-amber-700',
+  email: 'bg-emerald-100 text-emerald-700',
   other: 'bg-slate-100 text-slate-700',
 };
 
@@ -118,6 +125,7 @@ export default function TicketsPage() {
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isInternalNote, setIsInternalNote] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
 
   const filteredTicketIds = useMemo(() => {
@@ -143,6 +151,77 @@ export default function TicketsPage() {
     loadTickets();
     loadCurrentUser();
   }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
+
+  // Real-time subscription for new tickets
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel('admin-tickets')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'feedback' },
+        (payload) => {
+          const item = payload.new as any;
+          const newEntry: FeedbackEntry = {
+            id: item.id,
+            userEmail: item.user_email,
+            type: item.type,
+            message: item.message,
+            pageUrl: item.page_url,
+            status: item.status,
+            priority: item.priority || 'normal',
+            createdAt: item.created_at,
+            updatedAt: item.updated_at,
+            notes: [],
+            organizationId: item.organization_id,
+            organizationName: null,
+            partnerOrganizationId: item.partner_organization_id,
+            partnerOrganizationName: null,
+            isPartnerEscalation: item.is_partner_escalation || false,
+          };
+
+          // Add to the top of the list if on page 0 with no filters
+          if (page === 0) {
+            setTickets(prev => [newEntry, ...prev]);
+            setTotalCount(prev => prev + 1);
+          }
+
+          // Browser notification
+          if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            new Notification('New Support Ticket', {
+              body: `${item.type} from ${item.user_email || 'anonymous'}: ${item.message?.slice(0, 100)}`,
+              icon: '/favicon.ico',
+            });
+          }
+
+          // Audio ping
+          try {
+            const audio = new Audio('/sounds/notification.mp3');
+            audio.volume = 0.3;
+            audio.play().catch(() => {});
+          } catch {
+            // Audio not available
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [page, notificationsEnabled]);
+
+  const toggleNotifications = async () => {
+    if (!notificationsEnabled && typeof Notification !== 'undefined') {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        setNotificationsEnabled(true);
+      }
+    } else {
+      setNotificationsEnabled(!notificationsEnabled);
+    }
+  };
 
   const loadCurrentUser = async () => {
     const supabase = createClient();
@@ -234,18 +313,20 @@ export default function TicketsPage() {
     if (!notes) return [];
 
     // Get author emails
-    const authorIds = [...new Set(notes.map(n => n.author_id))];
-    const { data: authors } = await supabase
-      .from('users')
-      .select('id, email')
-      .in('id', authorIds);
-
-    const authorMap = new Map(authors?.map(a => [a.id, a.email]) || []);
+    const authorIds = [...new Set(notes.map(n => n.author_id).filter(Boolean))];
+    let authorMap = new Map<string, string>();
+    if (authorIds.length > 0) {
+      const { data: authors } = await supabase
+        .from('users')
+        .select('id, email')
+        .in('id', authorIds);
+      authorMap = new Map(authors?.map(a => [a.id, a.email]) || []);
+    }
 
     return notes.map(n => ({
       id: n.id,
       content: n.content,
-      authorEmail: authorMap.get(n.author_id) || 'Unknown',
+      authorEmail: n.author_id ? (authorMap.get(n.author_id) || 'Unknown') : 'External Reply',
       isInternal: n.is_internal,
       createdAt: n.created_at,
     }));
@@ -398,9 +479,21 @@ export default function TicketsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Support Tickets</h1>
-        <p className="text-slate-500">Manage feedback and support requests from users</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Support Tickets</h1>
+          <p className="text-slate-500">Manage feedback and support requests from users</p>
+        </div>
+        <Button
+          variant={notificationsEnabled ? 'default' : 'outline'}
+          size="sm"
+          onClick={toggleNotifications}
+          className="shrink-0"
+          title={notificationsEnabled ? 'Notifications on' : 'Enable notifications'}
+        >
+          {notificationsEnabled ? <Bell className="h-4 w-4 mr-1" /> : <BellOff className="h-4 w-4 mr-1" />}
+          {notificationsEnabled ? 'Live' : 'Notify'}
+        </Button>
       </div>
 
       {/* Stats */}
@@ -486,6 +579,7 @@ export default function TicketsPage() {
                 <option value="bug">Bug Reports</option>
                 <option value="feature">Feature Requests</option>
                 <option value="question">Questions</option>
+                <option value="email">Inbound Email</option>
                 <option value="other">Other</option>
               </select>
               <select

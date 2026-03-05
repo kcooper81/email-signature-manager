@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { notifyAdminsOfNewTicket } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
 
 // Use service role for feedback inserts to bypass RLS (allows anonymous submissions)
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate feedback type
-    const validTypes = ['bug', 'feature', 'question', 'other'];
+    const validTypes = ['bug', 'feature', 'question', 'email', 'other'];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { error: 'Invalid feedback type' },
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Insert feedback using service role to bypass RLS (supports anonymous users)
-    const { error: insertError } = await supabaseAdmin
+    const { data: newTicket, error: insertError } = await supabaseAdmin
       .from('feedback')
       .insert({
         user_id: user?.id || null,
@@ -52,7 +53,9 @@ export async function POST(request: NextRequest) {
           submitted_at: new Date().toISOString(),
         },
         status: 'new',
-      });
+      })
+      .select('id, type, user_email, message')
+      .single();
 
     if (insertError) {
       console.error('Feedback insert error:', insertError);
@@ -60,6 +63,17 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to submit feedback' },
         { status: 500 }
       );
+    }
+
+    // Notify admins of the new ticket (fire-and-forget)
+    if (newTicket) {
+      notifyAdminsOfNewTicket({
+        ticketId: newTicket.id,
+        type: newTicket.type,
+        senderEmail: newTicket.user_email || 'anonymous',
+        message: newTicket.message.slice(0, 500),
+        source: 'feedback_widget',
+      }).catch(() => {});
     }
 
     return NextResponse.json({
