@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import {
   Button,
@@ -13,7 +13,7 @@ import {
   Input,
   Label,
 } from '@/components/ui';
-import { Key, Plus, Copy, Check, Trash2, Loader2, AlertTriangle } from 'lucide-react';
+import { Key, Plus, Copy, Check, Trash2, Loader2, AlertTriangle, Eye, EyeOff, Shield, ExternalLink } from 'lucide-react';
 
 interface ApiKey {
   id: string;
@@ -24,6 +24,8 @@ interface ApiKey {
   last_used_at: string | null;
 }
 
+const AUTO_DISMISS_MS = 120_000; // 2 minutes
+
 export default function ApiKeysPage() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,16 +33,31 @@ export default function ApiKeysPage() {
   const [newKeyName, setNewKeyName] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [revealedKey, setRevealedKey] = useState<string | null>(null);
+  const [keyVisible, setKeyVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string>('member');
   const [planHasAccess, setPlanHasAccess] = useState<boolean | null>(null);
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     loadKeys();
     checkAccess();
   }, []);
+
+  // Auto-dismiss the revealed key after 2 minutes for security
+  useEffect(() => {
+    if (revealedKey) {
+      dismissTimer.current = setTimeout(() => {
+        setRevealedKey(null);
+        setKeyVisible(false);
+      }, AUTO_DISMISS_MS);
+    }
+    return () => {
+      if (dismissTimer.current) clearTimeout(dismissTimer.current);
+    };
+  }, [revealedKey]);
 
   async function checkAccess() {
     const supabase = createClient();
@@ -89,6 +106,7 @@ export default function ApiKeysPage() {
         return;
       }
       setRevealedKey(data.key.rawKey);
+      setKeyVisible(true);
       setNewKeyName('');
       setShowCreate(false);
       await loadKeys();
@@ -122,6 +140,18 @@ export default function ApiKeysPage() {
     navigator.clipboard.writeText(revealedKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  function maskKey(key: string): string {
+    // Show first 12 chars and last 4 chars, mask the rest
+    if (key.length <= 20) return key;
+    return key.slice(0, 12) + '\u2022'.repeat(24) + key.slice(-4);
+  }
+
+  function dismissKey() {
+    setRevealedKey(null);
+    setKeyVisible(false);
+    if (dismissTimer.current) clearTimeout(dismissTimer.current);
   }
 
   const isAdmin = ['owner', 'admin'].includes(userRole);
@@ -171,25 +201,49 @@ export default function ApiKeysPage() {
         <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30">
           <CardContent className="pt-6">
             <div className="space-y-3">
-              <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                API key created! Copy it now — you won{"'"}t be able to see it again.
-              </p>
+              <div className="flex items-start gap-2">
+                <Shield className="h-4 w-4 mt-0.5 text-green-700 dark:text-green-300 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    API key created — copy it now
+                  </p>
+                  <p className="text-xs text-green-700/80 dark:text-green-300/80 mt-0.5">
+                    This is the only time the full key will be shown. It cannot be retrieved
+                    later. Store it in a secure location like a password manager or secrets vault.
+                  </p>
+                </div>
+              </div>
               <div className="flex items-center gap-2">
-                <code className="flex-1 p-3 bg-white dark:bg-gray-900 rounded border text-sm font-mono break-all">
-                  {revealedKey}
+                <code className="flex-1 p-3 bg-white dark:bg-gray-900 rounded border text-sm font-mono break-all select-all">
+                  {keyVisible ? revealedKey : maskKey(revealedKey)}
                 </code>
-                <Button variant="outline" size="sm" onClick={copyKey}>
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                <div className="flex flex-col gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setKeyVisible(!keyVisible)}
+                    title={keyVisible ? 'Hide key' : 'Show key'}
+                  >
+                    {keyVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={copyKey} title="Copy to clipboard">
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-green-700/60 dark:text-green-300/60">
+                  This key will be hidden automatically after 2 minutes.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={dismissKey}
+                  className="text-green-700 dark:text-green-300"
+                >
+                  I{"'"}ve saved it — dismiss
                 </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setRevealedKey(null)}
-                className="text-green-700 dark:text-green-300"
-              >
-                Dismiss
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -229,12 +283,15 @@ export default function ApiKeysPage() {
               <Label htmlFor="keyName">Key name</Label>
               <Input
                 id="keyName"
-                placeholder="e.g. Exchange Server, Custom SMTP"
+                placeholder="e.g. Exchange Server, Custom SMTP, Deploy Script"
                 value={newKeyName}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewKeyName(e.target.value)}
                 onKeyDown={(e: React.KeyboardEvent) => e.key === 'Enter' && createKey()}
                 maxLength={100}
               />
+              <p className="text-xs text-muted-foreground">
+                Give it a descriptive name so you know where it{"'"}s used later.
+              </p>
               <div className="flex gap-2">
                 <Button size="sm" onClick={createKey} disabled={creating || !newKeyName.trim()}>
                   {creating && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
@@ -325,64 +382,132 @@ export default function ApiKeysPage() {
         </CardContent>
       </Card>
 
-      {/* API usage docs */}
+      {/* Security info */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">How it works</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="text-sm text-muted-foreground space-y-2">
+            <li><strong>Keys are hashed.</strong> We store a SHA-256 hash of your key, not the key itself. If our database were ever compromised, your raw keys stay safe.</li>
+            <li><strong>Shown once.</strong> The full key is only displayed at creation time. After you dismiss it, there is no way to retrieve it — you{"'"}d need to create a new key.</li>
+            <li><strong>Org-scoped.</strong> Each key can only read signatures for its own organization. It cannot access other orgs or modify any data.</li>
+            <li><strong>Instant revocation.</strong> Revoking a key takes effect immediately. Any system using that key will get a 401 error on its next request.</li>
+            <li><strong>Rate limited.</strong> 60 requests per minute per key to prevent abuse.</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      {/* Deployment guide */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">How to deploy signatures with the API</CardTitle>
           <CardDescription>
-            The Signature API lets you pull rendered HTML signatures for any mail system —
-            Exchange, custom SMTP, or your own tools. Create a key above, then use it to
-            fetch ready-to-use signature HTML for your team.
+            Use the Signature API to pull rendered HTML for any mail system that Siggly
+            doesn{"'"}t connect to directly — Exchange on-premise, custom SMTP servers,
+            internal tools, or anything else.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <p className="text-sm font-medium mb-1">Step 1 — Get all signatures</p>
+            <p className="text-sm font-medium mb-1">1. Fetch all signatures for your org</p>
             <p className="text-xs text-muted-foreground mb-2">
-              Returns rendered HTML for every active user in your organization.
+              Returns rendered HTML for every active user. Each entry includes the user{"'"}s
+              email, name, and ready-to-use signature HTML with disclaimers already appended.
             </p>
             <pre className="p-3 rounded-lg bg-secondary text-xs overflow-x-auto">
-{`curl -H "Authorization: Bearer YOUR_API_KEY" \\
+{`curl -H "Authorization: Bearer sk_live_YOUR_KEY" \\
   https://siggly.com/api/v1/signatures`}
             </pre>
           </div>
+
           <div>
-            <p className="text-sm font-medium mb-1">Step 2 — Get a single user{"'"}s signature</p>
+            <p className="text-sm font-medium mb-1">2. Or fetch a single user{"'"}s signature</p>
             <p className="text-xs text-muted-foreground mb-2">
-              Pass the user{"'"}s ID to get just their signature. Useful for per-mailbox deployment scripts.
+              Pass the user{"'"}s ID (from the list response) to get just their signature.
             </p>
             <pre className="p-3 rounded-lg bg-secondary text-xs overflow-x-auto">
-{`curl -H "Authorization: Bearer YOUR_API_KEY" \\
+{`curl -H "Authorization: Bearer sk_live_YOUR_KEY" \\
   https://siggly.com/api/v1/signatures/USER_ID`}
             </pre>
           </div>
+
           <div>
             <p className="text-sm font-medium mb-1">Response format</p>
-            <p className="text-xs text-muted-foreground mb-2">
-              Each signature includes the user{"'"}s info and ready-to-use HTML (with disclaimers already appended).
-            </p>
             <pre className="p-3 rounded-lg bg-secondary text-xs overflow-x-auto">
 {`{
-  "data": [{
-    "userId": "abc-123",
-    "email": "jane@example.com",
-    "name": "Jane Smith",
-    "templateName": "Company Default",
-    "html": "<table>...rendered signature...</table>"
-  }],
+  "data": [
+    {
+      "userId": "abc-123",
+      "email": "jane@example.com",
+      "name": "Jane Smith",
+      "templateName": "Company Default",
+      "html": "<table>...rendered signature...</table>"
+    }
+  ],
   "meta": { "count": 1 }
 }`}
             </pre>
           </div>
+
+          <div className="border-t pt-4">
+            <p className="text-sm font-medium mb-3">Example: Deploy to Exchange / Microsoft 365 (PowerShell)</p>
+            <p className="text-xs text-muted-foreground mb-2">
+              Pull signatures from Siggly and set them in Exchange mailboxes. Run this as a
+              scheduled task (e.g. daily) to keep signatures in sync.
+            </p>
+            <pre className="p-3 rounded-lg bg-secondary text-xs overflow-x-auto">
+{`# Pull signatures from Siggly
+$headers = @{ Authorization = "Bearer sk_live_YOUR_KEY" }
+$response = Invoke-RestMethod ` + '`' + `
+  -Uri "https://siggly.com/api/v1/signatures" ` + '`' + `
+  -Headers $headers
+
+# Apply to each mailbox
+foreach ($sig in $response.data) {
+    Set-MailboxMessageConfiguration ` + '`' + `
+      -Identity $sig.email ` + '`' + `
+      -SignatureHtml $sig.html ` + '`' + `
+      -AutoAddSignature $true
+    Write-Host "Updated: $($sig.email)"
+}`}
+            </pre>
+          </div>
+
+          <div className="border-t pt-4">
+            <p className="text-sm font-medium mb-3">Example: Simple fetch with JavaScript / Node.js</p>
+            <pre className="p-3 rounded-lg bg-secondary text-xs overflow-x-auto">
+{`const res = await fetch("https://siggly.com/api/v1/signatures", {
+  headers: { Authorization: "Bearer sk_live_YOUR_KEY" },
+});
+const { data } = await res.json();
+
+for (const sig of data) {
+  console.log(sig.email, sig.html);
+  // Deploy to your mail system here
+}`}
+            </pre>
+          </div>
+
           <div className="p-3 rounded-lg border bg-secondary/20 space-y-2">
             <p className="text-sm font-medium">Good to know</p>
             <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-4">
-              <li>Keys are scoped to your organization — they can only access your team{"'"}s signatures</li>
-              <li>The raw key is shown once when created. Store it somewhere safe (e.g. a secrets manager)</li>
+              <li>Responses are cached for 5 minutes — safe to poll frequently</li>
               <li>Rate limit: 60 requests per minute per key</li>
-              <li>Responses are cached for 5 minutes to keep things fast</li>
-              <li>Revoked keys stop working immediately — no grace period</li>
+              <li>When you update a template in Siggly, the next API call returns the new version</li>
+              <li>The API is read-only — keys cannot modify signatures, users, or settings</li>
+              <li>Store your key in environment variables or a secrets manager, never in source code</li>
             </ul>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <ExternalLink className="h-3 w-3" />
+            <a href="/help/signature-api" className="underline hover:text-foreground">
+              Full documentation in the Help Center
+            </a>
           </div>
         </CardContent>
       </Card>
