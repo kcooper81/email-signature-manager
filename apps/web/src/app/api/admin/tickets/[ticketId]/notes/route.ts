@@ -42,7 +42,7 @@ export async function POST(
 
     const { data: ticket } = await supabase
       .from('feedback')
-      .select('id, user_email, type, message, metadata')
+      .select('id, user_email, type, message, inbox_email, metadata')
       .eq('id', params.ticketId)
       .single();
 
@@ -76,7 +76,7 @@ export async function POST(
     if (!isInternal && ticket.user_email) {
       try {
         // Use the mailbox the user originally emailed, or fall back to support
-        const replyFromMailbox = replyAs || (ticket.metadata as any)?.received_at_mailbox || null;
+        const replyFromMailbox = replyAs || ticket.inbox_email || null;
 
         await sendTicketResponseEmail({
           to: ticket.user_email,

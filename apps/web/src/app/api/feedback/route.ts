@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate feedback type
-    const validTypes = ['bug', 'feature', 'question', 'email', 'other'];
+    const validTypes = ['bug', 'feature', 'question', 'email', 'sales', 'other'];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { error: 'Invalid feedback type' },
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
         message: message.trim(),
         page_url: pageUrl || null,
         user_agent: request.headers.get('user-agent') || null,
+        inbox_email: 'support@siggly.io',
         metadata: {
           submitted_at: new Date().toISOString(),
         },
