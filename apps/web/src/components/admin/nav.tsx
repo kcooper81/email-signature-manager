@@ -42,20 +42,56 @@ interface NavItem {
   supportVisible: boolean;
 }
 
-const navItems: NavItem[] = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null, supportVisible: false },
-  { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: null, supportVisible: false },
-  { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners', supportVisible: false },
-  { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets', supportVisible: true },
-  { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null, supportVisible: false },
-  { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null, supportVisible: false },
-  { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO', supportVisible: false },
-  { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null, supportVisible: false },
-  { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null, supportVisible: false },
-  { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null, supportVisible: false },
-  { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors', supportVisible: false },
-  { href: '/admin/platform-admins', label: 'Platform Admins', icon: Shield, badgeKey: null, supportVisible: false },
-  { href: '/admin/testing-guide', label: 'Testing Guide', icon: ClipboardCheck, badgeKey: null, supportVisible: true },
+interface NavGroup {
+  label: string;
+  supportVisible: boolean;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    label: '',
+    supportVisible: true,
+    items: [
+      { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null, supportVisible: false },
+    ],
+  },
+  {
+    label: 'Support',
+    supportVisible: true,
+    items: [
+      { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets', supportVisible: true },
+      { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null, supportVisible: false },
+    ],
+  },
+  {
+    label: 'Customers',
+    supportVisible: false,
+    items: [
+      { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: null, supportVisible: false },
+      { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners', supportVisible: false },
+      { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null, supportVisible: false },
+    ],
+  },
+  {
+    label: 'Growth',
+    supportVisible: false,
+    items: [
+      { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null, supportVisible: false },
+      { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO', supportVisible: false },
+    ],
+  },
+  {
+    label: 'System',
+    supportVisible: false,
+    items: [
+      { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null, supportVisible: false },
+      { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null, supportVisible: false },
+      { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors', supportVisible: false },
+      { href: '/admin/platform-admins', label: 'Platform Admins', icon: Shield, badgeKey: null, supportVisible: false },
+      { href: '/admin/testing-guide', label: 'Testing Guide', icon: ClipboardCheck, badgeKey: null, supportVisible: true },
+    ],
+  },
 ];
 
 interface AdminNavProps {
@@ -73,15 +109,11 @@ export function AdminNav({ role }: AdminNavProps) {
   });
 
   const isSupport = role === 'support';
-  const visibleItems = isSupport
-    ? navItems.filter((item) => item.supportVisible)
-    : navItems;
 
   useEffect(() => {
     loadBadgeCounts();
     const interval = setInterval(loadBadgeCounts, 60000);
 
-    // Real-time: refresh badge count when new tickets arrive
     const supabase = createClient();
     const channel = supabase
       .channel('admin-nav-badges')
@@ -125,7 +157,6 @@ export function AdminNav({ role }: AdminNavProps) {
   const loadBadgeCounts = async () => {
     const supabase = createClient();
 
-    // Support users only need ticket counts
     if (isSupport) {
       const ticketsResult = await supabase
         .from('feedback')
@@ -173,7 +204,7 @@ export function AdminNav({ role }: AdminNavProps) {
             : 'text-slate-300 hover:bg-slate-800 hover:text-white'
         }`}
       >
-        <item.icon className="h-5 w-5" />
+        <item.icon className="h-4 w-4" />
         <span className="flex-1">{item.label}</span>
         {badgeCount > 0 && (
           <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
@@ -182,6 +213,33 @@ export function AdminNav({ role }: AdminNavProps) {
         )}
       </Link>
     );
+  };
+
+  const renderNavGroups = (mobile?: boolean) => {
+    return navGroups.map((group, idx) => {
+      // Filter items for support role
+      const items = isSupport
+        ? group.items.filter((item) => item.supportVisible)
+        : group.items;
+
+      // Hide entire group if no visible items
+      if (items.length === 0) return null;
+      // Hide group if support and group isn't support-visible (except if it has visible items)
+      if (isSupport && !group.supportVisible && items.length === 0) return null;
+
+      return (
+        <div key={group.label || idx}>
+          {group.label && (
+            <p className="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              {group.label}
+            </p>
+          )}
+          <div className="space-y-0.5">
+            {items.map((item) => renderNavItem(item, mobile))}
+          </div>
+        </div>
+      );
+    });
   };
 
   return (
@@ -211,16 +269,12 @@ export function AdminNav({ role }: AdminNavProps) {
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="space-y-1">
-          {visibleItems.map((item) => renderNavItem(item, true))}
-        </div>
+        {renderNavGroups(true)}
       </nav>
 
       {/* Desktop Sidebar */}
       <nav className="hidden lg:block w-64 min-h-[calc(100vh-64px)] bg-slate-900 text-white p-4">
-        <div className="space-y-1">
-          {visibleItems.map((item) => renderNavItem(item))}
-        </div>
+        {renderNavGroups()}
       </nav>
     </>
   );
