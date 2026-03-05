@@ -6,9 +6,11 @@ import { createHmac } from 'crypto';
 
 /**
  * POST /api/webhooks/inbound-email
- * Receives inbound emails from Resend when someone emails support@siggly.io
- * - If subject contains "Re:" and matches an existing ticket → adds as a note
- * - If new email → creates a feedback record with type: 'email'
+ * Receives all email sent to *@siggly.io via Resend's inbound webhook.
+ * - Recognizes 7 aliases: support@, sales@, help@, contact@, info@, team@, kade@
+ * - Auto-tags type based on recipient (sales@ → "sales" + high priority)
+ * - Threads replies onto existing tickets by [Ticket#UUID] or subject matching
+ * - Links to existing user profiles by matching sender email
  */
 
 function getSupabaseAdmin() {
@@ -24,14 +26,12 @@ function verifyResendWebhook(request: NextRequest, body: string): boolean {
 
   if (!webhookSecret || !signature) return false;
 
-  // Resend sends "t=<timestamp>,v1=<signature>"
   const parts = signature.split(',');
   const timestamp = parts.find(p => p.startsWith('t='))?.slice(2);
   const v1 = parts.find(p => p.startsWith('v1='))?.slice(3);
 
   if (!timestamp || !v1) return false;
 
-  // Reject if timestamp is older than 5 minutes
   const age = Math.abs(Date.now() / 1000 - Number(timestamp));
   if (age > 300) return false;
 
@@ -42,14 +42,19 @@ function verifyResendWebhook(request: NextRequest, body: string): boolean {
   return expected === v1;
 }
 
-// Extract ticket ID from a "Re:" subject line
-// Matches patterns like "Re: Your bug submission" or "Re: [#abc12345] ..."
-const TICKET_ID_RE = /\[#([a-f0-9-]{8})\]/i;
+// Extract ticket ID from subject: [Ticket#abc12345] or [#abc12345]
+const TICKET_ID_RE = /\[(?:Ticket)?#([a-f0-9-]{8})\]/i;
+
+/** Extract the local part of the recipient email (e.g. "help" from "help@siggly.io") */
+function getInboxAlias(toAddress: string | null): string | null {
+  if (!toAddress) return null;
+  const match = toAddress.match(/<?([^@<\s]+)@/);
+  return match?.[1]?.toLowerCase() || null;
+}
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
-  // Verify webhook signature (skip in dev if no secret set)
   if (process.env.RESEND_WEBHOOK_SECRET) {
     if (!verifyResendWebhook(request, rawBody)) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
@@ -63,10 +68,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  // Resend inbound email payload structure
   const { from, to, subject, text, html } = payload.data || payload;
   const senderEmail = typeof from === 'string' ? from : from?.address || from?.[0]?.address;
-  // Capture which mailbox they sent to (support@, help@, kade@, etc.)
   const receivedAt = typeof to === 'string' ? to
     : Array.isArray(to) ? (to[0]?.address || to[0] || null)
     : to?.address || null;
@@ -81,57 +84,94 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabaseAdmin();
+  const inboxAlias = getInboxAlias(receivedAt);
 
   try {
-    // Check if this is a reply to an existing ticket
+    // --- Try to thread onto an existing ticket ---
     const isReply = subject && /^re:/i.test(subject.trim());
-    const ticketIdMatch = subject ? TICKET_ID_RE.exec(subject) : null;
 
-    if (isReply && ticketIdMatch) {
-      const ticketPrefix = ticketIdMatch[1];
+    if (isReply) {
+      let existingTicketId: string | null = null;
 
-      // Find the ticket by ID prefix
-      const { data: ticket } = await supabase
-        .from('feedback')
-        .select('id')
-        .like('id', `${ticketPrefix}%`)
-        .single();
+      // Strategy 1: Match [Ticket#UUID] or [#UUID] in subject
+      const ticketIdMatch = subject ? TICKET_ID_RE.exec(subject) : null;
+      if (ticketIdMatch) {
+        const { data: ticket } = await supabase
+          .from('feedback')
+          .select('id')
+          .like('id', `${ticketIdMatch[1]}%`)
+          .single();
+        if (ticket) existingTicketId = ticket.id;
+      }
 
-      if (ticket) {
-        // Add as a note on the existing ticket
+      // Strategy 2: Fallback — match by original subject text + sender email
+      if (!existingTicketId && subject) {
+        const cleanSubject = subject.replace(/^re:\s*/i, '').replace(/\[(?:Ticket)?#[a-f0-9-]+\]\s*/i, '').trim();
+        if (cleanSubject.length > 5) {
+          const { data: ticket } = await supabase
+            .from('feedback')
+            .select('id')
+            .eq('user_email', senderEmail)
+            .ilike('message', `%${cleanSubject.slice(0, 80)}%`)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+          if (ticket) existingTicketId = ticket.id;
+        }
+      }
+
+      if (existingTicketId) {
         await supabase
           .from('ticket_notes')
           .insert({
-            ticket_id: ticket.id,
-            author_id: null, // External user, no author_id
+            ticket_id: existingTicketId,
+            author_id: null,
             content: `Email reply from ${senderEmail}:\n\n${messageBody.trim()}`,
             is_internal: false,
             email_sent: false,
           });
 
-        // Bump the ticket back to 'new' if it was resolved/archived
+        // Reopen if resolved/archived
         await supabase
           .from('feedback')
           .update({ status: 'new', updated_at: new Date().toISOString() })
-          .eq('id', ticket.id)
+          .eq('id', existingTicketId)
           .in('status', ['resolved', 'archived']);
 
-        return NextResponse.json({ success: true, action: 'note_added', ticketId: ticket.id });
+        return NextResponse.json({ success: true, action: 'note_added', ticketId: existingTicketId });
       }
     }
 
-    // New email → create a feedback record
+    // --- New ticket ---
+
+    // Auto-tag type & priority based on inbox alias
+    const isSales = inboxAlias === 'sales';
+    const ticketType = isSales ? 'sales' : 'email';
+    const ticketPriority = isSales ? 'high' : 'normal';
+
+    // Try to link sender to an existing user profile
+    let userId: string | null = null;
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', senderEmail)
+      .limit(1)
+      .single();
+    if (existingUser) userId = existingUser.id;
+
     const { data: newTicket, error: insertError } = await supabase
       .from('feedback')
       .insert({
+        user_id: userId,
         user_email: senderEmail,
-        type: 'email',
+        type: ticketType,
+        priority: ticketPriority,
         message: `From: ${senderEmail}\nSubject: ${subject || '(no subject)'}\n\n${messageBody.trim()}`,
         status: 'new',
+        inbox_email: receivedAt || null,
         metadata: {
           source: 'inbound_email',
           original_subject: subject || null,
-          received_at_mailbox: receivedAt || null,
           submitted_at: new Date().toISOString(),
         },
       })
@@ -140,19 +180,15 @@ export async function POST(request: NextRequest) {
 
     if (insertError) throw insertError;
 
-    // Notify admins of the new ticket
+    // Notify admins (fire-and-forget)
     if (newTicket) {
-      try {
-        await notifyAdminsOfNewTicket({
-          ticketId: newTicket.id,
-          type: newTicket.type,
-          senderEmail: senderEmail,
-          message: messageBody.trim().slice(0, 500),
-          source: 'inbound_email',
-        });
-      } catch {
-        // Notification failure shouldn't break the webhook
-      }
+      notifyAdminsOfNewTicket({
+        ticketId: newTicket.id,
+        type: newTicket.type,
+        senderEmail: senderEmail,
+        message: messageBody.trim().slice(0, 500),
+        source: 'inbound_email',
+      }).catch(() => {});
     }
 
     return NextResponse.json({ success: true, action: 'ticket_created', ticketId: newTicket?.id });
