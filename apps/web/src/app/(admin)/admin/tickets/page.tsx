@@ -15,6 +15,7 @@ import {
   HelpCircle,
   MessageSquare,
   Mail,
+  DollarSign,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -43,7 +44,7 @@ interface TicketNote {
   createdAt: string;
 }
 
-type TicketType = 'bug' | 'feature' | 'question' | 'email' | 'other';
+type TicketType = 'bug' | 'feature' | 'question' | 'email' | 'sales' | 'other';
 
 interface FeedbackEntry {
   id: string;
@@ -72,6 +73,7 @@ const typeIcons: Record<TicketType, typeof Bug> = {
   feature: Lightbulb,
   question: HelpCircle,
   email: Mail,
+  sales: DollarSign,
   other: MessageSquare,
 };
 
@@ -80,6 +82,7 @@ const typeColors: Record<TicketType, string> = {
   feature: 'bg-blue-100 text-blue-700',
   question: 'bg-amber-100 text-amber-700',
   email: 'bg-emerald-100 text-emerald-700',
+  sales: 'bg-orange-100 text-orange-700',
   other: 'bg-slate-100 text-slate-700',
 };
 
@@ -181,7 +184,7 @@ export default function TicketsPage() {
             partnerOrganizationId: item.partner_organization_id,
             partnerOrganizationName: null,
             isPartnerEscalation: item.is_partner_escalation || false,
-            receivedAtMailbox: item.metadata?.received_at_mailbox || null,
+            receivedAtMailbox: item.inbox_email || null,
           };
 
           // Add to the top of the list if on page 0 with no filters
@@ -206,6 +209,22 @@ export default function TicketsPage() {
           } catch {
             // Audio not available
           }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'ticket_notes' },
+        (payload) => {
+          const note = payload.new as any;
+          // If we have a ticket detail open for this note, refresh it
+          setSelectedTicket(prev => {
+            if (!prev || prev.id !== note.ticket_id) return prev;
+            // Re-load notes for the open ticket
+            loadTicketNotes(note.ticket_id).then(notes => {
+              setSelectedTicket(p => p && p.id === note.ticket_id ? { ...p, notes } : p);
+            });
+            return prev;
+          });
         }
       )
       .subscribe();
@@ -299,7 +318,7 @@ export default function TicketsPage() {
       partnerOrganizationId: item.partner_organization_id,
       partnerOrganizationName: item.partner_organization?.name || null,
       isPartnerEscalation: item.is_partner_escalation || false,
-      receivedAtMailbox: item.metadata?.received_at_mailbox || null,
+      receivedAtMailbox: item.inbox_email || null,
     }));
 
     setTickets(mapped);
@@ -545,12 +564,12 @@ export default function TicketsPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-full bg-blue-100 p-2">
-                <Lightbulb className="h-5 w-5 text-blue-600" />
+              <div className="rounded-full bg-emerald-100 p-2">
+                <Mail className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{tickets.filter(t => t.type === 'feature').length}</p>
-                <p className="text-sm text-slate-500">Feature Requests</p>
+                <p className="text-2xl font-bold">{tickets.filter(t => t.type === 'email' || t.type === 'sales').length}</p>
+                <p className="text-sm text-slate-500">Inbound Email</p>
               </div>
             </div>
           </CardContent>
@@ -585,6 +604,7 @@ export default function TicketsPage() {
                 <option value="feature">Feature Requests</option>
                 <option value="question">Questions</option>
                 <option value="email">Inbound Email</option>
+                <option value="sales">Sales Inquiries</option>
                 <option value="other">Other</option>
               </select>
               <select

@@ -99,6 +99,20 @@ export function AdminNav({ role }: AdminNavProps) {
           loadBadgeCounts();
         }
       )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'error_logs' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'error_logs' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
       .subscribe();
 
     return () => {

@@ -831,6 +831,7 @@ export const feedback = pgTable('feedback', {
   status: text('status').default('new'),
   priority: text('priority').default('normal'),
   assignedTo: uuid('assigned_to').references(() => users.id),
+  inboxEmail: text('inbox_email'),
   updatedAt: timestamp('updated_at'),
   createdAt: timestamp('created_at').defaultNow(),
 });
