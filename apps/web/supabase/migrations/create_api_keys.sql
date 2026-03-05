@@ -27,7 +27,7 @@ CREATE POLICY "Users can view own org api keys"
   ON api_keys FOR SELECT
   USING (
     organization_id IN (
-      SELECT organization_id FROM users WHERE auth_id = auth.uid()
+      SELECT organization_id FROM users WHERE auth_id = auth.uid()::text
     )
   );
 
@@ -37,7 +37,7 @@ CREATE POLICY "Admins can create api keys"
   WITH CHECK (
     organization_id IN (
       SELECT organization_id FROM users
-      WHERE auth_id = auth.uid()
+      WHERE auth_id = auth.uid()::text
         AND role IN ('owner', 'admin')
     )
   );
@@ -48,7 +48,7 @@ CREATE POLICY "Admins can update api keys"
   USING (
     organization_id IN (
       SELECT organization_id FROM users
-      WHERE auth_id = auth.uid()
+      WHERE auth_id = auth.uid()::text
         AND role IN ('owner', 'admin')
     )
   );
