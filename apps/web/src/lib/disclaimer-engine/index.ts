@@ -26,9 +26,10 @@ export interface DisclaimerResolution {
  */
 export async function resolveDisclaimersForUser(
   context: DisclaimerRuleContext,
-  mspOrgId?: string | null
+  mspOrgId?: string | null,
+  supabaseClient?: ReturnType<typeof createClient>
 ): Promise<DisclaimerResolution> {
-  const supabase = createClient();
+  const supabase = supabaseClient || createClient();
 
   // Load rules for the user's organization
   const { data: orgRules } = await supabase
