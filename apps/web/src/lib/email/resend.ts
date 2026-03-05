@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/utils';
+import { renderSignatureToHtml } from '@/lib/signature-renderer';
 
 let resend: Resend | null = null;
 
@@ -45,6 +46,88 @@ export function resolveReplyFrom(receivedAt: string | null | undefined): string 
   return (local && MAILBOXES[local]) || EMAIL_FROM.support;
 }
 
+/**
+ * Render the email signature for an admin user (by users.id).
+ * Looks up their assigned template (or org default), renders it, and returns HTML.
+ * Returns null if no signature is available.
+ */
+async function renderAdminSignature(adminUserId: string): Promise<string | null> {
+  try {
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    // Get admin user data
+    const { data: user } = await supabase
+      .from('users')
+      .select('*, organization:organization_id(name)')
+      .eq('id', adminUserId)
+      .single();
+
+    if (!user) return null;
+
+    // Find their assigned template, or org default
+    let template: any = null;
+
+    const { data: assignment } = await supabase
+      .from('signature_assignments')
+      .select('template:template_id(id, blocks, name)')
+      .eq('user_id', adminUserId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (assignment?.template) {
+      template = assignment.template;
+    }
+
+    if (!template && user.organization_id) {
+      const { data: defaultTpl } = await supabase
+        .from('signature_templates')
+        .select('id, blocks, name')
+        .eq('organization_id', user.organization_id)
+        .eq('is_default', true)
+        .single();
+      template = defaultTpl;
+    }
+
+    if (!template) return null;
+
+    const blocks = (template.blocks as any[]) || [];
+    if (blocks.length === 0) return null;
+
+    const context = {
+      user: {
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        email: user.email,
+        title: user.title || '',
+        department: user.department || '',
+        phone: user.phone || '',
+        mobile: user.mobile || '',
+        calendlyUrl: user.calendly_url || '',
+        linkedinUrl: user.linkedin_url || '',
+        twitterUrl: user.twitter_url || '',
+        githubUrl: user.github_url || '',
+        personalWebsite: user.personal_website || '',
+        instagramUrl: user.instagram_url || '',
+        facebookUrl: user.facebook_url || '',
+        youtubeUrl: user.youtube_url || '',
+        googleBookingUrl: user.google_booking_url || '',
+      },
+      organization: { name: user.organization?.name || '' },
+    };
+
+    const { html } = await renderSignatureToHtml(blocks, context);
+    return html || null;
+  } catch (error) {
+    console.error('Failed to render admin signature:', error);
+    return null;
+  }
+}
+
 export interface TicketResponseEmailData {
   to: string;
   ticketId: string;
@@ -52,6 +135,8 @@ export interface TicketResponseEmailData {
   originalMessage: string;
   responseMessage: string;
   adminEmail: string;
+  /** The users.id of the admin sending the reply — used to render their email signature */
+  adminUserId?: string | null;
   /** The mailbox address to send from (e.g. "help@siggly.io"). Falls back to support. */
   replyAs?: string | null;
 }
@@ -327,11 +412,29 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
 }
 
 export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
-  const { to, ticketId, adminEmail, replyAs } = data;
+  const { to, ticketId, adminEmail, adminUserId, replyAs } = data;
   const ticketType = escapeHtml(data.ticketType);
   const originalMessage = escapeHtml(data.originalMessage);
   const responseMessage = escapeHtml(data.responseMessage);
   const fromAddress = resolveReplyFrom(replyAs);
+
+  // Render the admin's email signature (if they have one assigned)
+  let signatureHtml = '';
+  if (adminUserId) {
+    const sig = await renderAdminSignature(adminUserId);
+    if (sig) {
+      signatureHtml = `
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+          ${sig}
+        </div>
+      `;
+    }
+  }
+
+  // Fallback sign-off when no signature is available
+  const fallbackSignOff = !signatureHtml
+    ? `<p style="font-size: 16px; color: #374151; margin-bottom: 0;">Best regards,<br><strong>The Siggly Team</strong></p>`
+    : '';
 
   try {
     const client = getResendClient();
@@ -347,36 +450,22 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">Siggly Support</h1>
+            <div style="background: #ffffff; padding: 0;">
+              <p style="font-size: 15px; color: #374151; white-space: pre-wrap; margin-top: 0;">${responseMessage}</p>
+
+              ${fallbackSignOff}
+              ${signatureHtml}
             </div>
-            
-            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
-              <p style="font-size: 16px; color: #374151; margin-top: 0;">Hi there,</p>
-              
-              <p style="font-size: 16px; color: #374151;">Thank you for reaching out to us. We've reviewed your ${ticketType} and wanted to respond:</p>
-              
-              <div style="background: #f3f4f6; border-left: 4px solid #4d52de; padding: 15px; margin: 20px 0; border-radius: 4px;">
-                <p style="margin: 0; color: #6b7280; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Your Original Message:</p>
-                <p style="margin: 10px 0 0 0; color: #1f2937; white-space: pre-wrap;">${originalMessage}</p>
+
+            <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+              <div style="background: #f3f4f6; border-left: 4px solid #4d52de; padding: 15px; border-radius: 4px;">
+                <p style="margin: 0; color: #6b7280; font-size: 13px; font-weight: 600;">On ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}, you wrote:</p>
+                <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 13px; white-space: pre-wrap;">${originalMessage}</p>
               </div>
-              
-              <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 15px; margin: 20px 0; border-radius: 4px;">
-                <p style="margin: 0; color: #1e40af; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Our Response:</p>
-                <p style="margin: 10px 0 0 0; color: #1f2937; white-space: pre-wrap;">${responseMessage}</p>
-              </div>
-              
-              <p style="font-size: 16px; color: #374151;">If you have any additional questions or concerns, please don't hesitate to reply to this email.</p>
-              
-              <p style="font-size: 16px; color: #374151; margin-bottom: 0;">Best regards,<br><strong>The Siggly Team</strong></p>
             </div>
-            
-            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-              <p style="margin: 5px 0;">This email was sent in response to ticket #${ticketId.slice(0, 8)}</p>
-              <p style="margin: 5px 0;">
-                <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Visit Siggly</a> | 
-                <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">Contact Support</a>
-              </p>
+
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
+              <p style="margin: 5px 0;">Ticket #${ticketId.slice(0, 8)} &middot; <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Siggly</a></p>
             </div>
           </body>
         </html>
