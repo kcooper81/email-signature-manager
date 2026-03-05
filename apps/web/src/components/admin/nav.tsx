@@ -80,7 +80,31 @@ export function AdminNav({ role }: AdminNavProps) {
   useEffect(() => {
     loadBadgeCounts();
     const interval = setInterval(loadBadgeCounts, 60000);
-    return () => clearInterval(interval);
+
+    // Real-time: refresh badge count when new tickets arrive
+    const supabase = createClient();
+    const channel = supabase
+      .channel('admin-nav-badges')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'feedback' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'feedback' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
