@@ -61,6 +61,8 @@ interface FeedbackEntry {
   partnerOrganizationId: string | null;
   partnerOrganizationName: string | null;
   isPartnerEscalation: boolean;
+  /** Which mailbox this email was sent to (e.g. help@siggly.io) — only for inbound emails */
+  receivedAtMailbox: string | null;
 }
 
 const PAGE_SIZE = 20;
@@ -179,6 +181,7 @@ export default function TicketsPage() {
             partnerOrganizationId: item.partner_organization_id,
             partnerOrganizationName: null,
             isPartnerEscalation: item.is_partner_escalation || false,
+            receivedAtMailbox: item.metadata?.received_at_mailbox || null,
           };
 
           // Add to the top of the list if on page 0 with no filters
@@ -296,6 +299,7 @@ export default function TicketsPage() {
       partnerOrganizationId: item.partner_organization_id,
       partnerOrganizationName: item.partner_organization?.name || null,
       isPartnerEscalation: item.is_partner_escalation || false,
+      receivedAtMailbox: item.metadata?.received_at_mailbox || null,
     }));
 
     setTickets(mapped);
@@ -391,6 +395,7 @@ export default function TicketsPage() {
         body: JSON.stringify({
           content: newNote.trim(),
           isInternal: isInternalNote,
+          replyAs: selectedTicket.receivedAtMailbox || null,
         }),
       });
 
@@ -707,6 +712,9 @@ export default function TicketsPage() {
                             {ticket.userEmail && (
                               <span>From: {ticket.userEmail}</span>
                             )}
+                            {ticket.receivedAtMailbox && (
+                              <span className="text-emerald-600">To: {ticket.receivedAtMailbox}</span>
+                            )}
                             {ticket.organizationName && (
                               <span className="text-slate-600">Org: {ticket.organizationName}</span>
                             )}
@@ -833,8 +841,11 @@ export default function TicketsPage() {
                   })()}
                 </div>
 
-                <div className="text-sm text-slate-500">
+                <div className="text-sm text-slate-500 space-y-0.5">
                   <p>From: <span className="text-slate-700">{selectedTicket.userEmail || 'Anonymous'}</span></p>
+                  {selectedTicket.receivedAtMailbox && (
+                    <p>Sent to: <span className="text-slate-700 font-medium">{selectedTicket.receivedAtMailbox}</span></p>
+                  )}
                   <p>Submitted: {new Date(selectedTicket.createdAt).toLocaleString()}</p>
                   {selectedTicket.pageUrl && (
                     <a
@@ -938,9 +949,12 @@ export default function TicketsPage() {
                     </span>
                   </label>
                   {selectedTicket.userEmail && !isInternalNote && (
-                    <p className="text-xs text-blue-600">
-                      📧 Response will be sent to {selectedTicket.userEmail}
-                    </p>
+                    <div className="text-xs text-blue-600 space-y-0.5">
+                      <p>📧 Response will be sent to {selectedTicket.userEmail}</p>
+                      {selectedTicket.receivedAtMailbox && (
+                        <p>📤 Replying as <span className="font-medium">{selectedTicket.receivedAtMailbox}</span></p>
+                      )}
+                    </div>
                   )}
                   
                   <Button

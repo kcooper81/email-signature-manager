@@ -64,8 +64,12 @@ export async function POST(request: NextRequest) {
   }
 
   // Resend inbound email payload structure
-  const { from, subject, text, html } = payload.data || payload;
+  const { from, to, subject, text, html } = payload.data || payload;
   const senderEmail = typeof from === 'string' ? from : from?.address || from?.[0]?.address;
+  // Capture which mailbox they sent to (support@, help@, kade@, etc.)
+  const receivedAt = typeof to === 'string' ? to
+    : Array.isArray(to) ? (to[0]?.address || to[0] || null)
+    : to?.address || null;
 
   if (!senderEmail) {
     return NextResponse.json({ error: 'No sender email found' }, { status: 400 });
@@ -127,6 +131,7 @@ export async function POST(request: NextRequest) {
         metadata: {
           source: 'inbound_email',
           original_subject: subject || null,
+          received_at_mailbox: receivedAt || null,
           submitted_at: new Date().toISOString(),
         },
       })

@@ -8,7 +8,7 @@ export async function POST(
   { params }: { params: { ticketId: string } }
 ) {
   try {
-    const { content, isInternal } = await request.json();
+    const { content, isInternal, replyAs } = await request.json();
 
     if (!content?.trim()) {
       return NextResponse.json(
@@ -42,7 +42,7 @@ export async function POST(
 
     const { data: ticket } = await supabase
       .from('feedback')
-      .select('id, user_email, type, message')
+      .select('id, user_email, type, message, metadata')
       .eq('id', params.ticketId)
       .single();
 
@@ -75,6 +75,9 @@ export async function POST(
 
     if (!isInternal && ticket.user_email) {
       try {
+        // Use the mailbox the user originally emailed, or fall back to support
+        const replyFromMailbox = replyAs || (ticket.metadata as any)?.received_at_mailbox || null;
+
         await sendTicketResponseEmail({
           to: ticket.user_email,
           ticketId: ticket.id,
@@ -82,6 +85,7 @@ export async function POST(
           originalMessage: ticket.message,
           responseMessage: content.trim(),
           adminEmail: userData.email,
+          replyAs: replyFromMailbox,
         });
 
         await supabase
