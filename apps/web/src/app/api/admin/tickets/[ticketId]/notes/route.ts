@@ -85,6 +85,7 @@ export async function POST(
           originalMessage: ticket.message,
           responseMessage: content.trim(),
           adminEmail: userData.email,
+          adminUserId: userData.id,
           replyAs: replyFromMailbox,
         });
 
