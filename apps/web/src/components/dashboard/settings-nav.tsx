@@ -12,6 +12,7 @@ import {
   Zap,
   ClipboardCheck,
   CreditCard,
+  Key,
 } from 'lucide-react';
 
 interface SettingsTab {
@@ -33,6 +34,7 @@ const sections: NavSection[] = [
     tabs: [
       { id: 'general', label: 'General', icon: Settings, href: '/settings' },
       { id: 'billing', label: 'Billing', icon: CreditCard, href: '/settings/billing' },
+      { id: 'api-keys', label: 'API Keys', icon: Key, href: '/settings/api-keys' },
     ],
   },
   {

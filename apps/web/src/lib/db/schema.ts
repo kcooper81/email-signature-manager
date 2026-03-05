@@ -1513,3 +1513,32 @@ export const brandDocumentTemplatesRelations = relations(brandDocumentTemplates,
     references: [users.id],
   }),
 }));
+
+// ============================================
+// API Keys
+// ============================================
+
+export const apiKeys = pgTable('api_keys', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  keyPrefix: text('key_prefix').notNull(),
+  keyHash: text('key_hash').notNull(),
+  isRevoked: boolean('is_revoked').notNull().default(false),
+  createdBy: uuid('created_by').references(() => users.id),
+  lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+  rateLimitCount: integer('rate_limit_count').notNull().default(0),
+  rateLimitWindow: timestamp('rate_limit_window', { withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [apiKeys.organizationId],
+    references: [organizations.id],
+  }),
+  creator: one(users, {
+    fields: [apiKeys.createdBy],
+    references: [users.id],
+  }),
+}));
