@@ -14,6 +14,7 @@ import {
   Circle,
   ClipboardCheck,
   Filter,
+  Info,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { testSections, type StepStatus, type Priority, type TestSection } from './test-data';
@@ -120,7 +121,7 @@ export default function TestingGuidePage() {
     return testSections
       .map((section) => {
         const filteredSteps = section.steps.filter((step) => {
-          if (query && !step.description.toLowerCase().includes(query) && !section.title.toLowerCase().includes(query)) {
+          if (query && !step.description.toLowerCase().includes(query) && !section.title.toLowerCase().includes(query) && !step.howTo.some(h => h.toLowerCase().includes(query))) {
             return false;
           }
           if (statusFilter !== 'all' && getStepState(step.id).status !== statusFilter) return false;
@@ -309,6 +310,17 @@ function SectionCard({
   getStepState: (id: string) => StepState;
   onCycleStatus: (id: string) => void;
 }) {
+  const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
+
+  const toggleStep = useCallback((stepId: string) => {
+    setExpandedSteps((prev) => {
+      const next = new Set(prev);
+      if (next.has(stepId)) next.delete(stepId);
+      else next.add(stepId);
+      return next;
+    });
+  }, []);
+
   const sectionCounts = useMemo(() => {
     let pass = 0, fail = 0, skip = 0;
     for (const step of section.steps) {
@@ -353,23 +365,65 @@ function SectionCard({
             const state = getStepState(step.id);
             const config = statusConfig[state.status];
             const StatusIcon = config.icon;
+            const isExpanded = expandedSteps.has(step.id);
 
             return (
               <div
                 key={step.id}
-                className="flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-b-0"
+                className="border-b border-slate-50 last:border-b-0"
               >
-                <button
-                  onClick={() => onCycleStatus(step.id)}
-                  className={`mt-0.5 flex-shrink-0 ${config.color} hover:opacity-80 transition-opacity`}
-                  title={`Status: ${config.label} (click to cycle)`}
-                >
-                  <StatusIcon className="h-5 w-5" />
-                </button>
-                <span className="flex-1 text-sm text-slate-700">{step.description}</span>
-                <span className={`flex-shrink-0 text-[11px] font-medium px-1.5 py-0.5 rounded border ${priorityColors[step.priority]}`}>
-                  {step.priority}
-                </span>
+                <div className="flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors">
+                  <button
+                    onClick={() => onCycleStatus(step.id)}
+                    className={`mt-0.5 flex-shrink-0 ${config.color} hover:opacity-80 transition-opacity`}
+                    title={`Status: ${config.label} (click to cycle)`}
+                  >
+                    <StatusIcon className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => toggleStep(step.id)}
+                    className="flex-1 text-left text-sm text-slate-700 hover:text-slate-900 transition-colors"
+                    title="Click to show/hide instructions"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      {step.description}
+                      <Info className={`h-3.5 w-3.5 flex-shrink-0 transition-colors ${isExpanded ? 'text-amber-500' : 'text-slate-300'}`} />
+                    </span>
+                  </button>
+                  <span className={`flex-shrink-0 text-[11px] font-medium px-1.5 py-0.5 rounded border ${priorityColors[step.priority]}`}>
+                    {step.priority}
+                  </span>
+                </div>
+                {isExpanded && (
+                  <div className="px-4 pb-3 ml-8">
+                    <div className="bg-slate-50 rounded-lg p-3 space-y-3">
+                      <div>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">How to test</p>
+                        <ol className="space-y-1">
+                          {step.howTo.map((instruction, i) => (
+                            <li key={i} className="text-sm text-slate-600 flex gap-2">
+                              <span className="text-xs font-medium text-slate-400 mt-0.5 flex-shrink-0 w-5 text-right">{i + 1}.</span>
+                              <span>{instruction}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                      {step.sampleData && Object.keys(step.sampleData).length > 0 && (
+                        <div>
+                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Sample data</p>
+                          <div className="bg-white rounded border border-slate-200 divide-y divide-slate-100">
+                            {Object.entries(step.sampleData).map(([key, value]) => (
+                              <div key={key} className="flex items-start gap-3 px-3 py-1.5 text-sm">
+                                <span className="font-medium text-slate-500 flex-shrink-0 min-w-[100px]">{key}</span>
+                                <code className="text-slate-700 font-mono text-xs bg-slate-50 px-1.5 py-0.5 rounded break-all">{value}</code>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
