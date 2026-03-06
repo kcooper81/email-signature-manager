@@ -47,6 +47,34 @@ export function resolveReplyFrom(receivedAt: string | null | undefined): string 
 }
 
 /**
+ * Look up a per-mailbox signature from the mailbox_signatures table.
+ * Returns the stored HTML if the mailbox has a non-empty signature enabled.
+ */
+async function getMailboxSignature(mailboxAlias: string | null | undefined): Promise<string | null> {
+  if (!mailboxAlias) return null;
+  try {
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const match = mailboxAlias.match(/<?([^@<\s]+)@/);
+    const alias = match?.[1]?.toLowerCase() || mailboxAlias.toLowerCase();
+    const { data } = await supabase
+      .from('mailbox_signatures')
+      .select('signature_html, is_enabled')
+      .eq('alias', alias)
+      .single();
+    if (data?.is_enabled && data.signature_html?.trim()) {
+      return data.signature_html;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Render the email signature for an admin user (by users.id).
  * Looks up their assigned template (or org default), renders it, and returns HTML.
  * Returns null if no signature is available.
@@ -418,14 +446,21 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
   const responseMessage = escapeHtml(data.responseMessage);
   const fromAddress = resolveReplyFrom(replyAs);
 
-  // Render the admin's email signature (if they have one assigned)
+  // Render email signature: per-mailbox first, then admin's personal, then fallback
   let signatureHtml = '';
-  if (adminUserId) {
-    const sig = await renderAdminSignature(adminUserId);
-    if (sig) {
+  const mailboxSig = await getMailboxSignature(replyAs);
+  if (mailboxSig) {
+    signatureHtml = `
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        ${mailboxSig}
+      </div>
+    `;
+  } else if (adminUserId) {
+    const adminSig = await renderAdminSignature(adminUserId);
+    if (adminSig) {
       signatureHtml = `
         <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-          ${sig}
+          ${adminSig}
         </div>
       `;
     }
@@ -495,6 +530,90 @@ export interface NewTicketNotificationData {
   senderEmail: string;
   message: string;
   source: 'feedback_widget' | 'inbound_email' | 'contact_form';
+}
+
+/**
+ * Send an auto-reply to the customer when a new ticket is created (if enabled).
+ * Checks auto_responder_settings table. Optionally restricted to outside business hours.
+ */
+export async function sendAutoResponse(opts: {
+  to: string;
+  ticketId: string;
+  inboxEmail: string | null;
+}) {
+  try {
+    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: settings } = await supabase
+      .from('auto_responder_settings')
+      .select('*')
+      .limit(1)
+      .single();
+
+    if (!settings?.is_enabled) return;
+
+    // Check business hours if restricted
+    if (settings.only_outside_hours) {
+      const tz = settings.business_timezone || 'America/New_York';
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false,
+      });
+      const parts = formatter.formatToParts(now);
+      const hour = parseInt(parts.find(p => p.type === 'hour')?.value || '0');
+      const minute = parseInt(parts.find(p => p.type === 'minute')?.value || '0');
+      const currentMinutes = hour * 60 + minute;
+
+      const [startH, startM] = (settings.business_hours_start || '09:00').split(':').map(Number);
+      const [endH, endM] = (settings.business_hours_end || '17:00').split(':').map(Number);
+      const startMinutes = startH * 60 + startM;
+      const endMinutes = endH * 60 + endM;
+
+      // If within business hours, skip auto-response
+      if (currentMinutes >= startMinutes && currentMinutes < endMinutes) return;
+    }
+
+    const fromAddress = resolveReplyFrom(opts.inboxEmail);
+    const mailboxSig = await getMailboxSignature(opts.inboxEmail);
+    const sigBlock = mailboxSig
+      ? `<div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">${mailboxSig}</div>`
+      : '';
+
+    const subject = settings.subject || 'We received your message';
+    const body = escapeHtml(settings.body || 'Thank you for reaching out. We\'ve received your message and will get back to you as soon as possible.');
+
+    const client = getResendClient();
+    await client.emails.send({
+      from: fromAddress,
+      to: [opts.to],
+      subject: `${subject} [#${opts.ticketId.slice(0, 8)}]`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: #ffffff; padding: 0;">
+              <p style="font-size: 15px; color: #374151; white-space: pre-wrap; margin-top: 0;">${body}</p>
+              ${sigBlock}
+            </div>
+            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
+              <p style="margin: 5px 0;">Ticket #${opts.ticketId.slice(0, 8)} &middot; <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Siggly</a></p>
+            </div>
+          </body>
+        </html>
+      `,
+      replyTo: opts.inboxEmail || 'support@siggly.io',
+    });
+  } catch (error) {
+    console.error('Auto-responder failed:', error);
+  }
 }
 
 /**

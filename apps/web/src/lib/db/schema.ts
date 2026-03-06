@@ -832,6 +832,7 @@ export const feedback = pgTable('feedback', {
   priority: text('priority').default('normal'),
   assignedTo: uuid('assigned_to').references(() => users.id),
   inboxEmail: text('inbox_email'),
+  snoozedUntil: timestamp('snoozed_until', { withTimezone: true }),
   updatedAt: timestamp('updated_at'),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -1165,6 +1166,58 @@ export const ticketNotesRelations = relations(ticketNotes, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// ============================================
+// Canned Responses
+// ============================================
+
+export const cannedResponses = pgTable('canned_responses', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  category: text('category').default('general'),
+  shortcut: text('shortcut'),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+export const cannedResponsesRelations = relations(cannedResponses, ({ one }) => ({
+  author: one(users, {
+    fields: [cannedResponses.createdBy],
+    references: [users.id],
+  }),
+}));
+
+// ============================================
+// Mailbox Signatures
+// ============================================
+
+export const mailboxSignatures = pgTable('mailbox_signatures', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  alias: text('alias').notNull().unique(),
+  displayName: text('display_name').notNull(),
+  signatureHtml: text('signature_html').default('').notNull(),
+  isEnabled: boolean('is_enabled').default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+// ============================================
+// Auto-Responder Settings
+// ============================================
+
+export const autoResponderSettings = pgTable('auto_responder_settings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  isEnabled: boolean('is_enabled').default(false),
+  subject: text('subject').default('We received your message'),
+  body: text('body').default('Thank you for reaching out. We\'ve received your message and will get back to you as soon as possible.'),
+  onlyOutsideHours: boolean('only_outside_hours').default(false),
+  businessHoursStart: text('business_hours_start').default('09:00'),
+  businessHoursEnd: text('business_hours_end').default('17:00'),
+  businessTimezone: text('business_timezone').default('America/New_York'),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
 
 // ============================================
 // Sync Configurations (HR/Directory Sync)

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { notifyAdminsOfNewTicket } from '@/lib/email/resend';
+import { notifyAdminsOfNewTicket, sendAutoResponse } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
 import { createHmac } from 'crypto';
 
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
 
     if (insertError) throw insertError;
 
-    // Notify admins (fire-and-forget)
+    // Notify admins + auto-respond to sender (fire-and-forget)
     if (newTicket) {
       notifyAdminsOfNewTicket({
         ticketId: newTicket.id,
@@ -188,6 +188,12 @@ export async function POST(request: NextRequest) {
         senderEmail: senderEmail,
         message: messageBody.trim().slice(0, 500),
         source: 'inbound_email',
+      }).catch(() => {});
+
+      sendAutoResponse({
+        to: senderEmail,
+        ticketId: newTicket.id,
+        inboxEmail: receivedAt || null,
       }).catch(() => {});
     }
 
