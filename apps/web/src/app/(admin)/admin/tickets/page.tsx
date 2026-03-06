@@ -858,7 +858,7 @@ export default function TicketsPage() {
       {selectedTicket && (
         <div className="fixed inset-0 z-50 flex justify-end">
           <div className="absolute inset-0 bg-black/20" onClick={() => setSelectedTicket(null)} />
-          <div className="relative w-full max-w-lg bg-white shadow-xl overflow-y-auto animate-in slide-in-from-right">
+          <div className="relative w-full max-w-2xl bg-white shadow-xl overflow-y-auto animate-in slide-in-from-right">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b px-5 py-3 flex items-center justify-between z-10">
               <div className="flex items-center gap-2">
