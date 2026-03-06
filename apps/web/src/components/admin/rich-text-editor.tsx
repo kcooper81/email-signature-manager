@@ -25,6 +25,7 @@ export interface RichTextEditorRef {
   clear: () => void;
   setContent: (html: string) => void;
   isEmpty: () => boolean;
+  focus: () => void;
 }
 
 interface RichTextEditorProps {
@@ -215,6 +216,7 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
         const text = editor.getText().trim();
         return text.length === 0;
       },
+      focus: () => editor?.commands.focus(),
     }), [editor]);
 
     // Sync initial content if it changes externally (e.g. canned response)
