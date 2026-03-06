@@ -743,38 +743,12 @@ export default function TicketsPage() {
 
   return (
     <div className="space-y-2">
-      {/* Header row — title, tabs, actions */}
-      <div className="flex items-center gap-3">
+      {/* Header row — title + actions */}
+      <div className="flex items-center gap-2 sm:gap-3">
         <div className="flex items-center gap-2">
           <Inbox className="h-5 w-5 text-slate-700" />
           <h1 className="text-lg font-bold text-slate-900">Inbox</h1>
           <span className="text-xs text-slate-400 font-medium">{totalCount}</span>
-        </div>
-
-        {/* Status tabs inline with header */}
-        <div className="flex items-center gap-0.5 ml-2">
-          {STATUS_TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => { setStatusFilter(tab.key); setPage(0); }}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
-                statusFilter === tab.key
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
-              }`}
-            >
-              {tab.label}
-              {tab.key === 'open' && stats.new > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{stats.new}</span>
-              )}
-              {tab.key === 'mine' && stats.mine > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold">{stats.mine}</span>
-              )}
-              {tab.key === 'unassigned' && stats.unassigned > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">{stats.unassigned}</span>
-              )}
-            </button>
-          ))}
         </div>
 
         <div className="ml-auto flex items-center gap-1">
@@ -790,6 +764,32 @@ export default function TicketsPage() {
             <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">e</kbd>
           </div>
         </div>
+      </div>
+
+      {/* Status tabs — own row, scrollable on mobile */}
+      <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 -mb-0.5 scrollbar-none">
+        {STATUS_TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => { setStatusFilter(tab.key); setPage(0); }}
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
+              statusFilter === tab.key
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+            }`}
+          >
+            {tab.label}
+            {tab.key === 'open' && stats.new > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{stats.new}</span>
+            )}
+            {tab.key === 'mine' && stats.mine > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold">{stats.mine}</span>
+            )}
+            {tab.key === 'unassigned' && stats.unassigned > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">{stats.unassigned}</span>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Split pane: list left, detail right on desktop */}
@@ -1203,129 +1203,118 @@ export default function TicketsPage() {
       {selectedTicket && (
         <div className="fixed inset-0 z-50 flex justify-end lg:hidden">
           <div className="absolute inset-0 bg-black/20" onClick={() => setSelectedTicket(null)} />
-          <div className="relative w-full max-w-2xl bg-white shadow-xl overflow-y-auto animate-in slide-in-from-right">
+          <div className="relative w-full max-w-2xl bg-white shadow-xl flex flex-col animate-in slide-in-from-right">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b px-5 py-3 flex items-center justify-between z-10">
-              <div className="flex items-center gap-2">
+            <div className="bg-white border-b px-3 py-2.5 flex items-center justify-between z-10 shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-slate-100 rounded shrink-0">
+                  <ChevronLeft className="h-5 w-5 text-slate-500" />
+                </button>
                 {(() => {
                   const TypeIcon = typeIcons[selectedTicket.type];
                   return (
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${typeColors[selectedTicket.type]}`}>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${typeColors[selectedTicket.type]}`}>
                       <TypeIcon className="h-3 w-3" />
                       {selectedTicket.type}
                     </span>
                   );
                 })()}
+                <span className="text-xs font-mono text-slate-400 shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
                 <span className="text-sm font-medium text-slate-700 truncate">
-                  #{selectedTicket.id.slice(0, 8)}
+                  {selectedTicket.userEmail || 'Anonymous'}
                 </span>
               </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-slate-100 rounded">
-                <X className="h-5 w-5 text-slate-400" />
-              </button>
             </div>
 
-            <div className="p-5 space-y-5">
-              {/* Meta info */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {(() => {
-                    const StatusIcon = { new: Clock, reviewed: Eye, resolved: CheckCircle, archived: Archive }[selectedTicket.status];
-                    const PriorityIcon = priorityIcons[selectedTicket.priority];
+            {/* Controls bar */}
+            <div className="bg-slate-50 border-b px-3 py-2 shrink-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                  <option value="new">New</option>
+                  <option value="reviewed">In Progress</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="archived">Closed</option>
+                </select>
+                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                  <option value="low">Low</option>
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                  <option value="">Unassigned</option>
+                  {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
+                </select>
+                <span className="ml-auto text-[10px] text-slate-400">{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+              </div>
+            </div>
+
+            {/* Scrollable conversation */}
+            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
+              {/* Original message */}
+              <div>
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Original Message</div>
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-3">
+                  <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+                </div>
+              </div>
+
+              {/* Timeline thread */}
+              {selectedTicket.notes.length > 0 && (
+                <div className="relative ml-3">
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200" />
+                  {selectedTicket.notes.map((note) => {
+                    const isCustomer = note.authorEmail === 'External Reply';
+                    const isInternal = note.isInternal;
                     return (
-                      <>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[selectedTicket.status]}`}>
-                          <StatusIcon className="h-3 w-3" />
-                          {statusLabels[selectedTicket.status] || selectedTicket.status}
-                        </span>
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium ${priorityColors[selectedTicket.priority]}`}>
-                          <PriorityIcon className="h-3.5 w-3.5" />
-                          {selectedTicket.priority}
-                        </span>
-                        <div className="ml-auto flex items-center gap-1">
-                          <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
-                            <option value="new">New</option>
-                            <option value="reviewed">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="archived">Closed</option>
-                          </select>
-                          <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
-                            <option value="low">Low</option>
-                            <option value="normal">Normal</option>
-                            <option value="high">High</option>
-                            <option value="urgent">Urgent</option>
-                          </select>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-slate-400 text-xs flex items-center gap-1"><UserCheck className="h-3 w-3" /> Assigned</span>
-                  <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600 min-w-[140px]">
-                    <option value="">Unassigned</option>
-                    {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-1 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 w-12 text-xs">From</span>
-                    <span className="font-medium text-slate-800">{selectedTicket.userEmail || 'Anonymous'}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 w-12 text-xs">Date</span>
-                    <span className="text-slate-600 text-xs">{new Date(selectedTicket.createdAt).toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-slate-50 rounded-lg p-4">
-                <p className="text-sm text-slate-700 whitespace-pre-wrap">{selectedTicket.message}</p>
-              </div>
-
-              {/* Thread */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <StickyNote className="h-3.5 w-3.5" /> Thread ({selectedTicket.notes.length})
-                </h3>
-                {selectedTicket.notes.length > 0 && (
-                  <div className="space-y-2 max-h-72 overflow-y-auto">
-                    {selectedTicket.notes.map((note) => (
-                      <div key={note.id} className={`rounded-lg p-3 ${note.authorEmail === 'External Reply' ? 'bg-slate-50 border border-slate-200' : note.isInternal ? 'bg-amber-50 border border-amber-100' : 'bg-blue-50 border border-blue-100'}`}>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${note.authorEmail === 'External Reply' ? 'text-slate-500' : note.isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
-                            {note.authorEmail === 'External Reply' ? 'Customer Reply' : note.isInternal ? 'Internal' : 'Sent'}
+                      <div key={note.id} className="relative pl-5 pb-3 last:pb-0">
+                        <div className={`absolute left-0 top-1 w-2 h-2 rounded-full -translate-x-[3.5px] ring-2 ring-white ${
+                          isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'
+                        }`} />
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[11px] font-semibold ${
+                            isCustomer ? 'text-slate-600' : isInternal ? 'text-amber-600' : 'text-blue-600'
+                          }`}>
+                            {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
                           </span>
                           <span className="text-[10px] text-slate-400">{timeAgo(note.createdAt)}</span>
                         </div>
-                        {note.content.startsWith('<') ? (
-                          <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
-                        ) : (
-                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
-                        )}
-                        <p className="text-[10px] text-slate-400 mt-1.5">{note.authorEmail}</p>
+                        <div className={`rounded-lg p-3 ${
+                          isCustomer ? 'bg-white border border-slate-200'
+                            : isInternal ? 'bg-amber-50/70 border border-amber-100'
+                            : 'bg-blue-50/70 border border-blue-100'
+                        }`}>
+                          {note.content.startsWith('<') ? (
+                            <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                          ) : (
+                            <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
+                          )}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Reply */}
-                <div className="space-y-2 pt-2 border-t">
-                  <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600">
-                      <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
-                      Internal only
-                    </label>
-                  </div>
-                  <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} size="sm" className={`w-full ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
-                    {addingNote ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
-                    {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
-                  </Button>
+                    );
+                  })}
                 </div>
+              )}
+            </div>
+
+            {/* Sticky reply composer */}
+            <div className="bg-white border-t-2 border-slate-200 px-3 py-2.5 shrink-0 space-y-2">
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500">
+                  <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
+                  Internal
+                </label>
+                {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
+                  <span className="text-[10px] text-blue-600 flex items-center gap-1 ml-auto font-medium">
+                    <Reply className="h-3 w-3" /> via {selectedTicket.receivedAtMailbox}
+                  </span>
+                )}
               </div>
+              <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
+              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} size="sm" className={`w-full ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                {addingNote ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
+                {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
+              </Button>
             </div>
           </div>
         </div>
