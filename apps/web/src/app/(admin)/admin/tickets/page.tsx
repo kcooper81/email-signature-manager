@@ -988,306 +988,179 @@ export default function TicketsPage() {
 
         {/* Desktop detail panel — inline right side */}
         {selectedTicket && (
-          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l border-slate-200">
-            <Card className="overflow-hidden rounded-l-none border-l-0 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 260px)' }}>
-              {/* Header */}
-              <div className="sticky top-0 bg-white border-b px-5 py-3 flex items-center justify-between z-10">
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const TypeIcon = typeIcons[selectedTicket.type];
-                  return (
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${typeColors[selectedTicket.type]}`}>
-                      <TypeIcon className="h-3 w-3" />
-                      {selectedTicket.type}
-                    </span>
-                  );
-                })()}
-                <span className="text-sm font-medium text-slate-700 truncate">
-                  #{selectedTicket.id.slice(0, 8)}
-                </span>
-              </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-slate-100 rounded">
-                <X className="h-5 w-5 text-slate-400" />
-              </button>
-            </div>
+          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l border-slate-200" style={{ maxHeight: 'calc(100vh - 260px)' }}>
 
-            <div className="p-5 space-y-5">
-              {/* Meta info - compact */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {(() => {
-                    const StatusIcon = { new: Clock, reviewed: Eye, resolved: CheckCircle, archived: Archive }[selectedTicket.status];
-                    const PriorityIcon = priorityIcons[selectedTicket.priority];
-                    return (
-                      <>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[selectedTicket.status]}`}>
-                          <StatusIcon className="h-3 w-3" />
-                          {selectedTicket.status}
-                        </span>
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium ${priorityColors[selectedTicket.priority]}`}>
-                          <PriorityIcon className="h-3.5 w-3.5" />
-                          {selectedTicket.priority}
-                        </span>
-                        {/* Inline controls */}
-                        <div className="ml-auto flex items-center gap-1">
-                          <select
-                            value={selectedTicket.status}
-                            onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])}
-                            disabled={updating === selectedTicket.id}
-                            className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600"
-                          >
-                            <option value="new">New</option>
-                            <option value="reviewed">Reviewed</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="archived">Archived</option>
-                          </select>
-                          <select
-                            value={selectedTicket.priority}
-                            onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])}
-                            disabled={updating === selectedTicket.id}
-                            className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600"
-                          >
-                            <option value="low">Low</option>
-                            <option value="normal">Normal</option>
-                            <option value="high">High</option>
-                            <option value="urgent">Urgent</option>
-                          </select>
-                          {/* Snooze */}
-                          <div className="relative">
-                            {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
-                              <button
-                                onClick={() => unsnoozeTicket(selectedTicket.id)}
-                                className="h-7 px-1.5 border rounded text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-0.5"
-                                title="Click to unsnooze"
-                              >
-                                <AlarmClock className="h-3 w-3" />
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => setShowSnoozeMenu(!showSnoozeMenu)}
-                                className="h-7 px-1.5 border rounded text-xs text-slate-500 hover:bg-slate-50 flex items-center gap-0.5"
-                                title="Snooze ticket"
-                              >
-                                <AlarmClock className="h-3 w-3" />
-                              </button>
-                            )}
-                            {showSnoozeMenu && (
-                              <div className="absolute right-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-36">
-                                {[
-                                  { label: '1 hour', hours: 1 },
-                                  { label: '4 hours', hours: 4 },
-                                  { label: 'Tomorrow', hours: 24 },
-                                  { label: '3 days', hours: 72 },
-                                  { label: '1 week', hours: 168 },
-                                ].map(opt => (
-                                  <button
-                                    key={opt.hours}
-                                    onClick={() => snoozeTicket(selectedTicket.id, opt.hours)}
-                                    className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 text-slate-700"
-                                  >
-                                    {opt.label}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-
-                {/* Assigned to */}
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-slate-400 text-xs flex items-center gap-1">
-                    <UserCheck className="h-3 w-3" /> Assigned
+            {/* Toolbar header — all controls in one bar */}
+            <div className="bg-white border-b px-4 py-2 flex items-center gap-2 shrink-0">
+              {(() => {
+                const TypeIcon = typeIcons[selectedTicket.type];
+                return (
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${typeColors[selectedTicket.type]}`}>
+                    <TypeIcon className="h-3 w-3" />
+                    {selectedTicket.type}
                   </span>
-                  <select
-                    value={selectedTicket.assignedTo || ''}
-                    onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)}
-                    className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600 min-w-[140px]"
-                  >
-                    <option value="">Unassigned</option>
-                    {adminUsers.map(admin => (
-                      <option key={admin.id} value={admin.id}>{admin.email}</option>
-                    ))}
-                  </select>
-                </div>
+                );
+              })()}
+              <span className="text-xs font-mono text-slate-400">#{selectedTicket.id.slice(0, 8)}</span>
 
-                {/* Email routing info */}
-                <div className="flex flex-col gap-1 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 w-12 text-xs">From</span>
-                    <span className="font-medium text-slate-800">{selectedTicket.userEmail || 'Anonymous'}</span>
-                  </div>
-                  {selectedTicket.receivedAtMailbox && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 w-12 text-xs">To</span>
-                      <span className="font-medium text-emerald-700">{selectedTicket.receivedAtMailbox}</span>
-                    </div>
-                  )}
-                  {selectedTicket.receivedAtMailbox && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 w-12 text-xs">Reply</span>
-                      <span className="flex items-center gap-1 text-blue-600 text-xs font-medium">
-                        <Reply className="h-3 w-3" />
-                        {selectedTicket.receivedAtMailbox}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400 w-12 text-xs">Date</span>
-                    <span className="text-slate-600 text-xs">{new Date(selectedTicket.createdAt).toLocaleString()}</span>
-                  </div>
-                  {selectedTicket.organizationName && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 w-12 text-xs">Org</span>
-                      <span className="text-slate-600 text-xs">{selectedTicket.organizationName}</span>
-                    </div>
-                  )}
-                  {selectedTicket.pageUrl && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-slate-400 w-12 text-xs">Page</span>
-                      <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline flex items-center gap-1">
-                        View <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <div className="w-px h-5 bg-slate-200 mx-1" />
 
-              {/* Message body */}
-              <div className="bg-slate-50 rounded-lg p-4">
-                <p className="text-sm text-slate-700 whitespace-pre-wrap">{selectedTicket.message}</p>
-              </div>
+              <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                <option value="new">New</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="resolved">Resolved</option>
+                <option value="archived">Archived</option>
+              </select>
+              <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                <option value="low">Low</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+              <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                <option value="">Unassigned</option>
+                {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
+              </select>
 
-              {/* Conversation thread */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <StickyNote className="h-3.5 w-3.5" />
-                  Thread ({selectedTicket.notes.length})
-                </h3>
-
-                {selectedTicket.notes.length > 0 && (
-                  <div className="space-y-2 max-h-72 overflow-y-auto">
-                    {selectedTicket.notes.map((note) => (
-                      <div
-                        key={note.id}
-                        className={`rounded-lg p-3 ${
-                          note.authorEmail === 'External Reply'
-                            ? 'bg-slate-50 border border-slate-200'
-                            : note.isInternal
-                            ? 'bg-amber-50 border border-amber-100'
-                            : 'bg-blue-50 border border-blue-100'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${
-                            note.authorEmail === 'External Reply'
-                              ? 'text-slate-500'
-                              : note.isInternal ? 'text-amber-600' : 'text-blue-600'
-                          }`}>
-                            {note.authorEmail === 'External Reply'
-                              ? 'Customer Reply'
-                              : note.isInternal ? 'Internal' : 'Sent'}
-                          </span>
-                          <span className="text-[10px] text-slate-400">{timeAgo(note.createdAt)}</span>
-                        </div>
-                        {note.content.startsWith('<') ? (
-                          <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
-                        ) : (
-                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
-                        )}
-                        <p className="text-[10px] text-slate-400 mt-1.5">{note.authorEmail}</p>
-                      </div>
+              {/* Snooze */}
+              <div className="relative">
+                {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
+                  <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-7 px-1.5 border rounded text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-0.5" title="Click to unsnooze">
+                    <AlarmClock className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="h-7 px-1.5 border rounded text-xs text-slate-500 hover:bg-slate-50 flex items-center gap-0.5" title="Snooze">
+                    <AlarmClock className="h-3 w-3" />
+                  </button>
+                )}
+                {showSnoozeMenu && (
+                  <div className="absolute right-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-36">
+                    {[{ label: '1 hour', hours: 1 }, { label: '4 hours', hours: 4 }, { label: 'Tomorrow', hours: 24 }, { label: '3 days', hours: 72 }, { label: '1 week', hours: 168 }].map(opt => (
+                      <button key={opt.hours} onClick={() => snoozeTicket(selectedTicket.id, opt.hours)} className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 text-slate-700">{opt.label}</button>
                     ))}
                   </div>
                 )}
+              </div>
 
-                {/* Reply composer */}
-                <div className="space-y-2 pt-2 border-t">
-                  {/* Canned responses */}
-                  {cannedResponses.length > 0 && !isInternalNote && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowCannedPicker(!showCannedPicker)}
-                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-50"
-                      >
-                        <Zap className="h-3 w-3" />
-                        Saved replies
-                        <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
-                      </button>
-                      {showCannedPicker && (
-                        <div className="absolute left-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
-                          {cannedResponses.map(cr => (
-                            <button
-                              key={cr.id}
-                              onClick={() => {
-                                setNewNote(cr.content);
-                                editorRef.current?.setContent(cr.content);
-                                setShowCannedPicker(false);
-                              }}
-                              className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-50 last:border-0"
-                            >
-                              <p className="text-xs font-medium text-slate-700">{cr.title}</p>
-                              <p className="text-[10px] text-slate-400 truncate">{cr.content.slice(0, 80)}</p>
-                            </button>
-                          ))}
+              <button onClick={() => setSelectedTicket(null)} className="ml-auto p-1 hover:bg-slate-100 rounded" title="Close">
+                <X className="h-4 w-4 text-slate-400" />
+              </button>
+            </div>
+
+            {/* Contact info bar */}
+            <div className="bg-slate-50 border-b px-4 py-2 flex items-center gap-2 text-xs shrink-0 flex-wrap">
+              <span className="font-medium text-slate-800">{selectedTicket.userEmail || 'Anonymous'}</span>
+              {selectedTicket.receivedAtMailbox && (
+                <>
+                  <span className="text-slate-300">→</span>
+                  <span className="text-emerald-700 font-medium">{selectedTicket.receivedAtMailbox}</span>
+                </>
+              )}
+              <span className="text-slate-300">·</span>
+              <span className="text-slate-500">{new Date(selectedTicket.createdAt).toLocaleString()}</span>
+              {selectedTicket.organizationName && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <span className="text-slate-500">{selectedTicket.organizationName}</span>
+                </>
+              )}
+              {selectedTicket.pageUrl && (
+                <>
+                  <span className="text-slate-300">·</span>
+                  <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-0.5">
+                    Page <ExternalLink className="h-3 w-3" />
+                  </a>
+                </>
+              )}
+            </div>
+
+            {/* Scrollable conversation area */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+              {/* Original message */}
+              <div className="bg-white rounded-lg border border-slate-200 p-4">
+                <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+              </div>
+
+              {/* Thread */}
+              {selectedTicket.notes.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px bg-slate-200" />
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{selectedTicket.notes.length} {selectedTicket.notes.length === 1 ? 'reply' : 'replies'}</span>
+                    <div className="flex-1 h-px bg-slate-200" />
+                  </div>
+                  {selectedTicket.notes.map((note) => {
+                    const isCustomer = note.authorEmail === 'External Reply';
+                    const isInternal = note.isInternal;
+                    return (
+                      <div key={note.id} className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`max-w-[85%] rounded-lg p-3 ${
+                          isCustomer
+                            ? 'bg-white border border-slate-200 rounded-tl-sm'
+                            : isInternal
+                            ? 'bg-amber-50 border border-amber-200 rounded-tr-sm'
+                            : 'bg-blue-50 border border-blue-200 rounded-tr-sm'
+                        }`}>
+                          <div className="flex items-center justify-between gap-3 mb-1.5">
+                            <span className={`text-[10px] font-semibold ${
+                              isCustomer ? 'text-slate-500' : isInternal ? 'text-amber-600' : 'text-blue-600'
+                            }`}>
+                              {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
+                            </span>
+                            <span className="text-[10px] text-slate-400 whitespace-nowrap">{timeAgo(note.createdAt)}</span>
+                          </div>
+                          {note.content.startsWith('<') ? (
+                            <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                          ) : (
+                            <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
-                  <RichTextEditor
-                    ref={editorRef}
-                    placeholder={isInternalNote
-                      ? "Internal note (not visible to user)..."
-                      : "Write a reply..."
-                    }
-                    onChange={(html) => setNewNote(html)}
-                    initialContent={newNote}
-                  />
-
-                  <div className="flex items-center justify-between gap-2">
-                    <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600">
-                      <input
-                        type="checkbox"
-                        checked={isInternalNote}
-                        onChange={(e) => setIsInternalNote(e.target.checked)}
-                        className="w-3.5 h-3.5 rounded"
-                      />
-                      Internal only
-                    </label>
-
-                    {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
-                      <span className="text-[10px] text-blue-600 flex items-center gap-1">
-                        <Reply className="h-3 w-3" />
-                        via {selectedTicket.receivedAtMailbox}
-                      </span>
+            {/* Sticky reply composer */}
+            <div className="bg-white border-t px-4 py-3 shrink-0 space-y-2">
+              <div className="flex items-center gap-2">
+                {cannedResponses.length > 0 && !isInternalNote && (
+                  <div className="relative">
+                    <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-50">
+                      <Zap className="h-3 w-3" /> Saved replies <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
+                    </button>
+                    {showCannedPicker && (
+                      <div className="absolute left-0 bottom-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
+                        {cannedResponses.map(cr => (
+                          <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-50 last:border-0">
+                            <p className="text-xs font-medium text-slate-700">{cr.title}</p>
+                            <p className="text-[10px] text-slate-400 truncate">{cr.content.slice(0, 80)}</p>
+                          </button>
+                        ))}
+                      </div>
                     )}
                   </div>
-
-                  <Button
-                    onClick={addNote}
-                    disabled={(!newNote || newNote === '<p></p>') || addingNote}
-                    size="sm"
-                    className={`w-full ${
-                      isInternalNote
-                        ? 'bg-amber-600 hover:bg-amber-700'
-                        : 'bg-blue-600 hover:bg-blue-700'
-                    }`}
-                  >
-                    {addingNote ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                    ) : (
-                      <Send className="h-3.5 w-3.5 mr-1.5" />
-                    )}
-                    {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
-                  </Button>
-                </div>
+                )}
+                <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600">
+                  <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
+                  Internal
+                </label>
+                {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
+                  <span className="text-[10px] text-blue-600 flex items-center gap-1 ml-auto">
+                    <Reply className="h-3 w-3" /> via {selectedTicket.receivedAtMailbox}
+                  </span>
+                )}
               </div>
+
+              <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note (not visible to user)..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
+
+              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} size="sm" className={`w-full ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                {addingNote ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
+                {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
+              </Button>
             </div>
-            </Card>
+
           </div>
         )}
       </div>
