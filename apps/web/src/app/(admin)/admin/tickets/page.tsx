@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, Input, Button, Textarea, Checkbox } from '@/components/ui';
+import { Card, CardContent, Input, Button, Checkbox } from '@/components/ui';
+import { RichTextEditor, type RichTextEditorRef } from '@/components/admin/rich-text-editor';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import {
@@ -132,6 +133,7 @@ export default function TicketsPage() {
   const [selectedTicket, setSelectedTicket] = useState<FeedbackEntry | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
+  const editorRef = useRef<RichTextEditorRef>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isInternalNote, setIsInternalNote] = useState(false);
@@ -430,7 +432,9 @@ export default function TicketsPage() {
   };
 
   const addNote = async () => {
-    if (!selectedTicket || !newNote.trim()) return;
+    const htmlContent = editorRef.current?.getHTML() || '';
+    const textContent = editorRef.current?.getText()?.trim() || '';
+    if (!selectedTicket || !textContent) return;
 
     setAddingNote(true);
 
@@ -439,8 +443,9 @@ export default function TicketsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: newNote.trim(),
+          content: htmlContent,
           isInternal: isInternalNote,
+          isHtml: true,
           replyAs: selectedTicket.receivedAtMailbox || null,
         }),
       });
@@ -464,6 +469,7 @@ export default function TicketsPage() {
           notes: [...prev.notes, newNoteEntry],
         } : null);
         setNewNote('');
+        editorRef.current?.clear();
         setIsInternalNote(false);
 
         if (result.warning) {
@@ -1039,7 +1045,11 @@ export default function TicketsPage() {
                           </span>
                           <span className="text-[10px] text-slate-400">{timeAgo(note.createdAt)}</span>
                         </div>
-                        <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
+                        {note.content.startsWith('<') ? (
+                          <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                        ) : (
+                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
+                        )}
                         <p className="text-[10px] text-slate-400 mt-1.5">{note.authorEmail}</p>
                       </div>
                     ))}
@@ -1066,6 +1076,7 @@ export default function TicketsPage() {
                               key={cr.id}
                               onClick={() => {
                                 setNewNote(cr.content);
+                                editorRef.current?.setContent(cr.content);
                                 setShowCannedPicker(false);
                               }}
                               className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-50 last:border-0"
@@ -1079,14 +1090,14 @@ export default function TicketsPage() {
                     </div>
                   )}
 
-                  <Textarea
-                    value={newNote}
-                    onChange={(e) => setNewNote(e.target.value)}
+                  <RichTextEditor
+                    ref={editorRef}
                     placeholder={isInternalNote
                       ? "Internal note (not visible to user)..."
                       : "Write a reply..."
                     }
-                    className="min-h-[80px] resize-none text-sm"
+                    onChange={(html) => setNewNote(html)}
+                    initialContent={newNote}
                   />
 
                   <div className="flex items-center justify-between gap-2">
@@ -1110,7 +1121,7 @@ export default function TicketsPage() {
 
                   <Button
                     onClick={addNote}
-                    disabled={!newNote.trim() || addingNote}
+                    disabled={(!newNote || newNote === '<p></p>') || addingNote}
                     size="sm"
                     className={`w-full ${
                       isInternalNote
