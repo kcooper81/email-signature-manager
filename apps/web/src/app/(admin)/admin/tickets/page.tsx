@@ -110,6 +110,13 @@ const statusColors = {
   archived: 'bg-slate-100 text-slate-700',
 };
 
+const statusLabels: Record<string, string> = {
+  new: 'New',
+  reviewed: 'In Progress',
+  resolved: 'Resolved',
+  archived: 'Closed',
+};
+
 const priorityIcons = {
   low: ArrowDown,
   normal: Minus,
@@ -172,11 +179,14 @@ export default function TicketsPage() {
   }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
 
   useEffect(() => {
-    loadTickets();
     loadCurrentUser();
     loadCannedResponses();
     loadAdminUsers();
-  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
+  }, []);
+
+  useEffect(() => {
+    loadTickets();
+  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter, currentUserId]);
 
   // Real-time subscription for new tickets
   useEffect(() => {
@@ -212,9 +222,12 @@ export default function TicketsPage() {
           };
 
           const matchesType = typeFilter === 'all' || item.type === typeFilter;
+          const isOpen = ['new', 'reviewed'].includes(item.status);
           const matchesStatus = statusFilter === 'all'
-            || (statusFilter === 'open' && ['new', 'reviewed'].includes(item.status))
-            || item.status === statusFilter;
+            || (statusFilter === 'open' && isOpen)
+            || (statusFilter === 'mine' && isOpen && item.assigned_to === currentUserId)
+            || (statusFilter === 'unassigned' && isOpen && !item.assigned_to)
+            || (statusFilter === 'done' && ['resolved', 'archived'].includes(item.status));
           const matchesPriority = priorityFilter === 'all' || (item.priority || 'normal') === priorityFilter;
 
           if (page === 0 && matchesType && matchesStatus && matchesPriority) {
@@ -274,7 +287,7 @@ export default function TicketsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [page, typeFilter, statusFilter, priorityFilter, notificationsEnabled]);
+  }, [page, typeFilter, statusFilter, priorityFilter, notificationsEnabled, currentUserId]);
 
   const toggleNotifications = async () => {
     if (!notificationsEnabled && typeof Notification !== 'undefined') {
@@ -323,6 +336,16 @@ export default function TicketsPage() {
 
     if (statusFilter === 'open') {
       query = query.in('status', ['new', 'reviewed']);
+    } else if (statusFilter === 'mine') {
+      query = query.in('status', ['new', 'reviewed']);
+      if (currentUserId) {
+        query = query.eq('assigned_to', currentUserId);
+      }
+    } else if (statusFilter === 'unassigned') {
+      query = query.in('status', ['new', 'reviewed']);
+      query = query.is('assigned_to', null);
+    } else if (statusFilter === 'done') {
+      query = query.in('status', ['resolved', 'archived']);
     } else if (statusFilter !== 'all') {
       query = query.eq('status', statusFilter);
     }
@@ -598,9 +621,13 @@ export default function TicketsPage() {
       );
     });
     const sorted = sort.sortData(filtered);
-    // Pin unread (new) tickets to top
-    const unread = sorted.filter(t => t.status === 'new');
-    const read = sorted.filter(t => t.status !== 'new');
+    // Pin unread (new) tickets to top, then sort by most recent activity
+    const unread = sorted.filter(t => t.status === 'new').sort((a, b) =>
+      new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()
+    );
+    const read = sorted.filter(t => t.status !== 'new').sort((a, b) =>
+      new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()
+    );
     return [...unread, ...read];
   }, [tickets, hideSnoozed, search, sort.sortField, sort.sortDir]);
 
@@ -650,10 +677,11 @@ export default function TicketsPage() {
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
+  const openTickets = tickets.filter(t => t.status === 'new' || t.status === 'reviewed');
   const stats = {
     new: tickets.filter(t => t.status === 'new').length,
-    urgent: tickets.filter(t => t.priority === 'urgent' || t.priority === 'high').length,
-    email: tickets.filter(t => t.type === 'email' || t.type === 'sales').length,
+    mine: openTickets.filter(t => t.assignedTo === currentUserId).length,
+    unassigned: openTickets.filter(t => !t.assignedTo).length,
   };
 
   const bulkUpdateStatus = async (newStatus: FeedbackEntry['status']) => {
@@ -683,11 +711,11 @@ export default function TicketsPage() {
   };
 
   const bulkActions: BulkAction[] = [
-    { label: 'Mark Reviewed', icon: Eye, onClick: () => bulkUpdateStatus('reviewed') },
-    { label: 'Mark Resolved', icon: CheckCircle, onClick: () => bulkUpdateStatus('resolved') },
+    { label: 'In Progress', icon: Eye, onClick: () => bulkUpdateStatus('reviewed') },
+    { label: 'Resolve', icon: CheckCircle, onClick: () => bulkUpdateStatus('resolved') },
     { label: 'Priority: High', icon: ArrowUp, onClick: () => bulkUpdatePriority('high') },
     { label: 'Priority: Low', icon: ArrowDown, onClick: () => bulkUpdatePriority('low') },
-    { label: 'Archive', icon: Archive, onClick: () => bulkUpdateStatus('archived'), destructive: true, confirmMessage: `Archive ${bulk.selectedCount} ticket(s)?` },
+    { label: 'Close', icon: Archive, onClick: () => bulkUpdateStatus('archived'), destructive: true, confirmMessage: `Close ${bulk.selectedCount} ticket(s)?` },
   ];
 
   /** Friendly time-ago label */
@@ -707,9 +735,10 @@ export default function TicketsPage() {
 
   const STATUS_TABS = [
     { key: 'open', label: 'Open' },
+    { key: 'mine', label: 'Mine' },
+    { key: 'unassigned', label: 'Unassigned' },
+    { key: 'done', label: 'Done' },
     { key: 'all', label: 'All' },
-    { key: 'resolved', label: 'Resolved' },
-    { key: 'archived', label: 'Archived' },
   ];
 
   return (
@@ -737,6 +766,12 @@ export default function TicketsPage() {
               {tab.label}
               {tab.key === 'open' && stats.new > 0 && (
                 <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{stats.new}</span>
+              )}
+              {tab.key === 'mine' && stats.mine > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold">{stats.mine}</span>
+              )}
+              {tab.key === 'unassigned' && stats.unassigned > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">{stats.unassigned}</span>
               )}
             </button>
           ))}
@@ -898,7 +933,7 @@ export default function TicketsPage() {
                             </span>
                             {!isCompact && (
                               <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[ticket.status]}`}>
-                                {ticket.status}
+                                {statusLabels[ticket.status] || ticket.status}
                               </span>
                             )}
                             <span className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
@@ -999,9 +1034,9 @@ export default function TicketsPage() {
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status</span>
                 <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700 font-medium">
                   <option value="new">New</option>
-                  <option value="reviewed">Reviewed</option>
+                  <option value="reviewed">In Progress</option>
                   <option value="resolved">Resolved</option>
-                  <option value="archived">Archived</option>
+                  <option value="archived">Closed</option>
                 </select>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Priority</span>
                 <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700 font-medium">
@@ -1201,7 +1236,7 @@ export default function TicketsPage() {
                       <>
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[selectedTicket.status]}`}>
                           <StatusIcon className="h-3 w-3" />
-                          {selectedTicket.status}
+                          {statusLabels[selectedTicket.status] || selectedTicket.status}
                         </span>
                         <span className={`inline-flex items-center gap-1 text-xs font-medium ${priorityColors[selectedTicket.priority]}`}>
                           <PriorityIcon className="h-3.5 w-3.5" />
@@ -1210,9 +1245,9 @@ export default function TicketsPage() {
                         <div className="ml-auto flex items-center gap-1">
                           <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
                             <option value="new">New</option>
-                            <option value="reviewed">Reviewed</option>
+                            <option value="reviewed">In Progress</option>
                             <option value="resolved">Resolved</option>
-                            <option value="archived">Archived</option>
+                            <option value="archived">Closed</option>
                           </select>
                           <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
                             <option value="low">Low</option>
