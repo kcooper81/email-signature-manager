@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { Resend } from 'resend';
 import { notifyAdminsOfNewTicket, sendAutoResponse } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
 import { createHmac } from 'crypto';
@@ -94,46 +95,53 @@ export async function POST(request: NextRequest) {
   }
 
   const emailData = payload.data || payload;
-
-  console.log('[inbound-email] Raw payload keys', {
-    topLevelKeys: Object.keys(payload),
-    dataKeys: payload.data ? Object.keys(payload.data) : 'no data key',
-    type: payload.type,
-    // Log all string fields to see what's available
-    sampleFields: Object.fromEntries(
-      Object.entries(emailData).map(([k, v]) => [k, typeof v === 'string' ? v.slice(0, 100) : typeof v])
-    ),
-  });
-
-  const { from, to, subject, text, html } = emailData;
+  const { from, to, subject, email_id } = emailData;
   const senderEmail = typeof from === 'string' ? from : from?.address || from?.[0]?.address;
   const receivedAt = typeof to === 'string' ? to
     : Array.isArray(to) ? (to[0]?.address || to[0] || null)
     : to?.address || null;
 
-  console.log('[inbound-email] Parsed payload', {
-    senderEmail,
-    receivedAt,
-    subject: subject || '(none)',
-    hasText: !!text,
-    hasHtml: !!html,
-    textPreview: typeof text === 'string' ? text.slice(0, 200) : typeof text,
-    htmlPreview: typeof html === 'string' ? html.slice(0, 200) : typeof html,
-  });
+  console.log('[inbound-email] Parsed', { senderEmail, receivedAt, subject: subject || '(none)', email_id });
 
   if (!senderEmail) {
     return NextResponse.json({ error: 'No sender email found' }, { status: 400 });
   }
 
+  // Prevent loop: ignore emails FROM our own @siggly.io addresses
+  const senderLower = senderEmail.toLowerCase();
+  if (senderLower.includes('@siggly.io') || senderLower.includes('@send.siggly.io')) {
+    console.log('[inbound-email] Skipping — email from our own domain', { senderEmail });
+    return NextResponse.json({ skipped: true, reason: 'Sent from own domain' });
+  }
+
   // Only process emails addressed to @siggly.io — ignore other domains
-  // (Resend fires webhooks for all domains on the account)
   const recipientStr = typeof receivedAt === 'string' ? receivedAt : '';
   if (!recipientStr.toLowerCase().includes('@siggly.io')) {
     return NextResponse.json({ skipped: true, reason: 'Not a siggly.io recipient' });
   }
 
-  const messageBody = text || html?.replace(/<[^>]+>/g, '') || '';
-  // Allow empty-body emails through — they still create a ticket with subject info
+  // Resend webhook doesn't include email body — fetch it via API
+  let bodyText = '';
+  let bodyHtml = '';
+  if (email_id && process.env.RESEND_API_KEY) {
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const fullEmail = await resend.emails.get(email_id);
+      if (fullEmail.data) {
+        bodyText = (fullEmail.data as any).text || '';
+        bodyHtml = (fullEmail.data as any).html || '';
+      }
+      console.log('[inbound-email] Fetched email body', {
+        hasText: !!bodyText,
+        hasHtml: !!bodyHtml,
+        textLength: bodyText.length,
+      });
+    } catch (fetchErr) {
+      console.error('[inbound-email] Failed to fetch email body', fetchErr);
+    }
+  }
+
+  const messageBody = bodyText || bodyHtml?.replace(/<[^>]+>/g, '') || '';
   const displayBody = messageBody.trim() || '(No message body)';
 
   const supabase = getSupabaseAdmin();
