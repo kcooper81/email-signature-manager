@@ -151,9 +151,10 @@ export default function SubscriptionsPage() {
 
     setEvents(mappedEvents);
 
-    // Count upgrades and downgrades this month
+    // Count this month's events by type
     const upgradesThisMonth = eventData?.filter(e => e.event_type === 'upgraded').length || 0;
     const downgradesThisMonth = eventData?.filter(e => e.event_type === 'downgraded').length || 0;
+    const canceledThisMonth = eventData?.filter(e => e.event_type === 'canceled').length || 0;
 
     // Calculate MRR and build subscription list
     let totalMrr = 0;
@@ -200,7 +201,7 @@ export default function SubscriptionsPage() {
       activeSubscriptions: activeCount,
       trialingSubscriptions: trialingCount,
       pastDueSubscriptions: pastDueCount,
-      canceledThisMonth: subs.filter(s => s.status === 'canceled').length,
+      canceledThisMonth,
       upgradesThisMonth,
       downgradesThisMonth,
     });
@@ -329,7 +330,7 @@ export default function SubscriptionsPage() {
       </div>
 
       {/* Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
@@ -339,6 +340,7 @@ export default function SubscriptionsPage() {
               <div>
                 <p className="text-2xl font-bold">${metrics?.totalMrr.toFixed(0)}</p>
                 <p className="text-xs text-slate-500">MRR</p>
+                <p className="text-[10px] text-slate-400">${((metrics?.totalMrr || 0) * 12).toLocaleString()} ARR</p>
               </div>
             </div>
           </CardContent>
@@ -353,20 +355,9 @@ export default function SubscriptionsPage() {
               <div>
                 <p className="text-2xl font-bold">{metrics?.activeSubscriptions}</p>
                 <p className="text-xs text-slate-500">Active</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-100 rounded-lg">
-                <Clock className="h-5 w-5 text-violet-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{metrics?.trialingSubscriptions}</p>
-                <p className="text-xs text-slate-500">Trialing</p>
+                {(metrics?.trialingSubscriptions || 0) > 0 && (
+                  <p className="text-[10px] text-slate-400">{metrics?.trialingSubscriptions} trialing</p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -381,6 +372,9 @@ export default function SubscriptionsPage() {
               <div>
                 <p className="text-2xl font-bold">{metrics?.pastDueSubscriptions}</p>
                 <p className="text-xs text-slate-500">Past Due</p>
+                {(metrics?.canceledThisMonth || 0) > 0 && (
+                  <p className="text-[10px] text-red-400">{metrics?.canceledThisMonth} canceled this mo</p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -390,25 +384,20 @@ export default function SubscriptionsPage() {
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
-                <ArrowUpCircle className="h-5 w-5 text-green-600" />
+                <TrendingUp className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{metrics?.upgradesThisMonth || 0}</p>
-                <p className="text-xs text-slate-500">Upgrades</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <ArrowDownCircle className="h-5 w-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{metrics?.downgradesThisMonth || 0}</p>
-                <p className="text-xs text-slate-500">Downgrades</p>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="text-2xl font-bold text-green-600">+{metrics?.upgradesThisMonth || 0}</p>
+                    <p className="text-[10px] text-slate-400">upgrades</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-orange-500">-{metrics?.downgradesThisMonth || 0}</p>
+                    <p className="text-[10px] text-slate-400">downgrades</p>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500">This Month</p>
               </div>
             </div>
           </CardContent>

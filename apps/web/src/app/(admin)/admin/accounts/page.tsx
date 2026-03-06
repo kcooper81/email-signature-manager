@@ -18,11 +18,21 @@ import {
   AlertTriangle,
   UserPlus,
   Check,
+  CreditCard,
+  TrendingUp,
+  Clock,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
 import Link from 'next/link';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
+
+interface AccountStats {
+  totalOrgs: number;
+  paidOrgs: number;
+  totalUsers: number;
+  newThisWeek: number;
+}
 
 interface Organization {
   id: string;
@@ -63,6 +73,7 @@ export default function AccountsPage() {
   const [orgTypeFilter, setOrgTypeFilter] = useState<OrgTypeFilter>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [stats, setStats] = useState<AccountStats | null>(null);
   const [orphanedUsers, setOrphanedUsers] = useState<OrphanedUser[]>([]);
   const [fixingUsers, setFixingUsers] = useState<Set<string>>(new Set());
   const [fixedUsers, setFixedUsers] = useState<Set<string>>(new Set());
@@ -236,7 +247,27 @@ export default function AccountsPage() {
 
   useEffect(() => {
     loadOrphanedUsers();
+    loadStats();
   }, []);
+
+  const loadStats = async () => {
+    const supabase = createClient();
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    const [orgsResult, paidResult, usersResult, newResult] = await Promise.all([
+      supabase.from('organizations').select('*', { count: 'exact', head: true }),
+      supabase.from('subscriptions').select('*', { count: 'exact', head: true }).in('status', ['active', 'trialing']).neq('plan', 'free'),
+      supabase.from('users').select('*', { count: 'exact', head: true }),
+      supabase.from('organizations').select('*', { count: 'exact', head: true }).gt('created_at', oneWeekAgo),
+    ]);
+
+    setStats({
+      totalOrgs: orgsResult.count || 0,
+      paidOrgs: paidResult.count || 0,
+      totalUsers: usersResult.count || 0,
+      newThisWeek: newResult.count || 0,
+    });
+  };
 
   const fixOrphanedUser = async (authId: string) => {
     setFixingUsers(prev => new Set(prev).add(authId));
@@ -349,6 +380,64 @@ export default function AccountsPage() {
           Export CSV
         </Button>
       </div>
+
+      {/* Stats */}
+      {stats && (
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Building2 className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.totalOrgs}</p>
+                  <p className="text-xs text-slate-500">Total Orgs</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-violet-100 rounded-lg">
+                  <CreditCard className="h-5 w-5 text-violet-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.paidOrgs}</p>
+                  <p className="text-xs text-slate-500">Paid Orgs</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Users className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.totalUsers}</p>
+                  <p className="text-xs text-slate-500">Total Users</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <TrendingUp className="h-5 w-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">+{stats.newThisWeek}</p>
+                  <p className="text-xs text-slate-500">New This Week</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Search and Filters */}
       <Card>
@@ -492,6 +581,7 @@ export default function AccountsPage() {
                 <SortButton field="userCount" label="Users" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                 <SortButton field="templateCount" label="Templates" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                 <SortButton field="createdAt" label="Created" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="lastActivity" label="Last Active" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
               </div>
               <div className="divide-y">
                 {filteredOrgs.map((org) => (
@@ -557,6 +647,21 @@ export default function AccountsPage() {
                           {new Date(org.createdAt).toLocaleDateString()}
                         </p>
                         <p className="text-xs">joined</p>
+                      </div>
+                      <div className="text-right min-w-[80px]">
+                        {org.lastActivity ? (
+                          <>
+                            <p className="font-medium text-slate-700">
+                              {new Date(org.lastActivity).toLocaleDateString()}
+                            </p>
+                            <p className="text-xs">last active</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-medium text-slate-400">—</p>
+                            <p className="text-xs">no activity</p>
+                          </>
+                        )}
                       </div>
                       <ChevronRight className="h-5 w-5 text-slate-400" />
                     </div>
