@@ -25,7 +25,9 @@ import {
   CreditCard,
   Activity,
   MousePointerClick,
+  Check,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { PLANS } from '@/lib/billing/plans';
 
 interface DashboardStats {
@@ -74,16 +76,63 @@ interface RecentSignup {
   plan: string;
 }
 
+interface OrphanedUser {
+  authId: string;
+  email: string;
+  provider: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+}
+
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [recentActivity, setRecentActivity] = useState<RecentActivityItem[]>([]);
   const [recentSignups, setRecentSignups] = useState<RecentSignup[]>([]);
+  const [orphanedUsers, setOrphanedUsers] = useState<OrphanedUser[]>([]);
+  const [fixingUsers, setFixingUsers] = useState<Set<string>>(new Set());
+  const [fixedUsers, setFixedUsers] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadDashboard();
+    loadOrphanedUsers();
   }, []);
+
+  const loadOrphanedUsers = async () => {
+    try {
+      const res = await fetch('/api/admin/accounts/orphaned');
+      if (res.ok) {
+        const data = await res.json();
+        setOrphanedUsers(data.orphaned || []);
+      }
+    } catch (err) {
+      console.error('Failed to load orphaned users:', err);
+    }
+  };
+
+  const fixOrphanedUser = async (authId: string) => {
+    setFixingUsers(prev => new Set(prev).add(authId));
+    try {
+      const res = await fetch('/api/admin/accounts/orphaned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authId }),
+      });
+      if (res.ok) {
+        setFixedUsers(prev => new Set(prev).add(authId));
+        loadOrphanedUsers();
+      }
+    } catch (err) {
+      console.error('Failed to fix orphaned user:', err);
+    }
+    setFixingUsers(prev => {
+      const next = new Set(prev);
+      next.delete(authId);
+      return next;
+    });
+  };
 
   const loadDashboard = async () => {
     const supabase = createClient();
@@ -317,6 +366,64 @@ export default function AdminDashboardPage() {
             </Link>
           ))}
         </div>
+      )}
+
+      {/* Orphaned Signups */}
+      {orphanedUsers.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50/50">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-amber-800 text-sm">
+                <AlertTriangle className="h-4 w-4" />
+                {orphanedUsers.length} Orphaned Signup{orphanedUsers.length !== 1 ? 's' : ''}
+              </CardTitle>
+              <CardDescription className="text-amber-600 text-xs mt-0">
+                Signed up but never completed setup
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y divide-amber-200">
+              {orphanedUsers.map((ou) => (
+                <div key={ou.authId} className="flex items-center justify-between py-2 gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm text-slate-900 truncate">
+                      {ou.firstName || ou.lastName
+                        ? `${ou.firstName || ''} ${ou.lastName || ''}`.trim()
+                        : <span className="text-slate-400 italic">No name</span>}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span className="truncate">{ou.email}</span>
+                      <span className="px-1.5 py-0.5 text-[10px] rounded bg-slate-100 capitalize shrink-0">{ou.provider}</span>
+                      <span className="shrink-0">{new Date(ou.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  {fixedUsers.has(ou.authId) ? (
+                    <span className="flex items-center gap-1 text-xs text-green-700 font-medium shrink-0">
+                      <Check className="h-3.5 w-3.5" />
+                      Fixed
+                    </span>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => fixOrphanedUser(ou.authId)}
+                      disabled={fixingUsers.has(ou.authId)}
+                      className="border-amber-300 hover:bg-amber-100 shrink-0 h-7 text-xs"
+                    >
+                      {fixingUsers.has(ou.authId) ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                      ) : (
+                        <UserPlus className="h-3.5 w-3.5 mr-1" />
+                      )}
+                      Create Org
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Key Metrics */}
