@@ -61,7 +61,7 @@ export function MarketingTestimonial({
             />
           </div>
         )}
-        <blockquote className={cn('text-2xl font-medium mb-6', styles.quote)}>
+        <blockquote className={cn('text-lg sm:text-2xl font-medium mb-6', styles.quote)}>
           "{quote}"
         </blockquote>
         <div>

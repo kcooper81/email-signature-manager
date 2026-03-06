@@ -128,7 +128,7 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
           <Input type="number" value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} min={1} />
           <p className="text-xs text-muted-foreground">Lower numbers run first (1 = highest priority)</p>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label>Department Filter</Label>
             <Select value={form.departmentCondition} onChange={(e) => setForm({ ...form, departmentCondition: e.target.value })} options={conditionOptions} />
@@ -141,7 +141,7 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
             </div>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label>Region Filter</Label>
             <Select value={form.regionCondition} onChange={(e) => setForm({ ...form, regionCondition: e.target.value })} options={conditionOptions} />
@@ -193,7 +193,7 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
             </div>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label>Recipient Filter</Label>
             <Select value={form.recipientCondition} onChange={(e) => setForm({ ...form, recipientCondition: e.target.value })} options={conditionOptions} />
@@ -206,7 +206,7 @@ export function DisclaimerRuleModal({ open, onClose, rule, templates, onSaved }:
             </div>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-2">
             <Label>Start Date</Label>
             <Input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />

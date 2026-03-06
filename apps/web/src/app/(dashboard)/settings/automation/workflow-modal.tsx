@@ -244,7 +244,7 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
         {error && (
           <div className="p-3 text-sm bg-red-500/10 border border-red-500/20 text-red-600 rounded-md">{error}</div>
         )}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2 col-span-2">
             <Label>Workflow Name</Label>
             <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Onboarding — assign default signature" />
@@ -263,7 +263,7 @@ export function WorkflowModal({ open, onClose, workflow, onSaved }: Props) {
             <p className="text-xs text-muted-foreground">Lower numbers run first (1 = highest priority)</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Department Filter (comma-separated)</Label>
             <Input value={form.departmentFilter} onChange={(e) => setForm({ ...form, departmentFilter: e.target.value })} placeholder="Sales, Engineering" />

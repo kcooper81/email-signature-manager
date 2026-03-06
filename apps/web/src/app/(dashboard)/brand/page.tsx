@@ -51,7 +51,7 @@ export default function BrandHubPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Brand Compliance Score</p>
-            <p className={`text-4xl font-bold ${scoreColor}`}>{score}%</p>
+            <p className={`text-3xl sm:text-4xl font-bold ${scoreColor}`}>{score}%</p>
             <p className="text-sm text-muted-foreground mt-1">{hubData?.totalAudits || 0} signatures audited</p>
           </div>
           <Link href="/brand/audit">

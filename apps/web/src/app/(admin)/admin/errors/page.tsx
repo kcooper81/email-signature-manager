@@ -448,7 +448,7 @@ export default function AdminErrorLogsPage() {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">User ID:</span>
                         <span className="ml-2 font-mono">{error.user_id || 'N/A'}</span>
