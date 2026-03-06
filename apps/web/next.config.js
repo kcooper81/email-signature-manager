@@ -9,6 +9,12 @@ const nextConfig = {
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   transpilePackages: ['@esm/shared'],
+  async rewrites() {
+    // IndexNow requires key file at /{key}.txt — rewrite to our API route
+    return process.env.INDEXNOW_API_KEY
+      ? [{ source: `/${process.env.INDEXNOW_API_KEY}.txt`, destination: '/api/indexnow-key' }]
+      : [];
+  },
   images: {
     remotePatterns: [
       {
