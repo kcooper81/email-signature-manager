@@ -24,7 +24,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { SuperAdminRole } from '@/app/(admin)/layout';
+import type { SuperAdminRole } from '@/lib/admin/views';
 
 interface NavBadgeCounts {
   newTickets: number;
@@ -42,67 +42,62 @@ interface NavItem {
   label: string;
   icon: typeof LayoutDashboard;
   badgeKey: BadgeKey | null;
-  supportVisible: boolean;
+  viewKey: string; // maps to ADMIN_VIEW_ROUTES key
 }
 
 interface NavGroup {
   label: string;
-  supportVisible: boolean;
   items: NavItem[];
 }
 
 const navGroups: NavGroup[] = [
   {
     label: '',
-    supportVisible: true,
     items: [
-      { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null, supportVisible: false },
+      { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null, viewKey: 'dashboard' },
     ],
   },
   {
     label: 'Support',
-    supportVisible: true,
     items: [
-      { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets', supportVisible: true },
-      { href: '/admin/inbox-settings', label: 'Inbox Settings', icon: Settings, badgeKey: null, supportVisible: false },
-      { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null, supportVisible: false },
+      { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets', viewKey: 'tickets' },
+      { href: '/admin/inbox-settings', label: 'Inbox Settings', icon: Settings, badgeKey: null, viewKey: 'inbox-settings' },
+      { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null, viewKey: 'help' },
     ],
   },
   {
     label: 'Customers',
-    supportVisible: false,
     items: [
-      { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: 'newAccounts', supportVisible: false },
-      { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners', supportVisible: false },
-      { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: 'newSubscriptions', supportVisible: false },
+      { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: 'newAccounts', viewKey: 'accounts' },
+      { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners', viewKey: 'partners' },
+      { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: 'newSubscriptions', viewKey: 'billing' },
     ],
   },
   {
     label: 'Growth',
-    supportVisible: false,
     items: [
-      { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null, supportVisible: false },
-      { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO', supportVisible: false },
+      { href: '/admin/analytics', label: 'Analytics', icon: MousePointerClick, badgeKey: null, viewKey: 'analytics' },
+      { href: '/admin/seo', label: 'SEO Engine', icon: Search, badgeKey: 'pendingSEO', viewKey: 'seo' },
     ],
   },
   {
     label: 'System',
-    supportVisible: false,
     items: [
-      { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null, supportVisible: false },
-      { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null, supportVisible: false },
-      { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors', supportVisible: false },
-      { href: '/admin/platform-admins', label: 'Platform Admins', icon: Shield, badgeKey: null, supportVisible: false },
-      { href: '/admin/testing-guide', label: 'Testing Guide', icon: ClipboardCheck, badgeKey: null, supportVisible: true },
+      { href: '/admin/jobs', label: 'Jobs', icon: Cog, badgeKey: null, viewKey: 'jobs' },
+      { href: '/admin/activity', label: 'Activity Logs', icon: ScrollText, badgeKey: null, viewKey: 'activity' },
+      { href: '/admin/errors', label: 'Error Logs', icon: AlertTriangle, badgeKey: 'unresolvedErrors', viewKey: 'errors' },
+      { href: '/admin/platform-admins', label: 'Platform Admins', icon: Shield, badgeKey: null, viewKey: 'platform-admins' },
+      { href: '/admin/testing-guide', label: 'Testing Guide', icon: ClipboardCheck, badgeKey: null, viewKey: 'testing-guide' },
     ],
   },
 ];
 
 interface AdminNavProps {
   role: SuperAdminRole;
+  allowedViews: string[] | null; // null = full access (super_admin)
 }
 
-export function AdminNav({ role }: AdminNavProps) {
+export function AdminNav({ role, allowedViews }: AdminNavProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [badges, setBadges] = useState<NavBadgeCounts>({
@@ -243,6 +238,11 @@ export function AdminNav({ role }: AdminNavProps) {
     }
   }, [pathname]);
 
+  const isViewAllowed = (viewKey: string) => {
+    if (!isSupport || allowedViews === null) return true;
+    return allowedViews.includes(viewKey);
+  };
+
   const renderNavItem = (item: NavItem, mobile?: boolean) => {
     const isActive = pathname === item.href ||
       (item.href !== '/admin' && pathname.startsWith(item.href));
@@ -283,15 +283,10 @@ export function AdminNav({ role }: AdminNavProps) {
 
   const renderNavGroups = (mobile?: boolean) => {
     return navGroups.map((group, idx) => {
-      // Filter items for support role
-      const items = isSupport
-        ? group.items.filter((item) => item.supportVisible)
-        : group.items;
+      // Filter items based on allowed views
+      const items = group.items.filter(item => isViewAllowed(item.viewKey));
 
-      // Hide entire group if no visible items
       if (items.length === 0) return null;
-      // Hide group if support and group isn't support-visible (except if it has visible items)
-      if (isSupport && !group.supportVisible && items.length === 0) return null;
 
       return (
         <div key={group.label || idx}>

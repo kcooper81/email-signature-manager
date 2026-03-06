@@ -140,6 +140,7 @@ export const users = pgTable('users', {
   isAdmin: boolean('is_admin').default(false).notNull(),
   isSuperAdmin: boolean('is_super_admin').default(false),
   superAdminRole: text('super_admin_role'),
+  superAdminAllowedViews: text('super_admin_allowed_views'),
   source: text('source').default('manual'),
   company: text('company'),
   officeLocation: text('office_location'),
