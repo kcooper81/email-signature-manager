@@ -89,20 +89,26 @@ export default function SubscriptionsPage() {
       return;
     }
 
-    // Get org names
-    const orgIds = subs.map(s => s.organization_id);
-    const { data: orgs } = await supabase
+    // Get ALL organizations (not just those with subscriptions)
+    const { data: allOrgsData } = await supabase
       .from('organizations')
       .select('id, name')
-      .in('id', orgIds);
+      .order('created_at', { ascending: false });
 
-    const orgMap = new Map(orgs?.map(o => [o.id, o.name]) || []);
+    const orgMap = new Map(allOrgsData?.map(o => [o.id, o.name]) || []);
 
-    // Get user counts per org
+    // Find orgs that don't have a subscription record (they're on free)
+    const orgsWithSubs = new Set(subs.map(s => s.organization_id));
+    const freeOrgsWithoutSub = (allOrgsData || []).filter(o => !orgsWithSubs.has(o.id));
+
+    // Get ALL org IDs for user count query
+    const allOrgIds = allOrgsData?.map(o => o.id) || [];
+
+    // Get user counts per org (all orgs, not just those with subs)
     const { data: users } = await supabase
       .from('users')
       .select('organization_id')
-      .in('organization_id', orgIds);
+      .in('organization_id', allOrgIds);
 
     const userCountByOrg = new Map<string, number>();
     users?.forEach(u => {
@@ -128,19 +134,12 @@ export default function SubscriptionsPage() {
       .order('created_at', { ascending: false })
       .limit(50);
 
-    // Map events with org names
-    const allOrgIds = [...new Set([...orgIds, ...(recentEvents?.map(e => e.organization_id) || [])])];
-    const { data: allOrgs } = await supabase
-      .from('organizations')
-      .select('id, name')
-      .in('id', allOrgIds);
-
-    const allOrgMap = new Map(allOrgs?.map(o => [o.id, o.name]) || []);
+    // Use the orgMap we already built from all organizations
 
     const mappedEvents: SubscriptionEvent[] = (recentEvents || []).map(e => ({
       id: e.id,
       organizationId: e.organization_id,
-      orgName: allOrgMap.get(e.organization_id) || 'Unknown',
+      orgName: orgMap.get(e.organization_id) || 'Unknown',
       eventType: e.event_type,
       fromPlan: e.from_plan,
       toPlan: e.to_plan,
@@ -195,7 +194,21 @@ export default function SubscriptionsPage() {
       };
     });
 
-    setSubscriptions(enrichedSubs);
+    // Add free orgs that don't have subscription records
+    const freeOrgEntries: SubscriptionEntry[] = freeOrgsWithoutSub.map(org => ({
+      id: `free-${org.id}`,
+      orgId: org.id,
+      orgName: org.name,
+      plan: 'free',
+      status: 'active',
+      stripeCustomerId: '',
+      stripeSubscriptionId: null,
+      currentPeriodEnd: null,
+      userCount: userCountByOrg.get(org.id) || 0,
+      mrr: 0,
+    }));
+
+    setSubscriptions([...enrichedSubs, ...freeOrgEntries]);
     setMetrics({
       totalMrr,
       activeSubscriptions: activeCount,
@@ -213,7 +226,16 @@ export default function SubscriptionsPage() {
       sub.orgName.toLowerCase().includes(search.toLowerCase()) ||
       sub.stripeCustomerId.toLowerCase().includes(search.toLowerCase());
 
-    const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
+    let matchesStatus = false;
+    if (statusFilter === 'all') {
+      matchesStatus = true;
+    } else if (statusFilter === 'free') {
+      matchesStatus = sub.plan === 'free';
+    } else if (statusFilter === 'paid') {
+      matchesStatus = sub.plan !== 'free';
+    } else {
+      matchesStatus = sub.status === statusFilter;
+    }
 
     return matchesSearch && matchesStatus;
   }));
@@ -447,7 +469,7 @@ export default function SubscriptionsPage() {
                   />
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  {['all', 'active', 'trialing', 'past_due', 'canceled'].map((status) => (
+                  {['all', 'paid', 'free', 'active', 'trialing', 'past_due', 'canceled'].map((status) => (
                     <button
                       key={status}
                       onClick={() => setStatusFilter(status)}
@@ -524,15 +546,19 @@ export default function SubscriptionsPage() {
                               : '-'}
                           </td>
                           <td className="py-3">
-                            <a
-                              href={`https://dashboard.stripe.com/customers/${sub.stripeCustomerId}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline flex items-center gap-1"
-                            >
-                              View
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
+                            {sub.stripeCustomerId ? (
+                              <a
+                                href={`https://dashboard.stripe.com/customers/${sub.stripeCustomerId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline flex items-center gap-1"
+                              >
+                                View
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            ) : (
+                              <span className="text-slate-400">-</span>
+                            )}
                           </td>
                         </tr>
                       ))}
