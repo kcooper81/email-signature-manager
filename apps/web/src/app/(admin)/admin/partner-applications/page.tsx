@@ -589,7 +589,7 @@ export default function PartnerApplicationsPage() {
         <ModalContent>
         {selectedApp && (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label className="text-muted-foreground text-xs">Company</Label>
                 <p className="font-medium flex items-center gap-2">

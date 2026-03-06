@@ -40,10 +40,14 @@ export function MarketingStatsBar({
   return (
     <section className={cn('py-12', styles.bg, className)}>
       <div className="max-w-6xl mx-auto px-6">
-        <div className={cn('grid gap-8 text-center', `grid-cols-2 md:grid-cols-${stats.length}`)}>
+        <div className={cn('grid gap-8 text-center grid-cols-2', {
+          'md:grid-cols-2': stats.length === 2,
+          'md:grid-cols-3': stats.length === 3,
+          'md:grid-cols-4': stats.length >= 4,
+        })}>
           {stats.map((stat) => (
             <div key={stat.label}>
-              <div className="text-4xl font-bold mb-2">{stat.value}</div>
+              <div className="text-3xl sm:text-4xl font-bold mb-2">{stat.value}</div>
               <div className={styles.label}>{stat.label}</div>
             </div>
           ))}
