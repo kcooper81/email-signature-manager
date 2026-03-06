@@ -35,6 +35,26 @@ export const MAILBOXES: Record<string, string> = {
 };
 
 /**
+ * Sanitize rich editor HTML for email delivery.
+ * Strips dangerous elements (script, iframe, etc.) while preserving
+ * formatting tags and converting them to inline styles for email clients.
+ */
+function sanitizeEmailHtml(html: string): string {
+  // Strip script, style, iframe, object, embed, form tags and their content
+  let safe = html.replace(/<(script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\/\1>/gi, '');
+  // Strip event handlers
+  safe = safe.replace(/\s+on\w+\s*=\s*"[^"]*"/gi, '');
+  safe = safe.replace(/\s+on\w+\s*=\s*'[^']*'/gi, '');
+  // Convert TipTap tags to email-safe inline styles
+  safe = safe.replace(/<a\s+href=/g, '<a style="color: #4d52de; text-decoration: underline;" href=');
+  safe = safe.replace(/<ul>/g, '<ul style="padding-left: 1.5em; margin: 0.5em 0;">');
+  safe = safe.replace(/<ol>/g, '<ol style="padding-left: 1.5em; margin: 0.5em 0;">');
+  safe = safe.replace(/<li>/g, '<li style="margin: 0.25em 0;">');
+  safe = safe.replace(/<p>/g, '<p style="margin: 0.25em 0;">');
+  return safe;
+}
+
+/**
  * Resolve the "from" address for a ticket reply.
  * Matches the mailbox the user originally emailed.
  */
@@ -162,6 +182,8 @@ export interface TicketResponseEmailData {
   ticketType: string;
   originalMessage: string;
   responseMessage: string;
+  /** When true, responseMessage contains HTML from the rich text editor */
+  isHtml?: boolean;
   adminEmail: string;
   /** The users.id of the admin sending the reply — used to render their email signature */
   adminUserId?: string | null;
@@ -440,10 +462,14 @@ export async function sendAdminInviteEmail(data: AdminInviteEmailData) {
 }
 
 export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
-  const { to, ticketId, adminEmail, adminUserId, replyAs } = data;
+  const { to, ticketId, adminEmail, adminUserId, replyAs, isHtml } = data;
   const ticketType = escapeHtml(data.ticketType);
   const originalMessage = escapeHtml(data.originalMessage);
-  const responseMessage = escapeHtml(data.responseMessage);
+  // If content is HTML from the rich editor, sanitize but preserve formatting
+  // Otherwise escape as plain text
+  const responseMessage = isHtml
+    ? sanitizeEmailHtml(data.responseMessage)
+    : escapeHtml(data.responseMessage);
   const fromAddress = resolveReplyFrom(replyAs);
 
   // Render email signature: per-mailbox first, then admin's personal, then fallback
@@ -486,7 +512,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: #ffffff; padding: 0;">
-              <p style="font-size: 15px; color: #374151; white-space: pre-wrap; margin-top: 0;">${responseMessage}</p>
+              <div style="font-size: 15px; color: #374151; margin-top: 0;${isHtml ? '' : ' white-space: pre-wrap;'}">${responseMessage}</div>
 
               ${fallbackSignOff}
               ${signatureHtml}

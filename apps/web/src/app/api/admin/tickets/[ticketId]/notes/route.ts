@@ -8,7 +8,7 @@ export async function POST(
   { params }: { params: { ticketId: string } }
 ) {
   try {
-    const { content, isInternal, replyAs } = await request.json();
+    const { content, isInternal, isHtml, replyAs } = await request.json();
 
     if (!content?.trim()) {
       return NextResponse.json(
@@ -84,6 +84,7 @@ export async function POST(
           ticketType: ticket.type,
           originalMessage: ticket.message,
           responseMessage: content.trim(),
+          isHtml: isHtml === true,
           adminEmail: userData.email,
           adminUserId: userData.id,
           replyAs: replyFromMailbox,
