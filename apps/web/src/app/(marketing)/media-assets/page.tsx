@@ -103,7 +103,7 @@ export default function MediaAssetsPage() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent mb-3">
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent mb-3">
                 Siggly Media Assets
               </h1>
               <p className="text-lg text-gray-600">
@@ -120,7 +120,7 @@ export default function MediaAssetsPage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
             <div className="bg-gradient-to-br from-violet-50 to-violet-100 rounded-lg p-4 border border-violet-200">
               <div className="text-3xl font-bold text-violet-600">{profiles.length}</div>
               <div className="text-sm text-violet-700 font-medium">Profile Images</div>

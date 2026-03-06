@@ -82,16 +82,17 @@ export default function CodeTwoComparisonPage() {
       {/* Feature Comparison */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Feature Comparison</h2>
-          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">Feature Comparison</h2>
+          <div className="overflow-x-auto -mx-6 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden min-w-[480px]">
             <div className="grid grid-cols-3 bg-gray-50 border-b border-gray-200">
-              <div className="px-6 py-4 font-semibold">Feature</div>
-              <div className="px-6 py-4 font-semibold text-center text-violet-600">Siggly</div>
-              <div className="px-6 py-4 font-semibold text-center text-gray-500">CodeTwo</div>
+              <div className="px-3 sm:px-6 py-4 font-semibold">Feature</div>
+              <div className="px-3 sm:px-6 py-4 font-semibold text-center text-violet-600">Siggly</div>
+              <div className="px-3 sm:px-6 py-4 font-semibold text-center text-gray-500">CodeTwo</div>
             </div>
             {comparisonData.map((row) => (
               <div key={row.feature} className="grid grid-cols-3 border-b border-gray-100 last:border-0">
-                <div className="px-6 py-4 text-sm">{row.feature}</div>
+                <div className="px-3 sm:px-6 py-4 text-sm">{row.feature}</div>
                 <div className="px-6 py-4 text-center">
                   {typeof row.siggly === 'boolean' ? (
                     row.siggly ? <Check className="h-5 w-5 text-green-500 mx-auto" /> : <X className="h-5 w-5 text-gray-300 mx-auto" />
@@ -108,6 +109,7 @@ export default function CodeTwoComparisonPage() {
                 </div>
               </div>
             ))}
+          </div>
           </div>
         </div>
       </section>

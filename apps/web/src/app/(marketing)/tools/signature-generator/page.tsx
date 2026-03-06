@@ -74,7 +74,7 @@ export default function SignatureGeneratorPage() {
       {/* Hero */}
       <section className="py-12 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-4xl font-bold mb-4">Free Email Signature Generator</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4">Free Email Signature Generator</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Create a professional email signature in seconds. No signup required. 
             Copy the HTML and paste it into Gmail, Outlook, or any email client.
@@ -119,7 +119,7 @@ export default function SignatureGeneratorPage() {
               {/* Template Selection */}
               <div>
                 <h2 className="text-xl font-semibold mb-4">Choose a Style</h2>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {templates.map((template) => (
                     <button
                       key={template.id}

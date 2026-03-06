@@ -38,7 +38,7 @@ export default function BlogPost() {
             <span className="bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-sm font-medium">Best Practices</span>
           </div>
 
-          <h1 className="text-4xl font-bold mb-6">Why Email Signatures Matter More Than You Think</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6">Why Email Signatures Matter More Than You Think</h1>
 
           <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 28, 2026</span>

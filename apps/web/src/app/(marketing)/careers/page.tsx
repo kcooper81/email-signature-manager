@@ -74,7 +74,7 @@ export default function CareersPage() {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6">
           <div className="bg-gradient-to-br from-blue-50 to-violet-50 border border-blue-200 rounded-2xl p-8 md:p-12">
-            <h2 className="text-3xl font-bold mb-4 text-center">Our Mission</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center">Our Mission</h2>
             <p className="text-lg text-gray-700 text-center max-w-2xl mx-auto">
               We're on a mission to make professional email signatures accessible to every team, 
               regardless of size or technical expertise. We believe that every email is an opportunity 
@@ -87,7 +87,7 @@ export default function CareersPage() {
       {/* Values */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Values</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">Our Values</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {values.map((value) => (
               <div key={value.title} className="bg-white border border-gray-200 rounded-xl p-6">
@@ -105,7 +105,7 @@ export default function CareersPage() {
       {/* Benefits */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Benefits & Perks</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">Benefits & Perks</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {benefits.map((benefit) => (
               <div key={benefit} className="flex items-center gap-3 bg-white border border-gray-200 rounded-lg p-4">
@@ -124,7 +124,7 @@ export default function CareersPage() {
       {/* Open Positions */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-6">Open Positions</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6">Open Positions</h2>
           <p className="text-center text-gray-600 mb-12">
             We're a growing startup and always looking for talented people. Check back soon for open roles!
           </p>
@@ -149,7 +149,7 @@ export default function CareersPage() {
       {/* Team Culture */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Life at Siggly</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12">Life at Siggly</h2>
           <div className="space-y-6">
             <div className="bg-white border border-gray-200 rounded-xl p-6">
               <h3 className="font-semibold mb-3">🌍 Remote-First Culture</h3>
@@ -182,7 +182,7 @@ export default function CareersPage() {
       {/* CTA */}
       <section className="py-20 bg-gradient-to-br from-violet-600 to-blue-600 text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Join Us?</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">Ready to Join Us?</h2>
           <p className="text-violet-100 mb-8 text-lg">
             Let's build something amazing together.
           </p>
