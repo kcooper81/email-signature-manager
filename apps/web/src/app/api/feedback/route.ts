@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { notifyAdminsOfNewTicket } from '@/lib/email/resend';
+import { notifyAdminsOfNewTicket, sendAutoResponse } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
 
 // Use service role for feedback inserts to bypass RLS (allows anonymous submissions)
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Notify admins of the new ticket (fire-and-forget)
+    // Notify admins + auto-respond to sender (fire-and-forget)
     if (newTicket) {
       notifyAdminsOfNewTicket({
         ticketId: newTicket.id,
@@ -75,6 +75,14 @@ export async function POST(request: NextRequest) {
         message: newTicket.message.slice(0, 500),
         source: 'feedback_widget',
       }).catch(() => {});
+
+      if (newTicket.user_email) {
+        sendAutoResponse({
+          to: newTicket.user_email,
+          ticketId: newTicket.id,
+          inboxEmail: 'support@siggly.io',
+        }).catch(() => {});
+      }
     }
 
     return NextResponse.json({
