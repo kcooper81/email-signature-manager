@@ -37,7 +37,7 @@ export default function BlogPost() {
         <div className="mb-8">
           <span className="bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-sm font-medium">Compliance</span>
         </div>
-        <h1 className="text-4xl font-bold mb-6">Email Signature Disclaimers: When & What to Include</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6">Email Signature Disclaimers: When & What to Include</h1>
         <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 16, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>

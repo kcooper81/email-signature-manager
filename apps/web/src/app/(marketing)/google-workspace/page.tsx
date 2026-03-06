@@ -344,16 +344,17 @@ export default function GoogleWorkspacePage() {
       <section className="py-20 bg-blue-600 text-white">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Siggly vs Native Gmail Signatures</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Siggly vs Native Gmail Signatures</h2>
             <p className="text-blue-100">
               Native Gmail signatures require manual setup per user. Siggly gives you centralized control over your entire organization.
             </p>
           </div>
-          <div className="bg-white/10 backdrop-blur rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+          <div className="bg-white/10 backdrop-blur rounded-2xl overflow-hidden min-w-[480px]">
             <div className="grid grid-cols-3 bg-white/5 border-b border-white/10">
-              <div className="px-6 py-4 font-semibold">Feature</div>
-              <div className="px-6 py-4 font-semibold text-center">Siggly</div>
-              <div className="px-6 py-4 font-semibold text-center">Native Gmail</div>
+              <div className="px-3 sm:px-6 py-4 font-semibold">Feature</div>
+              <div className="px-3 sm:px-6 py-4 font-semibold text-center">Siggly</div>
+              <div className="px-3 sm:px-6 py-4 font-semibold text-center">Native Gmail</div>
             </div>
             {comparisonData.map((row) => (
               <div key={row.feature} className="grid grid-cols-3 border-b border-white/10 last:border-0">
@@ -374,6 +375,7 @@ export default function GoogleWorkspacePage() {
                 </div>
               </div>
             ))}
+          </div>
           </div>
           <div className="text-center mt-8">
             <p className="text-blue-100 text-sm">

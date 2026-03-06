@@ -17,7 +17,7 @@ export default function TermsPage() {
           Back to home
         </Link>
 
-        <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-8">Terms of Service</h1>
         <p className="text-gray-500 mb-8">Last updated: February 1, 2026</p>
 
         <div className="prose prose-gray max-w-none">
