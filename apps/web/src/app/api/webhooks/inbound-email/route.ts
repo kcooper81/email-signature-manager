@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
 import { notifyAdminsOfNewTicket, sendAutoResponse } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
 import { createHmac } from 'crypto';
@@ -120,16 +119,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ skipped: true, reason: 'Not a siggly.io recipient' });
   }
 
-  // Resend webhook doesn't include email body — fetch it via API
+  // Resend webhook only includes metadata — fetch body via Received Emails API
   let bodyText = '';
   let bodyHtml = '';
   if (email_id && process.env.RESEND_API_KEY) {
     try {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      const fullEmail = await resend.emails.get(email_id);
-      if (fullEmail.data) {
-        bodyText = (fullEmail.data as any).text || '';
-        bodyHtml = (fullEmail.data as any).html || '';
+      // Use the /emails/receiving/{id} endpoint (not /emails/{id} which is for outbound)
+      const res = await fetch(`https://api.resend.com/emails/receiving/${email_id}`, {
+        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
+      });
+      if (res.ok) {
+        const fullEmail = await res.json();
+        bodyText = fullEmail.text || '';
+        bodyHtml = fullEmail.html || '';
+      } else {
+        console.error('[inbound-email] Resend API error', { status: res.status, statusText: res.statusText });
       }
       console.log('[inbound-email] Fetched email body', {
         hasText: !!bodyText,
