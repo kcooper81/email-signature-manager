@@ -4,6 +4,9 @@ const createMDX = require('@next/mdx');
 const nextConfig = {
   trailingSlash: false,
   reactStrictMode: true,
+  experimental: {
+    instrumentationHook: true,
+  },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   transpilePackages: ['@esm/shared'],
   images: {
