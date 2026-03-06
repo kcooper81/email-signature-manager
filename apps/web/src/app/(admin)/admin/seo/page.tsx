@@ -255,6 +255,25 @@ export default function SEODashboardPage() {
   // Loading states
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [auditRunning, setAuditRunning] = useState(false);
+  const [indexNowLoading, setIndexNowLoading] = useState(false);
+  const [indexNowResult, setIndexNowResult] = useState<{ success: boolean; message: string; urlCount: number } | null>(null);
+
+  const submitIndexNow = async () => {
+    setIndexNowLoading(true);
+    setIndexNowResult(null);
+    try {
+      const res = await fetch('/api/admin/seo/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submitAll: true }),
+      });
+      const data = await res.json();
+      setIndexNowResult(data);
+    } catch (err) {
+      setIndexNowResult({ success: false, message: 'Network error', urlCount: 0 });
+    }
+    setIndexNowLoading(false);
+  };
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -654,18 +673,49 @@ export default function SEODashboardPage() {
           <h1 className="text-2xl font-bold text-slate-900">SEO Engine</h1>
           <p className="text-slate-500">Auto-optimization, competitor intelligence & content management</p>
         </div>
-        <Button
-          onClick={runAudit}
-          disabled={auditRunning}
-          className="bg-violet-600 hover:bg-violet-700"
-        >
-          {auditRunning ? (
-            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Running Audit...</>
-          ) : (
-            <><RefreshCw className="h-4 w-4 mr-2" /> Run Audit Now</>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={submitIndexNow}
+            disabled={indexNowLoading}
+            title="Submit all sitemap URLs to IndexNow for instant indexing"
+          >
+            {indexNowLoading ? (
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting...</>
+            ) : (
+              <><Zap className="h-4 w-4 mr-2" /> IndexNow</>
+            )}
+          </Button>
+          <Button
+            onClick={runAudit}
+            disabled={auditRunning}
+            className="bg-violet-600 hover:bg-violet-700"
+          >
+            {auditRunning ? (
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Running Audit...</>
+            ) : (
+              <><RefreshCw className="h-4 w-4 mr-2" /> Run Audit Now</>
+            )}
+          </Button>
+        </div>
       </div>
+
+      {/* IndexNow Result */}
+      {indexNowResult && (
+        <div className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm ${
+          indexNowResult.success ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+        }`}>
+          <span>
+            {indexNowResult.success
+              ? `Submitted ${indexNowResult.urlCount} URLs to IndexNow — ${indexNowResult.message}`
+              : `IndexNow error: ${indexNowResult.message}`
+            }
+          </span>
+          <button onClick={() => setIndexNowResult(null)} className="text-current opacity-50 hover:opacity-100">
+            <XCircle className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 border-b">
