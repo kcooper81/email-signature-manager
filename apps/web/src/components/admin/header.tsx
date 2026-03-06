@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
 import { Shield, ArrowLeft } from 'lucide-react';
-import type { SuperAdminRole } from '@/app/(admin)/layout';
+import type { SuperAdminRole } from '@/lib/admin/views';
 
 interface AdminHeaderProps {
   user: User;

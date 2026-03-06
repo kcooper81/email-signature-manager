@@ -3,11 +3,8 @@ import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { AdminNav } from '@/components/admin/nav';
 import { AdminHeader } from '@/components/admin/header';
-
-export type SuperAdminRole = 'super_admin' | 'support';
-
-// Routes accessible to support role users
-const SUPPORT_ALLOWED_ROUTES = ['/admin/tickets', '/admin/testing-guide'];
+import { ADMIN_VIEW_ROUTES, DEFAULT_SUPPORT_VIEWS } from '@/lib/admin/views';
+import type { SuperAdminRole } from '@/lib/admin/views';
 
 export default async function AdminLayout({
   children,
@@ -21,12 +18,9 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
-  // Check if user has super admin flag in database (platform-level access)
-  // is_super_admin = platform admins who can access /admin panel
-  // is_admin = organization-level admins who can manage their team
   const { data: userData } = await supabase
     .from('users')
-    .select('is_super_admin, super_admin_role')
+    .select('is_super_admin, super_admin_role, super_admin_allowed_views')
     .eq('auth_id', user.id)
     .single();
 
@@ -38,15 +32,31 @@ export default async function AdminLayout({
 
   const role = (userData?.super_admin_role as SuperAdminRole) || 'super_admin';
 
-  // Block support users from restricted admin routes via direct URL
+  // Parse allowed views for support users
+  let allowedViews: string[] | null = null;
   if (role === 'support') {
+    try {
+      allowedViews = userData?.super_admin_allowed_views
+        ? JSON.parse(userData.super_admin_allowed_views)
+        : DEFAULT_SUPPORT_VIEWS;
+    } catch {
+      allowedViews = DEFAULT_SUPPORT_VIEWS;
+    }
+
+    // Build allowed route prefixes from view keys
+    const allowedRoutes = allowedViews!.map(key => ADMIN_VIEW_ROUTES[key]).filter(Boolean);
+
     const headerStore = headers();
     const pathname = headerStore.get('x-pathname') || '';
-    const isAllowed = SUPPORT_ALLOWED_ROUTES.some(
-      (route) => pathname === route || pathname.startsWith(route + '/')
-    );
+
+    const isAllowed = allowedRoutes.some(route => {
+      if (route === '/admin') return pathname === '/admin';
+      return pathname === route || pathname.startsWith(route + '/');
+    });
+
     if (!isAllowed) {
-      redirect('/admin/tickets');
+      const firstRoute = allowedRoutes[0] || '/admin/tickets';
+      redirect(firstRoute);
     }
   }
 
@@ -54,7 +64,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-slate-50">
       <AdminHeader user={user} role={role} />
       <div className="flex">
-        <AdminNav role={role} />
+        <AdminNav role={role} allowedViews={allowedViews} />
         <main className="flex-1 p-3 sm:p-4 md:p-6 min-w-0 overflow-x-hidden">
           {children}
         </main>
