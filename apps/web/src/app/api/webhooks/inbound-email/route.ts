@@ -68,6 +68,12 @@ function getInboxAlias(toAddress: string | null): string | null {
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
+  console.log('[inbound-email] Webhook received', {
+    bodyLength: rawBody.length,
+    hasWebhookSecret: !!process.env.RESEND_WEBHOOK_SECRET,
+    contentType: request.headers.get('content-type'),
+  });
+
   if (process.env.RESEND_WEBHOOK_SECRET) {
     if (!verifyResendWebhook(request, rawBody)) {
       console.error('[inbound-email] Webhook signature verification failed', {
@@ -93,6 +99,15 @@ export async function POST(request: NextRequest) {
     : Array.isArray(to) ? (to[0]?.address || to[0] || null)
     : to?.address || null;
 
+  console.log('[inbound-email] Parsed payload', {
+    senderEmail,
+    receivedAt,
+    subject: subject || '(none)',
+    hasText: !!text,
+    hasHtml: !!html,
+    payloadKeys: Object.keys(payload.data || payload),
+  });
+
   if (!senderEmail) {
     return NextResponse.json({ error: 'No sender email found' }, { status: 400 });
   }
@@ -105,9 +120,8 @@ export async function POST(request: NextRequest) {
   }
 
   const messageBody = text || html?.replace(/<[^>]+>/g, '') || '';
-  if (!messageBody.trim()) {
-    return NextResponse.json({ error: 'Empty email body' }, { status: 400 });
-  }
+  // Allow empty-body emails through — they still create a ticket with subject info
+  const displayBody = messageBody.trim() || '(No message body)';
 
   const supabase = getSupabaseAdmin();
   const inboxAlias = getInboxAlias(receivedAt);
@@ -152,7 +166,7 @@ export async function POST(request: NextRequest) {
           .insert({
             ticket_id: existingTicketId,
             author_id: null,
-            content: `Email reply from ${senderEmail}:\n\n${messageBody.trim()}`,
+            content: `Email reply from ${senderEmail}:\n\n${displayBody}`,
             is_internal: false,
             email_sent: false,
           });
@@ -192,7 +206,7 @@ export async function POST(request: NextRequest) {
         user_email: senderEmail,
         type: ticketType,
         priority: ticketPriority,
-        message: `From: ${senderEmail}\nSubject: ${subject || '(no subject)'}\n\n${messageBody.trim()}`,
+        message: `From: ${senderEmail}\nSubject: ${subject || '(no subject)'}\n\n${displayBody}`,
         status: 'new',
         inbox_email: receivedAt || null,
         metadata: {
@@ -212,7 +226,7 @@ export async function POST(request: NextRequest) {
         ticketId: newTicket.id,
         type: newTicket.type,
         senderEmail: senderEmail,
-        message: messageBody.trim().slice(0, 500),
+        message: displayBody.slice(0, 500),
         source: 'inbound_email',
       }).catch(() => {});
 
