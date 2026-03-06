@@ -868,9 +868,7 @@ export default function TicketsPage() {
           {filteredTickets.length > 0 && (
             <div className="flex items-center justify-between text-xs text-muted-foreground px-3 py-2 bg-muted/40 border-b">
               <div className="flex items-center gap-3">
-                {!selectedTicket && (
-                  <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} aria-label="Select all" />
-                )}
+                <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} aria-label="Select all" />
                 <span className="font-medium">{filteredTickets.length} tickets</span>
                 <SortButton field="createdAt" label="Date" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                 <SortButton field="priority" label="Priority" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
@@ -917,15 +915,13 @@ export default function TicketsPage() {
                               : 'border-l-[3px] border-l-transparent hover:bg-muted/50'
                         }`}
                       >
-                        {!isCompact && (
-                          <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
-                            <Checkbox
-                              checked={bulk.isSelected(ticket.id)}
-                              onCheckedChange={() => bulk.toggle(ticket.id)}
-                              aria-label={`Select ticket`}
-                            />
-                          </div>
-                        )}
+                        <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
+                          <Checkbox
+                            checked={bulk.isSelected(ticket.id)}
+                            onCheckedChange={() => bulk.toggle(ticket.id)}
+                            aria-label={`Select ticket`}
+                          />
+                        </div>
 
                         <PriorityIcon className={`h-4 w-4 shrink-0 mt-0.5 ${priorityColors[ticket.priority]}`} />
 
