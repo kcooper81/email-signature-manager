@@ -335,7 +335,7 @@ export default function ActivityPage() {
                           <tr key={`${log.id}-detail`}>
                             <td colSpan={6} className="pb-4">
                               <div className="bg-slate-50 rounded-lg p-4 mx-2 space-y-3">
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                   <div>
                                     <span className="text-slate-500 font-medium">Resource ID:</span>
                                     <span className="ml-2 font-mono text-xs">{log.resourceId}</span>
