@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-ab-testing',
-  'A/B Testing Email Signatures: Optimize Performance | Siggly',
+  'A/B Testing Email Signatures: Optimize Performance',
   'Learn to A/B test email signatures for better results. Test CTAs, designs, and content to find what converts best.',
   ['ab test email signature', 'signature testing', 'optimize email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'A/B Testing Email Signatures: Optimize Performance | Siggly',
+    title: 'A/B Testing Email Signatures: Optimize Performance',
     description: 'Learn to A/B test email signatures for better results. Test CTAs, designs, and content to find what converts best.',
     url: '/blog/email-signature-ab-testing',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',

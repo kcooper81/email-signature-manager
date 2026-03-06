@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-hubspot-integration',
-  'Email Signatures with HubSpot CRM Integration | Siggly',
+  'Email Signatures with HubSpot CRM Integration',
   'Connect your email signatures to HubSpot CRM. Sync contact data, personalize signatures, and track engagement.',
   ['hubspot email signature', 'crm email signature', 'hubspot signature integration']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures with HubSpot CRM Integration | Siggly',
+    title: 'Email Signatures with HubSpot CRM Integration',
     description: 'Connect your email signatures to HubSpot CRM. Sync contact data, personalize signatures, and track engagement.',
     url: '/blog/email-signature-hubspot-integration',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',

@@ -4,7 +4,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { compliancePages } from '@/lib/seo-pages/data/compliance';
 
 export const metadata = genMeta({
-  title: 'Email Signature Compliance by Regulation | Siggly',
+  title: 'Email Signature Compliance by Regulation',
   description: 'Comprehensive compliance guides for email signatures across GDPR, HIPAA, SOX, CAN-SPAM, CCPA, FERPA, PCI-DSS, CASL, PECR, and ISO 27001. Enterprise-ready regulatory reference.',
   keywords: ['email signature compliance', 'email regulations', 'gdpr email', 'hipaa email', 'email signature requirements'],
   canonical: '/compliance',

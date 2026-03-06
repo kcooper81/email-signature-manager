@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MarketingCTA } from '@/components/marketing/cta';
 
 export const metadata = {
-  title: 'Use Cases | Siggly - Email Signature Management',
+  title: 'Use Cases - Email Signature Management',
   description: 'See how different industries and teams use Siggly for email signature management. From startups to enterprises.',
 };
 

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-html-basics',
-  'HTML Email Signatures: A Technical Guide | Siggly',
+  'HTML Email Signatures: A Technical Guide',
   'Understand HTML email signature basics. Tables, inline styles, and email client compatibility for custom signature development.',
   ['html email signature', 'signature html code', 'email signature coding']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'HTML Email Signatures: A Technical Guide | Siggly',
+    title: 'HTML Email Signatures: A Technical Guide',
     description: 'Understand HTML email signature basics. Tables, inline styles, and email client compatibility for custom signature development.',
     url: '/blog/email-signature-html-basics',
     image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',

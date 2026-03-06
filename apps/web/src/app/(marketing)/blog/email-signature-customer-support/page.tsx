@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-customer-support',
-  'Customer Support Email Signatures: Build Trust | Siggly',
+  'Customer Support Email Signatures: Build Trust',
   'Create effective email signatures for customer support teams. Include helpful links, build rapport, and improve customer experience.',
   ['customer support email signature', 'support team signature', 'help desk email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Customer Support Email Signatures: Build Trust | Siggly',
+    title: 'Customer Support Email Signatures: Build Trust',
     description: 'Create effective email signatures for customer support teams. Include helpful links, build rapport, and improve customer experience.',
     url: '/blog/email-signature-customer-support',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',

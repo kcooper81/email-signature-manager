@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-multi-language',
-  'Multi-Language Email Signatures for Global Teams | Siggly',
+  'Multi-Language Email Signatures for Global Teams',
   'Create email signatures for international teams. Multiple languages, localization, and regional variations.',
   ['multi-language email signature', 'international signature', 'global email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Multi-Language Email Signatures for Global Teams | Siggly',
+    title: 'Multi-Language Email Signatures for Global Teams',
     description: 'Create email signatures for international teams. Multiple languages, localization, and regional variations.',
     url: '/blog/email-signature-multi-language',
     image: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1200&h=600&fit=crop',

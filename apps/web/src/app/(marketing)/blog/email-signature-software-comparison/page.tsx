@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-software-comparison',
-  'Email Signature Software Comparison 2026 | Siggly',
+  'Email Signature Software Comparison 2026',
   'Compare the top email signature management tools. Features, pricing, and pros/cons of leading signature software solutions.',
   ['email signature software', 'signature management tools', 'compare email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Software Comparison 2026 | Siggly',
+    title: 'Email Signature Software Comparison 2026',
     description: 'Compare the top email signature management tools. Features, pricing, and pros/cons of leading signature software solutions.',
     url: '/blog/email-signature-software-comparison',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',

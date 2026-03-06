@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'financial-advisor-email-signature',
-  'Financial Advisor Email Signatures: Compliance Guide | Siggly',
+  'Financial Advisor Email Signatures: Compliance Guide',
   'Create compliant email signatures for financial advisors. Covers FINRA requirements, CRD numbers, disclosures, and regulatory disclaimers.',
   ['financial advisor email signature', 'FINRA email signature', 'investment advisor signature', 'wealth management email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Financial Advisor Email Signatures: Compliance Guide | Siggly',
+    title: 'Financial Advisor Email Signatures: Compliance Guide',
     description: 'Create compliant email signatures for financial advisors. Covers FINRA requirements, CRD numbers, disclosures, and regulatory disclaimers.',
     url: '/blog/financial-advisor-email-signature',
     image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',

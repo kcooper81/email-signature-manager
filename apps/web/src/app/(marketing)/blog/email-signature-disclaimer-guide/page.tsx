@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-disclaimer-guide',
-  'Email Signature Disclaimers: When & What to Include | Siggly',
+  'Email Signature Disclaimers: When & What to Include',
   'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
   ['email signature disclaimer', 'email confidentiality notice', 'legal email disclaimer']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Disclaimers: When & What to Include | Siggly',
+    title: 'Email Signature Disclaimers: When & What to Include',
     description: 'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
     url: '/blog/email-signature-disclaimer-guide',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',

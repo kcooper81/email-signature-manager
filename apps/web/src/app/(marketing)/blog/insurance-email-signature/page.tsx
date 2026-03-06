@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'insurance-email-signature',
-  'Insurance Agent Email Signatures: Compliance Guide | Siggly',
+  'Insurance Agent Email Signatures: Compliance Guide',
   'Create compliant email signatures for insurance agents. Includes license numbers, carrier info, and regulatory requirements.',
   ['insurance agent email signature', 'insurance broker signature', 'insurance email compliance']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Insurance Agent Email Signatures: Compliance Guide | Siggly',
+    title: 'Insurance Agent Email Signatures: Compliance Guide',
     description: 'Create compliant email signatures for insurance agents. Includes license numbers, carrier info, and regulatory requirements.',
     url: '/blog/insurance-email-signature',
     image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=600&fit=crop',

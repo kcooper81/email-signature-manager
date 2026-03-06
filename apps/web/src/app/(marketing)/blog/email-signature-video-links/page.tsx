@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-video-links',
-  'Adding Video Links to Email Signatures | Siggly',
+  'Adding Video Links to Email Signatures',
   'Include video content links in your email signature. Product demos, introductions, and video CTAs that engage recipients.',
   ['email signature video', 'video link signature', 'signature video CTA']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Adding Video Links to Email Signatures | Siggly',
+    title: 'Adding Video Links to Email Signatures',
     description: 'Include video content links in your email signature. Product demos, introductions, and video CTAs that engage recipients.',
     url: '/blog/email-signature-video-links',
     image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=1200&h=600&fit=crop',

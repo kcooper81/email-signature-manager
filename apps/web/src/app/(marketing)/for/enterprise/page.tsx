@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
-  title: 'Enterprise Email Signature Management | Siggly',
+  title: 'Enterprise Email Signature Management',
   description: 'Enterprise-grade email signature management with SSO, advanced security, compliance features, and dedicated support. Scale to thousands of users.',
   keywords: ['enterprise email signatures', 'enterprise signature management', 'SSO email signatures', 'compliance email signatures', 'large organization signatures'],
   canonical: '/for/enterprise',

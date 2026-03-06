@@ -9,6 +9,12 @@ const nextConfig = {
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   transpilePackages: ['@esm/shared'],
+  async redirects() {
+    return [
+      // Canonical: /integrations/google-workspace → /google-workspace
+      { source: '/integrations/google-workspace', destination: '/google-workspace', permanent: true },
+    ];
+  },
   async rewrites() {
     // IndexNow requires key file at /{key}.txt — rewrite to our API route
     return process.env.INDEXNOW_API_KEY

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'deploy-signatures-google-workspace',
-  'How to Deploy Email Signatures in Google Workspace | Siggly',
+  'How to Deploy Email Signatures in Google Workspace',
   'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
   ['google workspace email signature', 'deploy gmail signatures', 'google admin signature', 'gmail signature all users']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'How to Deploy Email Signatures in Google Workspace | Siggly',
+    title: 'How to Deploy Email Signatures in Google Workspace',
     description: 'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
     url: '/blog/deploy-signatures-google-workspace',
     image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',

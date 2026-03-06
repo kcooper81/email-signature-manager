@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'remote-team-email-signatures',
-  'Email Signatures for Remote Teams: Best Practices | Siggly',
+  'Email Signatures for Remote Teams: Best Practices',
   'Manage email signatures for distributed and remote teams. Learn deployment strategies, consistency tips, and tools for remote workforce.',
   ['remote team email signature', 'distributed team signatures', 'work from home email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures for Remote Teams: Best Practices | Siggly',
+    title: 'Email Signatures for Remote Teams: Best Practices',
     description: 'Manage email signatures for distributed and remote teams. Learn deployment strategies, consistency tips, and tools for remote workforce.',
     url: '/blog/remote-team-email-signatures',
     image: 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=1200&h=600&fit=crop',

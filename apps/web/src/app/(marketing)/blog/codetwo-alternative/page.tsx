@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'codetwo-alternative',
-  'Best CodeTwo Alternatives 2026: Compare Features & Pricing | Siggly',
+  'Best CodeTwo Alternatives 2026: Compare Features & Pricing',
   'Looking for a CodeTwo alternative? Compare email signature tools with Google Workspace support, easier pricing, and modern features.',
   ['codetwo alternative', 'codetwo competitor', 'codetwo vs', 'email signature software']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Best CodeTwo Alternatives 2026: Compare Features & Pricing | Siggly',
+    title: 'Best CodeTwo Alternatives 2026: Compare Features & Pricing',
     description: 'Looking for a CodeTwo alternative? Compare email signature tools with Google Workspace support, easier pricing, and modern features.',
     url: '/blog/codetwo-alternative',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',

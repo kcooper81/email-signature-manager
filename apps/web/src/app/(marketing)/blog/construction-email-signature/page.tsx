@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'construction-email-signature',
-  'Construction Company Email Signatures: Contractor Guide | Siggly',
+  'Construction Company Email Signatures: Contractor Guide',
   'Create professional email signatures for construction companies and contractors. Include license info and build client trust.',
   ['construction email signature', 'contractor email signature', 'builder email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Construction Company Email Signatures: Contractor Guide | Siggly',
+    title: 'Construction Company Email Signatures: Contractor Guide',
     description: 'Create professional email signatures for construction companies and contractors. Include license info and build client trust.',
     url: '/blog/construction-email-signature',
     image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop',

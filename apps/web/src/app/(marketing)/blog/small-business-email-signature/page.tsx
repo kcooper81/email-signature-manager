@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'small-business-email-signature',
-  'Small Business Email Signatures: Complete Guide 2026 | Siggly',
+  'Small Business Email Signatures: Complete Guide 2026',
   'Create professional email signatures for your small business. Learn what to include, design tips, and free tools to get started.',
   ['small business email signature', 'business email signature', 'professional email signature small business']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Small Business Email Signatures: Complete Guide 2026 | Siggly',
+    title: 'Small Business Email Signatures: Complete Guide 2026',
     description: 'Create professional email signatures for your small business. Learn what to include, design tips, and free tools to get started.',
     url: '/blog/small-business-email-signature',
     image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=600&fit=crop',

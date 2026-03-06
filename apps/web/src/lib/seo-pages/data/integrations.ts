@@ -552,12 +552,12 @@ export const integrationsPages: SEOLandingPageData[] = [
         'gmail signatures',
         'google directory sync',
       ],
-      canonical: '/integrations/google-workspace',
+      canonical: '/google-workspace',
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
       { name: 'Integrations', url: '/integrations' },
-      { name: 'Google Workspace', url: '/integrations/google-workspace' },
+      { name: 'Google Workspace', url: '/google-workspace' },
     ],
     hero: {
       badge: { icon: 'mail', text: 'Google Workspace Integration' },

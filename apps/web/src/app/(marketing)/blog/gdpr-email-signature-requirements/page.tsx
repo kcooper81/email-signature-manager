@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'gdpr-email-signature-requirements',
-  'GDPR Email Signature Requirements: EU Compliance Guide | Siggly',
+  'GDPR Email Signature Requirements: EU Compliance Guide',
   'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
   ['GDPR email signature', 'EU email compliance', 'email signature privacy', 'GDPR disclaimer email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'GDPR Email Signature Requirements: EU Compliance Guide | Siggly',
+    title: 'GDPR Email Signature Requirements: EU Compliance Guide',
     description: 'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
     url: '/blog/gdpr-email-signature-requirements',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop',

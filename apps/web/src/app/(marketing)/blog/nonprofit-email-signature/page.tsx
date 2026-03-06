@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'nonprofit-email-signature',
-  'Nonprofit Email Signatures: Boost Donations & Awareness | Siggly',
+  'Nonprofit Email Signatures: Boost Donations & Awareness',
   'Create impactful email signatures for nonprofits. Include donation links, mission statements, and build supporter engagement.',
   ['nonprofit email signature', 'charity email signature', 'ngo email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Nonprofit Email Signatures: Boost Donations & Awareness | Siggly',
+    title: 'Nonprofit Email Signatures: Boost Donations & Awareness',
     description: 'Create impactful email signatures for nonprofits. Include donation links, mission statements, and build supporter engagement.',
     url: '/blog/nonprofit-email-signature',
     image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&h=600&fit=crop',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-common-mistakes',
-  '15 Common Email Signature Mistakes to Avoid | Siggly',
+  '15 Common Email Signature Mistakes to Avoid',
   'Avoid these common email signature mistakes. Design errors, technical issues, and content problems that hurt your professional image.',
   ['email signature mistakes', 'signature errors', 'bad email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: '15 Common Email Signature Mistakes to Avoid | Siggly',
+    title: '15 Common Email Signature Mistakes to Avoid',
     description: 'Avoid these common email signature mistakes. Design errors, technical issues, and content problems that hurt your professional image.',
     url: '/blog/email-signature-common-mistakes',
     image: 'https://images.unsplash.com/photo-1525785967371-87ba44b3e6cf?w=1200&h=600&fit=crop',

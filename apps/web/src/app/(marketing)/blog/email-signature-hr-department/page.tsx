@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-hr-department',
-  'HR Department Email Signatures: Best Practices | Siggly',
+  'HR Department Email Signatures: Best Practices',
   'Email signature guidelines for HR teams. Professional signatures for recruiting, employee communications, and HR branding.',
   ['hr email signature', 'human resources signature', 'recruiting email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'HR Department Email Signatures: Best Practices | Siggly',
+    title: 'HR Department Email Signatures: Best Practices',
     description: 'Email signature guidelines for HR teams. Professional signatures for recruiting, employee communications, and HR branding.',
     url: '/blog/email-signature-hr-department',
     image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop',

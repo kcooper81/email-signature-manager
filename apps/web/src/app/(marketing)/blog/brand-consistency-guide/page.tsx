@@ -6,13 +6,13 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'brand-consistency-guide',
-  'The Complete Guide to Brand Consistency in Email | Siggly Blog',
+  'The Complete Guide to Brand Consistency in Email',
   'How to ensure every email your team sends reinforces your brand identity and professionalism.'
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'The Complete Guide to Brand Consistency in Email | Siggly Blog',
+    title: 'The Complete Guide to Brand Consistency in Email',
     description: 'How to ensure every email your team sends reinforces your brand identity and professionalism.',
     url: '/blog/brand-consistency-guide',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',

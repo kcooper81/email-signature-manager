@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-accessibility',
-  'Accessible Email Signatures: Inclusive Design | Siggly',
+  'Accessible Email Signatures: Inclusive Design',
   'Create accessible email signatures for all users. Alt text, color contrast, screen readers, and inclusive design practices.',
   ['accessible email signature', 'email signature accessibility', 'inclusive signature design']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Accessible Email Signatures: Inclusive Design | Siggly',
+    title: 'Accessible Email Signatures: Inclusive Design',
     description: 'Create accessible email signatures for all users. Alt text, color contrast, screen readers, and inclusive design practices.',
     url: '/blog/email-signature-accessibility',
     image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',

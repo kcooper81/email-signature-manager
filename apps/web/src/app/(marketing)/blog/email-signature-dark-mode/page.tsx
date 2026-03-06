@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-dark-mode',
-  'Email Signatures in Dark Mode: Design Tips | Siggly',
+  'Email Signatures in Dark Mode: Design Tips',
   'Design email signatures that work in dark mode. Tips for logos, colors, and images that look good on both light and dark backgrounds.',
   ['email signature dark mode', 'dark mode email', 'signature dark theme']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures in Dark Mode: Design Tips | Siggly',
+    title: 'Email Signatures in Dark Mode: Design Tips',
     description: 'Design email signatures that work in dark mode. Tips for logos, colors, and images that look good on both light and dark backgrounds.',
     url: '/blog/email-signature-dark-mode',
     image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',

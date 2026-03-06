@@ -6,13 +6,13 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'legal-requirements-email-signatures',
-  'Legal Requirements for Business Email Signatures | Siggly Blog',
+  'Legal Requirements for Business Email Signatures',
   'What your business email signatures legally need to include, by country and industry.'
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Legal Requirements for Business Email Signatures | Siggly Blog',
+    title: 'Legal Requirements for Business Email Signatures',
     description: 'What your business email signatures legally need to include, by country and industry.',
     url: '/blog/legal-requirements-email-signatures',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
