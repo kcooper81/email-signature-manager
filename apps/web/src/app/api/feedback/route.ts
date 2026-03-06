@@ -74,14 +74,14 @@ export async function POST(request: NextRequest) {
         senderEmail: newTicket.user_email || 'anonymous',
         message: newTicket.message.slice(0, 500),
         source: 'feedback_widget',
-      }).catch(() => {});
+      }).catch((err) => console.error('[feedback] Admin notification failed:', err));
 
       if (newTicket.user_email) {
         sendAutoResponse({
           to: newTicket.user_email,
           ticketId: newTicket.id,
           inboxEmail: 'support@siggly.io',
-        }).catch(() => {});
+        }).catch((err) => console.error('[feedback] Auto-response failed:', err));
       }
     }
 
