@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, Input, Button, Checkbox } from '@/components/ui';
+import { Input, Button, Checkbox } from '@/components/ui';
 import { RichTextEditor, type RichTextEditorRef } from '@/components/admin/rich-text-editor';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
@@ -742,87 +742,91 @@ export default function TicketsPage() {
   ];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       {/* Header row — title + actions */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div className="flex items-center gap-2">
-          <Inbox className="h-5 w-5 text-slate-700" />
-          <h1 className="text-lg font-bold text-slate-900">Inbox</h1>
-          <span className="text-xs text-slate-400 font-medium">{totalCount}</span>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Inbox className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Inbox</h1>
+            <p className="text-sm text-muted-foreground">{totalCount} ticket{totalCount !== 1 ? 's' : ''}</p>
+          </div>
         </div>
 
-        <div className="ml-auto flex items-center gap-1">
-          <button onClick={() => setHideSnoozed(!hideSnoozed)} className={`p-1.5 rounded-md transition-colors ${!hideSnoozed ? 'bg-amber-100 text-amber-700' : 'text-slate-400 hover:bg-slate-100'}`} title={hideSnoozed ? 'Snoozed hidden' : 'Showing snoozed'}>
-            <AlarmClock className="h-3.5 w-3.5" />
+        <div className="flex items-center gap-1.5">
+          <button onClick={() => setHideSnoozed(!hideSnoozed)} className={`p-2 rounded-lg transition-colors ${!hideSnoozed ? 'bg-amber-100 text-amber-700' : 'text-muted-foreground hover:bg-muted'}`} title={hideSnoozed ? 'Snoozed hidden' : 'Showing snoozed'}>
+            <AlarmClock className="h-4 w-4" />
           </button>
-          <button onClick={toggleNotifications} className={`p-1.5 rounded-md transition-colors ${notificationsEnabled ? 'bg-blue-100 text-blue-700' : 'text-slate-400 hover:bg-slate-100'}`} title={notificationsEnabled ? 'Notifications on' : 'Enable notifications'}>
-            {notificationsEnabled ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
+          <button onClick={toggleNotifications} className={`p-2 rounded-lg transition-colors ${notificationsEnabled ? 'bg-blue-100 text-blue-700' : 'text-muted-foreground hover:bg-muted'}`} title={notificationsEnabled ? 'Notifications on' : 'Enable notifications'}>
+            {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
           </button>
-          <div className="hidden lg:flex items-center gap-1 ml-2 text-[10px] text-slate-400">
-            <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">j</kbd>/<kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">k</kbd>
-            <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">r</kbd>
-            <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">e</kbd>
+          <div className="hidden lg:flex items-center gap-1.5 ml-2 text-xs text-muted-foreground">
+            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px] font-mono">j</kbd><span>/</span><kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px] font-mono">k</kbd>
+            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px] font-mono">r</kbd>
+            <kbd className="px-1.5 py-0.5 bg-muted border rounded text-[10px] font-mono">e</kbd>
           </div>
         </div>
       </div>
 
       {/* Status tabs — own row, scrollable on mobile */}
-      <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 -mb-0.5 scrollbar-none">
+      <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none border-b">
         {STATUS_TABS.map(tab => (
           <button
             key={tab.key}
             onClick={() => { setStatusFilter(tab.key); setPage(0); }}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
+            className={`px-3 py-2 text-sm font-medium rounded-t-md transition-colors whitespace-nowrap border-b-2 ${
               statusFilter === tab.key
-                ? 'bg-blue-100 text-blue-700'
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                ? 'border-primary text-primary bg-primary/5'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
             }`}
           >
             {tab.label}
             {tab.key === 'open' && stats.new > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{stats.new}</span>
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{stats.new}</span>
             )}
             {tab.key === 'mine' && stats.mine > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold">{stats.mine}</span>
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold">{stats.mine}</span>
             )}
             {tab.key === 'unassigned' && stats.unassigned > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">{stats.unassigned}</span>
+              <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold">{stats.unassigned}</span>
             )}
           </button>
         ))}
       </div>
 
       {/* Split pane: list left, detail right on desktop */}
-      <div className={`flex gap-0 ${selectedTicket ? 'lg:flex-row' : ''}`}>
+      <div className={`flex gap-0 rounded-lg border bg-card overflow-hidden ${selectedTicket ? 'lg:flex-row' : ''}`}>
         {/* Ticket list — inbox style */}
-        <div className={`${selectedTicket ? 'hidden lg:flex lg:flex-col lg:w-[320px] lg:min-w-[320px] lg:max-w-[320px] lg:shrink-0' : 'w-full'}`}>
+        <div className={`${selectedTicket ? 'hidden lg:flex lg:flex-col lg:w-[340px] lg:min-w-[340px] lg:max-w-[340px] lg:shrink-0' : 'w-full'}`}>
           {/* Search + filter inside the list pane */}
-          <div className="flex items-center gap-1.5 px-2 py-2 bg-white border border-b-0 border-slate-200 rounded-t-lg">
+          <div className="flex items-center gap-2 px-3 py-3 border-b bg-muted/30">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder="Search tickets..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-8 h-8 text-xs"
+                className="pl-8 h-9 text-sm"
               />
             </div>
             {/* Filter popover button */}
             <div className="relative">
               <button
                 onClick={() => setShowFilterPopover(!showFilterPopover)}
-                className={`h-8 px-2 border rounded-md text-xs flex items-center gap-1 transition-colors ${
-                  hasActiveFilters ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white text-slate-500 hover:bg-slate-50'
+                className={`h-9 px-2.5 border rounded-md text-sm flex items-center gap-1.5 transition-colors ${
+                  hasActiveFilters ? 'bg-primary/10 border-primary/30 text-primary' : 'bg-background text-muted-foreground hover:bg-muted'
                 }`}
               >
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-                {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+                <SlidersHorizontal className="h-4 w-4" />
+                {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
               </button>
               {showFilterPopover && (
-                <div className="absolute right-0 top-9 bg-white border rounded-lg shadow-lg p-3 z-30 w-56 space-y-3">
+                <div className="absolute right-0 top-10 bg-popover border rounded-lg shadow-lg p-4 z-30 w-60 space-y-4">
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Type</label>
-                    <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(0); }} className="w-full h-8 px-2 border rounded text-xs bg-white text-slate-700">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Type</label>
+                    <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(0); }} className="w-full h-9 px-2.5 border rounded-md text-sm bg-background">
                       <option value="all">All types</option>
                       <option value="bug">Bug</option>
                       <option value="feature">Feature</option>
@@ -833,8 +837,8 @@ export default function TicketsPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Priority</label>
-                    <select value={priorityFilter} onChange={(e) => { setPriorityFilter(e.target.value); setPage(0); }} className="w-full h-8 px-2 border rounded text-xs bg-white text-slate-700">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Priority</label>
+                    <select value={priorityFilter} onChange={(e) => { setPriorityFilter(e.target.value); setPage(0); }} className="w-full h-9 px-2.5 border rounded-md text-sm bg-background">
                       <option value="all">All priorities</option>
                       <option value="urgent">Urgent</option>
                       <option value="high">High</option>
@@ -843,15 +847,15 @@ export default function TicketsPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Source</label>
-                    <select value={partnerFilter} onChange={(e) => { setPartnerFilter(e.target.value); setPage(0); }} className="w-full h-8 px-2 border rounded text-xs bg-white text-slate-700">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Source</label>
+                    <select value={partnerFilter} onChange={(e) => { setPartnerFilter(e.target.value); setPage(0); }} className="w-full h-9 px-2.5 border rounded-md text-sm bg-background">
                       <option value="all">All sources</option>
                       <option value="escalations">Escalations</option>
                       <option value="partner">Partners</option>
                     </select>
                   </div>
                   {hasActiveFilters && (
-                    <button onClick={() => { setTypeFilter('all'); setPriorityFilter('all'); setPartnerFilter('all'); setPage(0); setShowFilterPopover(false); }} className="w-full h-7 text-xs text-red-600 hover:bg-red-50 rounded border border-red-200">
+                    <button onClick={() => { setTypeFilter('all'); setPriorityFilter('all'); setPartnerFilter('all'); setPage(0); setShowFilterPopover(false); }} className="w-full h-8 text-xs text-red-600 hover:bg-red-50 rounded-md border border-red-200 font-medium">
                       Clear filters
                     </button>
                   )}
@@ -862,38 +866,38 @@ export default function TicketsPage() {
 
           {/* Sort bar */}
           {filteredTickets.length > 0 && (
-            <div className="flex items-center justify-between text-[10px] text-slate-400 px-3 py-1.5 bg-slate-50 border-x border-slate-200">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground px-3 py-2 bg-muted/40 border-b">
+              <div className="flex items-center gap-3">
                 {!selectedTicket && (
                   <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} aria-label="Select all" />
                 )}
-                <span>{filteredTickets.length} tickets</span>
+                <span className="font-medium">{filteredTickets.length} tickets</span>
                 <SortButton field="createdAt" label="Date" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
-                <SortButton field="priority" label="Pri" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="priority" label="Priority" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
               </div>
               {totalPages > 1 && (
-                <div className="flex items-center gap-1">
-                  <span>{page + 1}/{totalPages}</span>
-                  <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="p-0.5 hover:bg-slate-200 rounded disabled:opacity-30"><ChevronLeft className="h-3 w-3" /></button>
-                  <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-0.5 hover:bg-slate-200 rounded disabled:opacity-30"><ChevronRight className="h-3 w-3" /></button>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-medium">{page + 1}/{totalPages}</span>
+                  <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="p-1 hover:bg-muted rounded disabled:opacity-30"><ChevronLeft className="h-3.5 w-3.5" /></button>
+                  <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-1 hover:bg-muted rounded disabled:opacity-30"><ChevronRight className="h-3.5 w-3.5" /></button>
                 </div>
               )}
             </div>
           )}
 
-          <Card className={`overflow-hidden rounded-t-none border-t-0 ${selectedTicket ? 'lg:rounded-r-none lg:border-r-0' : ''}`}>
-            <CardContent className="p-0">
+          <div className={`${selectedTicket ? 'lg:border-r' : ''}`}>
               {loading ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : filteredTickets.length === 0 ? (
-                <div className="text-center py-16 text-slate-400">
-                  <Inbox className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No tickets found</p>
+                <div className="text-center py-20 text-muted-foreground">
+                  <Inbox className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                  <p className="text-sm font-medium">No tickets found</p>
+                  <p className="text-xs mt-1">Try adjusting your filters</p>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y">
                   {filteredTickets.map((ticket) => {
                     const TypeIcon = typeIcons[ticket.type];
                     const PriorityIcon = priorityIcons[ticket.priority];
@@ -905,16 +909,16 @@ export default function TicketsPage() {
                       <div
                         key={ticket.id}
                         onClick={() => openTicketDetail(ticket)}
-                        className={`flex items-center gap-2 ${isCompact ? 'px-2.5 py-3' : 'px-3 py-3'} cursor-pointer transition-all border-b border-slate-200 ${
+                        className={`flex items-start gap-3 ${isCompact ? 'px-3 py-3' : 'px-4 py-3.5'} cursor-pointer transition-all ${
                           selectedTicket?.id === ticket.id
-                            ? 'bg-blue-50 border-l-[3px] border-l-blue-600 shadow-sm'
+                            ? 'bg-primary/5 border-l-[3px] border-l-primary'
                             : isUnread
-                              ? 'bg-gradient-to-r from-blue-50/60 to-white border-l-[3px] border-l-blue-400 hover:bg-blue-50/80'
-                              : 'border-l-[3px] border-l-transparent hover:bg-slate-50'
+                              ? 'bg-blue-50/40 border-l-[3px] border-l-blue-400 hover:bg-blue-50/70'
+                              : 'border-l-[3px] border-l-transparent hover:bg-muted/50'
                         }`}
                       >
                         {!isCompact && (
-                          <div onClick={(e) => e.stopPropagation()}>
+                          <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
                             <Checkbox
                               checked={bulk.isSelected(ticket.id)}
                               onCheckedChange={() => bulk.toggle(ticket.id)}
@@ -923,11 +927,11 @@ export default function TicketsPage() {
                           </div>
                         )}
 
-                        <PriorityIcon className={`h-3.5 w-3.5 shrink-0 ${priorityColors[ticket.priority]}`} />
+                        <PriorityIcon className={`h-4 w-4 shrink-0 mt-0.5 ${priorityColors[ticket.priority]}`} />
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className={`inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${typeColors[ticket.type]}`}>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${typeColors[ticket.type]}`}>
                               <TypeIcon className="h-2.5 w-2.5" />
                               {!isCompact && ticket.type}
                             </span>
@@ -936,7 +940,7 @@ export default function TicketsPage() {
                                 {statusLabels[ticket.status] || ticket.status}
                               </span>
                             )}
-                            <span className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
+                            <span className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>
                               {ticket.userEmail || 'Anonymous'}
                             </span>
                             {!isCompact && ticket.receivedAtMailbox && (
@@ -945,33 +949,33 @@ export default function TicketsPage() {
                               </span>
                             )}
                           </div>
-                          <p className={`truncate mt-0.5 ${isCompact ? 'text-[11px]' : 'text-xs'} ${isUnread ? 'text-slate-600 font-medium' : 'text-slate-400'}`}>
+                          <p className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'text-foreground/70 font-medium' : 'text-muted-foreground'}`}>
                             {ticket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}
                           </p>
                         </div>
 
-                        <div className="flex flex-col items-end gap-0.5 shrink-0">
-                          <span className={`${isCompact ? 'text-[10px]' : 'text-[11px]'} whitespace-nowrap ${isUnread ? 'text-blue-600 font-semibold' : 'text-slate-400'}`}>{timeAgo(ticket.createdAt)}</span>
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className={`text-xs whitespace-nowrap ${isUnread ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>{timeAgo(ticket.createdAt)}</span>
                           {!isCompact && ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
-                            <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                               <Reply className="h-2.5 w-2.5" />
                               {timeAgo(ticket.updatedAt)}
                             </span>
                           )}
                           {!isCompact && ticket.assignedEmail && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium flex items-center gap-0.5 max-w-[120px] truncate">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 font-medium flex items-center gap-0.5 max-w-[120px] truncate">
                               <UserCheck className="h-2.5 w-2.5 shrink-0" />
                               {ticket.assignedEmail.split('@')[0]}
                             </span>
                           )}
                           {!isCompact && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
                               <AlarmClock className="h-2.5 w-2.5" />
                               {timeAgo(ticket.snoozedUntil)}
                             </span>
                           )}
                           {!isCompact && ticket.isPartnerEscalation && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-medium">Partner</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">Partner</span>
                           )}
                         </div>
                       </div>
@@ -979,8 +983,7 @@ export default function TicketsPage() {
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+          </div>
 
           {/* Bottom pagination (mobile) */}
           {totalPages > 1 && (
@@ -1000,46 +1003,46 @@ export default function TicketsPage() {
 
         {/* Desktop detail panel — inline right side */}
         {selectedTicket && (
-          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l border-slate-200" style={{ maxHeight: 'calc(100vh - 260px)' }}>
+          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l" style={{ maxHeight: 'calc(100vh - 260px)' }}>
 
             {/* Header — ticket identity + close */}
-            <div className="bg-white border-b px-4 py-2.5 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2 min-w-0">
+            <div className="bg-card border-b px-5 py-3 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
                 {(() => {
                   const TypeIcon = typeIcons[selectedTicket.type];
                   return (
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${typeColors[selectedTicket.type]}`}>
-                      <TypeIcon className="h-3 w-3" />
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${typeColors[selectedTicket.type]}`}>
+                      <TypeIcon className="h-3.5 w-3.5" />
                       {selectedTicket.type}
                     </span>
                   );
                 })()}
-                <span className="text-xs font-mono text-slate-400 shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
-                <span className="text-sm font-medium text-slate-800 truncate">
+                <span className="text-xs font-mono text-muted-foreground shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
+                <span className="text-sm font-semibold text-foreground truncate">
                   {selectedTicket.userEmail || 'Anonymous'}
                 </span>
                 {selectedTicket.receivedAtMailbox && (
-                  <span className="text-[10px] text-emerald-600 font-medium shrink-0">→ {selectedTicket.receivedAtMailbox}</span>
+                  <span className="text-xs text-emerald-600 font-medium shrink-0">→ {selectedTicket.receivedAtMailbox}</span>
                 )}
               </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-slate-100 rounded shrink-0 ml-2" title="Close (Esc)">
-                <X className="h-4 w-4 text-slate-400" />
+              <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-muted rounded-md shrink-0 ml-2" title="Close (Esc)">
+                <X className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
 
             {/* Controls bar — grouped: status+priority | assignee | snooze */}
-            <div className="bg-slate-50 border-b px-4 py-2 flex items-center gap-3 shrink-0 flex-wrap">
+            <div className="bg-muted/30 border-b px-5 py-2.5 flex items-center gap-4 shrink-0 flex-wrap">
               {/* Status & Priority group */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status</span>
-                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700 font-medium">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</span>
+                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
                   <option value="new">New</option>
                   <option value="reviewed">In Progress</option>
                   <option value="resolved">Resolved</option>
                   <option value="archived">Closed</option>
                 </select>
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Priority</span>
-                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700 font-medium">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Priority</span>
+                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
                   <option value="low">Low</option>
                   <option value="normal">Normal</option>
                   <option value="high">High</option>
@@ -1047,99 +1050,99 @@ export default function TicketsPage() {
                 </select>
               </div>
 
-              <div className="w-px h-5 bg-slate-300" />
+              <div className="w-px h-6 bg-border" />
 
               {/* Assignee */}
-              <div className="flex items-center gap-1.5">
-                <UserCheck className="h-3 w-3 text-slate-400" />
-                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700">
+              <div className="flex items-center gap-2">
+                <UserCheck className="h-3.5 w-3.5 text-muted-foreground" />
+                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-8 px-2 border rounded-md text-sm bg-background">
                   <option value="">Unassigned</option>
                   {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
                 </select>
               </div>
 
-              <div className="w-px h-5 bg-slate-300" />
+              <div className="w-px h-6 bg-border" />
 
               {/* Snooze */}
               <div className="relative">
                 {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
-                  <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-7 px-2 border rounded-md text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-1 font-medium" title="Click to unsnooze">
-                    <AlarmClock className="h-3 w-3" /> Snoozed
+                  <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-8 px-3 border rounded-md text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-1.5 font-medium" title="Click to unsnooze">
+                    <AlarmClock className="h-3.5 w-3.5" /> Snoozed
                   </button>
                 ) : (
-                  <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="h-7 px-2 border rounded-md text-xs text-slate-500 hover:bg-white flex items-center gap-1" title="Snooze">
-                    <AlarmClock className="h-3 w-3" /> Snooze
+                  <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="h-8 px-3 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Snooze">
+                    <AlarmClock className="h-3.5 w-3.5" /> Snooze
                   </button>
                 )}
                 {showSnoozeMenu && (
-                  <div className="absolute left-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-36">
+                  <div className="absolute left-0 top-9 bg-popover border rounded-lg shadow-lg py-1 z-20 w-40">
                     {[{ label: '1 hour', hours: 1 }, { label: '4 hours', hours: 4 }, { label: 'Tomorrow', hours: 24 }, { label: '3 days', hours: 72 }, { label: '1 week', hours: 168 }].map(opt => (
-                      <button key={opt.hours} onClick={() => snoozeTicket(selectedTicket.id, opt.hours)} className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 text-slate-700">{opt.label}</button>
+                      <button key={opt.hours} onClick={() => snoozeTicket(selectedTicket.id, opt.hours)} className="w-full text-left px-3 py-2 text-sm hover:bg-muted">{opt.label}</button>
                     ))}
                   </div>
                 )}
               </div>
 
               {/* Meta */}
-              <div className="flex items-center gap-1.5 ml-auto text-[10px] text-slate-400">
+              <div className="flex items-center gap-2 ml-auto text-xs text-muted-foreground">
                 <span>{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
                 {selectedTicket.organizationName && (
-                  <><span>·</span><span>{selectedTicket.organizationName}</span></>
+                  <><span>·</span><span className="font-medium">{selectedTicket.organizationName}</span></>
                 )}
                 {selectedTicket.pageUrl && (
-                  <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-0.5">
-                    <ExternalLink className="h-3 w-3" />
+                  <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 )}
               </div>
             </div>
 
             {/* Scrollable conversation area */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-0">
+            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-0 bg-muted/20">
               {/* Original message — prominent */}
               <div className="relative">
-                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Original Message</div>
-                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
-                  <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Original Message</div>
+                <div className="bg-card rounded-lg border shadow-sm p-5">
+                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
                 </div>
               </div>
 
               {/* Timeline thread */}
               {selectedTicket.notes.length > 0 && (
-                <div className="relative ml-4 mt-4">
+                <div className="relative ml-5 mt-5">
                   {/* Timeline line */}
-                  <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200" />
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
 
                   {selectedTicket.notes.map((note, idx) => {
                     const isCustomer = note.authorEmail === 'External Reply';
                     const isInternal = note.isInternal;
                     return (
-                      <div key={note.id} className="relative pl-6 pb-4 last:pb-0">
+                      <div key={note.id} className="relative pl-7 pb-5 last:pb-0">
                         {/* Timeline dot */}
-                        <div className={`absolute left-0 top-1 w-2 h-2 rounded-full -translate-x-[3.5px] ring-2 ring-white ${
+                        <div className={`absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full -translate-x-[5px] ring-2 ring-background ${
                           isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'
                         }`} />
 
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[11px] font-semibold ${
-                            isCustomer ? 'text-slate-600' : isInternal ? 'text-amber-600' : 'text-blue-600'
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className={`text-xs font-semibold ${
+                            isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'
                           }`}>
                             {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
                           </span>
-                          <span className="text-[10px] text-slate-400">{timeAgo(note.createdAt)}</span>
+                          <span className="text-xs text-muted-foreground">{timeAgo(note.createdAt)}</span>
                         </div>
 
-                        <div className={`rounded-lg p-3 ${
+                        <div className={`rounded-lg p-4 ${
                           isCustomer
-                            ? 'bg-white border border-slate-200'
+                            ? 'bg-card border'
                             : isInternal
-                            ? 'bg-amber-50/70 border border-amber-100'
-                            : 'bg-blue-50/70 border border-blue-100'
+                            ? 'bg-amber-50/70 border border-amber-200/50'
+                            : 'bg-blue-50/70 border border-blue-200/50'
                         }`}>
                           {note.content.startsWith('<') ? (
-                            <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                            <div className="text-sm prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
                           ) : (
-                            <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
+                            <p className="text-sm whitespace-pre-wrap">{note.content}</p>
                           )}
                         </div>
                       </div>
@@ -1150,42 +1153,42 @@ export default function TicketsPage() {
             </div>
 
             {/* Sticky reply composer — polished */}
-            <div className="bg-white border-t-2 border-slate-200 px-4 py-3 shrink-0 space-y-2.5">
-              <div className="flex items-center gap-2 mb-1">
+            <div className="bg-card border-t-2 px-5 py-4 shrink-0 space-y-3">
+              <div className="flex items-center gap-2">
                 {cannedResponses.length > 0 && !isInternalNote && (
                   <div className="relative">
-                    <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded-md hover:bg-slate-50 border border-transparent hover:border-slate-200">
-                      <Zap className="h-3 w-3" /> Templates <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
+                    <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-2.5 py-1.5 rounded-md hover:bg-muted border border-transparent hover:border-border font-medium">
+                      <Zap className="h-3.5 w-3.5" /> Templates <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
                     </button>
                     {showCannedPicker && (
-                      <div className="absolute left-0 bottom-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
+                      <div className="absolute left-0 bottom-9 bg-popover border rounded-lg shadow-lg py-1 z-20 w-80 max-h-52 overflow-y-auto">
                         {cannedResponses.map(cr => (
-                          <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                            <p className="text-xs font-medium text-slate-700">{cr.title}</p>
-                            <p className="text-[10px] text-slate-400 truncate">{cr.content.slice(0, 80)}</p>
+                          <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-4 py-2.5 hover:bg-muted border-b last:border-0">
+                            <p className="text-sm font-medium">{cr.title}</p>
+                            <p className="text-xs text-muted-foreground truncate mt-0.5">{cr.content.slice(0, 80)}</p>
                           </button>
                         ))}
                       </div>
                     )}
                   </div>
                 )}
-                <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded-md hover:bg-slate-50">
+                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground px-2.5 py-1.5 rounded-md hover:bg-muted font-medium">
                   <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
                   Internal
                 </label>
                 {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
-                  <span className="text-[10px] text-blue-600 flex items-center gap-1 ml-auto font-medium">
-                    <Reply className="h-3 w-3" /> Reply via {selectedTicket.receivedAtMailbox}
+                  <span className="text-xs text-primary flex items-center gap-1 ml-auto font-medium">
+                    <Reply className="h-3.5 w-3.5" /> Reply via {selectedTicket.receivedAtMailbox}
                   </span>
                 )}
               </div>
 
               <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note (not visible to user)..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
 
-              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-9 ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
+              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-10 text-sm font-medium ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
                 {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                 {isInternalNote ? 'Add Internal Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
-                {!addingNote && <span className="ml-2 text-[10px] opacity-70">⌘↵</span>}
+                {!addingNote && <span className="ml-2 text-xs opacity-70">⌘↵</span>}
               </Button>
             </div>
 
@@ -1202,92 +1205,92 @@ export default function TicketsPage() {
       {/* Mobile flyout detail panel */}
       {selectedTicket && (
         <div className="fixed inset-0 z-50 flex justify-end lg:hidden">
-          <div className="absolute inset-0 bg-black/20" onClick={() => setSelectedTicket(null)} />
-          <div className="relative w-full max-w-2xl bg-white shadow-xl flex flex-col animate-in slide-in-from-right">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setSelectedTicket(null)} />
+          <div className="relative w-full max-w-2xl bg-background shadow-xl flex flex-col animate-in slide-in-from-right">
             {/* Header */}
-            <div className="bg-white border-b px-3 py-2.5 flex items-center justify-between z-10 shrink-0">
-              <div className="flex items-center gap-2 min-w-0">
-                <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-slate-100 rounded shrink-0">
-                  <ChevronLeft className="h-5 w-5 text-slate-500" />
+            <div className="bg-card border-b px-4 py-3 flex items-center justify-between z-10 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-muted rounded-md shrink-0">
+                  <ChevronLeft className="h-5 w-5 text-muted-foreground" />
                 </button>
                 {(() => {
                   const TypeIcon = typeIcons[selectedTicket.type];
                   return (
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${typeColors[selectedTicket.type]}`}>
-                      <TypeIcon className="h-3 w-3" />
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${typeColors[selectedTicket.type]}`}>
+                      <TypeIcon className="h-3.5 w-3.5" />
                       {selectedTicket.type}
                     </span>
                   );
                 })()}
-                <span className="text-xs font-mono text-slate-400 shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
-                <span className="text-sm font-medium text-slate-700 truncate">
+                <span className="text-xs font-mono text-muted-foreground shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
+                <span className="text-sm font-semibold truncate">
                   {selectedTicket.userEmail || 'Anonymous'}
                 </span>
               </div>
             </div>
 
             {/* Controls bar */}
-            <div className="bg-slate-50 border-b px-3 py-2 shrink-0">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+            <div className="bg-muted/30 border-b px-4 py-2.5 shrink-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
                   <option value="new">New</option>
                   <option value="reviewed">In Progress</option>
                   <option value="resolved">Resolved</option>
                   <option value="archived">Closed</option>
                 </select>
-                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
                   <option value="low">Low</option>
                   <option value="normal">Normal</option>
                   <option value="high">High</option>
                   <option value="urgent">Urgent</option>
                 </select>
-                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
+                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-8 px-2 border rounded-md text-sm bg-background">
                   <option value="">Unassigned</option>
                   {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
                 </select>
-                <span className="ml-auto text-[10px] text-slate-400">{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                <span className="ml-auto text-xs text-muted-foreground">{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
               </div>
             </div>
 
             {/* Scrollable conversation */}
-            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
+            <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4 bg-muted/20">
               {/* Original message */}
               <div>
-                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Original Message</div>
-                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-3">
-                  <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Original Message</div>
+                <div className="bg-card rounded-lg border shadow-sm p-4">
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
                 </div>
               </div>
 
               {/* Timeline thread */}
               {selectedTicket.notes.length > 0 && (
                 <div className="relative ml-3">
-                  <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200" />
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
                   {selectedTicket.notes.map((note) => {
                     const isCustomer = note.authorEmail === 'External Reply';
                     const isInternal = note.isInternal;
                     return (
-                      <div key={note.id} className="relative pl-5 pb-3 last:pb-0">
-                        <div className={`absolute left-0 top-1 w-2 h-2 rounded-full -translate-x-[3.5px] ring-2 ring-white ${
+                      <div key={note.id} className="relative pl-6 pb-4 last:pb-0">
+                        <div className={`absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full -translate-x-[5px] ring-2 ring-background ${
                           isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'
                         }`} />
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[11px] font-semibold ${
-                            isCustomer ? 'text-slate-600' : isInternal ? 'text-amber-600' : 'text-blue-600'
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className={`text-xs font-semibold ${
+                            isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'
                           }`}>
                             {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
                           </span>
-                          <span className="text-[10px] text-slate-400">{timeAgo(note.createdAt)}</span>
+                          <span className="text-xs text-muted-foreground">{timeAgo(note.createdAt)}</span>
                         </div>
-                        <div className={`rounded-lg p-3 ${
-                          isCustomer ? 'bg-white border border-slate-200'
-                            : isInternal ? 'bg-amber-50/70 border border-amber-100'
-                            : 'bg-blue-50/70 border border-blue-100'
+                        <div className={`rounded-lg p-4 ${
+                          isCustomer ? 'bg-card border'
+                            : isInternal ? 'bg-amber-50/70 border border-amber-200/50'
+                            : 'bg-blue-50/70 border border-blue-200/50'
                         }`}>
                           {note.content.startsWith('<') ? (
-                            <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                            <div className="text-sm prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
                           ) : (
-                            <p className="text-sm text-slate-700 whitespace-pre-wrap">{note.content}</p>
+                            <p className="text-sm whitespace-pre-wrap">{note.content}</p>
                           )}
                         </div>
                       </div>
@@ -1298,21 +1301,21 @@ export default function TicketsPage() {
             </div>
 
             {/* Sticky reply composer */}
-            <div className="bg-white border-t-2 border-slate-200 px-3 py-2.5 shrink-0 space-y-2">
+            <div className="bg-card border-t-2 px-4 py-3 shrink-0 space-y-2.5">
               <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500">
+                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground font-medium">
                   <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
                   Internal
                 </label>
                 {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
-                  <span className="text-[10px] text-blue-600 flex items-center gap-1 ml-auto font-medium">
-                    <Reply className="h-3 w-3" /> via {selectedTicket.receivedAtMailbox}
+                  <span className="text-xs text-primary flex items-center gap-1 ml-auto font-medium">
+                    <Reply className="h-3.5 w-3.5" /> via {selectedTicket.receivedAtMailbox}
                   </span>
                 )}
               </div>
               <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
-              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} size="sm" className={`w-full ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
-                {addingNote ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
+              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-10 text-sm font-medium ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
+                {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                 {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
               </Button>
             </div>
