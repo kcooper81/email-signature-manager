@@ -15,12 +15,8 @@ import {
   Download,
   ShieldAlert,
   Network,
-  AlertTriangle,
-  UserPlus,
-  Check,
   CreditCard,
   TrendingUp,
-  Clock,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -50,15 +46,6 @@ interface Organization {
   ownerEmail: string | null;
 }
 
-interface OrphanedUser {
-  authId: string;
-  email: string;
-  provider: string;
-  firstName: string;
-  lastName: string;
-  createdAt: string;
-}
-
 type PlanFilter = 'all' | 'free' | 'starter' | 'professional' | 'enterprise';
 type OrgTypeFilter = 'all' | 'standard' | 'msp' | 'msp_client';
 
@@ -74,9 +61,6 @@ export default function AccountsPage() {
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [stats, setStats] = useState<AccountStats | null>(null);
-  const [orphanedUsers, setOrphanedUsers] = useState<OrphanedUser[]>([]);
-  const [fixingUsers, setFixingUsers] = useState<Set<string>>(new Set());
-  const [fixedUsers, setFixedUsers] = useState<Set<string>>(new Set());
   const sort = useSortableTable<Organization>('createdAt', 'desc');
 
   const filteredOrgIds = useMemo(() => {
@@ -233,20 +217,7 @@ export default function AccountsPage() {
     setLoading(false);
   };
 
-  const loadOrphanedUsers = async () => {
-    try {
-      const res = await fetch('/api/admin/accounts/orphaned');
-      if (res.ok) {
-        const data = await res.json();
-        setOrphanedUsers(data.orphaned || []);
-      }
-    } catch (err) {
-      console.error('Failed to load orphaned users:', err);
-    }
-  };
-
   useEffect(() => {
-    loadOrphanedUsers();
     loadStats();
   }, []);
 
@@ -266,30 +237,6 @@ export default function AccountsPage() {
       paidOrgs: paidResult.count || 0,
       totalUsers: usersResult.count || 0,
       newThisWeek: newResult.count || 0,
-    });
-  };
-
-  const fixOrphanedUser = async (authId: string) => {
-    setFixingUsers(prev => new Set(prev).add(authId));
-    try {
-      const res = await fetch('/api/admin/accounts/orphaned', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authId }),
-      });
-      if (res.ok) {
-        setFixedUsers(prev => new Set(prev).add(authId));
-        // Refresh the org list and orphaned list to reflect the fix
-        loadOrganizations();
-        loadOrphanedUsers();
-      }
-    } catch (err) {
-      console.error('Failed to fix orphaned user:', err);
-    }
-    setFixingUsers(prev => {
-      const next = new Set(prev);
-      next.delete(authId);
-      return next;
     });
   };
 
@@ -489,61 +436,6 @@ export default function AccountsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Orphaned Auth Users */}
-      {orphanedUsers.length > 0 && (
-        <Card className="border-amber-200 bg-amber-50/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-800">
-              <AlertTriangle className="h-5 w-5" />
-              Orphaned Signups ({orphanedUsers.length})
-            </CardTitle>
-            <CardDescription className="text-amber-700">
-              These users signed up but never completed profile setup. They exist in auth but have no organization.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="divide-y divide-amber-200">
-              {orphanedUsers.map((ou) => (
-                <div key={ou.authId} className="flex items-center justify-between py-3">
-                  <div className="min-w-0">
-                    <p className="font-medium text-slate-900">
-                      {ou.firstName} {ou.lastName}
-                      {!ou.firstName && <span className="text-slate-400 italic">No name</span>}
-                    </p>
-                    <div className="flex items-center gap-3 text-sm text-slate-500">
-                      <span>{ou.email}</span>
-                      <span className="px-1.5 py-0.5 text-xs rounded bg-slate-100 capitalize">{ou.provider}</span>
-                      <span>{new Date(ou.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  {fixedUsers.has(ou.authId) ? (
-                    <span className="flex items-center gap-1.5 text-sm text-green-700 font-medium">
-                      <Check className="h-4 w-4" />
-                      Fixed
-                    </span>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => fixOrphanedUser(ou.authId)}
-                      disabled={fixingUsers.has(ou.authId)}
-                      className="border-amber-300 hover:bg-amber-100"
-                    >
-                      {fixingUsers.has(ou.authId) ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                      ) : (
-                        <UserPlus className="h-4 w-4 mr-1.5" />
-                      )}
-                      Create Org
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Results */}
       <Card>
