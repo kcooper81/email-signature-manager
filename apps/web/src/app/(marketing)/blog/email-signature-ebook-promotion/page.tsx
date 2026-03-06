@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-ebook-promotion',
-  'Promoting Ebooks & Content Through Email Signatures | Siggly',
+  'Promoting Ebooks & Content Through Email Signatures',
   'Use email signatures to distribute content. Promote ebooks, whitepapers, guides, and other lead magnets effectively.',
   ['email signature ebook', 'content promotion signature', 'lead magnet email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Promoting Ebooks & Content Through Email Signatures | Siggly',
+    title: 'Promoting Ebooks & Content Through Email Signatures',
     description: 'Use email signatures to distribute content. Promote ebooks, whitepapers, guides, and other lead magnets effectively.',
     url: '/blog/email-signature-ebook-promotion',
     image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1200&h=600&fit=crop',

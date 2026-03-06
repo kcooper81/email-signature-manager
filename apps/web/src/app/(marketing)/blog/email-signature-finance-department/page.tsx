@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-finance-department',
-  'Finance Department Email Signatures | Siggly',
+  'Finance Department Email Signatures',
   'Email signature best practices for finance teams. Compliance, security, and professional signatures for accounting and finance.',
   ['finance email signature', 'accounting department signature', 'CFO email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Finance Department Email Signatures | Siggly',
+    title: 'Finance Department Email Signatures',
     description: 'Email signature best practices for finance teams. Compliance, security, and professional signatures for accounting and finance.',
     url: '/blog/email-signature-finance-department',
     image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',

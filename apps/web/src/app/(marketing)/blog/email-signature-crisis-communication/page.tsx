@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-crisis-communication',
-  'Email Signatures in Crisis Communication | Siggly',
+  'Email Signatures in Crisis Communication',
   'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
   ['crisis communication email', 'emergency signature update', 'company crisis email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures in Crisis Communication | Siggly',
+    title: 'Email Signatures in Crisis Communication',
     description: 'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
     url: '/blog/email-signature-crisis-communication',
     image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop',

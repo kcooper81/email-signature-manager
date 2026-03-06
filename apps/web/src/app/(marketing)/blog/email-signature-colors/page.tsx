@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-colors',
-  'Email Signature Colors: Brand Color Best Practices | Siggly',
+  'Email Signature Colors: Brand Color Best Practices',
   'Choose the right colors for email signatures. Learn about brand colors, contrast, and what works across all email clients.',
   ['email signature colors', 'signature color scheme', 'brand colors email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Colors: Brand Color Best Practices | Siggly',
+    title: 'Email Signature Colors: Brand Color Best Practices',
     description: 'Choose the right colors for email signatures. Learn about brand colors, contrast, and what works across all email clients.',
     url: '/blog/email-signature-colors',
     image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1200&h=600&fit=crop',

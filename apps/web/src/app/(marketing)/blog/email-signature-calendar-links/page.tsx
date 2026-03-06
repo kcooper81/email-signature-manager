@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-calendar-links',
-  'Add Calendar Booking Links to Email Signatures | Siggly',
+  'Add Calendar Booking Links to Email Signatures',
   'Add Calendly, HubSpot, or Cal.com booking links to your email signature. Reduce scheduling friction and book more meetings.',
   ['email signature calendar link', 'calendly signature', 'meeting link email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Add Calendar Booking Links to Email Signatures | Siggly',
+    title: 'Add Calendar Booking Links to Email Signatures',
     description: 'Add Calendly, HubSpot, or Cal.com booking links to your email signature. Reduce scheduling friction and book more meetings.',
     url: '/blog/email-signature-calendar-links',
     image: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&h=600&fit=crop',

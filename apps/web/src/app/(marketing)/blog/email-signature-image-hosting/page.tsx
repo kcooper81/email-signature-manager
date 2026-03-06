@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-image-hosting',
-  'Email Signature Image Hosting: Best Practices Guide | Siggly',
+  'Email Signature Image Hosting: Best Practices Guide',
   'Learn where and how to host images for email signatures. Compare hosting options and avoid common image display problems.',
   ['email signature image hosting', 'host signature logo', 'email signature image url']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Image Hosting: Best Practices Guide | Siggly',
+    title: 'Email Signature Image Hosting: Best Practices Guide',
     description: 'Learn where and how to host images for email signatures. Compare hosting options and avoid common image display problems.',
     url: '/blog/email-signature-image-hosting',
     image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=600&fit=crop',

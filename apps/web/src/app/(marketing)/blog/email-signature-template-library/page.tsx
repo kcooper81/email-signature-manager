@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-template-library',
-  'Building an Email Signature Template Library | Siggly',
+  'Building an Email Signature Template Library',
   'Create a library of email signature templates for your organization. Templates for different roles, departments, and use cases.',
   ['email signature template', 'signature library', 'template management']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Building an Email Signature Template Library | Siggly',
+    title: 'Building an Email Signature Template Library',
     description: 'Create a library of email signature templates for your organization. Templates for different roles, departments, and use cases.',
     url: '/blog/email-signature-template-library',
     image: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=1200&h=600&fit=crop',

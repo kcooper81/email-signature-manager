@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'gmail-signature-setup-guide',
-  'How to Set Up Gmail Signature: Complete 2026 Guide | Siggly',
+  'How to Set Up Gmail Signature: Complete 2026 Guide',
   'Learn how to create and set up a professional Gmail signature step-by-step. Includes tips for images, formatting, and mobile optimization.',
   ['gmail signature', 'gmail signature setup', 'how to add signature in gmail', 'gmail email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'How to Set Up Gmail Signature: Complete 2026 Guide | Siggly',
+    title: 'How to Set Up Gmail Signature: Complete 2026 Guide',
     description: 'Learn how to create and set up a professional Gmail signature step-by-step. Includes tips for images, formatting, and mobile optimization.',
     url: '/blog/gmail-signature-setup-guide',
     image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&h=600&fit=crop',

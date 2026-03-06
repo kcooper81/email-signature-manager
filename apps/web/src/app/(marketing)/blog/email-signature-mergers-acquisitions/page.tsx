@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-mergers-acquisitions',
-  'Email Signatures During M&A: Transition Guide | Siggly',
+  'Email Signatures During M&A: Transition Guide',
   'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
   ['email signature merger', 'acquisition rebrand signature', 'company merger email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures During M&A: Transition Guide | Siggly',
+    title: 'Email Signatures During M&A: Transition Guide',
     description: 'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
     url: '/blog/email-signature-mergers-acquisitions',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',

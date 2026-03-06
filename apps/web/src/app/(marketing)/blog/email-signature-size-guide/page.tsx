@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-size-guide',
-  'Email Signature Size Guide: Dimensions & File Sizes | Siggly',
+  'Email Signature Size Guide: Dimensions & File Sizes',
   'The complete guide to email signature dimensions. Learn optimal image sizes, logo dimensions, and file size limits for all email clients.',
   ['email signature size', 'email signature dimensions', 'email signature image size', 'logo size email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Size Guide: Dimensions & File Sizes | Siggly',
+    title: 'Email Signature Size Guide: Dimensions & File Sizes',
     description: 'The complete guide to email signature dimensions. Learn optimal image sizes, logo dimensions, and file size limits for all email clients.',
     url: '/blog/email-signature-size-guide',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',

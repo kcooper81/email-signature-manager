@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-technology-companies',
-  'Tech Company Email Signatures: Modern Design Guide | Siggly',
+  'Tech Company Email Signatures: Modern Design Guide',
   'Create modern email signatures for technology companies. Balance innovation with professionalism in your tech startup or enterprise.',
   ['tech company email signature', 'startup signature', 'saas email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Tech Company Email Signatures: Modern Design Guide | Siggly',
+    title: 'Tech Company Email Signatures: Modern Design Guide',
     description: 'Create modern email signatures for technology companies. Balance innovation with professionalism in your tech startup or enterprise.',
     url: '/blog/email-signature-technology-companies',
     image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop',

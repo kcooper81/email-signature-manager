@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'accounting-firm-email-signature',
-  'Accounting Firm Email Signatures: CPA Credential Guide | Siggly',
+  'Accounting Firm Email Signatures: CPA Credential Guide',
   'Create professional email signatures for CPAs and accounting firms. Include credentials, firm info, and compliance elements.',
   ['cpa email signature', 'accounting firm signature', 'accountant email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Accounting Firm Email Signatures: CPA Credential Guide | Siggly',
+    title: 'Accounting Firm Email Signatures: CPA Credential Guide',
     description: 'Create professional email signatures for CPAs and accounting firms. Include credentials, firm info, and compliance elements.',
     url: '/blog/accounting-firm-email-signature',
     image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',

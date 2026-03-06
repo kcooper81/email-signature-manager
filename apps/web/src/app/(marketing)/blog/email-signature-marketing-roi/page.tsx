@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-marketing-roi',
-  'Email Signature Marketing: Measure ROI & Drive Results | Siggly',
+  'Email Signature Marketing: Measure ROI & Drive Results',
   'Turn email signatures into a marketing channel. Learn to measure ROI, add campaign banners, and track clicks from employee signatures.',
   ['email signature marketing', 'email signature ROI', 'signature banner campaigns', 'email signature analytics']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Marketing: Measure ROI & Drive Results | Siggly',
+    title: 'Email Signature Marketing: Measure ROI & Drive Results',
     description: 'Turn email signatures into a marketing channel. Learn to measure ROI, add campaign banners, and track clicks from employee signatures.',
     url: '/blog/email-signature-marketing-roi',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',

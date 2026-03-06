@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
-  title: 'Email Signatures for Small Business | Siggly',
+  title: 'Email Signatures for Small Business',
   description: 'Professional email signatures for small teams. Easy setup, affordable pricing, and no technical skills required.',
   keywords: ['small business email signatures', 'affordable signature management', 'easy email signatures', 'small team branding'],
   canonical: '/for/small-business',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'education-email-signature',
-  'Education Email Signatures: Teachers & Administrators | Siggly',
+  'Education Email Signatures: Teachers & Administrators',
   'Create professional email signatures for educators, teachers, and school administrators. Include credentials and contact info appropriately.',
   ['teacher email signature', 'education email signature', 'school administrator signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Education Email Signatures: Teachers & Administrators | Siggly',
+    title: 'Education Email Signatures: Teachers & Administrators',
     description: 'Create professional email signatures for educators, teachers, and school administrators. Include credentials and contact info appropriately.',
     url: '/blog/education-email-signature',
     image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=600&fit=crop',

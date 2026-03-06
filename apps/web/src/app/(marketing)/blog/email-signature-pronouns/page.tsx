@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-pronouns',
-  'Adding Pronouns to Email Signatures: Best Practices | Siggly',
+  'Adding Pronouns to Email Signatures: Best Practices',
   'How to add pronouns to your email signature professionally. Formatting tips and considerations for inclusive signatures.',
   ['pronouns in email signature', 'email signature pronouns', 'inclusive email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Adding Pronouns to Email Signatures: Best Practices | Siggly',
+    title: 'Adding Pronouns to Email Signatures: Best Practices',
     description: 'How to add pronouns to your email signature professionally. Formatting tips and considerations for inclusive signatures.',
     url: '/blog/email-signature-pronouns',
     image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'outlook-signature-setup-guide',
-  'How to Set Up Outlook Signature: Step-by-Step Guide 2026 | Siggly',
+  'How to Set Up Outlook Signature: Step-by-Step Guide 2026',
   'Create a professional Outlook email signature with this complete guide. Covers Outlook desktop, web, and mobile signature setup.',
   ['outlook signature', 'outlook signature setup', 'how to change outlook signature', 'microsoft outlook email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'How to Set Up Outlook Signature: Step-by-Step Guide 2026 | Siggly',
+    title: 'How to Set Up Outlook Signature: Step-by-Step Guide 2026',
     description: 'Create a professional Outlook email signature with this complete guide. Covers Outlook desktop, web, and mobile signature setup.',
     url: '/blog/outlook-signature-setup-guide',
     image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',

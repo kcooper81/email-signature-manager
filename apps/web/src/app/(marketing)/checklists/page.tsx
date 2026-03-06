@@ -4,7 +4,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { checklistsPages } from '@/lib/seo-pages/data/checklists';
 
 export const metadata = genMeta({
-  title: 'Email Signature Checklists - Step-by-Step Guides | Siggly',
+  title: 'Email Signature Checklists - Step-by-Step Guides',
   description: 'Actionable, step-by-step email signature checklists for deployment, compliance, design, branding, and operations. Follow each checklist to get it right the first time.',
   keywords: ['email signature checklists', 'signature deployment checklist', 'email compliance checklist', 'signature setup guides'],
   canonical: '/checklists',

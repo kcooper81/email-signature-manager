@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'real-estate-email-signature',
-  'Real Estate Email Signatures: Stand Out to Clients | Siggly',
+  'Real Estate Email Signatures: Stand Out to Clients',
   'Create professional real estate email signatures with property listings, virtual tour links, and trust-building elements for agents and brokers.',
   ['real estate email signature', 'realtor email signature', 'real estate agent signature', 'broker email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Real Estate Email Signatures: Stand Out to Clients | Siggly',
+    title: 'Real Estate Email Signatures: Stand Out to Clients',
     description: 'Create professional real estate email signatures with property listings, virtual tour links, and trust-building elements for agents and brokers.',
     url: '/blog/real-estate-email-signature',
     image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop',

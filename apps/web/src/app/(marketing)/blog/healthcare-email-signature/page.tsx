@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'healthcare-email-signature',
-  'Healthcare Email Signatures: HIPAA Compliant Guide | Siggly',
+  'Healthcare Email Signatures: HIPAA Compliant Guide',
   'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
   ['healthcare email signature', 'HIPAA email signature', 'medical email signature', 'doctor email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Healthcare Email Signatures: HIPAA Compliant Guide | Siggly',
+    title: 'Healthcare Email Signatures: HIPAA Compliant Guide',
     description: 'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
     url: '/blog/healthcare-email-signature',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop',

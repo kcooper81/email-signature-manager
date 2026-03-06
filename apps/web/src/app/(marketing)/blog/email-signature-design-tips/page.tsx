@@ -6,13 +6,13 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-design-tips',
-  '10 Email Signature Design Tips for 2026 | Siggly Blog',
+  '10 Email Signature Design Tips for 2026',
   'Modern design principles to make your email signatures stand out while remaining professional.'
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: '10 Email Signature Design Tips for 2026 | Siggly Blog',
+    title: '10 Email Signature Design Tips for 2026',
     description: 'Modern design principles to make your email signatures stand out while remaining professional.',
     url: '/blog/email-signature-design-tips',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',

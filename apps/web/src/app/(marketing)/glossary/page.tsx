@@ -4,7 +4,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { glossaryPages } from '@/lib/seo-pages/data/glossary';
 
 export const metadata = genMeta({
-  title: 'Email Signature Glossary - Terms & Definitions | Siggly',
+  title: 'Email Signature Glossary - Terms & Definitions',
   description: 'Complete glossary of email signature terms, email authentication, compliance, and signature management concepts. Learn everything about professional email signatures.',
   keywords: ['email signature glossary', 'email terms', 'signature management definitions', 'email authentication terms'],
   canonical: '/glossary',

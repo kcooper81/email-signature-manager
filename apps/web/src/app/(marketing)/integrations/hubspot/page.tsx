@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
-  title: 'HubSpot CRM Integration | Siggly',
+  title: 'HubSpot CRM Integration',
   description: 'Sync contact data from HubSpot CRM to enrich your email signatures. Automatically populate signature fields with up-to-date contact information.',
   keywords: ['HubSpot integration', 'HubSpot CRM signatures', 'CRM email signatures', 'contact data sync', 'HubSpot contact sync'],
   canonical: '/integrations/hubspot',

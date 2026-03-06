@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-generator-guide',
-  'Email Signature Generator: Create Professional Signatures Free | Siggly',
+  'Email Signature Generator: Create Professional Signatures Free',
   'Use our free email signature generator to create professional signatures in minutes. No design skills needed. Works with Gmail, Outlook, and more.',
   ['email signature generator', 'free email signature maker', 'create email signature', 'signature generator online']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Generator: Create Professional Signatures Free | Siggly',
+    title: 'Email Signature Generator: Create Professional Signatures Free',
     description: 'Use our free email signature generator to create professional signatures in minutes. No design skills needed. Works with Gmail, Outlook, and more.',
     url: '/blog/email-signature-generator-guide',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'sales-team-email-signatures',
-  'Sales Team Email Signatures: Convert More Leads | Siggly',
+  'Sales Team Email Signatures: Convert More Leads',
   'Create high-converting email signatures for sales teams. Includes meeting links, social proof, and CTA best practices for sales professionals.',
   ['sales email signature', 'sales team signature', 'email signature for salespeople']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Sales Team Email Signatures: Convert More Leads | Siggly',
+    title: 'Sales Team Email Signatures: Convert More Leads',
     description: 'Create high-converting email signatures for sales teams. Includes meeting links, social proof, and CTA best practices for sales professionals.',
     url: '/blog/sales-team-email-signatures',
     image: 'https://images.unsplash.com/photo-1552581234-26160f608093?w=1200&h=600&fit=crop',

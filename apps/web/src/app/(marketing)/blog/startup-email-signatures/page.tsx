@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'startup-email-signatures',
-  'Startup Email Signatures: Build Credibility on a Budget | Siggly',
+  'Startup Email Signatures: Build Credibility on a Budget',
   'Create professional email signatures for your startup. Budget-friendly tips to look established and build trust with investors and customers.',
   ['startup email signature', 'tech startup signature', 'email signature early stage']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Startup Email Signatures: Build Credibility on a Budget | Siggly',
+    title: 'Startup Email Signatures: Build Credibility on a Budget',
     description: 'Create professional email signatures for your startup. Budget-friendly tips to look established and build trust with investors and customers.',
     url: '/blog/startup-email-signatures',
     image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop',

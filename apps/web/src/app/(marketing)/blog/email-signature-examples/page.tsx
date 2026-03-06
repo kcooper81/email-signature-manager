@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-examples',
-  '25 Professional Email Signature Examples for 2026 | Siggly',
+  '25 Professional Email Signature Examples for 2026',
   'Get inspired by these 25 professional email signature examples. See what works for different industries, roles, and company sizes.',
   ['email signature examples', 'professional email signature', 'email signature design', 'business email signature examples']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: '25 Professional Email Signature Examples for 2026 | Siggly',
+    title: '25 Professional Email Signature Examples for 2026',
     description: 'Get inspired by these 25 professional email signature examples. See what works for different industries, roles, and company sizes.',
     url: '/blog/email-signature-examples',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
-  title: 'Email Signature Management for Agencies | Siggly',
+  title: 'Email Signature Management for Agencies',
   description: 'Manage email signatures for multiple clients from one dashboard. White-label options, bulk management, and multi-tenant support for agencies.',
   keywords: ['agency email signatures', 'multi-client signature management', 'white-label signatures', 'agency email branding'],
   canonical: '/for/agencies',

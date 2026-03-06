@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-troubleshooting',
-  'Email Signature Troubleshooting: Fix Common Problems | Siggly',
+  'Email Signature Troubleshooting: Fix Common Problems',
   'Fix common email signature problems. Solutions for broken images, formatting issues, missing signatures, and display problems across email clients.',
   ['email signature not working', 'fix email signature', 'signature troubleshooting', 'email signature problems']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Troubleshooting: Fix Common Problems | Siggly',
+    title: 'Email Signature Troubleshooting: Fix Common Problems',
     description: 'Fix common email signature problems. Solutions for broken images, formatting issues, missing signatures, and display problems across email clients.',
     url: '/blog/email-signature-troubleshooting',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-update-guide',
-  'How to Update Email Signatures: Complete Guide | Siggly',
+  'How to Update Email Signatures: Complete Guide',
   'Update email signatures across Gmail, Outlook, and Apple Mail. Step-by-step instructions for changing your signature on any platform.',
   ['update email signature', 'change email signature', 'edit email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'How to Update Email Signatures: Complete Guide | Siggly',
+    title: 'How to Update Email Signatures: Complete Guide',
     description: 'Update email signatures across Gmail, Outlook, and Apple Mail. Step-by-step instructions for changing your signature on any platform.',
     url: '/blog/email-signature-update-guide',
     image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop',

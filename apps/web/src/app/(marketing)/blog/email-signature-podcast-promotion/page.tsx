@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-podcast-promotion',
-  'Promoting Your Podcast Through Email Signatures | Siggly',
+  'Promoting Your Podcast Through Email Signatures',
   'Use email signatures to grow your podcast audience. Add podcast links, episode promotions, and subscriber CTAs.',
   ['podcast email signature', 'promote podcast signature', 'podcast link email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Promoting Your Podcast Through Email Signatures | Siggly',
+    title: 'Promoting Your Podcast Through Email Signatures',
     description: 'Use email signatures to grow your podcast audience. Add podcast links, episode promotions, and subscriber CTAs.',
     url: '/blog/email-signature-podcast-promotion',
     image: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=1200&h=600&fit=crop',

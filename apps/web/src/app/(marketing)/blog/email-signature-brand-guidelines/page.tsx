@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-brand-guidelines',
-  'Email Signature Brand Guidelines: A Template | Siggly',
+  'Email Signature Brand Guidelines: A Template',
   'Create brand guidelines for email signatures. Document standards for logos, colors, fonts, and signature elements.',
   ['email signature guidelines', 'signature brand standards', 'email signature policy']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Brand Guidelines: A Template | Siggly',
+    title: 'Email Signature Brand Guidelines: A Template',
     description: 'Create brand guidelines for email signatures. Document standards for logos, colors, fonts, and signature elements.',
     url: '/blog/email-signature-brand-guidelines',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',

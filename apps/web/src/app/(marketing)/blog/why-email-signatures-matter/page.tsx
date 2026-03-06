@@ -6,13 +6,13 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'why-email-signatures-matter',
-  'Why Email Signatures Matter More Than You Think | Siggly Blog',
+  'Why Email Signatures Matter More Than You Think',
   'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.'
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Why Email Signatures Matter More Than You Think | Siggly Blog',
+    title: 'Why Email Signatures Matter More Than You Think',
     description: 'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.',
     url: '/blog/why-email-signatures-matter',
     image: 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=1200&h=600&fit=crop',

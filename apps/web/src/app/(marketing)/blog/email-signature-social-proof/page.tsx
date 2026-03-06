@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-social-proof',
-  'Adding Social Proof to Email Signatures | Siggly',
+  'Adding Social Proof to Email Signatures',
   'Include social proof in your email signatures. Awards, ratings, certifications, and trust signals that build credibility.',
   ['email signature social proof', 'trust signals email', 'signature awards badges']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Adding Social Proof to Email Signatures | Siggly',
+    title: 'Adding Social Proof to Email Signatures',
     description: 'Include social proof in your email signatures. Awards, ratings, certifications, and trust signals that build credibility.',
     url: '/blog/email-signature-social-proof',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',

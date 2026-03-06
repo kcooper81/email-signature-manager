@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-for-freelancers',
-  'Freelancer Email Signatures: Stand Out Professionally | Siggly',
+  'Freelancer Email Signatures: Stand Out Professionally',
   'Create professional email signatures as a freelancer. Build credibility with clients and showcase your services effectively.',
   ['freelancer email signature', 'freelance signature', 'independent contractor email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Freelancer Email Signatures: Stand Out Professionally | Siggly',
+    title: 'Freelancer Email Signatures: Stand Out Professionally',
     description: 'Create professional email signatures as a freelancer. Build credibility with clients and showcase your services effectively.',
     url: '/blog/email-signature-for-freelancers',
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop',

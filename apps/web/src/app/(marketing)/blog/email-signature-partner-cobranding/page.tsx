@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-partner-cobranding',
-  'Partner Co-Branding in Email Signatures | Siggly',
+  'Partner Co-Branding in Email Signatures',
   'Include partner logos and co-branding in email signatures. Best practices for technology partners, resellers, and strategic alliances.',
   ['partner email signature', 'co-branding signature', 'partner logo email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Partner Co-Branding in Email Signatures | Siggly',
+    title: 'Partner Co-Branding in Email Signatures',
     description: 'Include partner logos and co-branding in email signatures. Best practices for technology partners, resellers, and strategic alliances.',
     url: '/blog/email-signature-partner-cobranding',
     image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&h=600&fit=crop',

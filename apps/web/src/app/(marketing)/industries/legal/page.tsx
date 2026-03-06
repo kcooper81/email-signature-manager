@@ -6,7 +6,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { NewsletterSignupSection } from '@/components/newsletter';
 
 export const metadata = genMeta({
-  title: 'Email Signatures for Law Firms | Legal Compliance | Siggly',
+  title: 'Email Signatures for Law Firms | Legal Compliance',
   description: 'Professional email signatures for law firms with built-in legal disclaimers, compliance features, and centralized management. Meet bar association requirements.',
   keywords: ['law firm email signatures', 'legal email disclaimers', 'attorney email signature', 'legal compliance email', 'bar association email requirements'],
   canonical: '/industries/legal',

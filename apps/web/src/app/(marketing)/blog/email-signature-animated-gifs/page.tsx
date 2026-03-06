@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-animated-gifs',
-  'Animated GIFs in Email Signatures: Pros & Cons | Siggly',
+  'Animated GIFs in Email Signatures: Pros & Cons',
   'Should you use animated GIFs in email signatures? Technical considerations, file size issues, and when animation makes sense.',
   ['animated email signature', 'gif email signature', 'moving signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Animated GIFs in Email Signatures: Pros & Cons | Siggly',
+    title: 'Animated GIFs in Email Signatures: Pros & Cons',
     description: 'Should you use animated GIFs in email signatures? Technical considerations, file size issues, and when animation makes sense.',
     url: '/blog/email-signature-animated-gifs',
     image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=600&fit=crop',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-employee-advocacy',
-  'Email Signatures for Employee Advocacy Programs | Siggly',
+  'Email Signatures for Employee Advocacy Programs',
   'Leverage email signatures for employee advocacy. Amplify company content and brand through every employee email.',
   ['employee advocacy email', 'signature advocacy', 'amplify brand email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures for Employee Advocacy Programs | Siggly',
+    title: 'Email Signatures for Employee Advocacy Programs',
     description: 'Leverage email signatures for employee advocacy. Amplify company content and brand through every employee email.',
     url: '/blog/email-signature-employee-advocacy',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop',

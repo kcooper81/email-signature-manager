@@ -182,8 +182,9 @@ export function generateBlogPostSchema({
     datePublished,
     dateModified: dateModified || datePublished,
     author: {
-      '@type': 'Person',
+      '@type': author === 'Siggly Team' ? 'Organization' : 'Person',
       name: author,
+      ...(author === 'Siggly Team' && { url: SITE_URL }),
     },
     publisher: {
       '@type': 'Organization',
@@ -346,9 +347,13 @@ export function createBlogMetadata(
   slug: string,
   title: string,
   description: string,
-  keywords: string[] = []
+  keywords: string[] = [],
+  image?: string,
 ): Metadata {
   const url = `${SITE_URL}/blog/${slug}`;
+  const imageUrl = image
+    ? (image.startsWith('http') ? image : `${SITE_URL}${image}`)
+    : `${SITE_URL}${DEFAULT_OG_IMAGE}`;
   const baseKeywords = [
     'email signature',
     'signature management',
@@ -385,7 +390,7 @@ export function createBlogMetadata(
       locale: 'en_US',
       images: [
         {
-          url: `${SITE_URL}${DEFAULT_OG_IMAGE}`,
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -396,7 +401,7 @@ export function createBlogMetadata(
       card: 'summary_large_image',
       title,
       description,
-      images: [`${SITE_URL}${DEFAULT_OG_IMAGE}`],
+      images: [imageUrl],
       creator: '@siggly',
     },
   };

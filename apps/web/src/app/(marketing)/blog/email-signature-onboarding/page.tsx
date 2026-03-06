@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-onboarding',
-  'Email Signature Onboarding: New Employee Setup Guide | Siggly',
+  'Email Signature Onboarding: New Employee Setup Guide',
   'Streamline email signature setup for new hires. Create an efficient onboarding process that gets signatures right from day one.',
   ['email signature onboarding', 'new employee signature', 'signature setup process']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Onboarding: New Employee Setup Guide | Siggly',
+    title: 'Email Signature Onboarding: New Employee Setup Guide',
     description: 'Streamline email signature setup for new hires. Create an efficient onboarding process that gets signatures right from day one.',
     url: '/blog/email-signature-onboarding',
     image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop',

@@ -6,13 +6,13 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'signature-marketing-campaigns',
-  'Using Email Signatures for Marketing Campaigns | Siggly Blog',
+  'Using Email Signatures for Marketing Campaigns',
   'How to leverage your team\'s email signatures as a powerful, free marketing channel.'
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Using Email Signatures for Marketing Campaigns | Siggly Blog',
+    title: 'Using Email Signatures for Marketing Campaigns',
     description: 'How to leverage your team\'s email signatures as a powerful, free marketing channel.',
     url: '/blog/signature-marketing-campaigns',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',

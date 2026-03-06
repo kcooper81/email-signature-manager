@@ -6,7 +6,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { NewsletterSignupSection } from '@/components/newsletter';
 
 export const metadata = genMeta({
-  title: 'Email Signatures for Real Estate Agents & Brokers | Siggly',
+  title: 'Email Signatures for Real Estate Agents & Brokers',
   description: 'Professional email signatures for real estate agents, brokers, and agencies. Showcase listings, credentials, and contact info with branded signatures.',
   keywords: ['real estate email signatures', 'realtor email signature', 'real estate agent email', 'broker email signature', 'property listing email'],
   canonical: '/industries/real-estate',

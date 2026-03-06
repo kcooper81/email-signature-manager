@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-sustainability',
-  'Sustainability Messaging in Email Signatures | Siggly',
+  'Sustainability Messaging in Email Signatures',
   'Include sustainability and environmental messaging in email signatures. Green initiatives, certifications, and eco-friendly messaging.',
   ['sustainability email signature', 'green signature', 'environmental messaging email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Sustainability Messaging in Email Signatures | Siggly',
+    title: 'Sustainability Messaging in Email Signatures',
     description: 'Include sustainability and environmental messaging in email signatures. Green initiatives, certifications, and eco-friendly messaging.',
     url: '/blog/email-signature-sustainability',
     image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1200&h=600&fit=crop',

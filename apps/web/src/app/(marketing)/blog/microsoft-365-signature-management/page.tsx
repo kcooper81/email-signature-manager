@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'microsoft-365-signature-management',
-  'Microsoft 365 Email Signature Management Guide | Siggly',
+  'Microsoft 365 Email Signature Management Guide',
   'Deploy and manage email signatures across your Microsoft 365 organization. Learn about transport rules, OWA signatures, and centralized management.',
   ['microsoft 365 email signature', 'office 365 signature management', 'outlook signature deployment']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Microsoft 365 Email Signature Management Guide | Siggly',
+    title: 'Microsoft 365 Email Signature Management Guide',
     description: 'Deploy and manage email signatures across your Microsoft 365 organization. Learn about transport rules, OWA signatures, and centralized management.',
     url: '/blog/microsoft-365-signature-management',
     image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',

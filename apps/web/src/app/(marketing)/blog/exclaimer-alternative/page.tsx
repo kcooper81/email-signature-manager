@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'exclaimer-alternative',
-  'Best Exclaimer Alternatives 2026: Compare Features & Pricing | Siggly',
+  'Best Exclaimer Alternatives 2026: Compare Features & Pricing',
   'Looking for an Exclaimer alternative? Compare the top email signature management tools with better pricing, easier setup, and modern features.',
   ['exclaimer alternative', 'exclaimer competitor', 'exclaimer vs', 'email signature software comparison']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Best Exclaimer Alternatives 2026: Compare Features & Pricing | Siggly',
+    title: 'Best Exclaimer Alternatives 2026: Compare Features & Pricing',
     description: 'Looking for an Exclaimer alternative? Compare the top email signature management tools with better pricing, easier setup, and modern features.',
     url: '/blog/exclaimer-alternative',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',

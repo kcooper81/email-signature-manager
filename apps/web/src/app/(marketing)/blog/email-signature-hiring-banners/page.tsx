@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-hiring-banners',
-  'Using Email Signatures for Recruiting & Hiring | Siggly',
+  'Using Email Signatures for Recruiting & Hiring',
   'Turn employee emails into a recruiting channel. Add job posting banners to signatures and attract candidates organically.',
   ['email signature hiring', 'recruiting email signature', 'job posting signature banner']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Using Email Signatures for Recruiting & Hiring | Siggly',
+    title: 'Using Email Signatures for Recruiting & Hiring',
     description: 'Turn employee emails into a recruiting channel. Add job posting banners to signatures and attract candidates organically.',
     url: '/blog/email-signature-hiring-banners',
     image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop',

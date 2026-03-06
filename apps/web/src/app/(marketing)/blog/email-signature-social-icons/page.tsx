@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-social-icons',
-  'Social Media Icons in Email Signatures: Best Practices | Siggly',
+  'Social Media Icons in Email Signatures: Best Practices',
   'Add social media icons to your email signature the right way. Learn which platforms to include, icon sizing, and linking best practices.',
   ['email signature social icons', 'social media email signature', 'linkedin email signature', 'email signature icons']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Social Media Icons in Email Signatures: Best Practices | Siggly',
+    title: 'Social Media Icons in Email Signatures: Best Practices',
     description: 'Add social media icons to your email signature the right way. Learn which platforms to include, icon sizing, and linking best practices.',
     url: '/blog/email-signature-social-icons',
     image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop',

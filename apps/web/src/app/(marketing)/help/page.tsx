@@ -5,7 +5,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { DynamicFAQs } from '@/components/help/dynamic-faqs';
 
 export const metadata = genMeta({
-  title: 'Help Center - Documentation & Support | Siggly',
+  title: 'Help Center - Documentation & Support',
   description: 'Get help with Siggly. Browse documentation, guides, and FAQs or contact our support team.',
   keywords: ['help', 'support', 'documentation', 'guides', 'FAQ', 'customer support'],
   canonical: '/help',

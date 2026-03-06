@@ -6,7 +6,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { NewsletterSignupSection } from '@/components/newsletter';
 
 export const metadata = genMeta({
-  title: 'HIPAA-Compliant Email Signatures for Healthcare | Siggly',
+  title: 'HIPAA-Compliant Email Signatures for Healthcare',
   description: 'Secure email signatures for healthcare organizations. HIPAA-compliant, encrypted deployment, audit logs, and patient confidentiality notices built-in.',
   keywords: ['HIPAA email signatures', 'healthcare email compliance', 'medical practice email signatures', 'hospital email signatures', 'patient confidentiality email'],
   canonical: '/industries/healthcare',

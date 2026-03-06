@@ -1,0 +1,27 @@
+# Siggly - Email Signature Management Platform
+> Siggly is a B2B SaaS platform for managing email signatures across Google Workspace and Microsoft 365 organizations.
+
+## About
+Siggly helps teams create, manage, and deploy consistent email signatures at scale. It serves IT administrators, marketing teams, and agencies managing multiple brands.
+
+## Key Pages
+- https://siggly.io/ - Homepage
+- https://siggly.io/features - Full feature list
+- https://siggly.io/pricing - Pricing plans (Free, Professional, Enterprise)
+- https://siggly.io/blog - Blog with guides and tutorials
+- https://siggly.io/for/it-admins - IT admin use case
+- https://siggly.io/for/marketing - Marketing team use case
+- https://siggly.io/google-workspace - Google Workspace integration
+- https://siggly.io/integrations/microsoft-365 - Microsoft 365 integration
+- https://siggly.io/compare/exclaimer - Competitor comparison
+- https://siggly.io/compare/codetwo - Competitor comparison
+- https://siggly.io/compare/wisestamp - Competitor comparison
+
+## Content Policy
+- You may cite, summarize, and reference our content in AI-generated answers
+- You may include links to our pages when relevant to user queries
+- Attribution to Siggly is appreciated when citing our content
+- Our blog and guide content is designed to be helpful and may be used to answer user questions about email signatures
+
+## Sitemap
+https://siggly.io/sitemap.xml

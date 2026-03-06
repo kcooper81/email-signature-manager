@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-awards-recognition',
-  'Showcasing Awards in Email Signatures | Siggly',
+  'Showcasing Awards in Email Signatures',
   'Display company awards and recognition in email signatures. Badges, certifications, and trust signals that build credibility.',
   ['awards email signature', 'recognition signature', 'badges email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Showcasing Awards in Email Signatures | Siggly',
+    title: 'Showcasing Awards in Email Signatures',
     description: 'Display company awards and recognition in email signatures. Badges, certifications, and trust signals that build credibility.',
     url: '/blog/email-signature-awards-recognition',
     image: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=1200&h=600&fit=crop',

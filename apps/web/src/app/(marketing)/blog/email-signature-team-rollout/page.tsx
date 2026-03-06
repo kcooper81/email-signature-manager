@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-team-rollout',
-  'Rolling Out Email Signatures to Your Team | Siggly',
+  'Rolling Out Email Signatures to Your Team',
   'Step-by-step guide to rolling out new email signatures across your organization. Communication, timing, and change management.',
   ['email signature rollout', 'deploy signatures team', 'signature change management']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Rolling Out Email Signatures to Your Team | Siggly',
+    title: 'Rolling Out Email Signatures to Your Team',
     description: 'Step-by-step guide to rolling out new email signatures across your organization. Communication, timing, and change management.',
     url: '/blog/email-signature-team-rollout',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop',

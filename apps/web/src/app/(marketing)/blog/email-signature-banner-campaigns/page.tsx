@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-banner-campaigns',
-  'Email Signature Banner Campaigns: Design & Strategy Guide | Siggly',
+  'Email Signature Banner Campaigns: Design & Strategy Guide',
   'Create effective email signature banner campaigns. Learn design best practices, campaign ideas, and how to measure banner performance.',
   ['email signature banner', 'signature campaign banner', 'email signature marketing banner']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Banner Campaigns: Design & Strategy Guide | Siggly',
+    title: 'Email Signature Banner Campaigns: Design & Strategy Guide',
     description: 'Create effective email signature banner campaigns. Learn design best practices, campaign ideas, and how to measure banner performance.',
     url: '/blog/email-signature-banner-campaigns',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',

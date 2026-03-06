@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'law-firm-email-signature',
-  'Law Firm Email Signatures: Attorney Requirements Guide | Siggly',
+  'Law Firm Email Signatures: Attorney Requirements Guide',
   'Create compliant email signatures for law firms. Includes bar number requirements, confidentiality disclaimers, and professional design tips.',
   ['law firm email signature', 'attorney email signature', 'legal email signature', 'lawyer email disclaimer']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Law Firm Email Signatures: Attorney Requirements Guide | Siggly',
+    title: 'Law Firm Email Signatures: Attorney Requirements Guide',
     description: 'Create compliant email signatures for law firms. Includes bar number requirements, confidentiality disclaimers, and professional design tips.',
     url: '/blog/law-firm-email-signature',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',

@@ -3,14 +3,14 @@ import { Mail, ArrowRight, Check, Users, Palette, Rocket, Shield, BarChart3, Zap
 import { Button } from '@/components/ui/button';
 import { IntegrationsSection } from '@/components/marketing/integrations-section';
 import { MarketingCTA } from '@/components/marketing/cta';
+import { generateMetadata as genMeta } from '@/lib/seo/metadata';
 
-export const metadata = {
-  title: 'Features | Siggly - Email Signature Management',
+export const metadata = genMeta({
+  title: 'Features - Email Signature Management',
   description: 'Explore all features of Siggly email signature management: visual editor, team management, one-click deployment, analytics, and more.',
-  alternates: {
-    canonical: 'https://siggly.io/features',
-  },
-};
+  canonical: '/features',
+  keywords: ['email signature features', 'signature editor', 'team management', 'signature deployment', 'email analytics'],
+});
 
 const colorClasses: Record<string, { bg: string; text: string }> = {
   violet: { bg: 'bg-violet-100', text: 'text-violet-600' },

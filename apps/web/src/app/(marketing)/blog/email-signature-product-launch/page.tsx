@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-product-launch',
-  'Email Signatures for Product Launch Campaigns | Siggly',
+  'Email Signatures for Product Launch Campaigns',
   'Use email signatures to amplify product launches. Create excitement, drive signups, and coordinate team messaging.',
   ['product launch email signature', 'launch announcement signature', 'new product email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures for Product Launch Campaigns | Siggly',
+    title: 'Email Signatures for Product Launch Campaigns',
     description: 'Use email signatures to amplify product launches. Create excitement, drive signups, and coordinate team messaging.',
     url: '/blog/email-signature-product-launch',
     image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&h=600&fit=crop',

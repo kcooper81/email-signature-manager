@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-future-trends',
-  'The Future of Email Signatures: 2026 Trends | Siggly',
+  'The Future of Email Signatures: 2026 Trends',
   'Emerging trends in email signatures. AI personalization, dynamic content, analytics, and what to expect in the coming years.',
   ['email signature trends', 'future email signature', 'signature innovation']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'The Future of Email Signatures: 2026 Trends | Siggly',
+    title: 'The Future of Email Signatures: 2026 Trends',
     description: 'Emerging trends in email signatures. AI personalization, dynamic content, analytics, and what to expect in the coming years.',
     url: '/blog/email-signature-future-trends',
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop',

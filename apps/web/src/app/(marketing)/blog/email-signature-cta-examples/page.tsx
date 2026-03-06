@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-cta-examples',
-  'Email Signature CTA Examples: Drive Action | Siggly',
+  'Email Signature CTA Examples: Drive Action',
   'Effective call-to-action examples for email signatures. Book meetings, drive downloads, and generate leads from your signature.',
   ['email signature cta', 'signature call to action', 'email signature button']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature CTA Examples: Drive Action | Siggly',
+    title: 'Email Signature CTA Examples: Drive Action',
     description: 'Effective call-to-action examples for email signatures. Book meetings, drive downloads, and generate leads from your signature.',
     url: '/blog/email-signature-cta-examples',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',

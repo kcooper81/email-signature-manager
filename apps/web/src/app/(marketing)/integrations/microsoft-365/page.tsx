@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
-  title: 'Microsoft 365 Email Signatures | Siggly',
+  title: 'Microsoft 365 Email Signatures',
   description: 'Manage Outlook signatures for your entire Microsoft 365 organization. Deploy consistent email signatures to all users with centralized control.',
   keywords: ['Microsoft 365 signatures', 'Outlook signature management', 'Office 365 email signatures', 'Exchange Online signatures', 'Azure AD signatures'],
   canonical: '/integrations/microsoft-365',

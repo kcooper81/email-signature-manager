@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-newsletter-promotion',
-  'Growing Your Newsletter with Email Signatures | Siggly',
+  'Growing Your Newsletter with Email Signatures',
   'Use email signatures to grow newsletter subscribers. Add signup CTAs, promote content, and convert contacts to subscribers.',
   ['newsletter email signature', 'grow newsletter signature', 'subscribe CTA email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Growing Your Newsletter with Email Signatures | Siggly',
+    title: 'Growing Your Newsletter with Email Signatures',
     description: 'Use email signatures to grow newsletter subscribers. Add signup CTAs, promote content, and convert contacts to subscribers.',
     url: '/blog/email-signature-newsletter-promotion',
     image: 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=1200&h=600&fit=crop',

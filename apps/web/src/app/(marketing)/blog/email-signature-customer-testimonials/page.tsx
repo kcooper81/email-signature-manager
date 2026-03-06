@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-customer-testimonials',
-  'Using Testimonials in Email Signatures | Siggly',
+  'Using Testimonials in Email Signatures',
   'Include customer testimonials and reviews in email signatures. Social proof that builds trust with every email sent.',
   ['testimonial email signature', 'customer review signature', 'social proof email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Using Testimonials in Email Signatures | Siggly',
+    title: 'Using Testimonials in Email Signatures',
     description: 'Include customer testimonials and reviews in email signatures. Social proof that builds trust with every email sent.',
     url: '/blog/email-signature-customer-testimonials',
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop',

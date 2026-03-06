@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'enterprise-email-signature-management',
-  'Enterprise Email Signature Management: Complete Guide | Siggly',
+  'Enterprise Email Signature Management: Complete Guide',
   'Manage email signatures at scale for large organizations. Learn about centralized control, compliance, and deployment strategies.',
   ['enterprise email signature', 'corporate email signature management', 'email signature at scale']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Enterprise Email Signature Management: Complete Guide | Siggly',
+    title: 'Enterprise Email Signature Management: Complete Guide',
     description: 'Manage email signatures at scale for large organizations. Learn about centralized control, compliance, and deployment strategies.',
     url: '/blog/enterprise-email-signature-management',
     image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=600&fit=crop',
