@@ -21,25 +21,38 @@ function getSupabaseAdmin() {
 }
 
 function verifyResendWebhook(request: NextRequest, body: string): boolean {
-  const signature = request.headers.get('resend-signature');
   const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
+  if (!webhookSecret) return false;
 
-  if (!webhookSecret || !signature) return false;
+  // Resend uses Svix under the hood — headers are svix-id, svix-timestamp, svix-signature
+  const svixId = request.headers.get('svix-id');
+  const svixTimestamp = request.headers.get('svix-timestamp');
+  const svixSignature = request.headers.get('svix-signature');
 
-  const parts = signature.split(',');
-  const timestamp = parts.find(p => p.startsWith('t='))?.slice(2);
-  const v1 = parts.find(p => p.startsWith('v1='))?.slice(3);
+  if (!svixId || !svixTimestamp || !svixSignature) return false;
 
-  if (!timestamp || !v1) return false;
-
-  const age = Math.abs(Date.now() / 1000 - Number(timestamp));
+  // Reject timestamps older than 5 minutes
+  const age = Math.abs(Date.now() / 1000 - Number(svixTimestamp));
   if (age > 300) return false;
 
-  const expected = createHmac('sha256', webhookSecret)
-    .update(`${timestamp}.${body}`)
-    .digest('hex');
+  // Secret from Resend dashboard is prefixed with "whsec_" and base64-encoded
+  const secretBytes = Buffer.from(
+    webhookSecret.startsWith('whsec_') ? webhookSecret.slice(6) : webhookSecret,
+    'base64'
+  );
 
-  return expected === v1;
+  // Signature payload: "{svix-id}.{svix-timestamp}.{body}"
+  const signaturePayload = `${svixId}.${svixTimestamp}.${body}`;
+  const expected = createHmac('sha256', secretBytes)
+    .update(signaturePayload)
+    .digest('base64');
+
+  // svix-signature header can contain multiple signatures: "v1,<base64> v1,<base64>"
+  const signatures = svixSignature.split(' ');
+  return signatures.some(sig => {
+    const [version, value] = sig.split(',');
+    return version === 'v1' && value === expected;
+  });
 }
 
 // Extract ticket ID from subject: [Ticket#abc12345] or [#abc12345]
@@ -57,6 +70,12 @@ export async function POST(request: NextRequest) {
 
   if (process.env.RESEND_WEBHOOK_SECRET) {
     if (!verifyResendWebhook(request, rawBody)) {
+      console.error('[inbound-email] Webhook signature verification failed', {
+        hasSvixId: !!request.headers.get('svix-id'),
+        hasSvixTimestamp: !!request.headers.get('svix-timestamp'),
+        hasSvixSignature: !!request.headers.get('svix-signature'),
+        hasResendSignature: !!request.headers.get('resend-signature'),
+      });
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
   }
