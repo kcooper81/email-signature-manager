@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from '@/components/ui/modal';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
 import {
   Loader2,
@@ -586,6 +586,7 @@ export default function PartnerApplicationsPage() {
             Submitted {selectedApp && formatDate(selectedApp.submitted_at)}
           </ModalDescription>
         </ModalHeader>
+        <ModalContent>
         {selectedApp && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
@@ -703,6 +704,7 @@ export default function PartnerApplicationsPage() {
             )}
           </div>
         )}
+        </ModalContent>
         <ModalFooter>
           {selectedApp && (selectedApp.status === 'pending' || selectedApp.status === 'under_review') && (
             <>
@@ -727,63 +729,65 @@ export default function PartnerApplicationsPage() {
             Approve {selectedApp?.company_name} as an MSP partner
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4">
-          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
-            <div className="flex gap-2">
-              <div className="text-amber-600 font-semibold text-sm">Before Approving:</div>
+        <ModalContent>
+          <div className="space-y-4">
+            <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+              <div className="flex gap-2">
+                <div className="text-amber-600 font-semibold text-sm">Before Approving:</div>
+              </div>
+              <p className="text-xs text-amber-700 mt-1">
+                You must manually add <span className="font-mono font-semibold">{subdomain}.siggly.io</span> to Vercel domains before clicking &quot;Approve Partner&quot;.
+                Go to Vercel → Settings → Domains → Add the subdomain.
+              </p>
             </div>
-            <p className="text-xs text-amber-700 mt-1">
-              You must manually add <span className="font-mono font-semibold">{subdomain}.siggly.io</span> to Vercel domains before clicking &quot;Approve Partner&quot;.
-              Go to Vercel → Settings → Domains → Add the subdomain.
-            </p>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="subdomain">Subdomain *</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="subdomain"
-                value={subdomain}
-                onChange={(e) => handleSubdomainChange(e.target.value)}
-                placeholder="partner-name"
-                className="max-w-xs"
+            <div className="space-y-2">
+              <Label htmlFor="subdomain">Subdomain *</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="subdomain"
+                  value={subdomain}
+                  onChange={(e) => handleSubdomainChange(e.target.value)}
+                  placeholder="partner-name"
+                  className="max-w-xs"
+                />
+                <span className="text-muted-foreground">.siggly.io</span>
+                {checkingSubdomain && (
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                )}
+                {!checkingSubdomain && subdomainAvailable === true && (
+                  <Check className="h-4 w-4 text-green-500" />
+                )}
+                {!checkingSubdomain && subdomainAvailable === false && (
+                  <X className="h-4 w-4 text-red-500" />
+                )}
+              </div>
+              {subdomainAvailable === false && (
+                <p className="text-xs text-red-500">This subdomain is not available</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="partnerTier">Partner Tier</Label>
+              <Select
+                options={TIER_OPTIONS}
+                value={partnerTier}
+                onChange={(e) => setPartnerTier(e.target.value)}
               />
-              <span className="text-muted-foreground">.siggly.io</span>
-              {checkingSubdomain && (
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-              )}
-              {!checkingSubdomain && subdomainAvailable === true && (
-                <Check className="h-4 w-4 text-green-500" />
-              )}
-              {!checkingSubdomain && subdomainAvailable === false && (
-                <X className="h-4 w-4 text-red-500" />
-              )}
             </div>
-            {subdomainAvailable === false && (
-              <p className="text-xs text-red-500">This subdomain is not available</p>
-            )}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="partnerTier">Partner Tier</Label>
-            <Select
-              options={TIER_OPTIONS}
-              value={partnerTier}
-              onChange={(e) => setPartnerTier(e.target.value)}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="approvalNotes">Notes (optional)</Label>
+              <Textarea
+                id="approvalNotes"
+                value={approvalNotes}
+                onChange={(e) => setApprovalNotes(e.target.value)}
+                placeholder="Internal notes about this approval..."
+                rows={3}
+              />
+            </div>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="approvalNotes">Notes (optional)</Label>
-            <Textarea
-              id="approvalNotes"
-              value={approvalNotes}
-              onChange={(e) => setApprovalNotes(e.target.value)}
-              placeholder="Internal notes about this approval..."
-              rows={3}
-            />
-          </div>
-        </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowApproveModal(false)}>
             Cancel
@@ -815,30 +819,32 @@ export default function PartnerApplicationsPage() {
             Reject the application from {selectedApp?.company_name}
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="rejectionReason">Reason (optional)</Label>
-            <Textarea
-              id="rejectionReason"
-              value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder="Reason for rejection (optional, stored internally)"
-              rows={4}
-            />
+        <ModalContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="rejectionReason">Reason (optional)</Label>
+              <Textarea
+                id="rejectionReason"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                placeholder="Reason for rejection (optional, stored internally)"
+                rows={4}
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                id="sendRejectionEmail"
+                checked={sendRejectionEmail}
+                onChange={(e) => setSendRejectionEmail(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              <Label htmlFor="sendRejectionEmail" className="text-sm font-normal">
+                Send rejection notification email to applicant
+              </Label>
+            </div>
           </div>
-          <div className="flex items-center gap-2 mt-2">
-            <input
-              type="checkbox"
-              id="sendRejectionEmail"
-              checked={sendRejectionEmail}
-              onChange={(e) => setSendRejectionEmail(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            <Label htmlFor="sendRejectionEmail" className="text-sm font-normal">
-              Send rejection notification email to applicant
-            </Label>
-          </div>
-        </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowRejectModal(false)}>
             Cancel
@@ -867,13 +873,15 @@ export default function PartnerApplicationsPage() {
             Change the partner tier for {selectedApp?.company_name}
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4">
-          <Select
-            options={TIER_OPTIONS}
-            value={newTier}
-            onChange={(e) => setNewTier(e.target.value)}
-          />
-        </div>
+        <ModalContent>
+          <div className="space-y-4">
+            <Select
+              options={TIER_OPTIONS}
+              value={newTier}
+              onChange={(e) => setNewTier(e.target.value)}
+            />
+          </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowTierModal(false)}>
             Cancel
