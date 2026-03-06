@@ -227,7 +227,7 @@ export default function TicketsPage() {
           }
 
           try {
-            const audio = new Audio('/sounds/notification.mp3');
+            const audio = new Audio('/sounds/notification.wav');
             audio.volume = 0.3;
             audio.play().catch(() => {});
           } catch {

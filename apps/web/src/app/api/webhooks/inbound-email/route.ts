@@ -253,13 +253,13 @@ export async function POST(request: NextRequest) {
         senderEmail: senderEmail,
         message: displayBody.slice(0, 500),
         source: 'inbound_email',
-      }).catch(() => {});
+      }).catch((err) => console.error('[inbound-email] Admin notification failed:', err));
 
       sendAutoResponse({
         to: senderEmail,
         ticketId: newTicket.id,
         inboxEmail: receivedAt || null,
-      }).catch(() => {});
+      }).catch((err) => console.error('[inbound-email] Auto-response failed:', err));
     }
 
     return NextResponse.json({ success: true, action: 'ticket_created', ticketId: newTicket?.id });
