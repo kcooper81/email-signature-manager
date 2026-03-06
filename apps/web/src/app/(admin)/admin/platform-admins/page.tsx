@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input } from '@/components/ui';
 import { Badge } from '@/components/ui/badge';
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from '@/components/ui/modal';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
@@ -255,27 +255,29 @@ export default function PlatformAdminsPage() {
             Grant admin panel access to an existing user by their email address.
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-slate-700 mb-1.5 block">Email</label>
-            <Input
-              placeholder="user@example.com"
-              value={addEmail}
-              onChange={(e) => { setAddEmail(e.target.value); setAddError(null); }}
-            />
+        <ModalContent>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1.5 block">Email</label>
+              <Input
+                placeholder="user@example.com"
+                value={addEmail}
+                onChange={(e) => { setAddEmail(e.target.value); setAddError(null); }}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-1.5 block">Role</label>
+              <Select
+                options={ROLE_OPTIONS}
+                value={addRole}
+                onChange={(e) => setAddRole(e.target.value)}
+              />
+            </div>
+            {addError && (
+              <p className="text-sm text-red-600">{addError}</p>
+            )}
           </div>
-          <div>
-            <label className="text-sm font-medium text-slate-700 mb-1.5 block">Role</label>
-            <Select
-              options={ROLE_OPTIONS}
-              value={addRole}
-              onChange={(e) => setAddRole(e.target.value)}
-            />
-          </div>
-          {addError && (
-            <p className="text-sm text-red-600">{addError}</p>
-          )}
-        </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => { setShowAddModal(false); setAddError(null); }}>
             Cancel

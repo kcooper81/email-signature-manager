@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Badge } from '@/components/ui';
-import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalFooter } from '@/components/ui/modal';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -862,23 +862,25 @@ export default function OrgDetailPage() {
             Change the plan for {org.name}
           </ModalDescription>
         </ModalHeader>
-        <div className="space-y-4">
-          {subscription?.stripeSubscriptionId && selectedPlan === 'free' && (
-            <Alert variant="destructive">
-              <AlertDescription>
-                Downgrading to free will immediately cancel the active Stripe subscription.
-              </AlertDescription>
-            </Alert>
-          )}
-          <Select
-            options={PLAN_OPTIONS}
-            value={selectedPlan}
-            onChange={(e) => setSelectedPlan(e.target.value)}
-          />
-          {planError && (
-            <p className="text-sm text-red-600">{planError}</p>
-          )}
-        </div>
+        <ModalContent>
+          <div className="space-y-4">
+            {subscription?.stripeSubscriptionId && selectedPlan === 'free' && (
+              <Alert variant="destructive">
+                <AlertDescription>
+                  Downgrading to free will immediately cancel the active Stripe subscription.
+                </AlertDescription>
+              </Alert>
+            )}
+            <Select
+              options={PLAN_OPTIONS}
+              value={selectedPlan}
+              onChange={(e) => setSelectedPlan(e.target.value)}
+            />
+            {planError && (
+              <p className="text-sm text-red-600">{planError}</p>
+            )}
+          </div>
+        </ModalContent>
         <ModalFooter>
           <Button variant="outline" onClick={() => setShowPlanModal(false)}>
             Cancel
