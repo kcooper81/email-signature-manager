@@ -38,6 +38,7 @@ import {
   Zap,
   ChevronDown,
   UserCheck,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -145,6 +146,7 @@ export default function TicketsPage() {
   const [showCannedPicker, setShowCannedPicker] = useState(false);
   const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
   const [hideSnoozed, setHideSnoozed] = useState(true);
+  const [showFilterPopover, setShowFilterPopover] = useState(false);
   const [adminUsers, setAdminUsers] = useState<{ id: string; email: string }[]>([]);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
@@ -699,177 +701,140 @@ export default function TicketsPage() {
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Compact header with stats inline */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Inbox className="h-5 w-5 text-slate-700" />
-            <h1 className="text-xl font-bold text-slate-900">Inbox</h1>
-          </div>
-          <div className="hidden sm:flex items-center gap-3 text-xs">
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-violet-100 text-violet-700 font-medium">
-              {totalCount} total
-            </span>
-            {stats.new > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-100 text-amber-700 font-medium">
-                {stats.new} new
-              </span>
-            )}
-            {stats.urgent > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 font-medium">
-                {stats.urgent} urgent
-              </span>
-            )}
-            {stats.email > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium">
-                {stats.email} email
-              </span>
-            )}
-          </div>
+    <div className="space-y-2">
+      {/* Header row — title, tabs, actions */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Inbox className="h-5 w-5 text-slate-700" />
+          <h1 className="text-lg font-bold text-slate-900">Inbox</h1>
+          <span className="text-xs text-slate-400 font-medium">{totalCount}</span>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setHideSnoozed(!hideSnoozed)}
-            className={`p-2 rounded-lg transition-colors ${
-              !hideSnoozed
-                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
-            }`}
-            title={hideSnoozed ? 'Snoozed tickets hidden' : 'Showing snoozed tickets'}
-          >
-            <AlarmClock className="h-4 w-4" />
-          </button>
-          <button
-            onClick={toggleNotifications}
-            className={`p-2 rounded-lg transition-colors ${
-              notificationsEnabled
-                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
-            }`}
-            title={notificationsEnabled ? 'Live notifications on' : 'Enable live notifications'}
-          >
-            {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
-          </button>
-        </div>
-      </div>
 
-      {/* Quick filter tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200">
-        {STATUS_TABS.map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => { setStatusFilter(tab.key); setPage(0); }}
-            className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
-              statusFilter === tab.key
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <div className="ml-auto text-[10px] text-slate-400 pr-2">
-          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">j</kbd>/<kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">k</kbd> navigate
-          <span className="mx-1">·</span>
-          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">r</kbd> reply
-          <span className="mx-1">·</span>
-          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">e</kbd> resolve
-          <span className="mx-1">·</span>
-          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">esc</kbd> close
-        </div>
-      </div>
-
-      {/* Search + filters in one row */}
-      <div className="flex flex-col sm:flex-row gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search tickets..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 h-9 text-sm"
-          />
-        </div>
-        <div className="flex items-center gap-1.5">
-          <select
-            value={typeFilter}
-            onChange={(e) => { setTypeFilter(e.target.value); setPage(0); }}
-            className="h-9 px-2 border rounded-lg text-xs bg-white text-slate-700"
-          >
-            <option value="all">Type</option>
-            <option value="bug">Bug</option>
-            <option value="feature">Feature</option>
-            <option value="question">Question</option>
-            <option value="email">Email</option>
-            <option value="sales">Sales</option>
-            <option value="other">Other</option>
-          </select>
-          <select
-            value={priorityFilter}
-            onChange={(e) => { setPriorityFilter(e.target.value); setPage(0); }}
-            className="h-9 px-2 border rounded-lg text-xs bg-white text-slate-700"
-          >
-            <option value="all">Priority</option>
-            <option value="urgent">Urgent</option>
-            <option value="high">High</option>
-            <option value="normal">Normal</option>
-            <option value="low">Low</option>
-          </select>
-          <select
-            value={partnerFilter}
-            onChange={(e) => { setPartnerFilter(e.target.value); setPage(0); }}
-            className="h-9 px-2 border rounded-lg text-xs bg-white text-slate-700"
-          >
-            <option value="all">Source</option>
-            <option value="escalations">Escalations</option>
-            <option value="partner">Partners</option>
-          </select>
-          {hasActiveFilters && (
+        {/* Status tabs inline with header */}
+        <div className="flex items-center gap-0.5 ml-2">
+          {STATUS_TABS.map(tab => (
             <button
-              onClick={() => { setTypeFilter('all'); setStatusFilter('all'); setPriorityFilter('all'); setPartnerFilter('all'); setPage(0); }}
-              className="h-9 px-2 text-xs text-slate-500 hover:text-slate-700"
+              key={tab.key}
+              onClick={() => { setStatusFilter(tab.key); setPage(0); }}
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+                statusFilter === tab.key
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+              }`}
             >
-              Clear
+              {tab.label}
+              {tab.key === 'open' && stats.new > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">{stats.new}</span>
+              )}
             </button>
-          )}
+          ))}
+        </div>
+
+        <div className="ml-auto flex items-center gap-1">
+          <button onClick={() => setHideSnoozed(!hideSnoozed)} className={`p-1.5 rounded-md transition-colors ${!hideSnoozed ? 'bg-amber-100 text-amber-700' : 'text-slate-400 hover:bg-slate-100'}`} title={hideSnoozed ? 'Snoozed hidden' : 'Showing snoozed'}>
+            <AlarmClock className="h-3.5 w-3.5" />
+          </button>
+          <button onClick={toggleNotifications} className={`p-1.5 rounded-md transition-colors ${notificationsEnabled ? 'bg-blue-100 text-blue-700' : 'text-slate-400 hover:bg-slate-100'}`} title={notificationsEnabled ? 'Notifications on' : 'Enable notifications'}>
+            {notificationsEnabled ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
+          </button>
+          <div className="hidden lg:flex items-center gap-1 ml-2 text-[10px] text-slate-400">
+            <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">j</kbd>/<kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">k</kbd>
+            <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">r</kbd>
+            <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">e</kbd>
+          </div>
         </div>
       </div>
-
-      {/* Sort bar + select all */}
-      {filteredTickets.length > 0 && (
-        <div className="flex items-center justify-between text-xs text-slate-500">
-          <div className="flex items-center gap-3">
-            <Checkbox
-              checked={bulk.allSelected}
-              onCheckedChange={bulk.toggleAll}
-              aria-label="Select all"
-            />
-            <span>{filteredTickets.length} of {totalCount}</span>
-            <span className="text-slate-300">|</span>
-            <SortButton field="createdAt" label="Date" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
-            <SortButton field="priority" label="Priority" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
-            <SortButton field="type" label="Type" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
-          </div>
-          {totalPages > 1 && (
-            <div className="flex items-center gap-1">
-              <span>{page + 1}/{totalPages}</span>
-              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30">
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-              <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30">
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Split pane: list left, detail right on desktop */}
       <div className={`flex gap-0 ${selectedTicket ? 'lg:flex-row' : ''}`}>
         {/* Ticket list — inbox style */}
-        <div className={`${selectedTicket ? 'hidden lg:block lg:w-[320px] lg:min-w-[320px] lg:max-w-[320px] lg:shrink-0' : 'w-full'}`}>
-          <Card className={`overflow-hidden ${selectedTicket ? 'lg:rounded-r-none lg:border-r-0' : ''}`}>
+        <div className={`${selectedTicket ? 'hidden lg:flex lg:flex-col lg:w-[320px] lg:min-w-[320px] lg:max-w-[320px] lg:shrink-0' : 'w-full'}`}>
+          {/* Search + filter inside the list pane */}
+          <div className="flex items-center gap-1.5 px-2 py-2 bg-white border border-b-0 border-slate-200 rounded-t-lg">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+              <Input
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 h-8 text-xs"
+              />
+            </div>
+            {/* Filter popover button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowFilterPopover(!showFilterPopover)}
+                className={`h-8 px-2 border rounded-md text-xs flex items-center gap-1 transition-colors ${
+                  hasActiveFilters ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white text-slate-500 hover:bg-slate-50'
+                }`}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+              </button>
+              {showFilterPopover && (
+                <div className="absolute right-0 top-9 bg-white border rounded-lg shadow-lg p-3 z-30 w-56 space-y-3">
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Type</label>
+                    <select value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value); setPage(0); }} className="w-full h-8 px-2 border rounded text-xs bg-white text-slate-700">
+                      <option value="all">All types</option>
+                      <option value="bug">Bug</option>
+                      <option value="feature">Feature</option>
+                      <option value="question">Question</option>
+                      <option value="email">Email</option>
+                      <option value="sales">Sales</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Priority</label>
+                    <select value={priorityFilter} onChange={(e) => { setPriorityFilter(e.target.value); setPage(0); }} className="w-full h-8 px-2 border rounded text-xs bg-white text-slate-700">
+                      <option value="all">All priorities</option>
+                      <option value="urgent">Urgent</option>
+                      <option value="high">High</option>
+                      <option value="normal">Normal</option>
+                      <option value="low">Low</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1 block">Source</label>
+                    <select value={partnerFilter} onChange={(e) => { setPartnerFilter(e.target.value); setPage(0); }} className="w-full h-8 px-2 border rounded text-xs bg-white text-slate-700">
+                      <option value="all">All sources</option>
+                      <option value="escalations">Escalations</option>
+                      <option value="partner">Partners</option>
+                    </select>
+                  </div>
+                  {hasActiveFilters && (
+                    <button onClick={() => { setTypeFilter('all'); setPriorityFilter('all'); setPartnerFilter('all'); setPage(0); setShowFilterPopover(false); }} className="w-full h-7 text-xs text-red-600 hover:bg-red-50 rounded border border-red-200">
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sort bar */}
+          {filteredTickets.length > 0 && (
+            <div className="flex items-center justify-between text-[10px] text-slate-400 px-3 py-1.5 bg-slate-50 border-x border-slate-200">
+              <div className="flex items-center gap-2">
+                {!selectedTicket && (
+                  <Checkbox checked={bulk.allSelected} onCheckedChange={bulk.toggleAll} aria-label="Select all" />
+                )}
+                <span>{filteredTickets.length} tickets</span>
+                <SortButton field="createdAt" label="Date" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                <SortButton field="priority" label="Pri" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+              </div>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  <span>{page + 1}/{totalPages}</span>
+                  <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="p-0.5 hover:bg-slate-200 rounded disabled:opacity-30"><ChevronLeft className="h-3 w-3" /></button>
+                  <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="p-0.5 hover:bg-slate-200 rounded disabled:opacity-30"><ChevronRight className="h-3 w-3" /></button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <Card className={`overflow-hidden rounded-t-none border-t-0 ${selectedTicket ? 'lg:rounded-r-none lg:border-r-0' : ''}`}>
             <CardContent className="p-0">
               {loading ? (
                 <div className="flex items-center justify-center py-16">
@@ -990,51 +955,77 @@ export default function TicketsPage() {
         {selectedTicket && (
           <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l border-slate-200" style={{ maxHeight: 'calc(100vh - 260px)' }}>
 
-            {/* Toolbar header — all controls in one bar */}
-            <div className="bg-white border-b px-4 py-2 flex items-center gap-2 shrink-0">
-              {(() => {
-                const TypeIcon = typeIcons[selectedTicket.type];
-                return (
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${typeColors[selectedTicket.type]}`}>
-                    <TypeIcon className="h-3 w-3" />
-                    {selectedTicket.type}
-                  </span>
-                );
-              })()}
-              <span className="text-xs font-mono text-slate-400">#{selectedTicket.id.slice(0, 8)}</span>
+            {/* Header — ticket identity + close */}
+            <div className="bg-white border-b px-4 py-2.5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                {(() => {
+                  const TypeIcon = typeIcons[selectedTicket.type];
+                  return (
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${typeColors[selectedTicket.type]}`}>
+                      <TypeIcon className="h-3 w-3" />
+                      {selectedTicket.type}
+                    </span>
+                  );
+                })()}
+                <span className="text-xs font-mono text-slate-400 shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
+                <span className="text-sm font-medium text-slate-800 truncate">
+                  {selectedTicket.userEmail || 'Anonymous'}
+                </span>
+                {selectedTicket.receivedAtMailbox && (
+                  <span className="text-[10px] text-emerald-600 font-medium shrink-0">→ {selectedTicket.receivedAtMailbox}</span>
+                )}
+              </div>
+              <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-slate-100 rounded shrink-0 ml-2" title="Close (Esc)">
+                <X className="h-4 w-4 text-slate-400" />
+              </button>
+            </div>
 
-              <div className="w-px h-5 bg-slate-200 mx-1" />
+            {/* Controls bar — grouped: status+priority | assignee | snooze */}
+            <div className="bg-slate-50 border-b px-4 py-2 flex items-center gap-3 shrink-0 flex-wrap">
+              {/* Status & Priority group */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Status</span>
+                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700 font-medium">
+                  <option value="new">New</option>
+                  <option value="reviewed">Reviewed</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="archived">Archived</option>
+                </select>
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Priority</span>
+                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700 font-medium">
+                  <option value="low">Low</option>
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
 
-              <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
-                <option value="new">New</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="resolved">Resolved</option>
-                <option value="archived">Archived</option>
-              </select>
-              <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
-                <option value="low">Low</option>
-                <option value="normal">Normal</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-              <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600">
-                <option value="">Unassigned</option>
-                {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
-              </select>
+              <div className="w-px h-5 bg-slate-300" />
+
+              {/* Assignee */}
+              <div className="flex items-center gap-1.5">
+                <UserCheck className="h-3 w-3 text-slate-400" />
+                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded-md text-xs bg-white text-slate-700">
+                  <option value="">Unassigned</option>
+                  {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
+                </select>
+              </div>
+
+              <div className="w-px h-5 bg-slate-300" />
 
               {/* Snooze */}
               <div className="relative">
                 {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
-                  <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-7 px-1.5 border rounded text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-0.5" title="Click to unsnooze">
-                    <AlarmClock className="h-3 w-3" />
+                  <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-7 px-2 border rounded-md text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-1 font-medium" title="Click to unsnooze">
+                    <AlarmClock className="h-3 w-3" /> Snoozed
                   </button>
                 ) : (
-                  <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="h-7 px-1.5 border rounded text-xs text-slate-500 hover:bg-slate-50 flex items-center gap-0.5" title="Snooze">
-                    <AlarmClock className="h-3 w-3" />
+                  <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="h-7 px-2 border rounded-md text-xs text-slate-500 hover:bg-white flex items-center gap-1" title="Snooze">
+                    <AlarmClock className="h-3 w-3" /> Snooze
                   </button>
                 )}
                 {showSnoozeMenu && (
-                  <div className="absolute right-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-36">
+                  <div className="absolute left-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-36">
                     {[{ label: '1 hour', hours: 1 }, { label: '4 hours', hours: 4 }, { label: 'Tomorrow', hours: 24 }, { label: '3 days', hours: 72 }, { label: '1 week', hours: 168 }].map(opt => (
                       <button key={opt.hours} onClick={() => snoozeTicket(selectedTicket.id, opt.hours)} className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 text-slate-700">{opt.label}</button>
                     ))}
@@ -1042,73 +1033,62 @@ export default function TicketsPage() {
                 )}
               </div>
 
-              <button onClick={() => setSelectedTicket(null)} className="ml-auto p-1 hover:bg-slate-100 rounded" title="Close">
-                <X className="h-4 w-4 text-slate-400" />
-              </button>
-            </div>
-
-            {/* Contact info bar */}
-            <div className="bg-slate-50 border-b px-4 py-2 flex items-center gap-2 text-xs shrink-0 flex-wrap">
-              <span className="font-medium text-slate-800">{selectedTicket.userEmail || 'Anonymous'}</span>
-              {selectedTicket.receivedAtMailbox && (
-                <>
-                  <span className="text-slate-300">→</span>
-                  <span className="text-emerald-700 font-medium">{selectedTicket.receivedAtMailbox}</span>
-                </>
-              )}
-              <span className="text-slate-300">·</span>
-              <span className="text-slate-500">{new Date(selectedTicket.createdAt).toLocaleString()}</span>
-              {selectedTicket.organizationName && (
-                <>
-                  <span className="text-slate-300">·</span>
-                  <span className="text-slate-500">{selectedTicket.organizationName}</span>
-                </>
-              )}
-              {selectedTicket.pageUrl && (
-                <>
-                  <span className="text-slate-300">·</span>
+              {/* Meta */}
+              <div className="flex items-center gap-1.5 ml-auto text-[10px] text-slate-400">
+                <span>{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                {selectedTicket.organizationName && (
+                  <><span>·</span><span>{selectedTicket.organizationName}</span></>
+                )}
+                {selectedTicket.pageUrl && (
                   <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-0.5">
-                    Page <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3" />
                   </a>
-                </>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Scrollable conversation area */}
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-              {/* Original message */}
-              <div className="bg-white rounded-lg border border-slate-200 p-4">
-                <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-0">
+              {/* Original message — prominent */}
+              <div className="relative">
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Original Message</div>
+                <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-4">
+                  <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+                </div>
               </div>
 
-              {/* Thread */}
+              {/* Timeline thread */}
               {selectedTicket.notes.length > 0 && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-px bg-slate-200" />
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{selectedTicket.notes.length} {selectedTicket.notes.length === 1 ? 'reply' : 'replies'}</span>
-                    <div className="flex-1 h-px bg-slate-200" />
-                  </div>
-                  {selectedTicket.notes.map((note) => {
+                <div className="relative ml-4 mt-4">
+                  {/* Timeline line */}
+                  <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-200" />
+
+                  {selectedTicket.notes.map((note, idx) => {
                     const isCustomer = note.authorEmail === 'External Reply';
                     const isInternal = note.isInternal;
                     return (
-                      <div key={note.id} className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`max-w-[85%] rounded-lg p-3 ${
+                      <div key={note.id} className="relative pl-6 pb-4 last:pb-0">
+                        {/* Timeline dot */}
+                        <div className={`absolute left-0 top-1 w-2 h-2 rounded-full -translate-x-[3.5px] ring-2 ring-white ${
+                          isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'
+                        }`} />
+
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-[11px] font-semibold ${
+                            isCustomer ? 'text-slate-600' : isInternal ? 'text-amber-600' : 'text-blue-600'
+                          }`}>
+                            {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
+                          </span>
+                          <span className="text-[10px] text-slate-400">{timeAgo(note.createdAt)}</span>
+                        </div>
+
+                        <div className={`rounded-lg p-3 ${
                           isCustomer
-                            ? 'bg-white border border-slate-200 rounded-tl-sm'
+                            ? 'bg-white border border-slate-200'
                             : isInternal
-                            ? 'bg-amber-50 border border-amber-200 rounded-tr-sm'
-                            : 'bg-blue-50 border border-blue-200 rounded-tr-sm'
+                            ? 'bg-amber-50/70 border border-amber-100'
+                            : 'bg-blue-50/70 border border-blue-100'
                         }`}>
-                          <div className="flex items-center justify-between gap-3 mb-1.5">
-                            <span className={`text-[10px] font-semibold ${
-                              isCustomer ? 'text-slate-500' : isInternal ? 'text-amber-600' : 'text-blue-600'
-                            }`}>
-                              {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
-                            </span>
-                            <span className="text-[10px] text-slate-400 whitespace-nowrap">{timeAgo(note.createdAt)}</span>
-                          </div>
                           {note.content.startsWith('<') ? (
                             <div className="text-sm text-slate-700 prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
                           ) : (
@@ -1122,13 +1102,13 @@ export default function TicketsPage() {
               )}
             </div>
 
-            {/* Sticky reply composer */}
-            <div className="bg-white border-t px-4 py-3 shrink-0 space-y-2">
-              <div className="flex items-center gap-2">
+            {/* Sticky reply composer — polished */}
+            <div className="bg-white border-t-2 border-slate-200 px-4 py-3 shrink-0 space-y-2.5">
+              <div className="flex items-center gap-2 mb-1">
                 {cannedResponses.length > 0 && !isInternalNote && (
                   <div className="relative">
-                    <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-50">
-                      <Zap className="h-3 w-3" /> Saved replies <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
+                    <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded-md hover:bg-slate-50 border border-transparent hover:border-slate-200">
+                      <Zap className="h-3 w-3" /> Templates <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
                     </button>
                     {showCannedPicker && (
                       <div className="absolute left-0 bottom-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
@@ -1142,22 +1122,23 @@ export default function TicketsPage() {
                     )}
                   </div>
                 )}
-                <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600">
+                <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded-md hover:bg-slate-50">
                   <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
                   Internal
                 </label>
                 {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
-                  <span className="text-[10px] text-blue-600 flex items-center gap-1 ml-auto">
-                    <Reply className="h-3 w-3" /> via {selectedTicket.receivedAtMailbox}
+                  <span className="text-[10px] text-blue-600 flex items-center gap-1 ml-auto font-medium">
+                    <Reply className="h-3 w-3" /> Reply via {selectedTicket.receivedAtMailbox}
                   </span>
                 )}
               </div>
 
               <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note (not visible to user)..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
 
-              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} size="sm" className={`w-full ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
-                {addingNote ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Send className="h-3.5 w-3.5 mr-1.5" />}
-                {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
+              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-9 ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                {isInternalNote ? 'Add Internal Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
+                {!addingNote && <span className="ml-2 text-[10px] opacity-70">⌘↵</span>}
               </Button>
             </div>
 
