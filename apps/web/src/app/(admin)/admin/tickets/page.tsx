@@ -776,9 +776,9 @@ export default function TicketsPage() {
                   <div
                     key={ticket.id}
                     onClick={() => openTicketDetail(ticket)}
-                    className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer transition-colors ${
+                    className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-200 ${
                       isUnread ? 'bg-blue-50/40' : ''
-                    } ${selectedTicket?.id === ticket.id ? 'bg-blue-50' : ''}`}
+                    } ${selectedTicket?.id === ticket.id ? 'bg-blue-50 border-l-2 border-l-blue-500' : ''}`}
                   >
                     <div onClick={(e) => e.stopPropagation()}>
                       <Checkbox
