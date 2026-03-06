@@ -20,7 +20,7 @@ export default function AboutPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to home
           </Link>
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
             About Siggly
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -32,7 +32,7 @@ export default function AboutPage() {
       {/* Story */}
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6">Our Story</h2>
           <div className="prose prose-lg prose-gray max-w-none">
             <p>
               Email signatures might seem like a small detail, but they're one of the most visible parts of your brand. Every email your team sends is an opportunity to make a professional impression.
@@ -50,7 +50,7 @@ export default function AboutPage() {
       {/* Values */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-12 text-center">Our Values</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-12 text-center">Our Values</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-6 rounded-xl shadow-sm">
               <div className="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center mb-4">

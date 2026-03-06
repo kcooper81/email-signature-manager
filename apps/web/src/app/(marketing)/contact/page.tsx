@@ -60,7 +60,7 @@ export default function ContactPage() {
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Left side - Info */}
             <div>
-              <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-4">Get in Touch</h1>
               <p className="text-lg text-gray-600 mb-8">
                 Have questions about Siggly? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
               </p>

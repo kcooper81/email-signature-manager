@@ -68,7 +68,7 @@ export default function UseCasesPage() {
       {/* Hero */}
       <section className="py-20 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-6">
             Email signatures for
             <span className="bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent"> every team</span>
           </h1>

@@ -964,7 +964,7 @@ export default function GuidePage() {
             User Guide
           </Badge>
         </div>
-        <h1 className="text-3xl font-bold mb-2">Siggly User Guide</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Siggly User Guide</h1>
         <p className="text-muted-foreground text-lg">
           Step-by-step instructions for all Siggly features. Click any section to expand.
         </p>

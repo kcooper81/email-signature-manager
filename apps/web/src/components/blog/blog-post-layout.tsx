@@ -50,7 +50,7 @@ export function BlogPostLayout({ meta, children }: BlogPostLayoutProps) {
             </span>
           </div>
 
-          <h1 className="text-4xl font-bold mb-6">{meta.title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6">{meta.title}</h1>
 
           <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
             <span className="flex items-center gap-2">

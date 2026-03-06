@@ -39,7 +39,7 @@ export default function BlogPost() {
             <span className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-medium">Design</span>
           </div>
 
-          <h1 className="text-4xl font-bold mb-6">10 Email Signature Design Tips for 2026</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-6">10 Email Signature Design Tips for 2026</h1>
 
           <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 7, 2026</span>

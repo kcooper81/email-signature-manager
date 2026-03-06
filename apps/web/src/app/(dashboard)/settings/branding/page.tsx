@@ -244,7 +244,7 @@ export default function BrandingSettingsPage() {
       )}
 
           <Tabs defaultValue="colors" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
           <TabsTrigger value="colors" className="flex items-center gap-2">
             <Palette className="h-4 w-4" />
             Colors
