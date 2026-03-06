@@ -497,12 +497,19 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
     ? `<p style="font-size: 16px; color: #374151; margin-bottom: 0;">Best regards,<br><strong>The Siggly Team</strong></p>`
     : '';
 
+  // Build plain text version for deliverability
+  const plainResponse = data.responseMessage.replace(/<[^>]+>/g, '').trim();
+  const plainOriginal = data.originalMessage.replace(/<[^>]+>/g, '').trim();
+  const plainSignature = signatureHtml ? '\n--\nSiggly Team' : '\nBest regards,\nThe Siggly Team';
+  const plainText = `${plainResponse}\n${plainSignature}\n\n---\nOn ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}, you wrote:\n\n${plainOriginal}\n\nTicket #${ticketId.slice(0, 8)}`;
+
   try {
     const client = getResendClient();
     const { data: emailData, error } = await client.emails.send({
       from: fromAddress,
       to: [to],
-      subject: `Re: [#${ticketId.slice(0, 8)}] Your ${ticketType} submission`,
+      subject: `Re: [Ticket#${ticketId.slice(0, 8)}] Your ${ticketType} request`,
+      text: plainText,
       html: `
         <!DOCTYPE html>
         <html>
@@ -511,27 +518,28 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: #ffffff; padding: 0;">
-              <div style="font-size: 15px; color: #374151; margin-top: 0;${isHtml ? '' : ' white-space: pre-wrap;'}">${responseMessage}</div>
+            <div style="font-size: 15px; color: #374151; margin-top: 0;${isHtml ? '' : ' white-space: pre-wrap;'}">${responseMessage}</div>
 
-              ${fallbackSignOff}
-              ${signatureHtml}
-            </div>
+            ${fallbackSignOff}
+            ${signatureHtml}
 
             <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-              <div style="background: #f3f4f6; border-left: 4px solid #4d52de; padding: 15px; border-radius: 4px;">
-                <p style="margin: 0; color: #6b7280; font-size: 13px; font-weight: 600;">On ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}, you wrote:</p>
-                <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 13px; white-space: pre-wrap;">${originalMessage}</p>
+              <div style="background: #f9fafb; border-left: 3px solid #d1d5db; padding: 12px 15px; border-radius: 4px;">
+                <p style="margin: 0; color: #6b7280; font-size: 13px;">On ${new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}, you wrote:</p>
+                <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 13px; white-space: pre-wrap;">${originalMessage}</p>
               </div>
             </div>
 
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
-              <p style="margin: 5px 0;">Ticket #${ticketId.slice(0, 8)} &middot; <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Siggly</a></p>
+              <p style="margin: 5px 0;">Ticket #${ticketId.slice(0, 8)}</p>
             </div>
           </body>
         </html>
       `,
       replyTo: replyAs || 'support@siggly.io',
+      headers: {
+        'X-Entity-Ref-ID': ticketId,
+      },
     });
 
     if (error) {
@@ -613,29 +621,32 @@ export async function sendAutoResponse(opts: {
       : '';
 
     const subject = settings.subject || 'We received your message';
-    const body = escapeHtml(settings.body || 'Thank you for reaching out. We\'ve received your message and will get back to you as soon as possible.');
+    const bodyText = settings.body || 'Thank you for reaching out. We\'ve received your message and will get back to you as soon as possible.';
+    const body = escapeHtml(bodyText);
 
     const client = getResendClient();
     await client.emails.send({
       from: fromAddress,
       to: [opts.to],
-      subject: `${subject} [#${opts.ticketId.slice(0, 8)}]`,
+      subject: `${subject} [Ticket#${opts.ticketId.slice(0, 8)}]`,
+      text: `${bodyText}\n\nTicket #${opts.ticketId.slice(0, 8)}`,
       html: `
         <!DOCTYPE html>
         <html>
           <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: #ffffff; padding: 0;">
-              <p style="font-size: 15px; color: #374151; white-space: pre-wrap; margin-top: 0;">${body}</p>
-              ${sigBlock}
-            </div>
+            <p style="font-size: 15px; color: #374151; white-space: pre-wrap; margin-top: 0;">${body}</p>
+            ${sigBlock}
             <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
-              <p style="margin: 5px 0;">Ticket #${opts.ticketId.slice(0, 8)} &middot; <a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">Siggly</a></p>
+              <p style="margin: 5px 0;">Ticket #${opts.ticketId.slice(0, 8)}</p>
             </div>
           </body>
         </html>
       `,
       replyTo: opts.inboxEmail || 'support@siggly.io',
+      headers: {
+        'X-Entity-Ref-ID': opts.ticketId,
+      },
     });
   } catch (error) {
     console.error('Auto-responder failed:', error);
@@ -674,12 +685,15 @@ export async function notifyAdminsOfNewTicket(data: NewTicketNotificationData) {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
 
+  const plainText = `New Support Ticket\n\nType: ${data.type}\nFrom: ${senderEmail}\nSource: ${sourceLabel}\nTicket: #${data.ticketId.slice(0, 8)}\n\nMessage:\n${data.message}\n\nView in Admin Panel: ${appUrl}/admin/tickets`;
+
   try {
     const client = getResendClient();
     await client.emails.send({
       from: EMAIL_FROM.support,
       to: adminEmails,
-      subject: `[New Ticket] ${type} from ${senderEmail}`,
+      subject: `[Ticket] ${type} from ${senderEmail}`,
+      text: plainText,
       html: `
         <!DOCTYPE html>
         <html>
