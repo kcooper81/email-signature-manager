@@ -150,6 +150,7 @@ export default function TicketsPage() {
   const [adminUsers, setAdminUsers] = useState<{ id: string; email: string }[]>([]);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
+  const initialLoadDone = useRef(false);
 
   const filteredTicketIds = useMemo(() => {
     const searchLower = search.toLowerCase();
@@ -370,6 +371,17 @@ export default function TicketsPage() {
 
     setTickets(mapped);
     setLoading(false);
+
+    // Auto-select first ticket on initial load (desktop only)
+    if (!initialLoadDone.current && mapped.length > 0 && window.innerWidth >= 1024) {
+      initialLoadDone.current = true;
+      const first = mapped[0];
+      loadTicketNotes(first.id).then(notes => {
+        setSelectedTicket({ ...first, notes });
+      });
+    } else if (!initialLoadDone.current) {
+      initialLoadDone.current = true;
+    }
   };
 
   const loadTicketNotes = async (ticketId: string) => {
