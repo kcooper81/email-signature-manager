@@ -93,7 +93,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { from, to, subject, text, html } = payload.data || payload;
+  const emailData = payload.data || payload;
+
+  console.log('[inbound-email] Raw payload keys', {
+    topLevelKeys: Object.keys(payload),
+    dataKeys: payload.data ? Object.keys(payload.data) : 'no data key',
+    type: payload.type,
+    // Log all string fields to see what's available
+    sampleFields: Object.fromEntries(
+      Object.entries(emailData).map(([k, v]) => [k, typeof v === 'string' ? v.slice(0, 100) : typeof v])
+    ),
+  });
+
+  const { from, to, subject, text, html } = emailData;
   const senderEmail = typeof from === 'string' ? from : from?.address || from?.[0]?.address;
   const receivedAt = typeof to === 'string' ? to
     : Array.isArray(to) ? (to[0]?.address || to[0] || null)
@@ -105,7 +117,8 @@ export async function POST(request: NextRequest) {
     subject: subject || '(none)',
     hasText: !!text,
     hasHtml: !!html,
-    payloadKeys: Object.keys(payload.data || payload),
+    textPreview: typeof text === 'string' ? text.slice(0, 200) : typeof text,
+    htmlPreview: typeof html === 'string' ? html.slice(0, 200) : typeof html,
   });
 
   if (!senderEmail) {
