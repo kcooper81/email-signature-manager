@@ -868,8 +868,8 @@ export default function TicketsPage() {
       {/* Split pane: list left, detail right on desktop */}
       <div className={`flex gap-0 ${selectedTicket ? 'lg:flex-row' : ''}`}>
         {/* Ticket list — inbox style */}
-        <div className={`${selectedTicket ? 'hidden lg:block lg:w-[400px] lg:min-w-[400px] lg:border-r lg:border-slate-200' : 'w-full'}`}>
-          <Card className="overflow-hidden lg:rounded-r-none lg:border-r-0">
+        <div className={`${selectedTicket ? 'hidden lg:block lg:w-[320px] lg:min-w-[320px] lg:max-w-[320px] lg:shrink-0' : 'w-full'}`}>
+          <Card className={`overflow-hidden ${selectedTicket ? 'lg:rounded-r-none lg:border-r-0' : ''}`}>
             <CardContent className="p-0">
               {loading ? (
                 <div className="flex items-center justify-center py-16">
@@ -887,11 +887,13 @@ export default function TicketsPage() {
                     const PriorityIcon = priorityIcons[ticket.priority];
                     const isUnread = ticket.status === 'new';
 
+                    const isCompact = !!selectedTicket;
+
                     return (
                       <div
                         key={ticket.id}
                         onClick={() => openTicketDetail(ticket)}
-                        className={`flex items-center gap-3 px-4 py-3.5 cursor-pointer transition-all border-b border-slate-200 ${
+                        className={`flex items-center gap-2 ${isCompact ? 'px-2 py-2' : 'px-3 py-2.5'} cursor-pointer transition-all border-b border-slate-200 ${
                           selectedTicket?.id === ticket.id
                             ? 'bg-blue-50 border-l-[3px] border-l-blue-600 shadow-sm'
                             : isUnread
@@ -899,60 +901,64 @@ export default function TicketsPage() {
                               : 'border-l-[3px] border-l-transparent hover:bg-slate-50'
                         }`}
                       >
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={bulk.isSelected(ticket.id)}
-                            onCheckedChange={() => bulk.toggle(ticket.id)}
-                            aria-label={`Select ticket`}
-                          />
-                        </div>
+                        {!isCompact && (
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <Checkbox
+                              checked={bulk.isSelected(ticket.id)}
+                              onCheckedChange={() => bulk.toggle(ticket.id)}
+                              aria-label={`Select ticket`}
+                            />
+                          </div>
+                        )}
 
                         <PriorityIcon className={`h-3.5 w-3.5 shrink-0 ${priorityColors[ticket.priority]}`} />
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${typeColors[ticket.type]}`}>
+                          <div className="flex items-center gap-1.5">
+                            <span className={`inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${typeColors[ticket.type]}`}>
                               <TypeIcon className="h-2.5 w-2.5" />
-                              {ticket.type}
+                              {!isCompact && ticket.type}
                             </span>
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[ticket.status]}`}>
-                              {ticket.status}
-                            </span>
-                            <span className={`truncate text-sm ${isUnread ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
+                            {!isCompact && (
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[ticket.status]}`}>
+                                {ticket.status}
+                              </span>
+                            )}
+                            <span className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
                               {ticket.userEmail || 'Anonymous'}
                             </span>
-                            {ticket.receivedAtMailbox && (
+                            {!isCompact && ticket.receivedAtMailbox && (
                               <span className="hidden md:inline text-[10px] text-emerald-600 font-medium">
                                 → {ticket.receivedAtMailbox}
                               </span>
                             )}
                           </div>
-                          <p className={`text-sm truncate mt-1 ${isUnread ? 'text-slate-700 font-medium' : 'text-slate-400'}`}>
+                          <p className={`truncate mt-0.5 ${isCompact ? 'text-[11px]' : 'text-xs'} ${isUnread ? 'text-slate-600 font-medium' : 'text-slate-400'}`}>
                             {ticket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}
                           </p>
                         </div>
 
-                        <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
-                          <span className={`text-[11px] whitespace-nowrap ${isUnread ? 'text-blue-600 font-semibold' : 'text-slate-400'}`}>{timeAgo(ticket.createdAt)}</span>
-                          {ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
+                        <div className="flex flex-col items-end gap-0.5 shrink-0">
+                          <span className={`${isCompact ? 'text-[10px]' : 'text-[11px]'} whitespace-nowrap ${isUnread ? 'text-blue-600 font-semibold' : 'text-slate-400'}`}>{timeAgo(ticket.createdAt)}</span>
+                          {!isCompact && ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
                             <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
                               <Reply className="h-2.5 w-2.5" />
                               {timeAgo(ticket.updatedAt)}
                             </span>
                           )}
-                          {ticket.assignedEmail && (
+                          {!isCompact && ticket.assignedEmail && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium flex items-center gap-0.5 max-w-[120px] truncate">
                               <UserCheck className="h-2.5 w-2.5 shrink-0" />
                               {ticket.assignedEmail.split('@')[0]}
                             </span>
                           )}
-                          {ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
+                          {!isCompact && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
                               <AlarmClock className="h-2.5 w-2.5" />
                               {timeAgo(ticket.snoozedUntil)}
                             </span>
                           )}
-                          {ticket.isPartnerEscalation && (
+                          {!isCompact && ticket.isPartnerEscalation && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-medium">Partner</span>
                           )}
                         </div>
@@ -982,8 +988,8 @@ export default function TicketsPage() {
 
         {/* Desktop detail panel — inline right side */}
         {selectedTicket && (
-          <div className="hidden lg:block flex-1 min-w-0">
-            <Card className="overflow-hidden rounded-l-none border-l-0 h-[calc(100vh-280px)] overflow-y-auto">
+          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l border-slate-200">
+            <Card className="overflow-hidden rounded-l-none border-l-0 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 260px)' }}>
               {/* Header */}
               <div className="sticky top-0 bg-white border-b px-5 py-3 flex items-center justify-between z-10">
               <div className="flex items-center gap-2">
