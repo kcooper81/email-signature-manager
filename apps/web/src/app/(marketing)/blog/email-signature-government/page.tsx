@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-government',
-  'Government Email Signatures: Compliance Guide | Siggly',
+  'Government Email Signatures: Compliance Guide',
   'Email signature requirements for government agencies. Official formatting, compliance, and accessibility considerations.',
   ['government email signature', 'public sector signature', 'agency email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Government Email Signatures: Compliance Guide | Siggly',
+    title: 'Government Email Signatures: Compliance Guide',
     description: 'Email signature requirements for government agencies. Official formatting, compliance, and accessibility considerations.',
     url: '/blog/email-signature-government',
     image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',

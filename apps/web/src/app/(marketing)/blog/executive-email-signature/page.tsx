@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'executive-email-signature',
-  'Executive Email Signatures: CEO & C-Suite Guide | Siggly',
+  'Executive Email Signatures: CEO & C-Suite Guide',
   'Create executive email signatures that convey authority. Guidance for CEOs, C-suite executives, and senior leadership.',
   ['executive email signature', 'ceo email signature', 'c-suite signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Executive Email Signatures: CEO & C-Suite Guide | Siggly',
+    title: 'Executive Email Signatures: CEO & C-Suite Guide',
     description: 'Create executive email signatures that convey authority. Guidance for CEOs, C-suite executives, and senior leadership.',
     url: '/blog/executive-email-signature',
     image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=1200&h=600&fit=crop',

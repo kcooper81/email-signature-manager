@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-security',
-  'Email Signature Security: Protect Your Brand | Siggly',
+  'Email Signature Security: Protect Your Brand',
   'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
   ['email signature security', 'signature spoofing', 'email brand protection']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Security: Protect Your Brand | Siggly',
+    title: 'Email Signature Security: Protect Your Brand',
     description: 'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
     url: '/blog/email-signature-security',
     image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',

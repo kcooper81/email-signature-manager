@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-qr-codes',
-  'QR Codes in Email Signatures: Do They Work? | Siggly',
+  'QR Codes in Email Signatures: Do They Work?',
   'Should you add QR codes to email signatures? Pros, cons, and use cases for QR codes in professional email signatures.',
   ['qr code email signature', 'signature qr code', 'email qr code']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'QR Codes in Email Signatures: Do They Work? | Siggly',
+    title: 'QR Codes in Email Signatures: Do They Work?',
     description: 'Should you add QR codes to email signatures? Pros, cons, and use cases for QR codes in professional email signatures.',
     url: '/blog/email-signature-qr-codes',
     image: 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=1200&h=600&fit=crop',

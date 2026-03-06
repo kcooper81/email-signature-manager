@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'retail-email-signature',
-  'Retail Business Email Signatures: Store & Ecommerce | Siggly',
+  'Retail Business Email Signatures: Store & Ecommerce',
   'Create email signatures for retail businesses. Drive store visits and online sales with strategic signature elements.',
   ['retail email signature', 'store email signature', 'ecommerce email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Retail Business Email Signatures: Store & Ecommerce | Siggly',
+    title: 'Retail Business Email Signatures: Store & Ecommerce',
     description: 'Create email signatures for retail businesses. Drive store visits and online sales with strategic signature elements.',
     url: '/blog/retail-email-signature',
     image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=600&fit=crop',

@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-roi-calculator',
-  'Email Signature ROI: Calculate Your Return | Siggly',
+  'Email Signature ROI: Calculate Your Return',
   'Calculate the ROI of email signature management. Understand the value of consistent branding, banner clicks, and time savings.',
   ['email signature ROI', 'signature value calculator', 'signature marketing ROI']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature ROI: Calculate Your Return | Siggly',
+    title: 'Email Signature ROI: Calculate Your Return',
     description: 'Calculate the ROI of email signature management. Understand the value of consistent branding, banner clicks, and time savings.',
     url: '/blog/email-signature-roi-calculator',
     image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',

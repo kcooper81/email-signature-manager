@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-photo-guidelines',
-  'Email Signature Photo Guidelines: Look Professional | Siggly',
+  'Email Signature Photo Guidelines: Look Professional',
   'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
   ['email signature photo', 'signature headshot', 'professional photo email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Photo Guidelines: Look Professional | Siggly',
+    title: 'Email Signature Photo Guidelines: Look Professional',
     description: 'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
     url: '/blog/email-signature-photo-guidelines',
     image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop',

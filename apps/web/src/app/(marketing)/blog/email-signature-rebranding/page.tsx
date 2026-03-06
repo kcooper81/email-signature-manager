@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-rebranding',
-  'Updating Email Signatures During Rebranding | Siggly',
+  'Updating Email Signatures During Rebranding',
   'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
   ['email signature rebrand', 'update company signature', 'signature brand refresh']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Updating Email Signatures During Rebranding | Siggly',
+    title: 'Updating Email Signatures During Rebranding',
     description: 'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
     url: '/blog/email-signature-rebranding',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',

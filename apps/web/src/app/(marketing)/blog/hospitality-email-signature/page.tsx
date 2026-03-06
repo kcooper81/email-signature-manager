@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'hospitality-email-signature',
-  'Hospitality Email Signatures: Hotels & Restaurants | Siggly',
+  'Hospitality Email Signatures: Hotels & Restaurants',
   'Create welcoming email signatures for hospitality businesses. Hotels, restaurants, and event venues can build guest relationships.',
   ['hotel email signature', 'hospitality signature', 'restaurant email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Hospitality Email Signatures: Hotels & Restaurants | Siggly',
+    title: 'Hospitality Email Signatures: Hotels & Restaurants',
     description: 'Create welcoming email signatures for hospitality businesses. Hotels, restaurants, and event venues can build guest relationships.',
     url: '/blog/hospitality-email-signature',
     image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=600&fit=crop',

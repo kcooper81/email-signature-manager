@@ -6,7 +6,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { NewsletterSignupSection } from '@/components/newsletter';
 
 export const metadata = genMeta({
-  title: 'Email Signatures for Financial Services | Compliance & Security | Siggly',
+  title: 'Email Signatures for Financial Services | Compliance & Security',
   description: 'Compliant email signatures for banks, investment firms, and financial advisors. Meet SEC, FINRA, and SOX requirements with built-in disclaimers and audit trails.',
   keywords: ['financial services email signatures', 'SEC compliant email', 'FINRA email requirements', 'bank email signatures', 'investment advisor email compliance'],
   canonical: '/industries/finance',

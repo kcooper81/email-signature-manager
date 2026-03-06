@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-manufacturing',
-  'Manufacturing Company Email Signatures | Siggly',
+  'Manufacturing Company Email Signatures',
   'Email signature best practices for manufacturing companies. Professional signatures for sales, engineering, and plant management.',
   ['manufacturing email signature', 'industrial email signature', 'factory email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Manufacturing Company Email Signatures | Siggly',
+    title: 'Manufacturing Company Email Signatures',
     description: 'Email signature best practices for manufacturing companies. Professional signatures for sales, engineering, and plant management.',
     url: '/blog/email-signature-manufacturing',
     image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&h=600&fit=crop',

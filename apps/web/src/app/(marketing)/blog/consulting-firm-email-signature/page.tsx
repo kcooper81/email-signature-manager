@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'consulting-firm-email-signature',
-  'Consulting Firm Email Signatures: Professional Guide | Siggly',
+  'Consulting Firm Email Signatures: Professional Guide',
   'Create polished email signatures for consultants and consulting firms. Build credibility and make it easy for clients to connect.',
   ['consulting email signature', 'consultant signature', 'management consulting email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Consulting Firm Email Signatures: Professional Guide | Siggly',
+    title: 'Consulting Firm Email Signatures: Professional Guide',
     description: 'Create polished email signatures for consultants and consulting firms. Build credibility and make it easy for clients to connect.',
     url: '/blog/consulting-firm-email-signature',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',

@@ -4,7 +4,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { caseStudiesPages } from '@/lib/seo-pages/data/case-studies';
 
 export const metadata = genMeta({
-  title: 'Customer Case Studies - Email Signature Success Stories | Siggly',
+  title: 'Customer Case Studies - Email Signature Success Stories',
   description: 'Real-world case studies showing how organizations use Siggly to solve email signature challenges. From law firms to healthcare networks, see measurable results across every industry.',
   keywords: ['email signature case studies', 'signature management success stories', 'email branding ROI', 'Siggly customer stories'],
   canonical: '/case-studies',

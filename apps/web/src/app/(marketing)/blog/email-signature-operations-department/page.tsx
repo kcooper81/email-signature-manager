@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-operations-department',
-  'Operations Department Email Signatures | Siggly',
+  'Operations Department Email Signatures',
   'Email signature best practices for operations teams. Practical signatures for logistics, facilities, and operational roles.',
   ['operations email signature', 'logistics signature', 'ops team email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Operations Department Email Signatures | Siggly',
+    title: 'Operations Department Email Signatures',
     description: 'Email signature best practices for operations teams. Practical signatures for logistics, facilities, and operational roles.',
     url: '/blog/email-signature-operations-department',
     image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop',

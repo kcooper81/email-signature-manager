@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-best-practices',
-  'Email Signature Best Practices: The Complete Guide | Siggly',
+  'Email Signature Best Practices: The Complete Guide',
   'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
   ['email signature best practices', 'professional email signature', 'email signature tips', 'email signature guidelines']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Best Practices: The Complete Guide | Siggly',
+    title: 'Email Signature Best Practices: The Complete Guide',
     description: 'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
     url: '/blog/email-signature-best-practices',
     image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop',

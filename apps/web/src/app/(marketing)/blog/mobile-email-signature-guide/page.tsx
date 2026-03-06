@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'mobile-email-signature-guide',
-  'Mobile Email Signature Guide: iOS & Android Setup | Siggly',
+  'Mobile Email Signature Guide: iOS & Android Setup',
   'Set up professional email signatures on iPhone and Android. Learn mobile-specific best practices for Gmail, Outlook, and Apple Mail apps.',
   ['mobile email signature', 'iphone email signature', 'android email signature', 'gmail mobile signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Mobile Email Signature Guide: iOS & Android Setup | Siggly',
+    title: 'Mobile Email Signature Guide: iOS & Android Setup',
     description: 'Set up professional email signatures on iPhone and Android. Learn mobile-specific best practices for Gmail, Outlook, and Apple Mail apps.',
     url: '/blog/mobile-email-signature-guide',
     image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop',

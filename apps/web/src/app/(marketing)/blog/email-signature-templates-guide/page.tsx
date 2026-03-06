@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-templates-guide',
-  'Email Signature Templates: Free Designs for Every Industry | Siggly',
+  'Email Signature Templates: Free Designs for Every Industry',
   'Download free email signature templates for professionals. Includes designs for corporate, creative, legal, healthcare, and real estate industries.',
   ['email signature template', 'free email signature', 'signature template download', 'professional email template']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Templates: Free Designs for Every Industry | Siggly',
+    title: 'Email Signature Templates: Free Designs for Every Industry',
     description: 'Download free email signature templates for professionals. Includes designs for corporate, creative, legal, healthcare, and real estate industries.',
     url: '/blog/email-signature-templates-guide',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',

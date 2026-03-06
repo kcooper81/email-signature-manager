@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'apple-mail-signature-setup',
-  'Apple Mail Signature Setup: Mac & iPhone Guide | Siggly',
+  'Apple Mail Signature Setup: Mac & iPhone Guide',
   'Set up email signatures in Apple Mail on Mac and iPhone. Step-by-step instructions for creating and managing signatures.',
   ['apple mail signature', 'mac email signature', 'iphone signature setup']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Apple Mail Signature Setup: Mac & iPhone Guide | Siggly',
+    title: 'Apple Mail Signature Setup: Mac & iPhone Guide',
     description: 'Set up email signatures in Apple Mail on Mac and iPhone. Step-by-step instructions for creating and managing signatures.',
     url: '/blog/apple-mail-signature-setup',
     image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop',

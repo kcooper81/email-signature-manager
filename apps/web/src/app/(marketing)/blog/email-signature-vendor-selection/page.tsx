@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-vendor-selection',
-  'Choosing an Email Signature Vendor: Buyer Guide | Siggly',
+  'Choosing an Email Signature Vendor: Buyer Guide',
   'How to evaluate and select an email signature management vendor. RFP questions, feature comparison, and decision criteria.',
   ['email signature vendor', 'signature software selection', 'choose signature tool']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Choosing an Email Signature Vendor: Buyer Guide | Siggly',
+    title: 'Choosing an Email Signature Vendor: Buyer Guide',
     description: 'How to evaluate and select an email signature management vendor. RFP questions, feature comparison, and decision criteria.',
     url: '/blog/email-signature-vendor-selection',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',

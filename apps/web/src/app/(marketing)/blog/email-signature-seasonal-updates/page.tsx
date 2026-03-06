@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-seasonal-updates',
-  'Seasonal Email Signature Updates: Holiday & Event Ideas | Siggly',
+  'Seasonal Email Signature Updates: Holiday & Event Ideas',
   'Update your email signatures for seasons and holidays. Ideas for holiday banners, event promotions, and timely messaging.',
   ['holiday email signature', 'seasonal signature', 'email signature holiday banner']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Seasonal Email Signature Updates: Holiday & Event Ideas | Siggly',
+    title: 'Seasonal Email Signature Updates: Holiday & Event Ideas',
     description: 'Update your email signatures for seasons and holidays. Ideas for holiday banners, event promotions, and timely messaging.',
     url: '/blog/email-signature-seasonal-updates',
     image: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200&h=600&fit=crop',

@@ -4,7 +4,7 @@ import { generateMetadata as genMeta } from '@/lib/seo';
 import { examplesPages } from '@/lib/seo-pages/data/examples';
 
 export const metadata = genMeta({
-  title: 'Email Signature Examples & Inspiration | Siggly',
+  title: 'Email Signature Examples & Inspiration',
   description: 'Browse 25+ curated email signature examples organized by style, elements, team roles, and context. Find inspiration for your next professional email signature design.',
   keywords: ['email signature examples', 'signature inspiration', 'professional signature designs', 'email signature gallery'],
   canonical: '/examples',

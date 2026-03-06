@@ -6,14 +6,14 @@ import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
 
 export const metadata = createBlogMetadata(
   'email-signature-analytics',
-  'Email Signature Analytics: Track Performance & ROI | Siggly',
+  'Email Signature Analytics: Track Performance & ROI',
   'Measure email signature performance with analytics. Track clicks, conversions, and ROI from signature links and campaign banners.',
   ['email signature analytics', 'signature tracking', 'email signature metrics', 'signature click tracking']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Analytics: Track Performance & ROI | Siggly',
+    title: 'Email Signature Analytics: Track Performance & ROI',
     description: 'Measure email signature performance with analytics. Track clicks, conversions, and ROI from signature links and campaign banners.',
     url: '/blog/email-signature-analytics',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
