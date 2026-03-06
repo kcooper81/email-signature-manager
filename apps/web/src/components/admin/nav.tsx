@@ -31,6 +31,8 @@ interface NavBadgeCounts {
   unresolvedErrors: number;
   pendingPartners: number;
   pendingSEO: number;
+  newAccounts: number;
+  newSubscriptions: number;
 }
 
 type BadgeKey = keyof NavBadgeCounts;
@@ -70,9 +72,9 @@ const navGroups: NavGroup[] = [
     label: 'Customers',
     supportVisible: false,
     items: [
-      { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: null, supportVisible: false },
+      { href: '/admin/accounts', label: 'Accounts', icon: Building2, badgeKey: 'newAccounts', supportVisible: false },
       { href: '/admin/partner-applications', label: 'Partners', icon: UserPlus, badgeKey: 'pendingPartners', supportVisible: false },
-      { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: null, supportVisible: false },
+      { href: '/admin/billing', label: 'Subscriptions', icon: CreditCard, badgeKey: 'newSubscriptions', supportVisible: false },
     ],
   },
   {
@@ -108,6 +110,8 @@ export function AdminNav({ role }: AdminNavProps) {
     unresolvedErrors: 0,
     pendingPartners: 0,
     pendingSEO: 0,
+    newAccounts: 0,
+    newSubscriptions: 0,
   });
 
   const isSupport = role === 'support';
@@ -147,6 +151,34 @@ export function AdminNav({ role }: AdminNavProps) {
           loadBadgeCounts();
         }
       )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'organizations' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'partner_applications' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'partner_applications' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'subscription_events' },
+        () => {
+          loadBadgeCounts();
+        }
+      )
       .subscribe();
 
     return () => {
@@ -170,15 +202,23 @@ export function AdminNav({ role }: AdminNavProps) {
         unresolvedErrors: 0,
         pendingPartners: 0,
         pendingSEO: 0,
+        newAccounts: 0,
+        newSubscriptions: 0,
       });
       return;
     }
 
-    const [ticketsResult, errorsResult, partnersResult, seoResult] = await Promise.all([
+    // Get last-seen timestamps for badge tracking
+    const accountsLastSeen = localStorage.getItem('admin_accounts_last_seen') || new Date(0).toISOString();
+    const subscriptionsLastSeen = localStorage.getItem('admin_subscriptions_last_seen') || new Date(0).toISOString();
+
+    const [ticketsResult, errorsResult, partnersResult, seoResult, accountsResult, subscriptionsResult] = await Promise.all([
       supabase.from('feedback').select('*', { count: 'exact', head: true }).eq('status', 'new'),
       supabase.from('error_logs').select('*', { count: 'exact', head: true }).eq('resolved', false),
       supabase.from('partner_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'under_review']),
       supabase.from('seo_recommendations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('organizations').select('*', { count: 'exact', head: true }).gt('created_at', accountsLastSeen),
+      supabase.from('subscription_events').select('*', { count: 'exact', head: true }).gt('created_at', subscriptionsLastSeen),
     ]);
 
     setBadges({
@@ -186,8 +226,22 @@ export function AdminNav({ role }: AdminNavProps) {
       unresolvedErrors: errorsResult.count || 0,
       pendingPartners: partnersResult.count || 0,
       pendingSEO: seoResult.count || 0,
+      newAccounts: accountsResult.count || 0,
+      newSubscriptions: subscriptionsResult.count || 0,
     });
   };
+
+  // Mark badges as seen when visiting relevant pages
+  useEffect(() => {
+    if (pathname === '/admin/accounts' || pathname.startsWith('/admin/accounts/')) {
+      localStorage.setItem('admin_accounts_last_seen', new Date().toISOString());
+      setBadges(prev => ({ ...prev, newAccounts: 0 }));
+    }
+    if (pathname === '/admin/billing' || pathname.startsWith('/admin/billing/')) {
+      localStorage.setItem('admin_subscriptions_last_seen', new Date().toISOString());
+      setBadges(prev => ({ ...prev, newSubscriptions: 0 }));
+    }
+  }, [pathname]);
 
   const renderNavItem = (item: NavItem, mobile?: boolean) => {
     const isActive = pathname === item.href ||
@@ -199,7 +253,17 @@ export function AdminNav({ role }: AdminNavProps) {
       <Link
         key={item.href}
         href={item.href}
-        onClick={() => mobile && setMobileMenuOpen(false)}
+        onClick={() => {
+          if (mobile) setMobileMenuOpen(false);
+          if (item.href === '/admin/accounts') {
+            localStorage.setItem('admin_accounts_last_seen', new Date().toISOString());
+            setBadges(prev => ({ ...prev, newAccounts: 0 }));
+          }
+          if (item.href === '/admin/billing') {
+            localStorage.setItem('admin_subscriptions_last_seen', new Date().toISOString());
+            setBadges(prev => ({ ...prev, newSubscriptions: 0 }));
+          }
+        }}
         className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
           isActive
             ? 'bg-slate-800 text-white'
