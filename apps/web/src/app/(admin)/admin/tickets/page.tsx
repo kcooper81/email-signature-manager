@@ -905,7 +905,7 @@ export default function TicketsPage() {
                       <div
                         key={ticket.id}
                         onClick={() => openTicketDetail(ticket)}
-                        className={`flex items-center gap-2 ${isCompact ? 'px-2 py-2' : 'px-3 py-2.5'} cursor-pointer transition-all border-b border-slate-200 ${
+                        className={`flex items-center gap-2 ${isCompact ? 'px-2.5 py-3' : 'px-3 py-3'} cursor-pointer transition-all border-b border-slate-200 ${
                           selectedTicket?.id === ticket.id
                             ? 'bg-blue-50 border-l-[3px] border-l-blue-600 shadow-sm'
                             : isUnread
