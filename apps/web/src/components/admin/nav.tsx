@@ -21,6 +21,7 @@ import {
   Search,
   ClipboardCheck,
   Shield,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { SuperAdminRole } from '@/app/(admin)/layout';
@@ -61,6 +62,7 @@ const navGroups: NavGroup[] = [
     supportVisible: true,
     items: [
       { href: '/admin/tickets', label: 'Tickets', icon: Ticket, badgeKey: 'newTickets', supportVisible: true },
+      { href: '/admin/inbox-settings', label: 'Inbox Settings', icon: Settings, badgeKey: null, supportVisible: false },
       { href: '/admin/help', label: 'Help Articles', icon: BookOpen, badgeKey: null, supportVisible: false },
     ],
   },

@@ -33,6 +33,9 @@ import {
   BellOff,
   Inbox,
   Reply,
+  AlarmClock,
+  Zap,
+  ChevronDown,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -43,6 +46,14 @@ interface TicketNote {
   authorEmail: string;
   isInternal: boolean;
   createdAt: string;
+}
+
+interface CannedResponse {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  shortcut: string | null;
 }
 
 type TicketType = 'bug' | 'feature' | 'question' | 'email' | 'sales' | 'other';
@@ -64,6 +75,7 @@ interface FeedbackEntry {
   partnerOrganizationName: string | null;
   isPartnerEscalation: boolean;
   receivedAtMailbox: string | null;
+  snoozedUntil: string | null;
 }
 
 const PAGE_SIZE = 20;
@@ -124,6 +136,10 @@ export default function TicketsPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isInternalNote, setIsInternalNote] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
+  const [showCannedPicker, setShowCannedPicker] = useState(false);
+  const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
+  const [hideSnoozed, setHideSnoozed] = useState(true);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
 
   const filteredTicketIds = useMemo(() => {
@@ -148,6 +164,7 @@ export default function TicketsPage() {
   useEffect(() => {
     loadTickets();
     loadCurrentUser();
+    loadCannedResponses();
   }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
 
   // Real-time subscription for new tickets
@@ -178,6 +195,7 @@ export default function TicketsPage() {
             partnerOrganizationName: null,
             isPartnerEscalation: item.is_partner_escalation || false,
             receivedAtMailbox: item.inbox_email || null,
+            snoozedUntil: item.snoozed_until || null,
           };
 
           const matchesType = typeFilter === 'all' || item.type === typeFilter;
@@ -328,6 +346,7 @@ export default function TicketsPage() {
       partnerOrganizationName: item.partner_organization?.name || null,
       isPartnerEscalation: item.is_partner_escalation || false,
       receivedAtMailbox: item.inbox_email || null,
+      snoozedUntil: item.snoozed_until || null,
     }));
 
     setTickets(mapped);
@@ -458,7 +477,59 @@ export default function TicketsPage() {
     setAddingNote(false);
   };
 
+  const loadCannedResponses = async () => {
+    try {
+      const res = await fetch('/api/admin/canned-responses');
+      if (res.ok) {
+        const { data } = await res.json();
+        setCannedResponses(data || []);
+      }
+    } catch {
+      // Not critical
+    }
+  };
+
+  const snoozeTicket = async (ticketId: string, hours: number) => {
+    const until = new Date(Date.now() + hours * 3600000).toISOString();
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'snooze', until }),
+      });
+      if (res.ok) {
+        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, snoozedUntil: until } : t));
+        if (selectedTicket?.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, snoozedUntil: until } : null);
+        }
+        setShowSnoozeMenu(false);
+      }
+    } catch {
+      console.error('Snooze failed');
+    }
+  };
+
+  const unsnoozeTicket = async (ticketId: string) => {
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'unsnooze' }),
+      });
+      if (res.ok) {
+        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, snoozedUntil: null } : t));
+        if (selectedTicket?.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, snoozedUntil: null } : null);
+        }
+      }
+    } catch {
+      console.error('Unsnooze failed');
+    }
+  };
+
   const filteredTickets = sort.sortData(tickets.filter(ticket => {
+    // Hide snoozed tickets if toggle is on
+    if (hideSnoozed && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date()) return false;
     if (search === '') return true;
     const searchLower = search.toLowerCase();
     return (
@@ -554,17 +625,30 @@ export default function TicketsPage() {
             )}
           </div>
         </div>
-        <button
-          onClick={toggleNotifications}
-          className={`p-2 rounded-lg transition-colors ${
-            notificationsEnabled
-              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-              : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
-          }`}
-          title={notificationsEnabled ? 'Live notifications on' : 'Enable live notifications'}
-        >
-          {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setHideSnoozed(!hideSnoozed)}
+            className={`p-2 rounded-lg transition-colors ${
+              !hideSnoozed
+                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+            }`}
+            title={hideSnoozed ? 'Snoozed tickets hidden' : 'Showing snoozed tickets'}
+          >
+            <AlarmClock className="h-4 w-4" />
+          </button>
+          <button
+            onClick={toggleNotifications}
+            className={`p-2 rounded-lg transition-colors ${
+              notificationsEnabled
+                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+            }`}
+            title={notificationsEnabled ? 'Live notifications on' : 'Enable live notifications'}
+          >
+            {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       {/* Search + filters in one row */}
@@ -725,6 +809,12 @@ export default function TicketsPage() {
 
                     <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
                       <span className="text-[11px] text-slate-400 whitespace-nowrap">{timeAgo(ticket.createdAt)}</span>
+                      {ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
+                          <AlarmClock className="h-2.5 w-2.5" />
+                          {timeAgo(ticket.snoozedUntil)}
+                        </span>
+                      )}
                       {ticket.isPartnerEscalation && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-medium">Partner</span>
                       )}
@@ -801,7 +891,7 @@ export default function TicketsPage() {
                           <PriorityIcon className="h-3.5 w-3.5" />
                           {selectedTicket.priority}
                         </span>
-                        {/* Inline status/priority dropdowns */}
+                        {/* Inline controls */}
                         <div className="ml-auto flex items-center gap-1">
                           <select
                             value={selectedTicket.status}
@@ -825,6 +915,45 @@ export default function TicketsPage() {
                             <option value="high">High</option>
                             <option value="urgent">Urgent</option>
                           </select>
+                          {/* Snooze */}
+                          <div className="relative">
+                            {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
+                              <button
+                                onClick={() => unsnoozeTicket(selectedTicket.id)}
+                                className="h-7 px-1.5 border rounded text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-0.5"
+                                title="Click to unsnooze"
+                              >
+                                <AlarmClock className="h-3 w-3" />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setShowSnoozeMenu(!showSnoozeMenu)}
+                                className="h-7 px-1.5 border rounded text-xs text-slate-500 hover:bg-slate-50 flex items-center gap-0.5"
+                                title="Snooze ticket"
+                              >
+                                <AlarmClock className="h-3 w-3" />
+                              </button>
+                            )}
+                            {showSnoozeMenu && (
+                              <div className="absolute right-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-36">
+                                {[
+                                  { label: '1 hour', hours: 1 },
+                                  { label: '4 hours', hours: 4 },
+                                  { label: 'Tomorrow', hours: 24 },
+                                  { label: '3 days', hours: 72 },
+                                  { label: '1 week', hours: 168 },
+                                ].map(opt => (
+                                  <button
+                                    key={opt.hours}
+                                    onClick={() => snoozeTicket(selectedTicket.id, opt.hours)}
+                                    className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 text-slate-700"
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </>
                     );
@@ -919,6 +1048,37 @@ export default function TicketsPage() {
 
                 {/* Reply composer */}
                 <div className="space-y-2 pt-2 border-t">
+                  {/* Canned responses */}
+                  {cannedResponses.length > 0 && !isInternalNote && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowCannedPicker(!showCannedPicker)}
+                        className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-slate-50"
+                      >
+                        <Zap className="h-3 w-3" />
+                        Saved replies
+                        <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
+                      </button>
+                      {showCannedPicker && (
+                        <div className="absolute left-0 top-8 bg-white border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
+                          {cannedResponses.map(cr => (
+                            <button
+                              key={cr.id}
+                              onClick={() => {
+                                setNewNote(cr.content);
+                                setShowCannedPicker(false);
+                              }}
+                              className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-50 last:border-0"
+                            >
+                              <p className="text-xs font-medium text-slate-700">{cr.title}</p>
+                              <p className="text-[10px] text-slate-400 truncate">{cr.content.slice(0, 80)}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <Textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
