@@ -776,9 +776,13 @@ export default function TicketsPage() {
                   <div
                     key={ticket.id}
                     onClick={() => openTicketDetail(ticket)}
-                    className={`flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-200 ${
-                      isUnread ? 'bg-blue-50/40' : ''
-                    } ${selectedTicket?.id === ticket.id ? 'bg-blue-50 border-l-2 border-l-blue-500' : ''}`}
+                    className={`flex items-center gap-3 px-4 py-3.5 cursor-pointer transition-all border-b border-slate-200 ${
+                      selectedTicket?.id === ticket.id
+                        ? 'bg-blue-50 border-l-[3px] border-l-blue-600 shadow-sm'
+                        : isUnread
+                          ? 'bg-gradient-to-r from-blue-50/60 to-white border-l-[3px] border-l-blue-400 hover:bg-blue-50/80'
+                          : 'border-l-[3px] border-l-transparent hover:bg-slate-50'
+                    }`}
                   >
                     <div onClick={(e) => e.stopPropagation()}>
                       <Checkbox
@@ -799,7 +803,7 @@ export default function TicketsPage() {
                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[ticket.status]}`}>
                           {ticket.status}
                         </span>
-                        <span className={`truncate text-sm ${isUnread ? 'font-semibold text-slate-900' : 'text-slate-700'}`}>
+                        <span className={`truncate text-sm ${isUnread ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
                           {ticket.userEmail || 'Anonymous'}
                         </span>
                         {ticket.receivedAtMailbox && (
@@ -808,13 +812,13 @@ export default function TicketsPage() {
                           </span>
                         )}
                       </div>
-                      <p className={`text-sm truncate mt-0.5 ${isUnread ? 'text-slate-700' : 'text-slate-500'}`}>
+                      <p className={`text-sm truncate mt-1 ${isUnread ? 'text-slate-700 font-medium' : 'text-slate-400'}`}>
                         {ticket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}
                       </p>
                     </div>
 
                     <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
-                      <span className="text-[11px] text-slate-400 whitespace-nowrap">{timeAgo(ticket.createdAt)}</span>
+                      <span className={`text-[11px] whitespace-nowrap ${isUnread ? 'text-blue-600 font-semibold' : 'text-slate-400'}`}>{timeAgo(ticket.createdAt)}</span>
                       {ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
                           <AlarmClock className="h-2.5 w-2.5" />
