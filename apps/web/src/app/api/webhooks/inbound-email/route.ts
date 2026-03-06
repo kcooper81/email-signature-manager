@@ -78,6 +78,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No sender email found' }, { status: 400 });
   }
 
+  // Only process emails addressed to @siggly.io — ignore other domains
+  // (Resend fires webhooks for all domains on the account)
+  const recipientStr = typeof receivedAt === 'string' ? receivedAt : '';
+  if (!recipientStr.toLowerCase().includes('@siggly.io')) {
+    return NextResponse.json({ skipped: true, reason: 'Not a siggly.io recipient' });
+  }
+
   const messageBody = text || html?.replace(/<[^>]+>/g, '') || '';
   if (!messageBody.trim()) {
     return NextResponse.json({ error: 'Empty email body' }, { status: 400 });
