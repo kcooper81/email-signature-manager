@@ -37,6 +37,7 @@ import {
   AlarmClock,
   Zap,
   ChevronDown,
+  UserCheck,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -77,6 +78,8 @@ interface FeedbackEntry {
   isPartnerEscalation: boolean;
   receivedAtMailbox: string | null;
   snoozedUntil: string | null;
+  assignedTo: string | null;
+  assignedEmail: string | null;
 }
 
 const PAGE_SIZE = 20;
@@ -125,7 +128,7 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('open');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [partnerFilter, setPartnerFilter] = useState<string>('all');
   const [page, setPage] = useState(0);
@@ -142,7 +145,9 @@ export default function TicketsPage() {
   const [showCannedPicker, setShowCannedPicker] = useState(false);
   const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
   const [hideSnoozed, setHideSnoozed] = useState(true);
+  const [adminUsers, setAdminUsers] = useState<{ id: string; email: string }[]>([]);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
+  const ticketListRef = useRef<HTMLDivElement>(null);
 
   const filteredTicketIds = useMemo(() => {
     const searchLower = search.toLowerCase();
@@ -167,6 +172,7 @@ export default function TicketsPage() {
     loadTickets();
     loadCurrentUser();
     loadCannedResponses();
+    loadAdminUsers();
   }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
 
   // Real-time subscription for new tickets
@@ -198,10 +204,14 @@ export default function TicketsPage() {
             isPartnerEscalation: item.is_partner_escalation || false,
             receivedAtMailbox: item.inbox_email || null,
             snoozedUntil: item.snoozed_until || null,
+            assignedTo: item.assigned_to || null,
+            assignedEmail: null,
           };
 
           const matchesType = typeFilter === 'all' || item.type === typeFilter;
-          const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+          const matchesStatus = statusFilter === 'all'
+            || (statusFilter === 'open' && ['new', 'reviewed'].includes(item.status))
+            || item.status === statusFilter;
           const matchesPriority = priorityFilter === 'all' || (item.priority || 'normal') === priorityFilter;
 
           if (page === 0 && matchesType && matchesStatus && matchesPriority) {
@@ -298,7 +308,8 @@ export default function TicketsPage() {
       .select(`
         *,
         organization:organization_id(id, name),
-        partner_organization:partner_organization_id(id, name)
+        partner_organization:partner_organization_id(id, name),
+        assigned_user:assigned_to(id, email)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
@@ -307,7 +318,9 @@ export default function TicketsPage() {
       query = query.eq('type', typeFilter);
     }
 
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'open') {
+      query = query.in('status', ['new', 'reviewed']);
+    } else if (statusFilter !== 'all') {
       query = query.eq('status', statusFilter);
     }
 
@@ -349,6 +362,8 @@ export default function TicketsPage() {
       isPartnerEscalation: item.is_partner_escalation || false,
       receivedAtMailbox: item.inbox_email || null,
       snoozedUntil: item.snoozed_until || null,
+      assignedTo: item.assigned_to || null,
+      assignedEmail: item.assigned_user?.email || null,
     }));
 
     setTickets(mapped);
@@ -495,6 +510,31 @@ export default function TicketsPage() {
     }
   };
 
+  const loadAdminUsers = async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('users')
+      .select('id, email')
+      .eq('is_super_admin', true)
+      .order('email');
+    setAdminUsers(data || []);
+  };
+
+  const assignTicket = async (ticketId: string, userId: string | null) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('feedback')
+      .update({ assigned_to: userId, updated_at: new Date().toISOString() })
+      .eq('id', ticketId);
+    if (!error) {
+      const assignedEmail = adminUsers.find(a => a.id === userId)?.email || null;
+      setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, assignedTo: userId, assignedEmail: assignedEmail } : t));
+      if (selectedTicket?.id === ticketId) {
+        setSelectedTicket(prev => prev ? { ...prev, assignedTo: userId, assignedEmail: assignedEmail } : null);
+      }
+    }
+  };
+
   const snoozeTicket = async (ticketId: string, hours: number) => {
     const until = new Date(Date.now() + hours * 3600000).toISOString();
     try {
@@ -533,16 +573,66 @@ export default function TicketsPage() {
     }
   };
 
-  const filteredTickets = sort.sortData(tickets.filter(ticket => {
-    // Hide snoozed tickets if toggle is on
-    if (hideSnoozed && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date()) return false;
-    if (search === '') return true;
-    const searchLower = search.toLowerCase();
-    return (
-      ticket.message.toLowerCase().includes(searchLower) ||
-      (ticket.userEmail?.toLowerCase().includes(searchLower) ?? false)
-    );
-  }));
+  const filteredTickets = useMemo(() => {
+    const filtered = tickets.filter(ticket => {
+      if (hideSnoozed && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date()) return false;
+      if (search === '') return true;
+      const searchLower = search.toLowerCase();
+      return (
+        ticket.message.toLowerCase().includes(searchLower) ||
+        (ticket.userEmail?.toLowerCase().includes(searchLower) ?? false)
+      );
+    });
+    const sorted = sort.sortData(filtered);
+    // Pin unread (new) tickets to top
+    const unread = sorted.filter(t => t.status === 'new');
+    const read = sorted.filter(t => t.status !== 'new');
+    return [...unread, ...read];
+  }, [tickets, hideSnoozed, search, sort.sortField, sort.sortDir]);
+
+  // Keyboard shortcuts: j/k navigate, r reply, e resolve, Escape close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' ||
+          target.isContentEditable || target.closest('.tiptap')) return;
+
+      if (e.key === 'Escape' && selectedTicket) {
+        setSelectedTicket(null);
+        return;
+      }
+
+      if (e.key === 'j' || e.key === 'k') {
+        e.preventDefault();
+        const currentIdx = selectedTicket
+          ? filteredTickets.findIndex(t => t.id === selectedTicket.id)
+          : -1;
+        const nextIdx = e.key === 'j'
+          ? Math.min(currentIdx + 1, filteredTickets.length - 1)
+          : Math.max(currentIdx - 1, 0);
+        if (filteredTickets[nextIdx]) {
+          openTicketDetail(filteredTickets[nextIdx]);
+        }
+        return;
+      }
+
+      if (selectedTicket) {
+        if (e.key === 'r') {
+          e.preventDefault();
+          editorRef.current?.focus?.();
+          return;
+        }
+        if (e.key === 'e') {
+          e.preventDefault();
+          updateStatus(selectedTicket.id, 'resolved');
+          return;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedTicket, filteredTickets]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -599,7 +689,14 @@ export default function TicketsPage() {
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const hasActiveFilters = typeFilter !== 'all' || statusFilter !== 'all' || priorityFilter !== 'all' || partnerFilter !== 'all';
+  const hasActiveFilters = typeFilter !== 'all' || priorityFilter !== 'all' || partnerFilter !== 'all';
+
+  const STATUS_TABS = [
+    { key: 'open', label: 'Open' },
+    { key: 'all', label: 'All' },
+    { key: 'resolved', label: 'Resolved' },
+    { key: 'archived', label: 'Archived' },
+  ];
 
   return (
     <div className="space-y-4">
@@ -657,6 +754,32 @@ export default function TicketsPage() {
         </div>
       </div>
 
+      {/* Quick filter tabs */}
+      <div className="flex items-center gap-1 border-b border-slate-200">
+        {STATUS_TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => { setStatusFilter(tab.key); setPage(0); }}
+            className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
+              statusFilter === tab.key
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+        <div className="ml-auto text-[10px] text-slate-400 pr-2">
+          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">j</kbd>/<kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">k</kbd> navigate
+          <span className="mx-1">·</span>
+          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">r</kbd> reply
+          <span className="mx-1">·</span>
+          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">e</kbd> resolve
+          <span className="mx-1">·</span>
+          <kbd className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">esc</kbd> close
+        </div>
+      </div>
+
       {/* Search + filters in one row */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
@@ -681,17 +804,6 @@ export default function TicketsPage() {
             <option value="email">Email</option>
             <option value="sales">Sales</option>
             <option value="other">Other</option>
-          </select>
-          <select
-            value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
-            className="h-9 px-2 border rounded-lg text-xs bg-white text-slate-700"
-          >
-            <option value="all">Status</option>
-            <option value="new">New</option>
-            <option value="reviewed">Reviewed</option>
-            <option value="resolved">Resolved</option>
-            <option value="archived">Archived</option>
           </select>
           <select
             value={priorityFilter}
@@ -819,6 +931,18 @@ export default function TicketsPage() {
 
                     <div className="hidden sm:flex flex-col items-end gap-1 shrink-0">
                       <span className={`text-[11px] whitespace-nowrap ${isUnread ? 'text-blue-600 font-semibold' : 'text-slate-400'}`}>{timeAgo(ticket.createdAt)}</span>
+                      {ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
+                        <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
+                          <Reply className="h-2.5 w-2.5" />
+                          {timeAgo(ticket.updatedAt)}
+                        </span>
+                      )}
+                      {ticket.assignedEmail && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium flex items-center gap-0.5 max-w-[120px] truncate">
+                          <UserCheck className="h-2.5 w-2.5 shrink-0" />
+                          {ticket.assignedEmail.split('@')[0]}
+                        </span>
+                      )}
                       {ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
                           <AlarmClock className="h-2.5 w-2.5" />
@@ -968,6 +1092,23 @@ export default function TicketsPage() {
                       </>
                     );
                   })()}
+                </div>
+
+                {/* Assigned to */}
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-400 text-xs flex items-center gap-1">
+                    <UserCheck className="h-3 w-3" /> Assigned
+                  </span>
+                  <select
+                    value={selectedTicket.assignedTo || ''}
+                    onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)}
+                    className="h-7 px-1.5 border rounded text-xs bg-white text-slate-600 min-w-[140px]"
+                  >
+                    <option value="">Unassigned</option>
+                    {adminUsers.map(admin => (
+                      <option key={admin.id} value={admin.id}>{admin.email}</option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Email routing info */}
