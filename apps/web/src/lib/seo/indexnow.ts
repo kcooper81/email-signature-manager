@@ -25,11 +25,20 @@ export async function submitToIndexNow(urls: string[]): Promise<IndexNowResponse
     return { success: true, statusCode: 200, message: 'No URLs to submit', urlCount: 0 };
   }
 
-  // Ensure all URLs are fully qualified
-  const fullUrls = urls.map(url => {
-    if (url.startsWith('http')) return url;
-    return `https://${SITE_HOST}${url.startsWith('/') ? '' : '/'}${url}`;
-  });
+  // Ensure all URLs are fully qualified and belong to our host
+  const fullUrls = urls
+    .map(url => {
+      if (url.startsWith('http')) return url;
+      return `https://${SITE_HOST}${url.startsWith('/') ? '' : '/'}${url}`;
+    })
+    .filter(url => {
+      try {
+        const parsed = new URL(url);
+        return parsed.hostname === SITE_HOST;
+      } catch {
+        return false;
+      }
+    });
 
   // Batch in groups of 10,000 (API limit)
   const batches = [];
@@ -49,7 +58,7 @@ export async function submitToIndexNow(urls: string[]): Promise<IndexNowResponse
         body: JSON.stringify({
           host: SITE_HOST,
           key: INDEXNOW_KEY,
-          keyLocation: `https://${SITE_HOST}/api/indexnow-key`,
+          keyLocation: `https://${SITE_HOST}/${INDEXNOW_KEY}.txt`,
           urlList: batch,
         }),
       });
