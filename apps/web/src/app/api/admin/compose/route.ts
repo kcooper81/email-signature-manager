@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { resolveReplyFrom, MAILBOXES } from '@/lib/email/resend';
+import { resolveReplyFrom, sendComposeEmail } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
 
 /**
@@ -39,9 +39,8 @@ export async function POST(request: NextRequest) {
 
     // Resolve the mailbox to send from
     const mailboxAddress = sendAs || 'support@siggly.io';
-    const fromAddress = resolveReplyFrom(mailboxAddress);
 
-    // Create the ticket first
+    // Create the ticket
     const { data: ticket, error: ticketError } = await supabase
       .from('feedback')
       .insert({
@@ -69,73 +68,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 });
     }
 
-    // Add the outbound message as the first note (so it appears in the thread)
-    await supabase
-      .from('ticket_notes')
-      .insert({
-        ticket_id: ticket.id,
-        author_id: userData.id,
-        content: body.trim(),
-        is_internal: false,
-        email_sent: false,
-      });
-
-    // Send the email via Resend
+    // Send the email (with signature, proper headers for deliverability)
     try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-
-      // Build plain text
-      const plainBody = body.replace(/<[^>]+>/g, '').trim();
-
-      // Sanitize HTML body for email
-      let safeBody = body;
-      safeBody = safeBody.replace(/<(script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\/\1>/gi, '');
-      safeBody = safeBody.replace(/\s+on\w+\s*=\s*"[^"]*"/gi, '');
-      safeBody = safeBody.replace(/\s+on\w+\s*=\s*'[^']*'/gi, '');
-      safeBody = safeBody.replace(/<a\s+href=/g, '<a style="color: #4d52de; text-decoration: underline;" href=');
-      safeBody = safeBody.replace(/<p>/g, '<p style="margin: 0.25em 0;">');
-
-      const { error: emailError } = await resend.emails.send({
-        from: fromAddress,
-        to: [to.trim()],
-        subject: `[Ticket#${ticket.id.slice(0, 8)}] ${subject.trim()}`,
-        text: plainBody,
-        html: `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            </head>
-            <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <div style="font-size: 15px; color: #374151;">${safeBody}</div>
-              <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
-                <p style="margin: 5px 0;">Ticket #${ticket.id.slice(0, 8)}</p>
-              </div>
-            </body>
-          </html>
-        `,
-        replyTo: mailboxAddress,
-        headers: {
-          'X-Entity-Ref-ID': ticket.id,
-        },
+      await sendComposeEmail({
+        to: to.trim(),
+        subject: subject.trim(),
+        body: body.trim(),
+        ticketId: ticket.id,
+        adminUserId: userData.id,
+        replyAs: mailboxAddress,
       });
-
-      if (emailError) {
-        console.error('Resend send error:', emailError);
-        return NextResponse.json({
-          success: true,
-          ticketId: ticket.id,
-          warning: 'Ticket created but email failed to send',
-        });
-      }
-
-      // Mark the note as sent
-      await supabase
-        .from('ticket_notes')
-        .update({ email_sent: true })
-        .eq('ticket_id', ticket.id);
 
       return NextResponse.json({
         success: true,
