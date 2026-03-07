@@ -11,7 +11,8 @@ interface SafeHtmlViewerProps {
 /**
  * Renders untrusted HTML (e.g. inbound email) inside a sandboxed iframe
  * using a blob URL. This prevents XSS by isolating the content in a
- * separate origin. The iframe auto-resizes to fit its content.
+ * separate origin (no allow-same-origin). Links open in a new tab via
+ * an inline script, and height is communicated via postMessage.
  */
 export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtmlViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -19,7 +20,6 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
   const blobUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
-    // Clean up previous blob URL
     if (blobUrlRef.current) {
       URL.revokeObjectURL(blobUrlRef.current);
       blobUrlRef.current = null;
@@ -27,7 +27,6 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
 
     if (!html) return;
 
-    // Wrap the HTML in a full document with base styles
     const wrappedHtml = `<!DOCTYPE html>
 <html>
 <head>
@@ -45,7 +44,8 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
     overflow-wrap: break-word;
   }
   img { max-width: 100%; height: auto; }
-  a { color: #2563eb; }
+  a { color: #2563eb; cursor: pointer; text-decoration: underline; }
+  a:hover { color: #1d4ed8; }
   pre, code { white-space: pre-wrap; word-wrap: break-word; }
   table { max-width: 100%; border-collapse: collapse; }
   blockquote {
@@ -56,7 +56,28 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
   }
 </style>
 </head>
-<body>${html}</body>
+<body>${html}
+<script>
+// Force all links to open in a new window
+document.addEventListener('click', function(e) {
+  var a = e.target;
+  while (a && a.tagName !== 'A') a = a.parentElement;
+  if (a && a.href) {
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(a.href, '_blank', 'noopener,noreferrer');
+  }
+});
+// Report height to parent for auto-resize
+function reportHeight() {
+  var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+  window.parent.postMessage({ type: 'safe-html-height', height: h }, '*');
+}
+reportHeight();
+new MutationObserver(reportHeight).observe(document.body, { childList: true, subtree: true });
+window.addEventListener('load', reportHeight);
+</script>
+</body>
 </html>`;
 
     const blob = new Blob([wrappedHtml], { type: 'text/html' });
@@ -75,26 +96,20 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
     };
   }, [html]);
 
-  const handleLoad = () => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    try {
-      const doc = iframe.contentDocument || iframe.contentWindow?.document;
-      if (doc?.body) {
-        const contentHeight = doc.body.scrollHeight;
-        setHeight(Math.max(contentHeight + 16, minHeight));
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'safe-html-height' && typeof e.data.height === 'number') {
+        setHeight(Math.max(e.data.height + 16, minHeight));
       }
-    } catch {
-      // Cross-origin — can't measure, use default
-      setHeight(300);
-    }
-  };
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [minHeight]);
 
   return (
     <iframe
       ref={iframeRef}
-      onLoad={handleLoad}
-      sandbox="allow-same-origin"
+      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
       style={{ height: `${height}px`, minHeight: `${minHeight}px` }}
       className={`w-full border-0 ${className}`}
       title="Email content"
