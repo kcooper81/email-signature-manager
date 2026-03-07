@@ -555,6 +555,106 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
 }
 
 // ============================================================
+// Compose Email (new outbound from admin)
+// ============================================================
+
+export interface ComposeEmailData {
+  to: string;
+  subject: string;
+  /** HTML body from the rich text editor */
+  body: string;
+  ticketId: string;
+  adminUserId: string;
+  replyAs?: string | null;
+}
+
+/**
+ * Send a new outbound email composed from the admin area.
+ * Uses a clean subject (no [Ticket#] prefix on first contact),
+ * includes the admin's email signature, and embeds the ticket ID
+ * in the Reply-To thread so replies get threaded automatically.
+ */
+export async function sendComposeEmail(data: ComposeEmailData) {
+  const { to, subject, ticketId, adminUserId, replyAs } = data;
+  const fromAddress = resolveReplyFrom(replyAs);
+  const replyToAddress = replyAs || 'support@siggly.io';
+
+  // Sanitize HTML body
+  const safeBody = sanitizeEmailHtml(data.body);
+  const plainBody = data.body.replace(/<[^>]+>/g, '').trim();
+
+  // Render email signature: per-mailbox first, then admin's personal, then fallback
+  let signatureHtml = '';
+  const mailboxSig = await getMailboxSignature(replyAs);
+  if (mailboxSig) {
+    signatureHtml = `
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        ${mailboxSig}
+      </div>
+    `;
+  } else if (adminUserId) {
+    const adminSig = await renderAdminSignature(adminUserId);
+    if (adminSig) {
+      signatureHtml = `
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+          ${adminSig}
+        </div>
+      `;
+    }
+  }
+
+  const fallbackSignOff = !signatureHtml
+    ? `<p style="font-size: 16px; color: #374151; margin-bottom: 0;">Best regards,<br><strong>The Siggly Team</strong></p>`
+    : '';
+
+  const plainSignature = signatureHtml ? '\n--\nSiggly Team' : '\nBest regards,\nThe Siggly Team';
+
+  try {
+    const client = getResendClient();
+    const { data: emailData, error } = await client.emails.send({
+      from: fromAddress,
+      to: [to],
+      // Clean subject — no [Ticket#] prefix on first contact (less spammy)
+      // The ticket ID is embedded in headers and Reply-To for threading
+      subject,
+      text: `${plainBody}${plainSignature}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="font-size: 15px; color: #374151;">${safeBody}</div>
+
+            ${fallbackSignOff}
+            ${signatureHtml}
+          </body>
+        </html>
+      `,
+      replyTo: replyToAddress,
+      headers: {
+        'X-Entity-Ref-ID': ticketId,
+        // Embed ticket ID so inbound webhook can thread replies
+        'References': `<ticket-${ticketId}@siggly.io>`,
+        'Message-ID': `<compose-${ticketId}-${Date.now()}@siggly.io>`,
+      },
+    });
+
+    if (error) {
+      console.error('Resend compose email error:', error);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+
+    return { success: true, emailId: emailData?.id };
+  } catch (error) {
+    console.error('Error sending compose email:', error);
+    throw error;
+  }
+}
+
+// ============================================================
 // Admin Ticket Notification
 // ============================================================
 
