@@ -147,6 +147,7 @@ export async function POST(request: NextRequest) {
 
   const messageBody = bodyText || bodyHtml?.replace(/<[^>]+>/g, '') || '';
   const displayBody = messageBody.trim() || '(No message body)';
+  const htmlContent = bodyHtml?.trim() || null;
 
   const supabase = getSupabaseAdmin();
   const inboxAlias = getInboxAlias(receivedAt);
@@ -192,6 +193,7 @@ export async function POST(request: NextRequest) {
             ticket_id: existingTicketId,
             author_id: null,
             content: `Email reply from ${senderEmail}:\n\n${displayBody}`,
+            html_body: htmlContent,
             is_internal: false,
             email_sent: false,
           });
@@ -232,6 +234,7 @@ export async function POST(request: NextRequest) {
         type: ticketType,
         priority: ticketPriority,
         message: `From: ${senderEmail}\nSubject: ${subject || '(no subject)'}\n\n${displayBody}`,
+        html_body: htmlContent,
         status: 'new',
         inbox_email: receivedAt || null,
         metadata: {
