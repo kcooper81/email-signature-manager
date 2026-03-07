@@ -20,7 +20,9 @@ import {
   History,
   Building2,
   Download,
+  Mail,
 } from 'lucide-react';
+import { ComposeEmailModal } from '@/components/admin/compose-email-modal';
 import { PLANS } from '@/lib/billing/plans';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 import { useSortableTable } from '@/hooks/use-sortable-table';
@@ -30,6 +32,7 @@ interface SubscriptionEntry {
   id: string;
   orgId: string;
   orgName: string;
+  ownerEmail: string | null;
   plan: string;
   status: string;
   stripeCustomerId: string;
@@ -70,6 +73,7 @@ export default function SubscriptionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'events'>('subscriptions');
   const sort = useSortableTable<SubscriptionEntry>('orgName', 'asc');
+  const [composeTarget, setComposeTarget] = useState<{ email: string; name: string; orgId: string } | null>(null);
 
   useEffect(() => {
     loadBillingData();
@@ -104,16 +108,20 @@ export default function SubscriptionsPage() {
     // Get ALL org IDs for user count query
     const allOrgIds = allOrgsData?.map(o => o.id) || [];
 
-    // Get user counts per org (all orgs, not just those with subs)
+    // Get user counts + owner emails per org
     const { data: users } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, email, role')
       .in('organization_id', allOrgIds);
 
     const userCountByOrg = new Map<string, number>();
+    const ownerEmailByOrg = new Map<string, string>();
     users?.forEach(u => {
       const count = userCountByOrg.get(u.organization_id) || 0;
       userCountByOrg.set(u.organization_id, count + 1);
+      if (u.role === 'owner' && !ownerEmailByOrg.has(u.organization_id)) {
+        ownerEmailByOrg.set(u.organization_id, u.email);
+      }
     });
 
     // Get subscription events from this month
@@ -184,6 +192,7 @@ export default function SubscriptionsPage() {
         id: sub.id,
         orgId: sub.organization_id,
         orgName: orgMap.get(sub.organization_id) || 'Unknown',
+        ownerEmail: ownerEmailByOrg.get(sub.organization_id) || null,
         plan: sub.plan,
         status: sub.status,
         stripeCustomerId: sub.stripe_customer_id,
@@ -199,6 +208,7 @@ export default function SubscriptionsPage() {
       id: `free-${org.id}`,
       orgId: org.id,
       orgName: org.name,
+      ownerEmail: ownerEmailByOrg.get(org.id) || null,
       plan: 'free',
       status: 'active',
       stripeCustomerId: '',
@@ -515,6 +525,7 @@ export default function SubscriptionsPage() {
                         <SortableHeader field="mrr" label="MRR" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                         <th className="pb-3 font-medium text-slate-500">Period End</th>
                         <th className="pb-3 font-medium text-slate-500">Stripe</th>
+                        <th className="pb-3 font-medium text-slate-500 w-10"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -558,6 +569,17 @@ export default function SubscriptionsPage() {
                               </a>
                             ) : (
                               <span className="text-slate-400">-</span>
+                            )}
+                          </td>
+                          <td className="py-3">
+                            {sub.ownerEmail && (
+                              <button
+                                onClick={() => setComposeTarget({ email: sub.ownerEmail!, name: sub.orgName, orgId: sub.orgId })}
+                                className="p-1.5 rounded-md hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors"
+                                title={`Email ${sub.ownerEmail}`}
+                              >
+                                <Mail className="h-4 w-4" />
+                              </button>
                             )}
                           </td>
                         </tr>
@@ -627,6 +649,15 @@ export default function SubscriptionsPage() {
           </CardContent>
         </Card>
       )}
+
+      <ComposeEmailModal
+        open={!!composeTarget}
+        onClose={() => setComposeTarget(null)}
+        defaultTo={composeTarget?.email || ''}
+        defaultSubject=""
+        recipientLabel={composeTarget?.name}
+        context={composeTarget ? `subscription:${composeTarget.orgId}` : undefined}
+      />
     </div>
   );
 }

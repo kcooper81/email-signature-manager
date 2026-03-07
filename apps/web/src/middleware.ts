@@ -71,6 +71,15 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // IndexNow: serve the API key as a plain text file at /{key}.txt (runtime, no rebuild needed)
+  const indexNowKey = process.env.INDEXNOW_API_KEY;
+  if (indexNowKey && pathname === `/${indexNowKey}.txt`) {
+    return new NextResponse(indexNowKey, {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    });
+  }
+
   // Set pathname on request headers so server components can read it via headers()
   request.headers.set('x-pathname', pathname);
 

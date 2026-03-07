@@ -17,11 +17,13 @@ import {
   Network,
   CreditCard,
   TrendingUp,
+  Mail,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
 import Link from 'next/link';
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
+import { ComposeEmailModal } from '@/components/admin/compose-email-modal';
 
 interface AccountStats {
   totalOrgs: number;
@@ -62,6 +64,7 @@ export default function AccountsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [stats, setStats] = useState<AccountStats | null>(null);
   const sort = useSortableTable<Organization>('createdAt', 'desc');
+  const [composeTarget, setComposeTarget] = useState<{ email: string; name: string; orgId: string } | null>(null);
 
   const filteredOrgIds = useMemo(() => {
     return organizations
@@ -558,6 +561,15 @@ export default function AccountsPage() {
                       <ChevronRight className="h-5 w-5 text-slate-400" />
                     </div>
                     </Link>
+                    {org.ownerEmail && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setComposeTarget({ email: org.ownerEmail!, name: org.name, orgId: org.id }); }}
+                        className="ml-2 p-1.5 rounded-md hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors flex-shrink-0"
+                        title={`Email ${org.ownerEmail}`}
+                      >
+                        <Mail className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
@@ -597,6 +609,15 @@ export default function AccountsPage() {
         selectedCount={bulk.selectedCount}
         onClear={bulk.clearSelection}
         actions={bulkActions}
+      />
+
+      <ComposeEmailModal
+        open={!!composeTarget}
+        onClose={() => setComposeTarget(null)}
+        defaultTo={composeTarget?.email || ''}
+        defaultSubject=""
+        recipientLabel={composeTarget?.name}
+        context={composeTarget ? `org:${composeTarget.orgId}` : undefined}
       />
     </div>
   );
