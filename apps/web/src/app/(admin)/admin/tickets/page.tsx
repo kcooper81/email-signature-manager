@@ -806,7 +806,7 @@ export default function TicketsPage() {
       {/* Split pane: list left, detail right on desktop */}
       <div className={`flex gap-0 rounded-lg border bg-card overflow-hidden ${selectedTicket ? 'lg:flex-row' : ''}`}>
         {/* Ticket list — inbox style */}
-        <div className={`${selectedTicket ? 'hidden lg:flex lg:flex-col lg:w-[340px] lg:min-w-[340px] lg:max-w-[340px] lg:shrink-0' : 'w-full'}`}>
+        <div className={`${selectedTicket ? 'hidden lg:flex lg:flex-col lg:w-[400px] lg:min-w-[400px] lg:max-w-[400px] lg:shrink-0' : 'w-full'}`}>
           {/* Search + filter inside the list pane */}
           <div className="flex items-center gap-2 px-3 py-3 border-b bg-muted/30">
             <div className="relative flex-1">
@@ -914,7 +914,7 @@ export default function TicketsPage() {
                       <div
                         key={ticket.id}
                         onClick={() => openTicketDetail(ticket)}
-                        className={`flex items-start gap-3 ${isCompact ? 'px-3 py-3' : 'px-4 py-3.5'} cursor-pointer transition-all ${
+                        className={`flex items-start gap-3 px-4 py-4 cursor-pointer transition-all ${
                           selectedTicket?.id === ticket.id
                             ? 'bg-primary/5 border-l-[3px] border-l-primary'
                             : isUnread
@@ -933,48 +933,49 @@ export default function TicketsPage() {
                         <PriorityIcon className={`h-4 w-4 shrink-0 mt-0.5 ${priorityColors[ticket.priority]}`} />
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-1">
+                          <div className="flex items-center gap-1.5 mb-1.5">
                             <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${typeColors[ticket.type]}`}>
                               <TypeIcon className="h-2.5 w-2.5" />
-                              {!isCompact && ticket.type}
+                              {ticket.type}
                             </span>
-                            {!isCompact && (
-                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[ticket.status]}`}>
-                                {statusLabels[ticket.status] || ticket.status}
-                              </span>
-                            )}
-                            <span className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>
-                              {ticket.userEmail || 'Anonymous'}
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[ticket.status]}`}>
+                              {statusLabels[ticket.status] || ticket.status}
                             </span>
-                            {!isCompact && ticket.receivedAtMailbox && (
-                              <span className="hidden md:inline text-[10px] text-emerald-600 font-medium">
-                                → {ticket.receivedAtMailbox}
+                            {ticket.receivedAtMailbox && (
+                              <span className="text-[10px] text-emerald-600 font-medium">
+                                → {ticket.receivedAtMailbox.split('@')[0]}
                               </span>
                             )}
                           </div>
-                          <p className={`truncate ${isCompact ? 'text-xs' : 'text-sm'} ${isUnread ? 'text-foreground/70 font-medium' : 'text-muted-foreground'}`}>
+                          <p className={`truncate text-sm mb-1 ${isUnread ? 'font-bold text-foreground' : 'text-foreground/80'}`}>
+                            {ticket.userEmail || 'Anonymous'}
+                          </p>
+                          <p className={`truncate text-xs ${isUnread ? 'text-foreground/70 font-medium' : 'text-muted-foreground'}`}>
                             {ticket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}
                           </p>
+                          {/* Metadata row */}
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            {ticket.assignedEmail && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 font-medium flex items-center gap-0.5 max-w-[120px] truncate">
+                                <UserCheck className="h-2.5 w-2.5 shrink-0" />
+                                {ticket.assignedEmail.split('@')[0]}
+                              </span>
+                            )}
+                            {ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
+                                <AlarmClock className="h-2.5 w-2.5" />
+                                {timeAgo(ticket.snoozedUntil)}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="flex flex-col items-end gap-1 shrink-0">
+                        <div className="flex flex-col items-end gap-1.5 shrink-0">
                           <span className={`text-xs whitespace-nowrap ${isUnread ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>{timeAgo(ticket.createdAt)}</span>
-                          {!isCompact && ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
+                          {ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
                             <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                               <Reply className="h-2.5 w-2.5" />
                               {timeAgo(ticket.updatedAt)}
-                            </span>
-                          )}
-                          {!isCompact && ticket.assignedEmail && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 font-medium flex items-center gap-0.5 max-w-[120px] truncate">
-                              <UserCheck className="h-2.5 w-2.5 shrink-0" />
-                              {ticket.assignedEmail.split('@')[0]}
-                            </span>
-                          )}
-                          {!isCompact && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date() && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium flex items-center gap-0.5">
-                              <AlarmClock className="h-2.5 w-2.5" />
-                              {timeAgo(ticket.snoozedUntil)}
                             </span>
                           )}
                           {!isCompact && ticket.isPartnerEscalation && (
