@@ -32,6 +32,7 @@ import {
 import { exportToCSV, type CSVColumn } from '@/lib/admin/export-csv';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
+import { ComposeEmailModal } from '@/components/admin/compose-email-modal';
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All Applications' },
@@ -108,6 +109,9 @@ export default function PartnerApplicationsPage() {
   // Rejection form
   const [rejectionReason, setRejectionReason] = useState('');
   const [sendRejectionEmail, setSendRejectionEmail] = useState(true);
+
+  // Compose email
+  const [composeTarget, setComposeTarget] = useState<{ email: string; name: string; id: string } | null>(null);
 
   // Tier change state
   const [showTierModal, setShowTierModal] = useState(false);
@@ -528,6 +532,15 @@ export default function PartnerApplicationsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                        onClick={() => setComposeTarget({ email: app.contact_email, name: app.company_name, id: app.id })}
+                        title={`Email ${app.contact_email}`}
+                      >
+                        <Mail className="h-4 w-4" />
+                      </Button>
                       {app.status === 'pending' && (
                         <Button
                           variant="ghost"
@@ -903,6 +916,15 @@ export default function PartnerApplicationsPage() {
         selectedCount={bulk.selectedCount}
         onClear={bulk.clearSelection}
         actions={bulkActions}
+      />
+
+      <ComposeEmailModal
+        open={!!composeTarget}
+        onClose={() => setComposeTarget(null)}
+        defaultTo={composeTarget?.email || ''}
+        defaultSubject=""
+        recipientLabel={composeTarget?.name}
+        context={composeTarget ? `partner:${composeTarget.id}` : undefined}
       />
     </div>
   );

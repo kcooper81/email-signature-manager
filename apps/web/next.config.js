@@ -15,12 +15,7 @@ const nextConfig = {
       { source: '/integrations/google-workspace', destination: '/google-workspace', permanent: true },
     ];
   },
-  async rewrites() {
-    // IndexNow requires key file at /{key}.txt — rewrite to our API route
-    return process.env.INDEXNOW_API_KEY
-      ? [{ source: `/${process.env.INDEXNOW_API_KEY}.txt`, destination: '/api/indexnow-key' }]
-      : [];
-  },
+  // IndexNow key file is now served via middleware at runtime (no rebuild needed)
   images: {
     remotePatterns: [
       {
