@@ -847,6 +847,105 @@ export async function notifyAdminsOfNewTicket(data: NewTicketNotificationData) {
   }
 }
 
+export interface NewSubscriptionNotificationData {
+  organizationName: string;
+  ownerEmail: string;
+  plan: string;
+  eventType: 'created' | 'upgraded' | 'downgraded' | 'canceled' | 'payment_failed';
+  fromPlan?: string;
+}
+
+/**
+ * Sends a notification email to all super admins when a subscription event occurs.
+ */
+export async function notifyAdminsOfSubscriptionEvent(data: NewSubscriptionNotificationData) {
+  const orgName = escapeHtml(data.organizationName);
+  const ownerEmail = escapeHtml(data.ownerEmail);
+  const plan = escapeHtml(data.plan);
+  const fromPlan = data.fromPlan ? escapeHtml(data.fromPlan) : null;
+
+  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data: admins } = await supabase
+    .from('users')
+    .select('email')
+    .eq('is_super_admin', true)
+    .not('email', 'is', null);
+
+  const adminEmails = admins?.map(a => a.email).filter(Boolean) || [];
+  if (adminEmails.length === 0) return;
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+
+  const eventLabels: Record<string, { label: string; emoji: string; color: string }> = {
+    created: { label: 'New Subscription', emoji: '🎉', color: '#16a34a' },
+    upgraded: { label: 'Plan Upgrade', emoji: '⬆️', color: '#2563eb' },
+    downgraded: { label: 'Plan Downgrade', emoji: '⬇️', color: '#f59e0b' },
+    canceled: { label: 'Subscription Canceled', emoji: '❌', color: '#dc2626' },
+    payment_failed: { label: 'Payment Failed', emoji: '⚠️', color: '#dc2626' },
+  };
+
+  const evt = eventLabels[data.eventType] || eventLabels.created;
+  const planChange = fromPlan ? `${fromPlan} → ${plan}` : plan;
+
+  const subject = `[Billing] ${evt.label}: ${data.organizationName} (${planChange})`;
+
+  const plainText = `${evt.label}\n\nOrganization: ${data.organizationName}\nOwner: ${data.ownerEmail}\nPlan: ${planChange}\n\nView in Admin Panel: ${appUrl}/admin/billing`;
+
+  try {
+    const client = getResendClient();
+    await client.emails.send({
+      from: EMAIL_FROM.noreply,
+      to: adminEmails,
+      subject,
+      text: plainText,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: ${evt.color}; padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">${evt.emoji} ${evt.label}</h1>
+            </div>
+
+            <div style="background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600; width: 120px;">Organization:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;">${orgName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Owner:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><a href="mailto:${ownerEmail}" style="color: #4d52de;">${ownerEmail}</a></td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Plan:</td>
+                  <td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; text-transform: capitalize;">${planChange}</td>
+                </tr>
+              </table>
+
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${appUrl}/admin/billing" style="display: inline-block; background: linear-gradient(135deg, #4d52de 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  View Billing
+                </a>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+  } catch (error) {
+    console.error('Failed to send subscription notification:', error);
+  }
+}
+
 // ============================================================
 // Partner / MSP Email Functions
 // ============================================================

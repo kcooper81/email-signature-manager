@@ -4,6 +4,7 @@ import { stripe } from '@/lib/billing/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { logException } from '@/lib/error-logging';
+import { notifyAdminsOfSubscriptionEvent } from '@/lib/email/resend';
 
 function getSupabaseAdmin() {
   return createClient(
@@ -180,6 +181,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         fromStatus: existingSub.status,
         toStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
       });
+
+      // Notify admins of new/upgraded subscription
+      await sendSubscriptionNotification(
+        supabase,
+        existingSub.organization_id,
+        eventType as 'created' | 'upgraded' | 'downgraded',
+        plan,
+        oldPlan !== plan ? oldPlan : undefined
+      );
     }
   } else {
     console.error('[Webhook] No subscription record found for customer:', customerId);
@@ -223,7 +233,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       if (existingSub.plan !== plan) {
         eventType = getPlanRank(plan) > getPlanRank(existingSub.plan) ? 'upgraded' : 'downgraded';
       }
-      
+
       await logSubscriptionEvent(supabase, {
         organizationId: existingSub.organization_id,
         subscriptionId: existingSub.id,
@@ -233,6 +243,17 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         fromStatus: existingSub.status,
         toStatus: status,
       });
+
+      // Notify admins of plan changes
+      if (existingSub.plan !== plan) {
+        await sendSubscriptionNotification(
+          supabase,
+          existingSub.organization_id,
+          eventType as 'upgraded' | 'downgraded',
+          plan,
+          existingSub.plan
+        );
+      }
     }
   }
 }
@@ -272,6 +293,14 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       fromStatus: existingSub.status,
       toStatus: 'canceled',
     });
+
+    await sendSubscriptionNotification(
+      supabase,
+      existingSub.organization_id,
+      'canceled',
+      'free',
+      existingSub.plan
+    );
   }
 }
 
@@ -304,6 +333,13 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       fromStatus: existingSub.status,
       toStatus: 'past_due',
     });
+
+    await sendSubscriptionNotification(
+      supabase,
+      existingSub.organization_id,
+      'payment_failed',
+      existingSub.plan
+    );
   }
 }
 
@@ -387,6 +423,42 @@ function getPlanRank(plan: string): number {
     case 'professional': return 2;
     case 'enterprise': return 3;
     default: return 0;
+  }
+}
+
+async function sendSubscriptionNotification(
+  supabase: ReturnType<typeof getSupabaseAdmin>,
+  organizationId: string,
+  eventType: 'created' | 'upgraded' | 'downgraded' | 'canceled' | 'payment_failed',
+  plan: string,
+  fromPlan?: string
+) {
+  try {
+    // Look up org name and owner email
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', organizationId)
+      .single();
+
+    const { data: owner } = await supabase
+      .from('organization_members')
+      .select('users(email)')
+      .eq('organization_id', organizationId)
+      .eq('role', 'owner')
+      .single();
+
+    const ownerEmail = (owner as any)?.users?.email || 'unknown';
+
+    await notifyAdminsOfSubscriptionEvent({
+      organizationName: org?.name || 'Unknown Organization',
+      ownerEmail,
+      plan,
+      eventType,
+      fromPlan,
+    });
+  } catch (error) {
+    console.error('[Webhook] Failed to send subscription notification email:', error);
   }
 }
 
