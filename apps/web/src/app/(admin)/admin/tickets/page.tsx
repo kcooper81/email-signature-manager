@@ -260,16 +260,30 @@ export default function TicketsPage() {
         { event: 'UPDATE', schema: 'public', table: 'feedback' },
         (payload) => {
           const item = payload.new as any;
-          setTickets(prev => prev.map(t => t.id === item.id ? {
-            ...t,
+          const updates = {
             status: item.status,
-            priority: item.priority || t.priority,
+            priority: item.priority || 'normal',
             updatedAt: item.updated_at,
-          } : t));
+            assignedTo: item.assigned_to || null,
+            snoozedUntil: item.snoozed_until || null,
+          };
+          setTickets(prev => prev.map(t => t.id === item.id ? { ...t, ...updates } : t));
           setSelectedTicket(prev => {
             if (!prev || prev.id !== item.id) return prev;
-            return { ...prev, status: item.status, priority: item.priority || prev.priority, updatedAt: item.updated_at };
+            return { ...prev, ...updates };
           });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'feedback' },
+        (payload) => {
+          const id = (payload.old as any)?.id;
+          if (id) {
+            setTickets(prev => prev.filter(t => t.id !== id));
+            setSelectedTicket(prev => prev?.id === id ? null : prev);
+            setTotalCount(prev => Math.max(0, prev - 1));
+          }
         }
       )
       .on(
@@ -403,10 +417,7 @@ export default function TicketsPage() {
     // Auto-select first ticket on initial load (desktop only)
     if (!initialLoadDone.current && mapped.length > 0 && window.innerWidth >= 1024) {
       initialLoadDone.current = true;
-      const first = mapped[0];
-      loadTicketNotes(first.id).then(notes => {
-        setSelectedTicket({ ...first, notes });
-      });
+      openTicketDetail(mapped[0]);
     } else if (!initialLoadDone.current) {
       initialLoadDone.current = true;
     }
@@ -445,6 +456,20 @@ export default function TicketsPage() {
   const openTicketDetail = async (ticket: FeedbackEntry) => {
     const notes = await loadTicketNotes(ticket.id);
     setSelectedTicket({ ...ticket, notes });
+
+    // Auto-mark as read: transition "new" → "reviewed" on open
+    if (ticket.status === 'new') {
+      const supabase = createClient();
+      await supabase
+        .from('feedback')
+        .update({ status: 'reviewed', updated_at: new Date().toISOString() })
+        .eq('id', ticket.id);
+
+      setTickets(prev => prev.map(t =>
+        t.id === ticket.id ? { ...t, status: 'reviewed' as const } : t
+      ));
+      setSelectedTicket(prev => prev ? { ...prev, status: 'reviewed' as const } : prev);
+    }
   };
 
   const updateStatus = async (id: string, newStatus: FeedbackEntry['status']) => {
@@ -717,7 +742,18 @@ export default function TicketsPage() {
     }
   };
 
+  const bulkAssignToMe = async () => {
+    if (!currentUserId) return;
+    const supabase = createClient();
+    const ids = Array.from(bulk.selectedIds);
+    const myEmail = adminUsers.find(a => a.id === currentUserId)?.email || null;
+    await supabase.from('feedback').update({ assigned_to: currentUserId, updated_at: new Date().toISOString() }).in('id', ids);
+    setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, assignedTo: currentUserId, assignedEmail: myEmail } : t));
+    bulk.clearSelection();
+  };
+
   const bulkActions: BulkAction[] = [
+    { label: 'Assign to me', icon: UserCheck, onClick: bulkAssignToMe },
     { label: 'In Progress', icon: Eye, onClick: () => bulkUpdateStatus('reviewed') },
     { label: 'Resolve', icon: CheckCircle, onClick: () => bulkUpdateStatus('resolved') },
     { label: 'Priority: High', icon: ArrowUp, onClick: () => bulkUpdatePriority('high') },
@@ -804,7 +840,7 @@ export default function TicketsPage() {
       </div>
 
       {/* Split pane: list left, detail right on desktop */}
-      <div className={`flex gap-0 rounded-lg border bg-card overflow-hidden ${selectedTicket ? 'lg:flex-row' : ''}`}>
+      <div className={`flex gap-0 rounded-lg border bg-card overflow-hidden ${selectedTicket ? 'lg:flex-row' : ''}`} style={selectedTicket ? { height: 'calc(100vh - 140px)' } : undefined}>
         {/* Ticket list — inbox style */}
         <div className={`${selectedTicket ? 'hidden lg:flex lg:flex-col lg:w-[400px] lg:min-w-[400px] lg:max-w-[400px] lg:shrink-0' : 'w-full'}`}>
           {/* Search + filter inside the list pane */}
@@ -1007,7 +1043,7 @@ export default function TicketsPage() {
 
         {/* Desktop detail panel — inline right side */}
         {selectedTicket && (
-          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l" style={{ maxHeight: 'calc(100vh - 260px)' }}>
+          <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l overflow-hidden">
 
             {/* Header — ticket identity + close */}
             <div className="bg-card border-b px-5 py-3 flex items-center justify-between shrink-0">
