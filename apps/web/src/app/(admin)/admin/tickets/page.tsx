@@ -42,10 +42,12 @@ import {
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 interface TicketNote {
   id: string;
   content: string;
+  htmlBody: string | null;
   authorEmail: string;
   isInternal: boolean;
   createdAt: string;
@@ -66,6 +68,7 @@ interface FeedbackEntry {
   userEmail: string | null;
   type: TicketType;
   message: string;
+  htmlBody: string | null;
   pageUrl: string | null;
   status: 'new' | 'reviewed' | 'resolved' | 'archived';
   priority: 'low' | 'normal' | 'high' | 'urgent';
@@ -204,6 +207,7 @@ export default function TicketsPage() {
             userEmail: item.user_email,
             type: item.type,
             message: item.message,
+            htmlBody: item.html_body || null,
             pageUrl: item.page_url,
             status: item.status,
             priority: item.priority || 'normal',
@@ -375,6 +379,7 @@ export default function TicketsPage() {
       userEmail: item.user_email,
       type: item.type,
       message: item.message,
+      htmlBody: item.html_body || null,
       pageUrl: item.page_url,
       status: item.status,
       priority: item.priority || 'normal',
@@ -411,7 +416,7 @@ export default function TicketsPage() {
     const supabase = createClient();
     const { data: notes } = await supabase
       .from('ticket_notes')
-      .select('id, content, is_internal, created_at, author_id')
+      .select('id, content, html_body, is_internal, created_at, author_id')
       .eq('ticket_id', ticketId)
       .order('created_at', { ascending: true });
 
@@ -430,6 +435,7 @@ export default function TicketsPage() {
     return notes.map(n => ({
       id: n.id,
       content: n.content,
+      htmlBody: n.html_body || null,
       authorEmail: n.author_id ? (authorMap.get(n.author_id) || 'Unknown') : 'External Reply',
       isInternal: n.is_internal,
       createdAt: n.created_at,
@@ -512,6 +518,7 @@ export default function TicketsPage() {
         const newNoteEntry: TicketNote = {
           id: result.note.id,
           content: result.note.content,
+          htmlBody: null,
           authorEmail: result.note.authorEmail,
           isInternal: result.note.is_internal,
           createdAt: result.note.created_at,
@@ -1099,7 +1106,11 @@ export default function TicketsPage() {
               <div className="relative">
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Original Message</div>
                 <div className="bg-card rounded-lg border shadow-sm p-5">
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+                  {selectedTicket.htmlBody ? (
+                    <SafeHtmlViewer html={selectedTicket.htmlBody} />
+                  ) : (
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{selectedTicket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}</p>
+                  )}
                 </div>
               </div>
 
@@ -1135,8 +1146,10 @@ export default function TicketsPage() {
                             ? 'bg-amber-50/70 border border-amber-200/50'
                             : 'bg-blue-50/70 border border-blue-200/50'
                         }`}>
-                          {note.content.startsWith('<') ? (
-                            <div className="text-sm prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                          {note.htmlBody ? (
+                            <SafeHtmlViewer html={note.htmlBody} />
+                          ) : note.content.startsWith('<') ? (
+                            <SafeHtmlViewer html={note.content} />
                           ) : (
                             <p className="text-sm whitespace-pre-wrap">{note.content}</p>
                           )}
@@ -1254,7 +1267,11 @@ export default function TicketsPage() {
               <div>
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Original Message</div>
                 <div className="bg-card rounded-lg border shadow-sm p-4">
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{selectedTicket.message}</p>
+                  {selectedTicket.htmlBody ? (
+                    <SafeHtmlViewer html={selectedTicket.htmlBody} />
+                  ) : (
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{selectedTicket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}</p>
+                  )}
                 </div>
               </div>
 
@@ -1283,8 +1300,10 @@ export default function TicketsPage() {
                             : isInternal ? 'bg-amber-50/70 border border-amber-200/50'
                             : 'bg-blue-50/70 border border-blue-200/50'
                         }`}>
-                          {note.content.startsWith('<') ? (
-                            <div className="text-sm prose prose-sm max-w-none [&_a]:text-blue-600 [&_a]:underline" dangerouslySetInnerHTML={{ __html: note.content }} />
+                          {note.htmlBody ? (
+                            <SafeHtmlViewer html={note.htmlBody} />
+                          ) : note.content.startsWith('<') ? (
+                            <SafeHtmlViewer html={note.content} />
                           ) : (
                             <p className="text-sm whitespace-pre-wrap">{note.content}</p>
                           )}
