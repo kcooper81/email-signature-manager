@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Button, Input } from '@/components/ui';
 import { Badge } from '@/components/ui/badge';
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
@@ -17,6 +16,7 @@ import {
   Search,
   Settings2,
   Check,
+  Building2,
 } from 'lucide-react';
 import { DEFAULT_SUPPORT_VIEWS, ADMIN_VIEW_OPTIONS } from '@/lib/admin/views';
 
@@ -30,6 +30,14 @@ interface PlatformAdmin {
   createdAt: string;
 }
 
+interface SearchResult {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  organizationName: string | null;
+}
+
 const ROLE_OPTIONS = [
   { value: 'super_admin', label: 'Super Admin — Full access to all admin features' },
   { value: 'support', label: 'Support — Selected views only' },
@@ -40,7 +48,6 @@ export default function PlatformAdminsPage() {
   const [admins, setAdmins] = useState<PlatformAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addEmail, setAddEmail] = useState('');
   const [addRole, setAddRole] = useState('support');
   const [addViews, setAddViews] = useState<string[]>([...DEFAULT_SUPPORT_VIEWS]);
   const [addLoading, setAddLoading] = useState(false);
@@ -48,124 +55,160 @@ export default function PlatformAdminsPage() {
   const [removeTarget, setRemoveTarget] = useState<PlatformAdmin | null>(null);
   const [removeLoading, setRemoveLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [editingViews, setEditingViews] = useState<string | null>(null); // admin id being edited
+  const [editingViews, setEditingViews] = useState<string | null>(null);
   const [editViewsState, setEditViewsState] = useState<string[]>([]);
   const [savingViews, setSavingViews] = useState(false);
+
+  // Search state for adding admins
+  const [userSearch, setUserSearch] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<SearchResult | null>(null);
+  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     loadAdmins();
   }, []);
 
   const loadAdmins = async () => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from('users')
-      .select('id, email, first_name, last_name, super_admin_role, super_admin_allowed_views, created_at')
-      .eq('is_super_admin', true)
-      .order('created_at', { ascending: true });
+    try {
+      const res = await fetch('/api/admin/platform-admins');
+      const data = await res.json();
 
-    setAdmins(
-      data?.map((u) => {
-        let views: string[] = DEFAULT_SUPPORT_VIEWS;
-        try {
-          if (u.super_admin_allowed_views) {
-            views = JSON.parse(u.super_admin_allowed_views);
-          }
-        } catch { /* use default */ }
+      if (!res.ok) {
+        console.error('Failed to load admins:', data.error);
+        setLoading(false);
+        return;
+      }
 
-        return {
-          id: u.id,
-          email: u.email,
-          firstName: u.first_name,
-          lastName: u.last_name,
-          superAdminRole: u.super_admin_role || 'super_admin',
-          allowedViews: views,
-          createdAt: u.created_at,
-        };
-      }) || []
-    );
+      setAdmins(
+        (data.admins || []).map((u: any) => {
+          let views: string[] = DEFAULT_SUPPORT_VIEWS;
+          try {
+            if (u.super_admin_allowed_views) {
+              views = JSON.parse(u.super_admin_allowed_views);
+            }
+          } catch { /* use default */ }
+
+          return {
+            id: u.id,
+            email: u.email,
+            firstName: u.first_name,
+            lastName: u.last_name,
+            superAdminRole: u.super_admin_role || 'super_admin',
+            allowedViews: views,
+            createdAt: u.created_at,
+          };
+        })
+      );
+    } catch (err) {
+      console.error('Failed to load admins:', err);
+    }
     setLoading(false);
   };
 
+  const searchUsers = useCallback(async (query: string) => {
+    if (query.trim().length < 2) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const res = await fetch(`/api/admin/platform-admins/search?q=${encodeURIComponent(query.trim())}`);
+      const data = await res.json();
+      if (res.ok) {
+        setSearchResults(data.users || []);
+      }
+    } catch {
+      // ignore
+    }
+    setSearchLoading(false);
+  }, []);
+
+  const handleUserSearchChange = (value: string) => {
+    setUserSearch(value);
+    setSelectedUser(null);
+    setAddError(null);
+
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    if (value.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    searchTimeout.current = setTimeout(() => searchUsers(value), 300);
+  };
+
   const handleAdd = async () => {
-    if (!addEmail.trim()) return;
+    if (!selectedUser) {
+      setAddError('Please search and select a user first.');
+      return;
+    }
     setAddLoading(true);
     setAddError(null);
 
-    const supabase = createClient();
+    try {
+      const res = await fetch('/api/admin/platform-admins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: selectedUser.id,
+          role: addRole,
+          allowedViews: addRole === 'support' ? addViews : undefined,
+        }),
+      });
 
-    const { data: user, error: findErr } = await supabase
-      .from('users')
-      .select('id, email, is_super_admin')
-      .eq('email', addEmail.trim().toLowerCase())
-      .maybeSingle();
+      const data = await res.json();
 
-    if (findErr || !user) {
-      setAddError('User not found. They must have an existing account.');
-      setAddLoading(false);
-      return;
+      if (!res.ok) {
+        setAddError(data.error || 'Failed to add admin');
+        setAddLoading(false);
+        return;
+      }
+
+      setShowAddModal(false);
+      resetAddForm();
+      loadAdmins();
+    } catch {
+      setAddError('Failed to add admin');
     }
+    setAddLoading(false);
+  };
 
-    if (user.is_super_admin) {
-      setAddError('This user is already a platform admin.');
-      setAddLoading(false);
-      return;
-    }
-
-    const updateData: Record<string, unknown> = {
-      is_super_admin: true,
-      super_admin_role: addRole,
-    };
-
-    if (addRole === 'support') {
-      updateData.super_admin_allowed_views = JSON.stringify(addViews);
-    } else {
-      updateData.super_admin_allowed_views = null;
-    }
-
-    const { error: updateErr } = await supabase
-      .from('users')
-      .update(updateData)
-      .eq('id', user.id);
-
-    if (updateErr) {
-      setAddError('Failed to update user: ' + updateErr.message);
-      setAddLoading(false);
-      return;
-    }
-
-    setShowAddModal(false);
-    setAddEmail('');
+  const resetAddForm = () => {
+    setUserSearch('');
+    setSearchResults([]);
+    setSelectedUser(null);
     setAddRole('support');
     setAddViews([...DEFAULT_SUPPORT_VIEWS]);
-    setAddLoading(false);
-    loadAdmins();
+    setAddError(null);
   };
 
   const handleChangeRole = async (admin: PlatformAdmin, newRole: string) => {
-    const supabase = createClient();
-    const updateData: Record<string, unknown> = { super_admin_role: newRole };
-
-    if (newRole === 'support') {
-      // Preserve existing views or use defaults
-      updateData.super_admin_allowed_views = JSON.stringify(
-        admin.allowedViews.length > 0 ? admin.allowedViews : DEFAULT_SUPPORT_VIEWS
-      );
-    } else {
-      updateData.super_admin_allowed_views = null;
-    }
-
-    await supabase.from('users').update(updateData).eq('id', admin.id);
+    await fetch('/api/admin/platform-admins', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: admin.id,
+        role: newRole,
+        allowedViews: newRole === 'support'
+          ? (admin.allowedViews.length > 0 ? admin.allowedViews : DEFAULT_SUPPORT_VIEWS)
+          : undefined,
+      }),
+    });
     loadAdmins();
   };
 
   const handleSaveViews = async (adminId: string) => {
     setSavingViews(true);
-    const supabase = createClient();
-    await supabase
-      .from('users')
-      .update({ super_admin_allowed_views: JSON.stringify(editViewsState) })
-      .eq('id', adminId);
+    await fetch('/api/admin/platform-admins', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: adminId, allowedViews: editViewsState }),
+    });
     setEditingViews(null);
     setSavingViews(false);
     loadAdmins();
@@ -175,11 +218,11 @@ export default function PlatformAdminsPage() {
     if (!removeTarget) return;
     setRemoveLoading(true);
 
-    const supabase = createClient();
-    await supabase
-      .from('users')
-      .update({ is_super_admin: false, super_admin_role: null, super_admin_allowed_views: null })
-      .eq('id', removeTarget.id);
+    await fetch('/api/admin/platform-admins', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: removeTarget.id }),
+    });
 
     setRemoveTarget(null);
     setRemoveLoading(false);
@@ -387,23 +430,106 @@ export default function PlatformAdminsPage() {
       </Card>
 
       {/* Add Admin Modal */}
-      <Modal open={showAddModal} onClose={() => { setShowAddModal(false); setAddError(null); }}>
-        <ModalHeader onClose={() => { setShowAddModal(false); setAddError(null); }}>
+      <Modal open={showAddModal} onClose={() => { setShowAddModal(false); resetAddForm(); }}>
+        <ModalHeader onClose={() => { setShowAddModal(false); resetAddForm(); }}>
           <ModalTitle>Add Platform Admin</ModalTitle>
           <ModalDescription>
-            Grant admin panel access to an existing user by their email address.
+            Search for an existing user account to grant admin panel access.
           </ModalDescription>
         </ModalHeader>
         <ModalContent>
           <div className="space-y-4">
+            {/* User search */}
             <div>
-              <label className="text-sm font-medium text-slate-700 mb-1.5 block">Email</label>
-              <Input
-                placeholder="user@example.com"
-                value={addEmail}
-                onChange={(e) => { setAddEmail(e.target.value); setAddError(null); }}
-              />
+              <label className="text-sm font-medium text-slate-700 mb-1.5 block">Search User</label>
+              {selectedUser ? (
+                <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center flex-shrink-0">
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-900 truncate">
+                        {selectedUser.firstName || selectedUser.lastName
+                          ? `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim()
+                          : selectedUser.email}
+                      </p>
+                      <p className="text-xs text-slate-500 truncate">{selectedUser.email}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedUser(null);
+                      setUserSearch('');
+                      setSearchResults([]);
+                    }}
+                    className="text-slate-500 hover:text-slate-700"
+                  >
+                    Change
+                  </Button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="Search by name or email..."
+                    value={userSearch}
+                    onChange={(e) => handleUserSearchChange(e.target.value)}
+                    className="pl-9"
+                    autoFocus
+                  />
+                  {searchLoading && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-slate-400" />
+                  )}
+
+                  {/* Search results dropdown */}
+                  {userSearch.trim().length >= 2 && !selectedUser && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                      {searchResults.length > 0 ? (
+                        searchResults.map((user) => (
+                          <button
+                            key={user.id}
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setSearchResults([]);
+                              setUserSearch('');
+                            }}
+                            className="w-full text-left px-3 py-2.5 hover:bg-slate-50 flex items-center gap-3 border-b border-slate-100 last:border-0 transition-colors"
+                          >
+                            <div className="h-8 w-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center flex-shrink-0 text-xs font-medium">
+                              {(user.firstName?.[0] || user.email[0]).toUpperCase()}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-slate-900 truncate">
+                                {user.firstName || user.lastName
+                                  ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+                                  : user.email}
+                              </p>
+                              {(user.firstName || user.lastName) && (
+                                <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                              )}
+                            </div>
+                            {user.organizationName && (
+                              <span className="flex items-center gap-1 text-[10px] text-slate-400 flex-shrink-0">
+                                <Building2 className="h-3 w-3" />
+                                {user.organizationName}
+                              </span>
+                            )}
+                          </button>
+                        ))
+                      ) : !searchLoading ? (
+                        <p className="px-3 py-4 text-sm text-slate-500 text-center">
+                          No users found matching &ldquo;{userSearch}&rdquo;
+                        </p>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+
             <div>
               <label className="text-sm font-medium text-slate-700 mb-1.5 block">Role</label>
               <Select
@@ -458,12 +584,12 @@ export default function PlatformAdminsPage() {
           </div>
         </ModalContent>
         <ModalFooter>
-          <Button variant="outline" onClick={() => { setShowAddModal(false); setAddError(null); }}>
+          <Button variant="outline" onClick={() => { setShowAddModal(false); resetAddForm(); }}>
             Cancel
           </Button>
           <Button
             onClick={handleAdd}
-            disabled={addLoading || !addEmail.trim() || (addRole === 'support' && addViews.length === 0)}
+            disabled={addLoading || !selectedUser || (addRole === 'support' && addViews.length === 0)}
           >
             {addLoading ? (
               <>
