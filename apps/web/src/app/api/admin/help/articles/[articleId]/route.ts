@@ -67,13 +67,13 @@ export async function PATCH(
 
     if (error) {
       console.error('Error updating help article:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 
     return NextResponse.json({ article: data });
   } catch (err: any) {
     console.error('Error updating help article:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -97,7 +97,7 @@ export async function DELETE(
 
   if (error) {
     console.error('Error deleting help article:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });

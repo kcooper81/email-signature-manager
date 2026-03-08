@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: true, summary });
   } catch (err: any) {
     console.error('SEO audit cron failed:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 

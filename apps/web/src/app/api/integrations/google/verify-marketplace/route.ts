@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Marketplace verification error:', error);
     return NextResponse.json(
-      { error: error.message || 'Verification failed' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

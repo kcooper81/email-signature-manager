@@ -82,6 +82,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Subdomain check exception:', error);
-    return NextResponse.json({ available: false, error: error.message });
+    return NextResponse.json({ available: false, error: 'Internal server error' });
   }
 }

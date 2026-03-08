@@ -60,6 +60,6 @@ export async function PATCH(
 
     return NextResponse.json({ success: true, is_suspended });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

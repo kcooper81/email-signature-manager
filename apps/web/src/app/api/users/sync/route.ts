@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       googleAuth = await createOrgGoogleClient(organizationId);
     } catch (err: any) {
       return NextResponse.json(
-        { error: err.message || 'Google Workspace not connected' },
+        { error: 'Internal server error' },
         { status: 400 }
       );
     }
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { error: err.message || 'Failed to sync users' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

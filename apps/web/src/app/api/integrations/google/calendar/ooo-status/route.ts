@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
     // Return not OOO on error to avoid breaking signatures
     return NextResponse.json({
       isOutOfOffice: false,
-      error: error.message || 'Failed to check OOO status',
+      error: 'Internal server error',
     });
   }
 }

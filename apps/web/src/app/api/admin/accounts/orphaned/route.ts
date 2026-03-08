@@ -62,7 +62,7 @@ export async function GET() {
     return NextResponse.json({ orphaned });
   } catch (error: any) {
     console.error('Orphaned users error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -139,6 +139,6 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error('Fix orphaned user error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
