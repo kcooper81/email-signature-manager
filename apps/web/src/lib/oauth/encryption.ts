@@ -8,7 +8,9 @@ if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 64) {
 }
 
 export function encryptToken(token: string): string {
-  if (!ENCRYPTION_KEY) return token;
+  if (!ENCRYPTION_KEY) {
+    throw new Error('OAUTH_ENCRYPTION_KEY is not configured. Cannot store tokens without encryption.');
+  }
   
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
@@ -22,7 +24,9 @@ export function encryptToken(token: string): string {
 }
 
 export function decryptToken(encryptedToken: string): string {
-  if (!ENCRYPTION_KEY) return encryptedToken;
+  if (!ENCRYPTION_KEY) {
+    throw new Error('OAUTH_ENCRYPTION_KEY is not configured. Cannot decrypt tokens without encryption key.');
+  }
   
   const parts = encryptedToken.split(':');
   if (parts.length !== 3) return encryptedToken;
