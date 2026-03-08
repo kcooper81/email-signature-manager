@@ -47,6 +47,14 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient();
 
+    // Verify state userId matches authenticated user
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser || authUser.id !== userId) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=auth_mismatch', request.url)
+      );
+    }
+
     const { data: userData } = await supabase
       .from('users')
       .select('organization_id')
@@ -96,7 +104,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.redirect(
-      new URL(`/integrations?error=oauth_failed&message=${encodeURIComponent(err.message)}`, request.url)
+      new URL('/integrations?error=callback_failed', request.url)
     );
   }
 }

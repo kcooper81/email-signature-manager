@@ -15,10 +15,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(email) || email.length > 254) {
       return NextResponse.json(
         { error: 'Invalid email address' },
+        { status: 400 }
+      );
+    }
+
+    // Input length validation
+    if (name.length > 200 || subject.length > 500 || message.length > 10000) {
+      return NextResponse.json(
+        { error: 'Input too long' },
         { status: 400 }
       );
     }

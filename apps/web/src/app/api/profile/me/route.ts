@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ profile: userData });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('Profile GET error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -51,8 +52,11 @@ export async function PUT(request: NextRequest) {
 
     for (const [key, value] of Object.entries(body)) {
       if (allowedFields.includes(key)) {
-        updates[key] = value;
-        fieldChanges.push({ field: key, oldValue: (userData as any)[key] || null, newValue: value });
+        // Validate string type and length
+        if (value !== null && value !== undefined && typeof value !== 'string') continue;
+        const strVal = typeof value === 'string' ? value.trim().slice(0, 500) : value;
+        updates[key] = strVal;
+        fieldChanges.push({ field: key, oldValue: (userData as any)[key] || null, newValue: strVal });
       }
     }
 
@@ -84,6 +88,7 @@ export async function PUT(request: NextRequest) {
     }
     return NextResponse.json({ success: true, pending: false });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('Profile PUT error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
