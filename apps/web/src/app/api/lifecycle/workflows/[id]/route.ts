@@ -48,10 +48,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .select()
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     return NextResponse.json({ success: true, workflow });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -79,9 +79,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       .eq('id', id)
       .eq('organization_id', userData.organization_id);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

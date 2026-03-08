@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Failed to refresh Calendly metadata:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to refresh metadata' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

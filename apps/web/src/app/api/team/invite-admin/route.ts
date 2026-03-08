@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Admin invite error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to send admin invite' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

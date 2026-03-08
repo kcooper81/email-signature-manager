@@ -40,10 +40,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       .select('id, organization_id, provider, schedule_type, field_mapping, conflict_resolution, auto_apply_changes, sync_new_users, sync_deactivated, api_url, is_active, last_sync_at, last_sync_status, last_sync_result, created_at, updated_at')
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     return NextResponse.json({ success: true, configuration: config });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -71,9 +71,9 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       .eq('id', id)
       .eq('organization_id', userData.organization_id);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

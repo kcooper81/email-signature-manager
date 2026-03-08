@@ -40,6 +40,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ presets });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
   } catch (err: any) {
     console.error('Gusto OAuth callback error:', err);
     return NextResponse.redirect(
-      new URL(`/settings/hr-sync?error=${encodeURIComponent(err.message)}`, request.url)
+      new URL('/settings/hr-sync?error=Connection+failed', request.url)
     );
   }
 }

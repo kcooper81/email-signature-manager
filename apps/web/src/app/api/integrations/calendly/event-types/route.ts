@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Failed to fetch Calendly event types:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch event types' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

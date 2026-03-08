@@ -114,7 +114,7 @@ export async function PATCH(request: NextRequest) {
   } catch (error: any) {
     console.error('Role update error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update role' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

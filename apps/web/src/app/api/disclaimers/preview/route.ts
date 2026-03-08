@@ -63,6 +63,6 @@ export async function POST(request: NextRequest) {
       totalMatched: resolution.disclaimers.length,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

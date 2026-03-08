@@ -34,6 +34,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ runs: runs || [], total: count || 0, limit, offset });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
