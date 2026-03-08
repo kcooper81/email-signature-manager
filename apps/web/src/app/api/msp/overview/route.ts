@@ -30,6 +30,18 @@ export async function GET() {
       return NextResponse.json({ error: 'Not an MSP organization' }, { status: 403 });
     }
 
+    // Verify user has admin/owner role in the MSP organization
+    const { data: memberData } = await supabase
+      .from('organization_members')
+      .select('role')
+      .eq('organization_id', userData.organization_id)
+      .eq('user_id', userData.id)
+      .single();
+
+    if (!memberData || !['admin', 'owner'].includes(memberData.role)) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    }
+
     // Get all client org IDs
     const { data: clientOrgs } = await supabase
       .from('organizations')
@@ -119,6 +131,6 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('MSP overview error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

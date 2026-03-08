@@ -459,12 +459,17 @@ function renderHtmlBlock(content: any): string {
   
   if (!html.trim()) return '';
 
-  // Sanitize HTML - remove dangerous elements
+  // Sanitize HTML - remove dangerous elements and attributes
   let sanitized = html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
     .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '')
-    .replace(/javascript:/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^>]*>/gi, '')
+    .replace(/<base\b[^>]*>/gi, '')
+    .replace(/java\s*script\s*:/gi, '')
+    .replace(/vbscript\s*:/gi, '')
+    .replace(/data\s*:\s*text\/html/gi, '')
     .replace(/on\w+\s*=/gi, '');
 
   return `
