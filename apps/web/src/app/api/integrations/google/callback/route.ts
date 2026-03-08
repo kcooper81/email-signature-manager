@@ -51,6 +51,14 @@ export async function GET(request: NextRequest) {
     // Store the connection in the database
     const supabase = createClient();
 
+    // Verify state userId matches the currently authenticated user
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (!authUser || authUser.id !== userId) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=auth_mismatch', request.url)
+      );
+    }
+
     // Get user's organization
     const { data: userData } = await supabase
       .from('users')
@@ -60,13 +68,11 @@ export async function GET(request: NextRequest) {
 
     if (!userData?.organization_id) {
       // Create a default organization if none exists
-      const { data: { user } } = await supabase.auth.getUser();
-      
       const { data: newOrg } = await supabase
         .from('organizations')
         .insert({
-          name: user?.user_metadata?.organization_name || 'My Organization',
-          slug: user?.email?.split('@')[0] || 'org',
+          name: authUser.user_metadata?.organization_name || 'My Organization',
+          slug: authUser.email?.split('@')[0] || 'org',
         })
         .select('id')
         .single();
@@ -77,7 +83,7 @@ export async function GET(request: NextRequest) {
           .upsert({
             auth_id: userId,
             organization_id: newOrg.id,
-            email: user?.email || '',
+            email: authUser.email || '',
             role: 'admin',
           });
       }

@@ -76,11 +76,11 @@ export async function POST(request: NextRequest) {
     ) || stripeSubscriptions.data[0];
 
     if (!activeSubscription) {
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         message: 'No active subscription found',
-        plan: subscription.plan,
-        synced: false 
+        plan: subscription?.plan || 'free',
+        synced: false
       });
     }
 
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     const status = mapStripeStatus(activeSubscription.status);
 
     // Update database if different
-    if (subscription.plan !== plan || 
+    if (!subscription || subscription.plan !== plan ||
         subscription.stripe_subscription_id !== activeSubscription.id ||
         subscription.status !== status) {
       
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to sync subscription' },
+      { error: 'Failed to sync subscription' },
       { status: 500 }
     );
   }
