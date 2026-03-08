@@ -42,9 +42,16 @@ export async function GET(request: NextRequest) {
     const supabase = createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
+    }
+
+    // Verify state userId matches authenticated user
+    if (user.id !== userId) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=auth_mismatch', request.url)
+      );
     }
 
     const { data: userData } = await supabase

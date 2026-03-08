@@ -122,8 +122,8 @@ export async function POST(request: NextRequest) {
       const existing = existingUserMap.get(workspaceUser.email);
       return {
         email: workspaceUser.email,
-        first_name: workspaceUser.name.split(' ')[0] || workspaceUser.name,
-        last_name: workspaceUser.name.split(' ').slice(1).join(' ') || undefined,
+        first_name: (workspaceUser.name || '').split(' ')[0] || workspaceUser.name || null,
+        last_name: (workspaceUser.name || '').split(' ').slice(1).join(' ') || null,
         title: workspaceUser.title,
         department: workspaceUser.department,
         organization_id: userData.organization_id,

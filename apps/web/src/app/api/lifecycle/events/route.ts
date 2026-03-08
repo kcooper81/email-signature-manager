@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '50') || 50, 1), 200);
+    const offset = Math.max(parseInt(searchParams.get('offset') || '0') || 0, 0);
     const eventType = searchParams.get('eventType');
 
     let query = supabase
