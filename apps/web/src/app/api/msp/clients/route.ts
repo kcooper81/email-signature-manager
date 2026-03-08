@@ -102,7 +102,7 @@ export async function GET() {
 
     return NextResponse.json({ clients: clientsWithDetails });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -288,6 +288,6 @@ export async function POST(request: NextRequest) {
       message: `Client created. Invite sent to ${adminEmail}`,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       googleAuth = await createOrgGoogleClient(userData.organization_id);
     } catch (err: any) {
       return NextResponse.json(
-        { error: err.message || 'Google Workspace not connected', needsReconnect: true },
+        { error: 'Internal server error', needsReconnect: true },
         { status: 400 }
       );
     }
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch calendar data' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { error: error.message || 'Failed to update calendar settings' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         useServiceAccount = true;
       } else {
         return NextResponse.json(
-          { error: err.message || 'Google Workspace not connected' },
+          { error: 'Internal server error' },
           { status: 400 }
         );
       }

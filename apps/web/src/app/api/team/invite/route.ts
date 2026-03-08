@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Invite error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to send invites' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
