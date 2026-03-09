@@ -25,7 +25,7 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
       
       const { data, error } = await supabase
         .from('user_invites')
-        .select('*, users(email, first_name, last_name, organization_id)')
+        .select('*, users(email, first_name, last_name, organization_id, organizations(name))')
         .eq('token', params.token)
         .is('accepted_at', null)
         .single();
@@ -78,12 +78,11 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.error || 'Failed to accept invite');
       }
-
-      const { authId } = await response.json();
 
       // Now sign in with the created account
       const supabase = createClient();
@@ -148,7 +147,7 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
         <CardHeader>
           <CardTitle>Create Your Account</CardTitle>
           <CardDescription>
-            You've been invited to manage your profile at {inviteData.users?.organization_id}
+            You've been invited to manage your profile{inviteData.users?.organizations?.name ? ` at ${inviteData.users.organizations.name}` : ''}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
