@@ -39,6 +39,7 @@ import {
   ChevronDown,
   UserCheck,
   SlidersHorizontal,
+  PenSquare,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -158,6 +159,18 @@ export default function TicketsPage() {
   const [hideSnoozed, setHideSnoozed] = useState(true);
   const [showFilterPopover, setShowFilterPopover] = useState(false);
   const [adminUsers, setAdminUsers] = useState<{ id: string; email: string }[]>([]);
+  // Compose modal state
+  const [showCompose, setShowCompose] = useState(false);
+  const [composeTo, setComposeTo] = useState('');
+  const [composeSubject, setComposeSubject] = useState('');
+  const [composeSendAs, setComposeSendAs] = useState('support@siggly.io');
+  const [composeSending, setComposeSending] = useState(false);
+  const [composeSuccess, setComposeSuccess] = useState<string | null>(null);
+  const [composeError, setComposeError] = useState<string | null>(null);
+  const composeEditorRef = useRef<RichTextEditorRef>(null);
+  const [userSuggestions, setUserSuggestions] = useState<{ email: string; name: string }[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchingUsers, setSearchingUsers] = useState(false);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
   const initialLoadDone = useRef(false);
@@ -362,6 +375,8 @@ export default function TicketsPage() {
     } else if (statusFilter === 'unassigned') {
       query = query.in('status', ['new', 'reviewed']);
       query = query.is('assigned_to', null);
+    } else if (statusFilter === 'sent') {
+      query = query.contains('metadata', { source: 'admin_compose' });
     } else if (statusFilter === 'done') {
       query = query.in('status', ['resolved', 'archived']);
     } else if (statusFilter !== 'all') {
@@ -589,6 +604,96 @@ export default function TicketsPage() {
     setAdminUsers(data || []);
   };
 
+  // Search users and ticket contacts for the To field
+  const searchRecipients = async (query: string) => {
+    if (query.length < 2) {
+      setUserSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    setSearchingUsers(true);
+    const supabase = createClient();
+
+    // Search users by email or name
+    const { data: users } = await supabase
+      .from('users')
+      .select('email, first_name, last_name')
+      .or(`email.ilike.%${query}%,first_name.ilike.%${query}%,last_name.ilike.%${query}%`)
+      .limit(8);
+
+    // Also search recent ticket contacts
+    const { data: contacts } = await supabase
+      .from('feedback')
+      .select('user_email')
+      .ilike('user_email', `%${query}%`)
+      .not('user_email', 'is', null)
+      .limit(5);
+
+    const results = new Map<string, string>();
+
+    // Add users
+    (users || []).forEach(u => {
+      const name = [u.first_name, u.last_name].filter(Boolean).join(' ');
+      if (u.email) results.set(u.email, name || u.email);
+    });
+
+    // Add ticket contacts (dedup)
+    (contacts || []).forEach(c => {
+      if (c.user_email && !results.has(c.user_email)) {
+        results.set(c.user_email, c.user_email);
+      }
+    });
+
+    setUserSuggestions(
+      Array.from(results.entries()).map(([email, name]) => ({ email, name }))
+    );
+    setShowSuggestions(true);
+    setSearchingUsers(false);
+  };
+
+  const sendComposeEmail = async () => {
+    const htmlContent = composeEditorRef.current?.getHTML() || '';
+    const textContent = composeEditorRef.current?.getText()?.trim() || '';
+    if (!composeTo.trim() || !composeSubject.trim() || !textContent) return;
+
+    setComposeSending(true);
+    setComposeError(null);
+    setComposeSuccess(null);
+
+    try {
+      const res = await fetch('/api/admin/compose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: composeTo.trim(),
+          subject: composeSubject.trim(),
+          body: htmlContent,
+          sendAs: composeSendAs,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setComposeError(result.error || 'Failed to send email');
+      } else {
+        setComposeSuccess(result.warning || `Email sent to ${composeTo.trim()}`);
+        // Reset form after brief delay
+        setTimeout(() => {
+          setComposeTo('');
+          setComposeSubject('');
+          composeEditorRef.current?.clear();
+          setComposeSuccess(null);
+          setShowCompose(false);
+        }, 2000);
+      }
+    } catch {
+      setComposeError('Failed to send email');
+    }
+
+    setComposeSending(false);
+  };
+
   const assignTicket = async (ticketId: string, userId: string | null) => {
     const supabase = createClient();
     const { error } = await supabase
@@ -780,6 +885,7 @@ export default function TicketsPage() {
     { key: 'open', label: 'Open' },
     { key: 'mine', label: 'Mine' },
     { key: 'unassigned', label: 'Unassigned' },
+    { key: 'sent', label: 'Sent' },
     { key: 'done', label: 'Done' },
     { key: 'all', label: 'All' },
   ];
@@ -799,6 +905,14 @@ export default function TicketsPage() {
         </div>
 
         <div className="flex items-center gap-1.5">
+          <Button
+            onClick={() => setShowCompose(true)}
+            size="sm"
+            className="h-9 gap-1.5"
+          >
+            <PenSquare className="h-4 w-4" />
+            <span className="hidden sm:inline">Compose</span>
+          </Button>
           <button onClick={() => setHideSnoozed(!hideSnoozed)} className={`p-2 rounded-lg transition-colors ${!hideSnoozed ? 'bg-amber-100 text-amber-700' : 'text-muted-foreground hover:bg-muted'}`} title={hideSnoozed ? 'Snoozed hidden' : 'Showing snoozed'}>
             <AlarmClock className="h-4 w-4" />
           </button>
@@ -1370,6 +1484,161 @@ export default function TicketsPage() {
                 {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                 {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Compose Email Modal */}
+      {showCompose && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { if (!composeSending) setShowCompose(false); }} />
+          <div className="relative bg-background rounded-xl shadow-2xl border w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-primary/10">
+                  <PenSquare className="h-4 w-4 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold">New Email</h2>
+              </div>
+              <button
+                onClick={() => { if (!composeSending) setShowCompose(false); }}
+                className="p-1.5 hover:bg-muted rounded-md"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+              {/* To field with autocomplete */}
+              <div className="relative">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">To</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    placeholder="recipient@example.com"
+                    value={composeTo}
+                    onChange={(e) => {
+                      setComposeTo(e.target.value);
+                      searchRecipients(e.target.value);
+                    }}
+                    onFocus={() => { if (userSuggestions.length > 0) setShowSuggestions(true); }}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    className="pl-10 h-10"
+                  />
+                  {searchingUsers && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                </div>
+                {showSuggestions && userSuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-popover border rounded-lg shadow-lg py-1 z-30 max-h-48 overflow-y-auto">
+                    {userSuggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.email}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setComposeTo(suggestion.email);
+                          setShowSuggestions(false);
+                          setUserSuggestions([]);
+                        }}
+                        className="w-full text-left px-4 py-2.5 hover:bg-muted flex items-center gap-3"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                          <span className="text-xs font-bold text-primary">
+                            {suggestion.name.charAt(0).toUpperCase() || suggestion.email.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          {suggestion.name !== suggestion.email && (
+                            <p className="text-sm font-medium truncate">{suggestion.name}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground truncate">{suggestion.email}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Subject */}
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Subject</label>
+                <Input
+                  placeholder="Email subject"
+                  value={composeSubject}
+                  onChange={(e) => setComposeSubject(e.target.value)}
+                  className="h-10"
+                />
+              </div>
+
+              {/* Send As */}
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Send As</label>
+                <select
+                  value={composeSendAs}
+                  onChange={(e) => setComposeSendAs(e.target.value)}
+                  className="w-full h-10 px-3 border rounded-md text-sm bg-background"
+                >
+                  <option value="support@siggly.io">Siggly Support (support@)</option>
+                  <option value="sales@siggly.io">Siggly Sales (sales@)</option>
+                  <option value="help@siggly.io">Siggly Help (help@)</option>
+                  <option value="team@siggly.io">Siggly Team (team@)</option>
+                  <option value="kade@siggly.io">Kade (kade@)</option>
+                  <option value="contact@siggly.io">Siggly (contact@)</option>
+                  <option value="info@siggly.io">Siggly (info@)</option>
+                </select>
+              </div>
+
+              {/* Body */}
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Message</label>
+                <RichTextEditor
+                  ref={composeEditorRef}
+                  placeholder="Write your email..."
+                  onChange={() => {}}
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-4 border-t space-y-3">
+              {composeError && (
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  {composeError}
+                </div>
+              )}
+              {composeSuccess && (
+                <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                  <CheckCircle className="h-4 w-4 shrink-0" />
+                  {composeSuccess}
+                </div>
+              )}
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => { if (!composeSending) setShowCompose(false); }}
+                  disabled={composeSending}
+                  className="flex-1 sm:flex-none"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={sendComposeEmail}
+                  disabled={composeSending || !composeTo.trim() || !composeSubject.trim()}
+                  className="flex-1 sm:flex-none gap-2"
+                >
+                  {composeSending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                  {composeSending ? 'Sending...' : 'Send Email'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
