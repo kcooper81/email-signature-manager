@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
   const [checking, setChecking] = useState(true);
 
   // BUG-23 fix: Verify the user arrived here via a valid password reset link
-  useState(() => {
+  useEffect(() => {
     const checkSession = async () => {
       try {
         const supabase = createClient();
@@ -47,7 +47,7 @@ export default function ResetPasswordPage() {
       setChecking(false);
     };
     checkSession();
-  });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
