@@ -187,6 +187,8 @@ export interface TicketResponseEmailData {
   adminEmail: string;
   /** The users.id of the admin sending the reply — used to render their email signature */
   adminUserId?: string | null;
+  cc?: string[];
+  bcc?: string[];
   /** The mailbox address to send from (e.g. "help@siggly.io"). Falls back to support. */
   replyAs?: string | null;
 }
@@ -508,6 +510,8 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
     const { data: emailData, error } = await client.emails.send({
       from: fromAddress,
       to: [to],
+      ...(data.cc?.length ? { cc: data.cc } : {}),
+      ...(data.bcc?.length ? { bcc: data.bcc } : {}),
       subject: `Re: [Ticket#${ticketId.slice(0, 8)}] Your ${ticketType} request`,
       text: plainText,
       html: `
@@ -566,6 +570,8 @@ export interface ComposeEmailData {
   ticketId: string;
   adminUserId: string;
   replyAs?: string | null;
+  cc?: string[];
+  bcc?: string[];
 }
 
 /**
@@ -614,6 +620,8 @@ export async function sendComposeEmail(data: ComposeEmailData) {
     const { data: emailData, error } = await client.emails.send({
       from: fromAddress,
       to: [to],
+      ...(data.cc?.length ? { cc: data.cc } : {}),
+      ...(data.bcc?.length ? { bcc: data.bcc } : {}),
       // Clean subject — no [Ticket#] prefix on first contact (less spammy)
       // The ticket ID is embedded in headers and Reply-To for threading
       subject,
