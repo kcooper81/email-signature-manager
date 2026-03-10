@@ -92,6 +92,8 @@ interface MspOverview {
 type TabType = 'clients' | 'overview' | 'billing';
 type PlanFilter = 'all' | 'free' | 'professional';
 
+const CLIENTS_PER_PAGE = 20;
+
 export default function ClientsPage() {
   const router = useRouter();
   const { switchToClient, refreshClients } = useMspContext();
@@ -100,6 +102,7 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [planFilter, setPlanFilter] = useState<PlanFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [isNotMsp, setIsNotMsp] = useState(false);
 
@@ -238,6 +241,17 @@ export default function ClientsPage() {
       client.domain?.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .filter(client => planFilter === 'all' || client.plan === planFilter);
+
+  const clientTotalPages = Math.max(1, Math.ceil(filteredClients.length / CLIENTS_PER_PAGE));
+  const paginatedClients = filteredClients.slice(
+    (currentPage - 1) * CLIENTS_PER_PAGE,
+    currentPage * CLIENTS_PER_PAGE
+  );
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, planFilter]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -465,91 +479,111 @@ export default function ClientsPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-3">
-              {filteredClients.map((client) => {
-                const health = getHealthStatus(client);
-                return (
-                  <Card key={client.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="py-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-4 min-w-0 flex-1">
-                          <div className="p-3 bg-slate-100 rounded-lg dark:bg-slate-800 shrink-0">
-                            <Building2 className="h-6 w-6 text-slate-600 dark:text-slate-400" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-semibold truncate">{client.name}</h3>
-                              <Badge variant={client.plan === 'free' ? 'secondary' : 'default'} className="text-xs">
-                                {formatPlanName(client.plan)}
-                              </Badge>
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${health.color}`}>
-                                {health.label}
-                              </span>
+            <>
+              <div className="grid gap-3">
+                {paginatedClients.map((client) => {
+                  const health = getHealthStatus(client);
+                  return (
+                    <Card key={client.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="py-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-4 min-w-0 flex-1">
+                            <div className="p-3 bg-slate-100 rounded-lg dark:bg-slate-800 shrink-0">
+                              <Building2 className="h-6 w-6 text-slate-600 dark:text-slate-400" />
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 flex-wrap">
-                              {client.domain && (
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-semibold truncate">{client.name}</h3>
+                                <Badge variant={client.plan === 'free' ? 'secondary' : 'default'} className="text-xs">
+                                  {formatPlanName(client.plan)}
+                                </Badge>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${health.color}`}>
+                                  {health.label}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 flex-wrap">
+                                {client.domain && (
+                                  <span className="flex items-center gap-1">
+                                    <Globe className="h-3 w-3" />
+                                    {client.domain}
+                                  </span>
+                                )}
                                 <span className="flex items-center gap-1">
-                                  <Globe className="h-3 w-3" />
-                                  {client.domain}
+                                  <Users className="h-3 w-3" />
+                                  {client.userCount}
                                 </span>
-                              )}
-                              <span className="flex items-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {client.userCount}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <FileText className="h-3 w-3" />
-                                {client.templateCount} templates
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <Rocket className="h-3 w-3" />
-                                {client.deploymentCount} deployed
-                              </span>
-                              {client.lastActivity && (
                                 <span className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  {timeAgo(client.lastActivity)}
+                                  <FileText className="h-3 w-3" />
+                                  {client.templateCount} templates
                                 </span>
-                              )}
-                            </div>
-                            {/* Integration pills */}
-                            <div className="flex items-center gap-2 mt-1.5">
-                              {client.googleConnected && (
-                                <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded dark:bg-green-900/20">
-                                  <Wifi className="h-3 w-3" /> Google
+                                <span className="flex items-center gap-1">
+                                  <Rocket className="h-3 w-3" />
+                                  {client.deploymentCount} deployed
                                 </span>
-                              )}
-                              {client.microsoftConnected && (
-                                <span className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded dark:bg-blue-900/20">
-                                  <Wifi className="h-3 w-3" /> Microsoft
-                                </span>
-                              )}
-                              {!client.googleConnected && !client.microsoftConnected && (
-                                <span className="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded dark:bg-gray-900/20">
-                                  <WifiOff className="h-3 w-3" /> No integration
-                                </span>
-                              )}
+                                {client.lastActivity && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {timeAgo(client.lastActivity)}
+                                  </span>
+                                )}
+                              </div>
+                              {/* Integration pills */}
+                              <div className="flex items-center gap-2 mt-1.5">
+                                {client.googleConnected && (
+                                  <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded dark:bg-green-900/20">
+                                    <Wifi className="h-3 w-3" /> Google
+                                  </span>
+                                )}
+                                {client.microsoftConnected && (
+                                  <span className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded dark:bg-blue-900/20">
+                                    <Wifi className="h-3 w-3" /> Microsoft
+                                  </span>
+                                )}
+                                {!client.googleConnected && !client.microsoftConnected && (
+                                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded dark:bg-gray-900/20">
+                                    <WifiOff className="h-3 w-3" /> No integration
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="shrink-0"
+                            onClick={() => {
+                              switchToClient({ id: client.id, name: client.name, domain: client.domain });
+                              router.push('/dashboard');
+                            }}
+                          >
+                            <Settings className="h-4 w-4 mr-1" />
+                            Manage
+                          </Button>
                         </div>
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="shrink-0"
-                          onClick={() => {
-                            switchToClient({ id: client.id, name: client.name, domain: client.domain });
-                            router.push('/dashboard');
-                          }}
-                        >
-                          <Settings className="h-4 w-4 mr-1" />
-                          Manage
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              {/* Pagination */}
+              {filteredClients.length > CLIENTS_PER_PAGE && (
+                <div className="flex items-center justify-between pt-2">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {(currentPage - 1) * CLIENTS_PER_PAGE + 1}-{Math.min(currentPage * CLIENTS_PER_PAGE, filteredClients.length)} of {filteredClients.length} clients
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+                      Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">Page {currentPage} of {clientTotalPages}</span>
+                    <Button variant="outline" size="sm" disabled={currentPage === clientTotalPages} onClick={() => setCurrentPage(p => p + 1)}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

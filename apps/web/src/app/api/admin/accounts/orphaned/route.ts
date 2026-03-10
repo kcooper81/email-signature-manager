@@ -20,11 +20,11 @@ export async function GET() {
 
     const { data: adminCheck } = await supabaseAdmin
       .from('users')
-      .select('is_super_admin')
+      .select('is_super_admin, super_admin_role')
       .eq('auth_id', user.id)
       .single();
 
-    if (!adminCheck?.is_super_admin) {
+    if (!adminCheck?.is_super_admin || adminCheck.super_admin_role === 'support') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -83,11 +83,11 @@ export async function POST(request: Request) {
 
     const { data: adminCheck } = await supabaseAdmin
       .from('users')
-      .select('is_super_admin')
+      .select('is_super_admin, super_admin_role')
       .eq('auth_id', user.id)
       .single();
 
-    if (!adminCheck?.is_super_admin) {
+    if (!adminCheck?.is_super_admin || adminCheck.super_admin_role === 'support') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 

@@ -78,6 +78,7 @@ export async function GET(request: NextRequest) {
         .single();
 
       if (newOrg) {
+        // Link user to org
         await supabase
           .from('users')
           .upsert({
@@ -85,6 +86,22 @@ export async function GET(request: NextRequest) {
             organization_id: newOrg.id,
             email: authUser.email || '',
             role: 'admin',
+          });
+
+        // Create default subscription (free plan) so billing checks work
+        await supabase
+          .from('subscriptions')
+          .insert({
+            organization_id: newOrg.id,
+            plan: 'free',
+            status: 'active',
+          });
+
+        // Create default organization settings so settings lookups don't fail
+        await supabase
+          .from('organization_settings')
+          .insert({
+            organization_id: newOrg.id,
           });
       }
     }

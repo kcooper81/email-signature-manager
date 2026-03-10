@@ -38,6 +38,7 @@ export default function TemplatesPage() {
   }, [currentClientOrg]); // Reload when MSP context changes
 
   const loadTemplates = async () => {
+    setLoading(true);
     const supabase = createClient();
     
     // Get current user's organization
@@ -95,18 +96,25 @@ export default function TemplatesPage() {
 
     if (!currentUser?.organization_id) return;
 
+    // Use MSP client org if viewing a client, otherwise use user's own org
+    const effectiveOrgId = currentClientOrg?.id || currentUser.organization_id;
+
     // CASCADE DELETE will automatically handle related deployments and assignments
     const { error } = await supabase
       .from('signature_templates')
       .delete()
       .eq('id', id)
-      .eq('organization_id', currentUser.organization_id);
+      .eq('organization_id', effectiveOrgId);
 
-    if (!error) {
-      setTemplates(templates.filter((t) => t.id !== id));
-      // Refresh subscription usage counts
-      refresh();
+    if (error) {
+      console.error('Failed to delete template:', error);
+      alert('Failed to delete template. Please try again.');
+      return;
     }
+
+    setTemplates(prev => prev.filter((t) => t.id !== id));
+    // Refresh subscription usage counts
+    refresh();
   };
 
   // Check if user can create more templates (use actual templates.length for accuracy)
@@ -288,7 +296,7 @@ export default function TemplatesPage() {
         </div>
       ) : (
         <Card>
-          <CardContent className="p-0">
+          <CardContent className="p-0 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left">

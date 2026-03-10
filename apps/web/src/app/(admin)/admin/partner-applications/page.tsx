@@ -138,7 +138,8 @@ export default function PartnerApplicationsPage() {
     let query = supabase
       .from('partner_applications')
       .select('*')
-      .order('submitted_at', { ascending: false });
+      .order('submitted_at', { ascending: false })
+      .limit(200);
 
     if (statusFilter !== 'all') {
       query = query.eq('status', statusFilter);

@@ -32,6 +32,16 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // Validate input formats to prevent enumeration/abuse
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (userId && !UUID_RE.test(userId)) {
+    return NextResponse.json({ error: 'Invalid userId format' }, { status: 400 });
+  }
+  if (email && !EMAIL_RE.test(email)) {
+    return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
+  }
+
   try {
     // Get user data
     let userData;

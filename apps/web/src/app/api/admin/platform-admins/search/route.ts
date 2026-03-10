@@ -28,12 +28,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ users: [] });
     }
 
+    // Sanitize query to prevent PostgREST filter injection
+    const sanitizedQuery = query.replace(/[,%()\\]/g, '');
+    if (!sanitizedQuery || sanitizedQuery.length < 2) {
+      return NextResponse.json({ users: [] });
+    }
+
     // Search by email, first name, or last name — exclude existing admins
     const { data, error } = await supabaseAdmin
       .from('users')
       .select('id, email, first_name, last_name, organization_id')
       .eq('is_super_admin', false)
-      .or(`email.ilike.%${query}%,first_name.ilike.%${query}%,last_name.ilike.%${query}%`)
+      .or(`email.ilike.%${sanitizedQuery}%,first_name.ilike.%${sanitizedQuery}%,last_name.ilike.%${sanitizedQuery}%`)
       .limit(20);
 
     if (error) {
