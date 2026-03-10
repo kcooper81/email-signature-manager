@@ -12,15 +12,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's organization
+    // Get user's organization and role
     const { data: userData } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, role')
       .eq('auth_id', user.id)
       .single();
 
     if (!userData?.organization_id) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
+    // Only owners and admins can access billing portal
+    if (!userData.role || !['owner', 'admin'].includes(userData.role)) {
+      return NextResponse.json({ error: 'Only organization owners and admins can manage billing' }, { status: 403 });
     }
 
     // Get subscription with Stripe customer ID

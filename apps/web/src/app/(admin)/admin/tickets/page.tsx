@@ -265,10 +265,12 @@ export default function TicketsPage() {
             || (statusFilter === 'done' && ['resolved', 'archived'].includes(item.status));
           const matchesPriority = priorityFilter === 'all' || (item.priority || 'normal') === priorityFilter;
 
-          if (page === 0 && matchesType && matchesStatus && matchesPriority) {
-            setTickets(prev => [newEntry, ...prev]);
+          if (matchesType && matchesStatus && matchesPriority) {
+            if (page === 0) {
+              setTickets(prev => [newEntry, ...prev]);
+            }
+            setTotalCount(prev => prev + 1);
           }
-          setTotalCount(prev => prev + 1);
 
           if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             new Notification('New Support Ticket', {
@@ -291,13 +293,26 @@ export default function TicketsPage() {
         { event: 'UPDATE', schema: 'public', table: 'feedback' },
         (payload) => {
           const item = payload.new as any;
-          const updates = {
+          const updates: Partial<FeedbackEntry> = {
             status: item.status,
             priority: item.priority || 'normal',
             updatedAt: item.updated_at,
             assignedTo: item.assigned_to || null,
             snoozedUntil: item.snoozed_until || null,
           };
+          // Look up assigned email from the current ticket list
+          if (item.assigned_to) {
+            setTickets(prev => {
+              const existing = prev.find(t => t.id === item.id);
+              if (existing && existing.assignedTo !== item.assigned_to) {
+                // Will be resolved on next full load; keep existing email if same assignee
+                updates.assignedEmail = null;
+              }
+              return prev;
+            });
+          } else {
+            updates.assignedEmail = null;
+          }
           setTickets(prev => prev.map(t => t.id === item.id ? { ...t, ...updates } : t));
           setSelectedTicket(prev => {
             if (!prev || prev.id !== item.id) return prev;
@@ -388,10 +403,13 @@ export default function TicketsPage() {
     } else if (statusFilter === 'open') {
       query = query.in('status', ['new', 'reviewed']);
     } else if (statusFilter === 'mine') {
-      query = query.in('status', ['new', 'reviewed']);
-      if (currentUserId) {
-        query = query.eq('assigned_to', currentUserId);
+      if (!currentUserId) {
+        setTickets([]);
+        setTotalCount(0);
+        setLoading(false);
+        return;
       }
+      query = query.in('status', ['new', 'reviewed']).eq('assigned_to', currentUserId);
     } else if (statusFilter === 'unassigned') {
       query = query.in('status', ['new', 'reviewed']);
       query = query.is('assigned_to', null);
@@ -634,18 +652,21 @@ export default function TicketsPage() {
     setSearchingUsers(true);
     const supabase = createClient();
 
+    // Sanitize query for Supabase filter safety
+    const sanitizedQuery = query.replace(/[,%()\\]/g, '');
+
     // Search users by email or name
     const { data: users } = await supabase
       .from('users')
       .select('email, first_name, last_name')
-      .or(`email.ilike.%${query}%,first_name.ilike.%${query}%,last_name.ilike.%${query}%`)
+      .or(`email.ilike.%${sanitizedQuery}%,first_name.ilike.%${sanitizedQuery}%,last_name.ilike.%${sanitizedQuery}%`)
       .limit(8);
 
     // Also search recent ticket contacts
     const { data: contacts } = await supabase
       .from('feedback')
       .select('user_email')
-      .ilike('user_email', `%${query}%`)
+      .ilike('user_email', `%${sanitizedQuery}%`)
       .not('user_email', 'is', null)
       .limit(5);
 

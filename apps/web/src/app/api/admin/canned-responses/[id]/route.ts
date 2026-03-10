@@ -11,10 +11,10 @@ export async function PUT(
 
   const { data: userData } = await supabase
     .from('users')
-    .select('is_super_admin')
+    .select('is_super_admin, super_admin_role')
     .eq('auth_id', user.id.toString())
     .single();
-  if (!userData?.is_super_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!userData?.is_super_admin || userData.super_admin_role === 'support') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const { title, content, category, shortcut } = await request.json();
   if (!title?.trim() || !content?.trim()) {
@@ -48,10 +48,10 @@ export async function DELETE(
 
   const { data: userData } = await supabase
     .from('users')
-    .select('is_super_admin')
+    .select('is_super_admin, super_admin_role')
     .eq('auth_id', user.id.toString())
     .single();
-  if (!userData?.is_super_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!userData?.is_super_admin || userData.super_admin_role === 'support') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const { error } = await supabase
     .from('canned_responses')

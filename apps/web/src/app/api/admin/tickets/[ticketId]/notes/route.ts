@@ -78,11 +78,12 @@ export async function POST(
         // Use the mailbox the user originally emailed, or fall back to support
         const replyFromMailbox = replyAs || ticket.inbox_email || null;
 
-        // Parse CC/BCC
+        // Parse and validate CC/BCC
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const parsedCc = (Array.isArray(cc) ? cc : (cc || '').split(','))
-          .map((e: string) => e.trim()).filter(Boolean);
+          .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
         const parsedBcc = (Array.isArray(bcc) ? bcc : (bcc || '').split(','))
-          .map((e: string) => e.trim()).filter(Boolean);
+          .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
 
         await sendTicketResponseEmail({
           to: ticket.user_email,

@@ -70,11 +70,12 @@ export async function POST(request: NextRequest) {
 
     // Send the email (with signature, proper headers for deliverability)
     try {
-      // Parse CC/BCC — accept comma-separated strings or arrays
+      // Parse and validate CC/BCC — accept comma-separated strings or arrays
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const parsedCc = (Array.isArray(cc) ? cc : (cc || '').split(','))
-        .map((e: string) => e.trim()).filter(Boolean);
+        .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
       const parsedBcc = (Array.isArray(bcc) ? bcc : (bcc || '').split(','))
-        .map((e: string) => e.trim()).filter(Boolean);
+        .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
 
       await sendComposeEmail({
         to: to.trim(),

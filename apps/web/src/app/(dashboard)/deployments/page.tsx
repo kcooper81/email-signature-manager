@@ -246,7 +246,12 @@ export default function DeploymentsPage() {
 
   const selectAllFiltered = () => {
     const filteredIds = filteredUsers.map(u => u.id);
-    setSelectedUsers(prev => [...new Set([...prev, ...filteredIds])]);
+    const allSelected = filteredIds.every(id => selectedUsers.includes(id));
+    if (allSelected) {
+      setSelectedUsers(prev => prev.filter(id => !filteredIds.includes(id)));
+    } else {
+      setSelectedUsers(prev => [...new Set([...prev, ...filteredIds])]);
+    }
   };
 
   const clearSelection = () => {

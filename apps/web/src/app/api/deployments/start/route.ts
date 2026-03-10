@@ -55,15 +55,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (!organizationId) {
-      // Fallback: try to get org from connection
-      const { data: connection } = await supabase
-        .from('provider_connections')
-        .select('organization_id')
-        .eq('provider', 'google')
-        .eq('is_active', true)
-        .single();
-
-      organizationId = connection?.organization_id || null;
+      // No fallback — user must have an organization assigned
+      // The previous fallback could pick up any active Google connection,
+      // potentially crossing organization boundaries
     }
 
     if (!organizationId) {
@@ -135,21 +129,29 @@ export async function POST(request: NextRequest) {
     const userSelectFields = 'id, email, first_name, last_name, department, source, calendly_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url';
 
     if (target === 'me') {
-      // Deploy to current user only - get their user ID from the users table
+      // Deploy to current user only - get all fields from the users table
       const { data: currentUserData } = await supabase
         .from('users')
-        .select('id, department, source')
+        .select(userSelectFields)
         .eq('auth_id', user.id)
         .single();
 
       targetUsers = [{
         id: currentUserData?.id,
-        email: user.email!,
-        name: user.user_metadata?.full_name || user.email!,
-        firstName: user.user_metadata?.first_name,
-        lastName: user.user_metadata?.last_name,
+        email: currentUserData?.email || user.email!,
+        name: `${currentUserData?.first_name || ''} ${currentUserData?.last_name || ''}`.trim() || user.email!,
+        firstName: currentUserData?.first_name || undefined,
+        lastName: currentUserData?.last_name || undefined,
         department: currentUserData?.department || undefined,
         source: currentUserData?.source || undefined,
+        calendlyUrl: currentUserData?.calendly_url || undefined,
+        linkedinUrl: currentUserData?.linkedin_url || undefined,
+        twitterUrl: currentUserData?.twitter_url || undefined,
+        githubUrl: currentUserData?.github_url || undefined,
+        personalWebsite: currentUserData?.personal_website || undefined,
+        instagramUrl: currentUserData?.instagram_url || undefined,
+        facebookUrl: currentUserData?.facebook_url || undefined,
+        youtubeUrl: currentUserData?.youtube_url || undefined,
       }];
     } else if (target === 'selected' && userIds?.length > 0) {
       // Deploy to selected users
