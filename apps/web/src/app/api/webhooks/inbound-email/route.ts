@@ -145,7 +145,26 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const messageBody = bodyText || bodyHtml?.replace(/<[^>]+>/g, '') || '';
+  // Convert HTML to clean plaintext: strip style/script blocks, then tags, then collapse whitespace
+  const htmlToPlainText = (html: string) =>
+    html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<\/div>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+  const messageBody = bodyText || (bodyHtml ? htmlToPlainText(bodyHtml) : '');
   const displayBody = messageBody.trim() || '(No message body)';
   const htmlContent = bodyHtml?.trim() || null;
 
