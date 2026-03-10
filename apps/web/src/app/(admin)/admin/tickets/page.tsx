@@ -529,11 +529,13 @@ export default function TicketsPage() {
     setUpdating(null);
   };
 
+  const addNoteRef = useRef(false);
   const addNote = async () => {
     const htmlContent = editorRef.current?.getHTML() || '';
     const textContent = editorRef.current?.getText()?.trim() || '';
-    if (!selectedTicket || !textContent) return;
+    if (!selectedTicket || !textContent || addNoteRef.current) return;
 
+    addNoteRef.current = true;
     setAddingNote(true);
 
     try {
@@ -554,19 +556,8 @@ export default function TicketsPage() {
 
       const result = await response.json();
 
-      if (result.success && result.note) {
-        const newNoteEntry: TicketNote = {
-          id: result.note.id,
-          content: result.note.content,
-          htmlBody: null,
-          authorEmail: result.note.authorEmail,
-          isInternal: result.note.is_internal,
-          createdAt: result.note.created_at,
-        };
-        setSelectedTicket(prev => prev ? {
-          ...prev,
-          notes: [...prev.notes, newNoteEntry],
-        } : null);
+      if (result.success) {
+        // Clear the form — the realtime subscription will add the note to the UI
         setNewNote('');
         editorRef.current?.clear();
         setIsInternalNote(false);
@@ -580,6 +571,7 @@ export default function TicketsPage() {
     }
 
     setAddingNote(false);
+    addNoteRef.current = false;
   };
 
   const loadCannedResponses = async () => {
@@ -852,9 +844,11 @@ export default function TicketsPage() {
     const supabase = createClient();
     const ids = Array.from(bulk.selectedIds);
     const myEmail = adminUsers.find(a => a.id === currentUserId)?.email || null;
-    await supabase.from('feedback').update({ assigned_to: currentUserId, updated_at: new Date().toISOString() }).in('id', ids);
-    setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, assignedTo: currentUserId, assignedEmail: myEmail } : t));
-    bulk.clearSelection();
+    const { error } = await supabase.from('feedback').update({ assigned_to: currentUserId, updated_at: new Date().toISOString() }).in('id', ids);
+    if (!error) {
+      setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, assignedTo: currentUserId, assignedEmail: myEmail } : t));
+      bulk.clearSelection();
+    }
   };
 
   const bulkActions: BulkAction[] = [
@@ -1040,7 +1034,7 @@ export default function TicketsPage() {
             </div>
           )}
 
-          <div className={`${selectedTicket ? 'lg:border-r' : ''}`}>
+          <div className={`flex-1 overflow-y-auto ${selectedTicket ? 'lg:border-r' : ''}`}>
               {loading ? (
                 <div className="flex items-center justify-center py-20">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />

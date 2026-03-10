@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 interface SafeHtmlViewerProps {
   html: string;
@@ -18,6 +18,7 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState(minHeight);
   const blobUrlRef = useRef<string | null>(null);
+  const instanceId = useId();
 
   useEffect(() => {
     if (blobUrlRef.current) {
@@ -26,6 +27,8 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
     }
 
     if (!html) return;
+
+    const escapedId = instanceId.replace(/"/g, '\\"');
 
     const wrappedHtml = `<!DOCTYPE html>
 <html>
@@ -68,10 +71,11 @@ document.addEventListener('click', function(e) {
     window.open(a.href, '_blank', 'noopener,noreferrer');
   }
 });
-// Report height to parent for auto-resize
+// Report height to parent for auto-resize (scoped to this instance)
+var viewerId = "${escapedId}";
 function reportHeight() {
   var h = document.documentElement.scrollHeight || document.body.scrollHeight;
-  window.parent.postMessage({ type: 'safe-html-height', height: h }, '*');
+  window.parent.postMessage({ type: 'safe-html-height', id: viewerId, height: h }, '*');
 }
 reportHeight();
 new MutationObserver(reportHeight).observe(document.body, { childList: true, subtree: true });
@@ -94,17 +98,17 @@ window.addEventListener('load', reportHeight);
         blobUrlRef.current = null;
       }
     };
-  }, [html]);
+  }, [html, instanceId]);
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.data?.type === 'safe-html-height' && typeof e.data.height === 'number') {
+      if (e.data?.type === 'safe-html-height' && e.data.id === instanceId && typeof e.data.height === 'number') {
         setHeight(Math.max(e.data.height + 16, minHeight));
       }
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [minHeight]);
+  }, [minHeight, instanceId]);
 
   return (
     <iframe
