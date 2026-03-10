@@ -11,7 +11,7 @@ import { logException } from '@/lib/error-logging';
  */
 export async function POST(request: NextRequest) {
   try {
-    const { to, subject, body, sendAs, context } = await request.json();
+    const { to, subject, body, sendAs, context, cc, bcc } = await request.json();
 
     if (!to?.trim() || !subject?.trim() || !body?.trim()) {
       return NextResponse.json(
@@ -70,6 +70,12 @@ export async function POST(request: NextRequest) {
 
     // Send the email (with signature, proper headers for deliverability)
     try {
+      // Parse CC/BCC — accept comma-separated strings or arrays
+      const parsedCc = (Array.isArray(cc) ? cc : (cc || '').split(','))
+        .map((e: string) => e.trim()).filter(Boolean);
+      const parsedBcc = (Array.isArray(bcc) ? bcc : (bcc || '').split(','))
+        .map((e: string) => e.trim()).filter(Boolean);
+
       await sendComposeEmail({
         to: to.trim(),
         subject: subject.trim(),
@@ -77,6 +83,8 @@ export async function POST(request: NextRequest) {
         ticketId: ticket.id,
         adminUserId: userData.id,
         replyAs: mailboxAddress,
+        cc: parsedCc.length ? parsedCc : undefined,
+        bcc: parsedBcc.length ? parsedBcc : undefined,
       });
 
       return NextResponse.json({

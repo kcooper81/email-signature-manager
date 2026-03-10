@@ -8,7 +8,7 @@ export async function POST(
   { params }: { params: { ticketId: string } }
 ) {
   try {
-    const { content, isInternal, isHtml, replyAs } = await request.json();
+    const { content, isInternal, isHtml, replyAs, cc, bcc } = await request.json();
 
     if (!content?.trim()) {
       return NextResponse.json(
@@ -78,6 +78,12 @@ export async function POST(
         // Use the mailbox the user originally emailed, or fall back to support
         const replyFromMailbox = replyAs || ticket.inbox_email || null;
 
+        // Parse CC/BCC
+        const parsedCc = (Array.isArray(cc) ? cc : (cc || '').split(','))
+          .map((e: string) => e.trim()).filter(Boolean);
+        const parsedBcc = (Array.isArray(bcc) ? bcc : (bcc || '').split(','))
+          .map((e: string) => e.trim()).filter(Boolean);
+
         await sendTicketResponseEmail({
           to: ticket.user_email,
           ticketId: ticket.id,
@@ -88,6 +94,8 @@ export async function POST(
           adminEmail: userData.email,
           adminUserId: userData.id,
           replyAs: replyFromMailbox,
+          cc: parsedCc.length ? parsedCc : undefined,
+          bcc: parsedBcc.length ? parsedBcc : undefined,
         });
 
         await supabase
