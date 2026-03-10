@@ -53,6 +53,8 @@ const ERROR_TYPE_COLORS: Record<string, string> = {
   unknown_error: 'bg-slate-100 text-slate-800',
 };
 
+const ERRORS_PER_PAGE = 25;
+
 export default function AdminErrorLogsPage() {
   const [errors, setErrors] = useState<ErrorLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,7 @@ export default function AdminErrorLogsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [resolvingId, setResolvingId] = useState<string | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const sort = useSortableTable<ErrorLog>('created_at', 'desc');
 
   const filteredErrorIds = useMemo(() => {
@@ -82,7 +85,8 @@ export default function AdminErrorLogsPage() {
 
   useEffect(() => {
     bulk.clearSelection();
-  }, [filter, typeFilter]);
+    setCurrentPage(1);
+  }, [filter, typeFilter, searchQuery]);
 
   useEffect(() => {
     loadErrors();
@@ -153,6 +157,12 @@ export default function AdminErrorLogsPage() {
       e.error_type.toLowerCase().includes(query)
     );
   }));
+
+  const totalPages = Math.max(1, Math.ceil(filteredErrors.length / ERRORS_PER_PAGE));
+  const paginatedErrors = filteredErrors.slice(
+    (currentPage - 1) * ERRORS_PER_PAGE,
+    currentPage * ERRORS_PER_PAGE
+  );
 
   const errorTypes = [...new Set(errors.map(e => e.error_type))];
 
@@ -343,7 +353,7 @@ export default function AdminErrorLogsPage() {
               </div>
             </div>
           )}
-          {filteredErrors.map((error) => (
+          {paginatedErrors.map((error) => (
             <Card key={error.id} className={error.resolved ? 'opacity-60' : ''}>
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
@@ -470,6 +480,24 @@ export default function AdminErrorLogsPage() {
               )}
             </Card>
           ))}
+
+          {/* Pagination */}
+          {filteredErrors.length > ERRORS_PER_PAGE && (
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * ERRORS_PER_PAGE + 1}-{Math.min(currentPage * ERRORS_PER_PAGE, filteredErrors.length)} of {filteredErrors.length} errors
+              </p>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+                  Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">Page {currentPage} of {totalPages}</span>
+                <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

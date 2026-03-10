@@ -24,6 +24,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate message length (prevent abuse/DoS)
+    if (message.length > 10000) {
+      return NextResponse.json(
+        { error: 'Message is too long (max 10,000 characters)' },
+        { status: 400 }
+      );
+    }
+
     // Validate feedback type
     const validTypes = ['bug', 'feature', 'question', 'email', 'sales', 'other'];
     if (!validTypes.includes(type)) {

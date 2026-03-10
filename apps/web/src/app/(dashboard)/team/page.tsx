@@ -94,6 +94,8 @@ function getMemberStatus(member: TeamMember): { label: string; variant: 'inactiv
   return { label: 'Active', variant: 'active', priority: 3 };
 }
 
+const MEMBERS_PER_PAGE = 25;
+
 const statusColors = {
   inactive: 'bg-red-500/15 text-red-600 border-red-500/20',
   pending: 'bg-amber-500/15 text-amber-600 border-amber-500/20',
@@ -128,6 +130,7 @@ export default function TeamMembersPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Add team member modal
   const [showAddModal, setShowAddModal] = useState(false);
@@ -277,11 +280,12 @@ export default function TeamMembersPage() {
 
     if (!currentUser?.organization_id) return;
 
-    // Load templates - ONLY for current organization
+    // Load templates - use effective org for MSP context
+    const effectiveOrgId = currentClientOrg?.id || currentUser.organization_id;
     const { data } = await supabase
       .from('signature_templates')
       .select('id, name, description')
-      .eq('organization_id', currentUser.organization_id)
+      .eq('organization_id', effectiveOrgId)
       .order('name');
     
     if (data) setTemplates(data);
@@ -428,6 +432,8 @@ export default function TeamMembersPage() {
         throw new Error('Organization not found');
       }
 
+      // Use effective org for MSP context
+      const effectiveOrgId = currentClientOrg?.id || currentUser.organization_id;
       const { error } = await supabase.from('users').insert({
         email: newMember.email,
         first_name: newMember.first_name || null,
@@ -442,7 +448,7 @@ export default function TeamMembersPage() {
         instagram_url: newMember.instagram_url || null,
         facebook_url: newMember.facebook_url || null,
         youtube_url: newMember.youtube_url || null,
-        organization_id: currentUser.organization_id,
+        organization_id: effectiveOrgId,
         role: 'member',
         source: 'manual',
       });
@@ -746,7 +752,7 @@ export default function TeamMembersPage() {
     if (sourceFilter === 'manual') {
       result = result.filter(e => e.source === 'manual' || e.source === null);
     } else if (sourceFilter === 'synced') {
-      result = result.filter(e => e.source === 'google' || e.source === 'microsoft');
+      result = result.filter(e => e.source === 'google' || e.source === 'microsoft' || e.source === 'hubspot');
     }
 
     // Filter by department
@@ -822,6 +828,20 @@ export default function TeamMembersPage() {
 
     return result;
   }, [members, searchQuery, sortField, sortOrder, sourceFilter, departmentFilter]);
+
+  // Reset to page 1 when search query or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sourceFilter, departmentFilter]);
+
+  // Pagination computed values
+  const totalPages = Math.max(1, Math.ceil(filteredMembers.length / MEMBERS_PER_PAGE));
+  const paginatedMembers = useMemo(() => {
+    const start = (currentPage - 1) * MEMBERS_PER_PAGE;
+    return filteredMembers.slice(start, start + MEMBERS_PER_PAGE);
+  }, [filteredMembers, currentPage]);
+  const paginationStart = filteredMembers.length === 0 ? 0 : (currentPage - 1) * MEMBERS_PER_PAGE + 1;
+  const paginationEnd = Math.min(currentPage * MEMBERS_PER_PAGE, filteredMembers.length);
 
   if (loading) {
     return (
@@ -1275,7 +1295,7 @@ export default function TeamMembersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredMembers.map((emp) => (
+                  {paginatedMembers.map((emp) => (
                     <tr key={emp.id} className="border-b hover:bg-secondary/50 transition-colors">
                       <td className="p-3">
                         <input
@@ -1384,6 +1404,23 @@ export default function TeamMembersPage() {
                 </tbody>
                 </table>
               </div>
+              {/* Pagination controls */}
+              {filteredMembers.length > MEMBERS_PER_PAGE && (
+                <div className="flex items-center justify-between pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {paginationStart}-{paginationEnd} of {filteredMembers.length} members
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+                      Previous
+                    </Button>
+                    <span className="text-sm">Page {currentPage} of {totalPages}</span>
+                    <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

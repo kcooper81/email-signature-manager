@@ -8,10 +8,10 @@ export async function GET() {
 
   const { data: userData } = await supabase
     .from('users')
-    .select('is_super_admin')
+    .select('is_super_admin, super_admin_role')
     .eq('auth_id', user.id.toString())
     .single();
-  if (!userData?.is_super_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!userData?.is_super_admin || userData.super_admin_role === 'support') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const { data, error } = await supabase
     .from('canned_responses')
@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
 
   const { data: userData } = await supabase
     .from('users')
-    .select('id, is_super_admin')
+    .select('id, is_super_admin, super_admin_role')
     .eq('auth_id', user.id.toString())
     .single();
-  if (!userData?.is_super_admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!userData?.is_super_admin || userData.super_admin_role === 'support') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const { title, content, category, shortcut } = await request.json();
   if (!title?.trim() || !content?.trim()) {

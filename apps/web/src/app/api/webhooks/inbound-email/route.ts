@@ -192,12 +192,14 @@ export async function POST(request: NextRequest) {
       // Strategy 2: Fallback — match by original subject text + sender email
       if (!existingTicketId && subject) {
         const cleanSubject = subject.replace(/^re:\s*/i, '').replace(/\[(?:Ticket)?#[a-f0-9-]+\]\s*/i, '').trim();
+        // Escape LIKE special characters to prevent wildcard injection
+        const escapedSubject = cleanSubject.slice(0, 80).replace(/[%_\\]/g, '\\$&');
         if (cleanSubject.length > 5) {
           const { data: ticket } = await supabase
             .from('feedback')
             .select('id')
             .eq('user_email', senderEmail)
-            .ilike('message', `%${cleanSubject.slice(0, 80)}%`)
+            .ilike('message', `%${escapedSubject}%`)
             .order('created_at', { ascending: false })
             .limit(1)
             .single();

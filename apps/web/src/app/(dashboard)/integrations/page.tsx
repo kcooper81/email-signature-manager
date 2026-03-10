@@ -396,7 +396,7 @@ export default function IntegrationsPage() {
       .eq('organization_id', currentUser.organization_id);
 
     if (!error) {
-      setConnections(connections.filter((c) => c.provider !== provider));
+      setConnections(prev => prev.filter((c) => c.provider !== provider));
     }
   };
 

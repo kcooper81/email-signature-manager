@@ -94,6 +94,7 @@ export default function AdminDashboardPage() {
   const [fixingUsers, setFixingUsers] = useState<Set<string>>(new Set());
   const [fixedUsers, setFixedUsers] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [showAllOrphaned, setShowAllOrphaned] = useState(false);
 
   useEffect(() => {
     loadDashboard();
@@ -383,8 +384,8 @@ export default function AdminDashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="divide-y divide-amber-200">
-              {orphanedUsers.map((ou) => (
+            <div className="divide-y divide-amber-200 max-h-[300px] overflow-y-auto">
+              {(showAllOrphaned ? orphanedUsers : orphanedUsers.slice(0, 5)).map((ou) => (
                 <div key={ou.authId} className="flex items-center justify-between py-2 gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-sm text-slate-900 truncate">
@@ -422,6 +423,14 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+            {orphanedUsers.length > 5 && (
+              <button
+                onClick={() => setShowAllOrphaned(!showAllOrphaned)}
+                className="mt-2 text-xs text-amber-700 hover:text-amber-900 font-medium"
+              >
+                {showAllOrphaned ? 'Show less' : `Show all ${orphanedUsers.length} orphaned users`}
+              </button>
+            )}
           </CardContent>
         </Card>
       )}

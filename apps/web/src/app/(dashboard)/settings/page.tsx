@@ -303,19 +303,38 @@ export default function SettingsPage() {
 
   const changePassword = async () => {
     setPasswordError('');
-    
+
+    if (!currentPassword) {
+      setPasswordError('Current password is required');
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       setPasswordError('Passwords do not match');
       return;
     }
-    
+
     if (newPassword.length < 8) {
       setPasswordError('Password must be at least 8 characters');
       return;
     }
-    
+
     setSaving(true);
     const supabase = createClient();
+
+    // Verify current password by re-authenticating
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+      if (signInError) {
+        setPasswordError('Current password is incorrect');
+        setSaving(false);
+        return;
+      }
+    }
 
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
@@ -476,15 +495,15 @@ export default function SettingsPage() {
   };
 
   const revokeSession = async (sessionId: string) => {
+    // Supabase client SDK only supports signing out the current session.
+    // Warn the user before proceeding.
+    if (!confirm('This will sign you out of your current session. Continue?')) return;
+
     setSaving(true);
     const supabase = createClient();
 
-    // Sign out from specific session
     await supabase.auth.signOut();
-
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    window.location.href = '/login';
   };
 
   const deleteAccount = async () => {
@@ -492,10 +511,10 @@ export default function SettingsPage() {
       return;
     }
 
+    if (!profile) return;
+
     setSaving(true);
     const supabase = createClient();
-
-    if (!profile) return;
 
     try {
       // Delete the user record from the database

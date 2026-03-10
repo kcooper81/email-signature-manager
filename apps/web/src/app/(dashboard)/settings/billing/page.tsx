@@ -54,42 +54,53 @@ export default function BillingPage() {
   // Sync and reload data after successful checkout
   useEffect(() => {
     const success = searchParams.get('success');
-    if (success === 'true') {
-      setIsSyncing(true);
-      // Sync subscription from Stripe and poll until updated
-      const syncSubscription = async (attempts = 0): Promise<void> => {
-        try {
-          const response = await fetch('/api/billing/sync', { method: 'POST' });
-          const data = await response.json();
-          
-          if (data.success && data.plan !== 'free') {
-            // Subscription synced successfully
-            await loadBillingData();
-            setIsSyncing(false);
-            return;
-          }
-          
-          // Retry up to 5 times with increasing delay
-          if (attempts < 5) {
-            const delay = Math.min(1000 * Math.pow(2, attempts), 8000);
-            setTimeout(() => syncSubscription(attempts + 1), delay);
-          } else {
-            // Final attempt - just reload data
-            await loadBillingData();
-            setIsSyncing(false);
-          }
-        } catch (error) {
-          console.error('Sync error:', error);
-          if (attempts < 5) {
-            setTimeout(() => syncSubscription(attempts + 1), 2000);
-          } else {
-            setIsSyncing(false);
-          }
+    if (success !== 'true') return;
+
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    setIsSyncing(true);
+
+    // Sync subscription from Stripe and poll until updated
+    const syncSubscription = async (attempts = 0): Promise<void> => {
+      if (cancelled) return;
+      try {
+        const response = await fetch('/api/billing/sync', { method: 'POST' });
+        const data = await response.json();
+        if (cancelled) return;
+
+        if (data.success && data.plan !== 'free') {
+          // Subscription synced successfully
+          await loadBillingData();
+          if (!cancelled) setIsSyncing(false);
+          return;
         }
-      };
-      
-      syncSubscription();
-    }
+
+        // Retry up to 5 times with increasing delay
+        if (attempts < 5) {
+          const delay = Math.min(1000 * Math.pow(2, attempts), 8000);
+          timeoutId = setTimeout(() => syncSubscription(attempts + 1), delay);
+        } else {
+          // Final attempt - just reload data
+          await loadBillingData();
+          if (!cancelled) setIsSyncing(false);
+        }
+      } catch (error) {
+        console.error('Sync error:', error);
+        if (cancelled) return;
+        if (attempts < 5) {
+          timeoutId = setTimeout(() => syncSubscription(attempts + 1), 2000);
+        } else {
+          setIsSyncing(false);
+        }
+      }
+    };
+
+    syncSubscription();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [searchParams]);
 
   // Track successful checkout/purchase
@@ -125,6 +136,7 @@ export default function BillingPage() {
   }, [searchParams, subscription, usage, purchaseTracked]);
 
   const loadBillingData = async () => {
+    setLoading(true);
     const supabase = createClient();
     
     // Get current user's organization

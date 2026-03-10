@@ -27,6 +27,7 @@ export default function BrandingSettingsPage() {
   const [checkingSubdomain, setCheckingSubdomain] = useState(false);
   const [organizationType, setOrganizationType] = useState<string>('standard');
   const [uploadingLogo, setUploadingLogo] = useState<string | null>(null);
+  const subdomainDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRefs = {
     logoUrl: useRef<HTMLInputElement>(null),
     logoIconUrl: useRef<HTMLInputElement>(null),
@@ -103,13 +104,16 @@ export default function BrandingSettingsPage() {
     const sanitized = value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     setFormData({ ...formData, customSubdomain: sanitized });
     setSubdomainAvailable(null);
-    
+
+    // Clear previous debounce timer
+    if (subdomainDebounceRef.current) {
+      clearTimeout(subdomainDebounceRef.current);
+    }
+
     // Debounce the availability check
-    const timeoutId = setTimeout(() => {
+    subdomainDebounceRef.current = setTimeout(() => {
       checkSubdomainAvailability(sanitized);
     }, 500);
-    
-    return () => clearTimeout(timeoutId);
   };
 
   const handleFileUpload = async (file: File, fieldName: keyof typeof fileInputRefs): Promise<string> => {

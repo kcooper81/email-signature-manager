@@ -22,7 +22,12 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const body = await request.json();
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
   const now = new Date().toISOString();
 
   if (body.action === 'snooze') {
@@ -67,7 +72,8 @@ export async function PATCH(
     const { error } = await supabase
       .from('feedback')
       .update({ status: 'new', updated_at: now })
-      .eq('id', params.ticketId);
+      .eq('id', params.ticketId)
+      .in('status', ['reviewed']);
     if (error) return NextResponse.json({ error: 'Failed to mark unread' }, { status: 500 });
     return NextResponse.json({ success: true });
   }

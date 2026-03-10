@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
     const { data: userData } = await supabase
       .from('users')
-      .select('*')
+      .select('id, email, first_name, last_name, title, phone, mobile, department, role, organization_id, profile_photo_url, linkedin_url, twitter_url, github_url, personal_website, instagram_url, facebook_url, youtube_url, calendly_url, ooo_banner_enabled, ooo_custom_message, google_calendar_enabled, self_manage_enabled, extension_installed, extension_version, created_at, updated_at')
       .eq('auth_id', user.id)
       .single();
 

@@ -36,6 +36,7 @@ interface BrandAsset {
   created_at: string;
 }
 
+const ASSETS_PER_PAGE = 24;
 const CATEGORIES = ['all', 'logo', 'banner', 'icon', 'photo', 'uncategorized'] as const;
 const CATEGORY_OPTIONS = CATEGORIES.filter((c) => c !== 'all').map((cat) => ({
   value: cat,
@@ -85,6 +86,7 @@ export default function BrandAssetsPage() {
     category: 'uncategorized',
     description: '',
   });
+  const [currentPage, setCurrentPage] = useState(1);
   const [deleteTarget, setDeleteTarget] = useState<BrandAsset | null>(null);
   const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,6 +95,10 @@ export default function BrandAssetsPage() {
   useEffect(() => {
     loadAssets();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, activeCategory]);
 
   const loadAssets = async () => {
     setLoading(true);
@@ -203,7 +209,13 @@ export default function BrandAssetsPage() {
       return;
     }
 
-    setAssets((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+    setAssets((prev) => {
+      const updated = prev.filter((a) => a.id !== deleteTarget.id);
+      // Clamp page if we deleted the last item on the current page
+      const newTotalPages = Math.max(1, Math.ceil(updated.length / ASSETS_PER_PAGE));
+      if (currentPage > newTotalPages) setCurrentPage(newTotalPages);
+      return updated;
+    });
     setDeleteTarget(null);
     setDeleting(false);
   };
@@ -266,6 +278,11 @@ export default function BrandAssetsPage() {
       (a.tags || []).some((t) => t.toLowerCase().includes(search.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
+
+  const totalPages = Math.ceil(filteredAssets.length / ASSETS_PER_PAGE);
+  const start = (currentPage - 1) * ASSETS_PER_PAGE;
+  const end = start + ASSETS_PER_PAGE;
+  const paginatedAssets = filteredAssets.slice(start, end);
 
   if (loading) {
     return (
@@ -383,7 +400,7 @@ export default function BrandAssetsPage() {
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {filteredAssets.map((asset) => (
+          {paginatedAssets.map((asset) => (
             <Card key={asset.id} className="group overflow-hidden">
               <div className="aspect-square bg-muted flex items-center justify-center p-2 relative">
                 <img
@@ -471,7 +488,7 @@ export default function BrandAssetsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAssets.map((asset) => (
+                {paginatedAssets.map((asset) => (
                   <tr key={asset.id} className="border-b last:border-0 hover:bg-muted/50">
                     <td className="p-3">
                       <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
@@ -544,6 +561,23 @@ export default function BrandAssetsPage() {
             </table>
           </CardContent>
         </Card>
+      )}
+
+      {filteredAssets.length > ASSETS_PER_PAGE && (
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {start + 1}-{Math.min(end, filteredAssets.length)} of {filteredAssets.length} assets
+          </p>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">Page {currentPage} of {totalPages}</span>
+            <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+              Next
+            </Button>
+          </div>
+        </div>
       )}
 
       <ConfirmDialog
