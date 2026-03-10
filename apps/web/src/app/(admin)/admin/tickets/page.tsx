@@ -40,6 +40,12 @@ import {
   UserCheck,
   SlidersHorizontal,
   PenSquare,
+  ShieldBan,
+  ShieldCheck,
+  Trash2,
+  Forward,
+  MailOpen,
+  CircleDot,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -71,7 +77,7 @@ interface FeedbackEntry {
   message: string;
   htmlBody: string | null;
   pageUrl: string | null;
-  status: 'new' | 'reviewed' | 'resolved' | 'archived';
+  status: 'new' | 'reviewed' | 'resolved' | 'archived' | 'spam';
   priority: 'low' | 'normal' | 'high' | 'urgent';
   createdAt: string;
   updatedAt: string | null;
@@ -107,11 +113,12 @@ const typeColors: Record<TicketType, string> = {
   other: 'bg-slate-100 text-slate-700',
 };
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   new: 'bg-violet-100 text-violet-700',
   reviewed: 'bg-blue-100 text-blue-700',
   resolved: 'bg-green-100 text-green-700',
   archived: 'bg-slate-100 text-slate-700',
+  spam: 'bg-red-100 text-red-700',
 };
 
 const statusLabels: Record<string, string> = {
@@ -119,6 +126,7 @@ const statusLabels: Record<string, string> = {
   reviewed: 'In Progress',
   resolved: 'Resolved',
   archived: 'Closed',
+  spam: 'Spam',
 };
 
 const priorityIcons = {
@@ -171,6 +179,16 @@ export default function TicketsPage() {
   const [userSuggestions, setUserSuggestions] = useState<{ email: string; name: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchingUsers, setSearchingUsers] = useState(false);
+  const [composeCc, setComposeCc] = useState('');
+  const [composeBcc, setComposeBcc] = useState('');
+  const [showCcBcc, setShowCcBcc] = useState(false);
+  // Reply CC/BCC
+  const [replyCc, setReplyCc] = useState('');
+  const [replyBcc, setReplyBcc] = useState('');
+  const [showReplyCcBcc, setShowReplyCcBcc] = useState(false);
+  // Delete confirmation
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
   const initialLoadDone = useRef(false);
@@ -365,7 +383,9 @@ export default function TicketsPage() {
       query = query.eq('type', typeFilter);
     }
 
-    if (statusFilter === 'open') {
+    if (statusFilter === 'spam') {
+      query = query.eq('status', 'spam');
+    } else if (statusFilter === 'open') {
       query = query.in('status', ['new', 'reviewed']);
     } else if (statusFilter === 'mine') {
       query = query.in('status', ['new', 'reviewed']);
@@ -377,9 +397,12 @@ export default function TicketsPage() {
       query = query.is('assigned_to', null);
     } else if (statusFilter === 'sent') {
       query = query.contains('metadata', { source: 'admin_compose' });
+      query = query.neq('status', 'spam');
     } else if (statusFilter === 'done') {
       query = query.in('status', ['resolved', 'archived']);
-    } else if (statusFilter !== 'all') {
+    } else if (statusFilter === 'all') {
+      query = query.neq('status', 'spam');
+    } else {
       query = query.eq('status', statusFilter);
     }
 
@@ -547,6 +570,8 @@ export default function TicketsPage() {
           isInternal: isInternalNote,
           isHtml: true,
           replyAs: selectedTicket.receivedAtMailbox || null,
+          cc: replyCc || undefined,
+          bcc: replyBcc || undefined,
         }),
       });
 
@@ -561,6 +586,9 @@ export default function TicketsPage() {
         setNewNote('');
         editorRef.current?.clear();
         setIsInternalNote(false);
+        setReplyCc('');
+        setReplyBcc('');
+        setShowReplyCcBcc(false);
 
         if (result.warning) {
           console.warn(result.warning);
@@ -661,6 +689,8 @@ export default function TicketsPage() {
           subject: composeSubject.trim(),
           body: htmlContent,
           sendAs: composeSendAs,
+          cc: composeCc || undefined,
+          bcc: composeBcc || undefined,
         }),
       });
 
@@ -674,6 +704,9 @@ export default function TicketsPage() {
         setTimeout(() => {
           setComposeTo('');
           setComposeSubject('');
+          setComposeCc('');
+          setComposeBcc('');
+          setShowCcBcc(false);
           composeEditorRef.current?.clear();
           setComposeSuccess(null);
           setShowCompose(false);
@@ -684,6 +717,81 @@ export default function TicketsPage() {
     }
 
     setComposeSending(false);
+  };
+
+  const markAsSpam = async (ticketId: string) => {
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'spam' }),
+      });
+      if (res.ok) {
+        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'spam' as const } : t));
+        if (selectedTicket?.id === ticketId) setSelectedTicket(null);
+      }
+    } catch { console.error('Failed to mark spam'); }
+  };
+
+  const markNotSpam = async (ticketId: string) => {
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'not_spam' }),
+      });
+      if (res.ok) {
+        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'new' as const } : t));
+        if (selectedTicket?.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, status: 'new' as const } : null);
+        }
+      }
+    } catch { console.error('Failed to unmark spam'); }
+  };
+
+  const markUnread = async (ticketId: string) => {
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'mark_unread' }),
+      });
+      if (res.ok) {
+        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'new' as const } : t));
+        if (selectedTicket?.id === ticketId) setSelectedTicket(null);
+      }
+    } catch { console.error('Failed to mark unread'); }
+  };
+
+  const deleteTicket = async (ticketId: string) => {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/tickets/${ticketId}`, { method: 'DELETE' });
+      if (res.ok) {
+        setTickets(prev => prev.filter(t => t.id !== ticketId));
+        if (selectedTicket?.id === ticketId) setSelectedTicket(null);
+        setTotalCount(prev => Math.max(0, prev - 1));
+      }
+    } catch { console.error('Failed to delete ticket'); }
+    setDeleting(false);
+    setDeleteConfirmId(null);
+  };
+
+  const forwardTicket = (ticket: FeedbackEntry) => {
+    // Pre-fill compose modal with forwarded content
+    const fwdSubject = `Fwd: ${(ticket as any).metadata?.original_subject || ticket.message.split('\n')[0]?.replace(/^(From|Subject):\s*/i, '') || 'Ticket #' + ticket.id.slice(0, 8)}`;
+    const fwdBody = ticket.htmlBody || `<p>${ticket.message.replace(/\n/g, '<br>')}</p>`;
+    setComposeSubject(fwdSubject);
+    setComposeTo('');
+    composeEditorRef.current?.setContent(
+      `<br><br><div style="border-left: 3px solid #ccc; padding-left: 12px; margin-left: 4px; color: #666;">` +
+      `<p><strong>---------- Forwarded message ----------</strong><br>` +
+      `From: ${ticket.userEmail || 'Unknown'}<br>` +
+      `Date: ${new Date(ticket.createdAt).toLocaleString()}<br>` +
+      `Subject: ${fwdSubject.replace('Fwd: ', '')}</p>` +
+      `${fwdBody}</div>`
+    );
+    setShowCompose(true);
   };
 
   const assignTicket = async (ticketId: string, userId: string | null) => {
@@ -851,13 +959,31 @@ export default function TicketsPage() {
     }
   };
 
+  const bulkDeleteTickets = async () => {
+    const ids = [...bulk.selectedIds];
+    const supabase = createClient();
+    const { error } = await supabase.from('feedback').delete().in('id', ids);
+    if (!error) {
+      setTickets(prev => prev.filter(t => !ids.includes(t.id)));
+      setTotalCount(prev => Math.max(0, prev - ids.length));
+      if (selectedTicket && ids.includes(selectedTicket.id)) setSelectedTicket(null);
+      bulk.clearSelection();
+    }
+  };
+
   const bulkActions: BulkAction[] = [
     { label: 'Assign to me', icon: UserCheck, onClick: bulkAssignToMe },
+    { label: 'Mark Unread', icon: CircleDot, onClick: () => bulkUpdateStatus('new') },
     { label: 'In Progress', icon: Eye, onClick: () => bulkUpdateStatus('reviewed') },
     { label: 'Resolve', icon: CheckCircle, onClick: () => bulkUpdateStatus('resolved') },
     { label: 'Priority: High', icon: ArrowUp, onClick: () => bulkUpdatePriority('high') },
     { label: 'Priority: Low', icon: ArrowDown, onClick: () => bulkUpdatePriority('low') },
+    ...(statusFilter === 'spam'
+      ? [{ label: 'Not Spam', icon: ShieldCheck, onClick: () => bulkUpdateStatus('new') } as BulkAction]
+      : [{ label: 'Spam', icon: ShieldBan, onClick: () => bulkUpdateStatus('spam'), destructive: true, confirmMessage: `Mark ${bulk.selectedCount} ticket(s) as spam?` } as BulkAction]
+    ),
     { label: 'Close', icon: Archive, onClick: () => bulkUpdateStatus('archived'), destructive: true, confirmMessage: `Close ${bulk.selectedCount} ticket(s)?` },
+    { label: 'Delete', icon: Trash2, onClick: bulkDeleteTickets, destructive: true, confirmMessage: `Permanently delete ${bulk.selectedCount} ticket(s)? This cannot be undone.` },
   ];
 
   /** Friendly time-ago label */
@@ -881,6 +1007,7 @@ export default function TicketsPage() {
     { key: 'unassigned', label: 'Unassigned' },
     { key: 'sent', label: 'Sent' },
     { key: 'done', label: 'Done' },
+    { key: 'spam', label: 'Spam' },
     { key: 'all', label: 'All' },
   ];
 
@@ -1188,6 +1315,7 @@ export default function TicketsPage() {
                   <option value="reviewed">In Progress</option>
                   <option value="resolved">Resolved</option>
                   <option value="archived">Closed</option>
+                  <option value="spam">Spam</option>
                 </select>
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Priority</span>
                 <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
@@ -1229,6 +1357,32 @@ export default function TicketsPage() {
                     ))}
                   </div>
                 )}
+              </div>
+
+              <div className="w-px h-6 bg-border" />
+
+              {/* Quick actions */}
+              <div className="flex items-center gap-1">
+                <button onClick={() => forwardTicket(selectedTicket)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Forward">
+                  <Forward className="h-3.5 w-3.5" /> <span className="hidden xl:inline">Forward</span>
+                </button>
+                {selectedTicket.status !== 'new' && (
+                  <button onClick={() => markUnread(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Mark unread">
+                    <MailOpen className="h-3.5 w-3.5" /> <span className="hidden xl:inline">Unread</span>
+                  </button>
+                )}
+                {selectedTicket.status === 'spam' ? (
+                  <button onClick={() => markNotSpam(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-green-600 hover:bg-green-50 flex items-center gap-1.5" title="Not spam">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Not Spam
+                  </button>
+                ) : (
+                  <button onClick={() => markAsSpam(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Spam">
+                    <ShieldBan className="h-3.5 w-3.5" />
+                  </button>
+                )}
+                <button onClick={() => setDeleteConfirmId(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-red-50 hover:text-red-600 flex items-center gap-1.5" title="Delete">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
               </div>
 
               {/* Meta */}
@@ -1330,12 +1484,39 @@ export default function TicketsPage() {
                   <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
                   Internal
                 </label>
+                {!isInternalNote && (
+                  <button onClick={() => setShowReplyCcBcc(!showReplyCcBcc)} className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted font-medium">
+                    Cc/Bcc
+                  </button>
+                )}
                 {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
                   <span className="text-xs text-primary flex items-center gap-1 ml-auto font-medium">
                     <Reply className="h-3.5 w-3.5" /> Reply via {selectedTicket.receivedAtMailbox}
                   </span>
                 )}
               </div>
+
+              {/* CC/BCC fields for reply */}
+              {showReplyCcBcc && !isInternalNote && (
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Cc (comma-separated)"
+                      value={replyCc}
+                      onChange={(e) => setReplyCc(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Bcc (comma-separated)"
+                      value={replyBcc}
+                      onChange={(e) => setReplyBcc(e.target.value)}
+                      className="h-8 text-xs"
+                    />
+                  </div>
+                </div>
+              )}
 
               <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note (not visible to user)..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
 
@@ -1391,6 +1572,7 @@ export default function TicketsPage() {
                   <option value="reviewed">In Progress</option>
                   <option value="resolved">Resolved</option>
                   <option value="archived">Closed</option>
+                  <option value="spam">Spam</option>
                 </select>
                 <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
                   <option value="low">Low</option>
@@ -1483,6 +1665,31 @@ export default function TicketsPage() {
         </div>
       )}
 
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteConfirmId(null)} />
+          <div className="relative bg-background rounded-xl shadow-2xl border w-full max-w-sm mx-4 p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-red-100">
+                <Trash2 className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold">Delete Ticket</h3>
+                <p className="text-sm text-muted-foreground">This action cannot be undone.</p>
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={() => setDeleteConfirmId(null)} disabled={deleting}>Cancel</Button>
+              <Button variant="destructive" onClick={() => deleteTicket(deleteConfirmId)} disabled={deleting}>
+                {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Trash2 className="h-4 w-4 mr-1" />}
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Compose Email Modal */}
       {showCompose && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -1556,6 +1763,35 @@ export default function TicketsPage() {
                   </div>
                 )}
               </div>
+
+              {/* CC/BCC toggle + fields */}
+              <div className="flex items-center gap-2">
+                <button onClick={() => setShowCcBcc(!showCcBcc)} className="text-xs text-primary hover:underline font-medium">
+                  {showCcBcc ? 'Hide' : 'Add'} Cc/Bcc
+                </button>
+              </div>
+              {showCcBcc && (
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Cc</label>
+                    <Input
+                      placeholder="cc@example.com, ..."
+                      value={composeCc}
+                      onChange={(e) => setComposeCc(e.target.value)}
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Bcc</label>
+                    <Input
+                      placeholder="bcc@example.com, ..."
+                      value={composeBcc}
+                      onChange={(e) => setComposeBcc(e.target.value)}
+                      className="h-10"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Subject */}
               <div>
