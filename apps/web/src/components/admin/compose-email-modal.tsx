@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,20 +45,17 @@ export function ComposeEmailModal({
   const [result, setResult] = useState<{ success: boolean; message: string; ticketId?: string } | null>(null);
   const editorRef = useRef<RichTextEditorRef>(null);
 
-  // Reset state when modal opens with new defaults
-  const handleOpen = () => {
-    setTo(defaultTo);
-    setSubject(defaultSubject);
-    setBody('');
-    setSending(false);
-    setResult(null);
-    editorRef.current?.clear();
-  };
-
-  // Reset when defaultTo changes (new recipient)
-  useState(() => {
-    if (open) handleOpen();
-  });
+  // Sync state when modal opens or recipient changes
+  useEffect(() => {
+    if (open) {
+      setTo(defaultTo);
+      setSubject(defaultSubject);
+      setBody('');
+      setSending(false);
+      setResult(null);
+      editorRef.current?.clear();
+    }
+  }, [open, defaultTo, defaultSubject]);
 
   const handleSend = async () => {
     const htmlContent = editorRef.current?.getHTML() || body;

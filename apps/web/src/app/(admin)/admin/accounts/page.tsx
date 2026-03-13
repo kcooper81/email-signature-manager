@@ -525,7 +525,15 @@ export default function AccountsPage() {
                       <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
                         <span>{org.slug}</span>
                         {org.domain && <span>• {org.domain}</span>}
-                        {org.ownerEmail && <span>• {org.ownerEmail}</span>}
+                        {org.ownerEmail && (
+                          <button
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setComposeTarget({ email: org.ownerEmail!, name: org.name, orgId: org.id }); }}
+                            className="hover:text-blue-600 hover:underline transition-colors"
+                            title={`Compose email to ${org.ownerEmail}`}
+                          >
+                            • {org.ownerEmail}
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-6 text-sm text-slate-500">
