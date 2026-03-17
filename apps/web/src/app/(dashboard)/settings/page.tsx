@@ -215,13 +215,16 @@ export default function SettingsPage() {
     setLoading(false);
   };
 
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const saveProfile = async () => {
     if (!profile) return;
-    
+
     setSaving(true);
+    setSaveError(null);
     const supabase = createClient();
 
-    await supabase
+    const { error } = await supabase
       .from('users')
       .update({
         first_name: firstName,
@@ -238,6 +241,10 @@ export default function SettingsPage() {
       .eq('id', profile.id);
 
     setSaving(false);
+    if (error) {
+      setSaveError(error.message || 'Failed to save profile');
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -257,13 +264,19 @@ export default function SettingsPage() {
       updateData.domain = orgDomain;
     }
 
-    await supabase
+    const { error: orgError } = await supabase
       .from('organizations')
       .update(updateData)
       .eq('id', organization.id);
 
+    if (orgError) {
+      setSaving(false);
+      setSaveError(orgError.message || 'Failed to save organization');
+      return;
+    }
+
     // Upsert organization settings
-    await supabase
+    const { error: settingsError } = await supabase
       .from('organization_settings')
       .upsert({
         organization_id: organization.id,
@@ -277,6 +290,10 @@ export default function SettingsPage() {
       });
 
     setSaving(false);
+    if (settingsError) {
+      setSaveError(settingsError.message || 'Failed to save organization settings');
+      return;
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -735,6 +752,12 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
+                {saveError && (
+                  <div className="text-sm text-destructive flex items-center gap-2 mb-2">
+                    <AlertCircle className="h-4 w-4" />
+                    {saveError}
+                  </div>
+                )}
                 <Button onClick={saveProfile} disabled={saving}>
                   {saving ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />

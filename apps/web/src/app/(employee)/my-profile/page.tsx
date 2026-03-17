@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 interface UserProfile {
   id: string;
@@ -424,10 +425,9 @@ export default function MyProfilePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div 
-              className="border rounded-lg p-4 bg-white"
-              dangerouslySetInnerHTML={{ __html: signature.html }}
-            />
+            <div className="border rounded-lg p-4 bg-white">
+              <SafeHtmlViewer html={signature.html} />
+            </div>
             <Button onClick={copySignature} className="w-full sm:w-auto">
               {copied ? (
                 <>

@@ -13,6 +13,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'URL required' }, { status: 400 });
   }
 
+  // Validate URL scheme to prevent open redirect attacks (javascript:, data:, etc.)
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return NextResponse.json({ error: 'Invalid URL' }, { status: 400 });
+  }
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    return NextResponse.json({ error: 'Invalid URL scheme' }, { status: 400 });
+  }
+
   try {
     const supabase = createServiceClient();
 

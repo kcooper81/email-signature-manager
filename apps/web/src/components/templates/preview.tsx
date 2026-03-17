@@ -482,13 +482,25 @@ function renderDisclaimerBlock(content: DisclaimerBlockContent): React.ReactNode
   );
 }
 
+function sanitizeHtml(html: string): string {
+  // Strip <script>, <style>, <iframe>, <object>, <embed>, <form> tags and their content
+  let clean = html.replace(/<(script|style|iframe|object|embed|form)\b[^<]*(?:(?!<\/\1>)<[^<]*)*<\/\1>/gi, '');
+  // Remove any remaining self-closing or unclosed dangerous tags
+  clean = clean.replace(/<(script|iframe|object|embed|form)\b[^>]*\/?>/gi, '');
+  // Strip on* event handler attributes
+  clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+  // Strip javascript: URLs in href/src/action attributes
+  clean = clean.replace(/(href|src|action)\s*=\s*(?:"javascript:[^"]*"|'javascript:[^']*')/gi, '$1=""');
+  return clean;
+}
+
 function renderHtmlBlock(content: HtmlBlockContent): React.ReactNode {
   if (!content.html) {
     return null;
   }
   return (
     <div
-      dangerouslySetInnerHTML={{ __html: content.html }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.html) }}
       style={{ marginTop: 8 }}
     />
   );

@@ -56,6 +56,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Atomically claim the invite to prevent race conditions (double-use)
+    const { data: claimed, error: claimError } = await supabaseAdmin
+      .from('user_invites')
+      .update({ accepted_at: new Date().toISOString() })
+      .eq('token', token)
+      .is('accepted_at', null)
+      .select('id')
+      .maybeSingle();
+
+    if (claimError || !claimed) {
+      return NextResponse.json(
+        { error: 'Invite already accepted' },
+        { status: 400 }
+      );
+    }
+
     // Check if user already has an auth_id from a previous invite
     const { data: existingUserRecord } = await supabaseAdmin
       .from('users')
@@ -90,11 +106,20 @@ export async function POST(request: NextRequest) {
     } else {
       // BUG-18 fix: Use paginated listUsers with filter instead of fetching all
       // BUG-19 fix: Never delete existing auth users — reuse or create new
-      const { data: listData } = await supabaseAdmin.auth.admin.listUsers({
-        page: 1,
-        perPage: 50,
-      });
-      const existingAuthUser = listData?.users?.find(u => u.email === email);
+      // Paginate through all auth users to find by email
+      let existingAuthUser: any = null;
+      let page = 1;
+      const perPage = 50;
+      while (!existingAuthUser) {
+        const { data: listData } = await supabaseAdmin.auth.admin.listUsers({
+          page,
+          perPage,
+        });
+        if (!listData?.users || listData.users.length === 0) break;
+        existingAuthUser = listData.users.find(u => u.email === email) || null;
+        if (listData.users.length < perPage) break;
+        page++;
+      }
 
       if (existingAuthUser) {
         // Auth user exists with this email — check if it's an orphan (no users row linked)
@@ -159,14 +184,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Mark invite as accepted — prevents token reuse
-    const { error: acceptErr } = await supabaseAdmin
-      .from('user_invites')
-      .update({ accepted_at: new Date().toISOString() })
-      .eq('token', token);
-    if (acceptErr) {
-      console.error('Failed to mark invite as accepted:', acceptErr);
-    }
+    // Invite was already atomically marked as accepted above
 
     // BUG-21 fix: Don't return authId in response (information disclosure)
     return NextResponse.json({ success: true });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -41,7 +41,15 @@ interface HubSpotList {
   size: number;
 }
 
-export default function IntegrationsPage() {
+export default function IntegrationsPageWrapper() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}>
+      <IntegrationsPage />
+    </Suspense>
+  );
+}
+
+function IntegrationsPage() {
   const searchParams = useSearchParams();
   const [connections, setConnections] = useState<ProviderConnection[]>([]);
   const [loading, setLoading] = useState(true);

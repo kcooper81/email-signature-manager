@@ -45,10 +45,10 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      return buildSignaturesResponse(supabase, fallback, auth);
+      return buildSignaturesResponse(supabase, fallback, auth, request);
     }
 
-    return buildSignaturesResponse(supabase, template, auth);
+    return buildSignaturesResponse(supabase, template, auth, request);
   } catch (error) {
     await logException(error, {
       route: '/api/v1/signatures',
@@ -65,19 +65,38 @@ async function buildSignaturesResponse(
   supabase: ReturnType<typeof createServiceClient>,
   template: any,
   auth: ApiKeyAuth,
+  request?: NextRequest,
 ) {
-  // Fetch all active users
+  // Pagination parameters
+  const url = request ? new URL(request.url) : null;
+  const pageParam = url?.searchParams.get('page');
+  const limitParam = url?.searchParams.get('limit');
+  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(limitParam || '50', 10) || 50));
+  const offset = (page - 1) * limit;
+
+  // Get total count
+  const { count: totalCount } = await supabase
+    .from('users')
+    .select('*', { count: 'exact', head: true })
+    .eq('organization_id', auth.organizationId)
+    .is('deleted_at', null)
+    .eq('is_active', true);
+
+  // Fetch paginated active users
   const { data: users, error: usersError } = await supabase
     .from('users')
     .select('*')
     .eq('organization_id', auth.organizationId)
     .is('deleted_at', null)
-    .eq('is_active', true);
+    .eq('is_active', true)
+    .order('created_at', { ascending: true })
+    .range(offset, offset + limit - 1);
 
   if (usersError) throw usersError;
   if (!users || users.length === 0) {
     return NextResponse.json(
-      { data: [], meta: { count: 0 } },
+      { data: [], meta: { count: 0, total: totalCount || 0, page, limit } },
       { headers: cacheHeaders() },
     );
   }
@@ -90,7 +109,7 @@ async function buildSignaturesResponse(
   return NextResponse.json(
     {
       data: signatures,
-      meta: { count: signatures.length },
+      meta: { count: signatures.length, total: totalCount || 0, page, limit },
     },
     { headers: cacheHeaders() },
   );

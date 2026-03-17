@@ -30,6 +30,7 @@ export default function TemplatesPage() {
   const { plan, usage, limits, refresh } = useSubscription();
   const devBypass = usePayGatesBypass();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { currentClientOrg } = useMspContext();
 
@@ -80,7 +81,7 @@ export default function TemplatesPage() {
   };
 
   const deleteTemplate = async (id: string) => {
-    setDeleteConfirmId(null);
+    setDeleting(true);
 
     const supabase = createClient();
     
@@ -109,10 +110,13 @@ export default function TemplatesPage() {
     if (error) {
       console.error('Failed to delete template:', error);
       alert('Failed to delete template. Please try again.');
+      setDeleting(false);
       return;
     }
 
     setTemplates(prev => prev.filter((t) => t.id !== id));
+    setDeleteConfirmId(null);
+    setDeleting(false);
     // Refresh subscription usage counts
     refresh();
   };
@@ -374,7 +378,12 @@ export default function TemplatesPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          onKeyDown={(e) => { if (e.key === 'Escape') setDeleteConfirmId(null); }}
+        >
           <Card className="w-full max-w-md mx-4">
             <CardHeader>
               <CardTitle>Delete Template?</CardTitle>
@@ -383,11 +392,11 @@ export default function TemplatesPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex gap-3">
-              <Button variant="outline" onClick={() => setDeleteConfirmId(null)}>
+              <Button variant="outline" onClick={() => setDeleteConfirmId(null)} disabled={deleting}>
                 Cancel
               </Button>
-              <Button variant="destructive" onClick={() => deleteTemplate(deleteConfirmId)}>
-                Delete
+              <Button variant="destructive" onClick={() => deleteTemplate(deleteConfirmId)} disabled={deleting}>
+                {deleting ? 'Deleting...' : 'Delete'}
               </Button>
             </CardContent>
           </Card>

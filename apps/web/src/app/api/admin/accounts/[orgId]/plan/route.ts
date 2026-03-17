@@ -77,7 +77,8 @@ export async function PATCH(
       .eq('id', subscription.id);
 
     if (updateError) {
-      return NextResponse.json({ error: 'Failed to update subscription: ' + updateError.message }, { status: 500 });
+      console.error('Failed to update subscription:', updateError.message);
+      return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 });
     }
 
     // Log subscription event

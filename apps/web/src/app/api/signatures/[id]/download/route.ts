@@ -72,6 +72,11 @@ export async function GET(
   }
 }
 
+/** Strip anything that isn't alphanumeric, #, px, %, commas, spaces, or periods */
+function sanitizeStyleValue(value: any): string {
+  return String(value ?? '').replace(/[^a-zA-Z0-9#%,.\-\s]/g, '');
+}
+
 function generateSignatureHtml(blocks: any[]): string {
   if (!blocks || blocks.length === 0) {
     return '<p>No signature content</p>';
@@ -94,7 +99,7 @@ function generateSignatureHtml(blocks: any[]): string {
       case 'text':
         html += `
       <tr>
-        <td style="font-size: ${content.fontSize || 14}px; color: ${content.color || '#000000'}; font-weight: ${content.fontWeight || 'normal'}; padding: 4px 0;">
+        <td style="font-size: ${sanitizeStyleValue(content.fontSize || 14)}px; color: ${sanitizeStyleValue(content.color || '#000000')}; font-weight: ${sanitizeStyleValue(content.fontWeight || 'normal')}; padding: 4px 0;">
           ${escapeHtml(content.text || '')}
         </td>
       </tr>`;
@@ -162,7 +167,7 @@ function generateSignatureHtml(blocks: any[]): string {
       case 'spacer':
         html += `
       <tr>
-        <td style="height: ${content.height || 12}px;"></td>
+        <td style="height: ${sanitizeStyleValue(content.height || 12)}px;"></td>
       </tr>`;
         break;
 
@@ -170,7 +175,7 @@ function generateSignatureHtml(blocks: any[]): string {
         html += `
       <tr>
         <td style="padding: 8px 0;">
-          <hr style="border: 0; border-top: ${content.thickness || 1}px ${content.style || 'solid'} ${content.color || '#cccccc'}; margin: 0;" />
+          <hr style="border: 0; border-top: ${sanitizeStyleValue(content.thickness || 1)}px ${sanitizeStyleValue(content.style || 'solid')} ${sanitizeStyleValue(content.color || '#cccccc')}; margin: 0;" />
         </td>
       </tr>`;
         break;
@@ -179,7 +184,7 @@ function generateSignatureHtml(blocks: any[]): string {
         html += `
       <tr>
         <td style="padding: 8px 0;">
-          <a href="${escapeHtml(content.url || '#')}" style="display: inline-block; padding: 10px 20px; background-color: ${content.backgroundColor || '#4d52de'}; color: ${content.textColor || '#ffffff'}; text-decoration: none; border-radius: 4px; font-size: 14px;">
+          <a href="${escapeHtml(content.url || '#')}" style="display: inline-block; padding: 10px 20px; background-color: ${sanitizeStyleValue(content.backgroundColor || '#4d52de')}; color: ${sanitizeStyleValue(content.textColor || '#ffffff')}; text-decoration: none; border-radius: 4px; font-size: 14px;">
             ${escapeHtml(content.text || 'Click here')}
           </a>
         </td>
