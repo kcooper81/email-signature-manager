@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Input, Button, Checkbox } from '@/components/ui';
 import { RichTextEditor, type RichTextEditorRef } from '@/components/admin/rich-text-editor';
@@ -192,14 +192,23 @@ export default function TicketsPage() {
   // Toast notifications
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
+  // Forward content deferred until compose modal renders
+  const [pendingForwardContent, setPendingForwardContent] = useState<string | null>(null);
+  const composeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const navigatingRef = useRef(false);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
   const initialLoadDone = useRef(false);
+  // Ref to always have latest tickets for use in callbacks/subscriptions
+  const ticketsRef = useRef<FeedbackEntry[]>([]);
+  ticketsRef.current = tickets;
 
   const filteredTicketIds = useMemo(() => {
     const searchLower = search.toLowerCase();
     return tickets
       .filter(ticket => {
+        if (hideSnoozed && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date()) return false;
         if (search === '') return true;
         return (
           ticket.message.toLowerCase().includes(searchLower) ||
@@ -207,7 +216,7 @@ export default function TicketsPage() {
         );
       })
       .map(t => t.id);
-  }, [tickets, search]);
+  }, [tickets, search, hideSnoozed]);
 
   const bulk = useBulkSelection({ itemIds: filteredTicketIds });
 
@@ -219,6 +228,11 @@ export default function TicketsPage() {
     loadCurrentUser();
     loadCannedResponses();
     loadAdminUsers();
+    return () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      if (composeTimerRef.current) clearTimeout(composeTimerRef.current);
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -265,12 +279,20 @@ export default function TicketsPage() {
             || (statusFilter === 'open' && isOpen)
             || (statusFilter === 'mine' && isOpen && item.assigned_to === currentUserId)
             || (statusFilter === 'unassigned' && isOpen && !item.assigned_to)
+            || (statusFilter === 'sent' && !['spam'].includes(item.status))
             || (statusFilter === 'done' && ['resolved', 'archived'].includes(item.status));
           const matchesPriority = priorityFilter === 'all' || (item.priority || 'normal') === priorityFilter;
+          const matchesPartner = partnerFilter === 'all'
+            || (partnerFilter === 'escalations' && item.is_partner_escalation)
+            || (partnerFilter === 'partner' && item.partner_organization_id);
 
-          if (matchesType && matchesStatus && matchesPriority) {
+          if (matchesType && matchesStatus && matchesPriority && matchesPartner) {
             if (page === 0) {
-              setTickets(prev => [newEntry, ...prev]);
+              setTickets(prev => {
+                // Deduplicate: real-time INSERT can race with loadTickets
+                if (prev.some(t => t.id === newEntry.id)) return prev;
+                return [newEntry, ...prev];
+              });
             }
             setTotalCount(prev => prev + 1);
           }
@@ -296,30 +318,35 @@ export default function TicketsPage() {
         { event: 'UPDATE', schema: 'public', table: 'feedback' },
         (payload) => {
           const item = payload.new as any;
-          const updates: Partial<FeedbackEntry> = {
-            status: item.status,
-            priority: item.priority || 'normal',
-            updatedAt: item.updated_at,
-            assignedTo: item.assigned_to || null,
-            snoozedUntil: item.snoozed_until || null,
-          };
-          // Look up assigned email from the current ticket list
-          if (item.assigned_to) {
-            setTickets(prev => {
-              const existing = prev.find(t => t.id === item.id);
-              if (existing && existing.assignedTo !== item.assigned_to) {
-                // Will be resolved on next full load; keep existing email if same assignee
-                updates.assignedEmail = null;
-              }
-              return prev;
-            });
-          } else {
-            updates.assignedEmail = null;
-          }
-          setTickets(prev => prev.map(t => t.id === item.id ? { ...t, ...updates } : t));
+          setTickets(prev => prev.map(t => {
+            if (t.id !== item.id) return t;
+            const assignedEmail = item.assigned_to
+              ? (item.assigned_to === t.assignedTo ? t.assignedEmail : null)
+              : null;
+            return {
+              ...t,
+              status: item.status,
+              priority: item.priority || 'normal',
+              updatedAt: item.updated_at,
+              assignedTo: item.assigned_to || null,
+              snoozedUntil: item.snoozed_until || null,
+              assignedEmail,
+            };
+          }));
           setSelectedTicket(prev => {
             if (!prev || prev.id !== item.id) return prev;
-            return { ...prev, ...updates };
+            const assignedEmail = item.assigned_to
+              ? (item.assigned_to === prev.assignedTo ? prev.assignedEmail : null)
+              : null;
+            return {
+              ...prev,
+              status: item.status,
+              priority: item.priority || 'normal',
+              updatedAt: item.updated_at,
+              assignedTo: item.assigned_to || null,
+              snoozedUntil: item.snoozed_until || null,
+              assignedEmail,
+            };
           });
         }
       )
@@ -340,12 +367,11 @@ export default function TicketsPage() {
         { event: 'INSERT', schema: 'public', table: 'ticket_notes' },
         (payload) => {
           const note = payload.new as any;
-          setSelectedTicket(prev => {
-            if (!prev || prev.id !== note.ticket_id) return prev;
-            loadTicketNotes(note.ticket_id).then(notes => {
-              setSelectedTicket(p => p && p.id === note.ticket_id ? { ...p, notes } : p);
-            });
-            return prev;
+          // Check if we're viewing the relevant ticket, then load notes outside the state updater
+          const currentSelected = ticketsRef.current.find(t => t.id === note.ticket_id);
+          if (!currentSelected) return;
+          loadTicketNotes(note.ticket_id).then(notes => {
+            setSelectedTicket(p => p && p.id === note.ticket_id ? { ...p, notes } : p);
           });
         }
       )
@@ -354,7 +380,7 @@ export default function TicketsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [page, typeFilter, statusFilter, priorityFilter, notificationsEnabled, currentUserId]);
+  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter, notificationsEnabled, currentUserId]);
 
   const toggleNotifications = async () => {
     if (!notificationsEnabled && typeof Notification !== 'undefined') {
@@ -513,21 +539,27 @@ export default function TicketsPage() {
   };
 
   const openTicketDetail = async (ticket: FeedbackEntry) => {
+    navigatingRef.current = true;
     const notes = await loadTicketNotes(ticket.id);
-    setSelectedTicket({ ...ticket, notes });
+    // Re-read latest version of the ticket from state to avoid stale data
+    const latest = ticketsRef.current.find(t => t.id === ticket.id);
+    setSelectedTicket({ ...(latest || ticket), notes });
+    navigatingRef.current = false;
 
     // Auto-mark as read: transition "new" → "reviewed" on open
     if (ticket.status === 'new') {
       const supabase = createClient();
-      await supabase
+      const { error: markError } = await supabase
         .from('feedback')
         .update({ status: 'reviewed', updated_at: new Date().toISOString() })
         .eq('id', ticket.id);
 
-      setTickets(prev => prev.map(t =>
-        t.id === ticket.id ? { ...t, status: 'reviewed' as const } : t
-      ));
-      setSelectedTicket(prev => prev ? { ...prev, status: 'reviewed' as const } : prev);
+      if (!markError) {
+        setTickets(prev => prev.map(t =>
+          t.id === ticket.id ? { ...t, status: 'reviewed' as const } : t
+        ));
+        setSelectedTicket(prev => prev ? { ...prev, status: 'reviewed' as const } : prev);
+      }
     }
   };
 
@@ -660,13 +692,18 @@ export default function TicketsPage() {
     setAdminUsers(data || []);
   };
 
-  // Search users and ticket contacts for the To field
-  const searchRecipients = async (query: string) => {
+  // Search users and ticket contacts for the To field (debounced)
+  const searchRecipients = (query: string) => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
     if (query.length < 2) {
       setUserSuggestions([]);
       setShowSuggestions(false);
       return;
     }
+    searchDebounceRef.current = setTimeout(() => searchRecipientsImmediate(query), 250);
+  };
+
+  const searchRecipientsImmediate = async (query: string) => {
     setSearchingUsers(true);
     const supabase = createClient();
 
@@ -740,7 +777,7 @@ export default function TicketsPage() {
       } else {
         setComposeSuccess(result.warning || `Email sent to ${composeTo.trim()}`);
         // Reset form after brief delay
-        setTimeout(() => {
+        composeTimerRef.current = setTimeout(() => {
           setComposeTo('');
           setComposeSubject('');
           setComposeCc('');
@@ -838,7 +875,8 @@ export default function TicketsPage() {
     const fwdBody = ticket.htmlBody || `<p>${ticket.message.replace(/\n/g, '<br>')}</p>`;
     setComposeSubject(fwdSubject);
     setComposeTo('');
-    composeEditorRef.current?.setContent(
+    // Store content to be applied once the compose modal mounts
+    setPendingForwardContent(
       `<br><br><div style="border-left: 3px solid #ccc; padding-left: 12px; margin-left: 4px; color: #666;">` +
       `<p><strong>---------- Forwarded message ----------</strong><br>` +
       `From: ${ticket.userEmail || 'Unknown'}<br>` +
@@ -848,6 +886,14 @@ export default function TicketsPage() {
     );
     setShowCompose(true);
   };
+
+  // Apply pending forward content once compose modal is mounted
+  useEffect(() => {
+    if (showCompose && pendingForwardContent && composeEditorRef.current) {
+      composeEditorRef.current.setContent(pendingForwardContent);
+      setPendingForwardContent(null);
+    }
+  }, [showCompose, pendingForwardContent]);
 
   const assignTicket = async (ticketId: string, userId: string | null) => {
     const supabase = createClient();
@@ -932,6 +978,18 @@ export default function TicketsPage() {
     return [...unread, ...read];
   }, [tickets, hideSnoozed, search, sort.sortField, sort.sortDir]);
 
+  // Close popovers on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (showFilterPopover && !target.closest('[data-popover="filter"]')) setShowFilterPopover(false);
+      if (showSnoozeMenu && !target.closest('[data-popover="snooze"]')) setShowSnoozeMenu(false);
+      if (showCannedPicker && !target.closest('[data-popover="canned"]')) setShowCannedPicker(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFilterPopover, showSnoozeMenu, showCannedPicker]);
+
   // Keyboard shortcuts: j/k navigate, r reply, e resolve, Escape close
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -946,6 +1004,7 @@ export default function TicketsPage() {
 
       if (e.key === 'j' || e.key === 'k') {
         e.preventDefault();
+        if (navigatingRef.current) return; // Prevent race from rapid keypresses
         const currentIdx = selectedTicket
           ? filteredTickets.findIndex(t => t.id === selectedTicket.id)
           : -1;
@@ -977,6 +1036,13 @@ export default function TicketsPage() {
   }, [selectedTicket, filteredTickets]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  // Auto-adjust page when current page becomes empty
+  useEffect(() => {
+    if (!loading && tickets.length === 0 && page > 0) {
+      setPage(p => Math.max(0, p - 1));
+    }
+  }, [tickets.length, page, loading]);
 
   const openTickets = tickets.filter(t => t.status === 'new' || t.status === 'reviewed');
   const stats = {
@@ -1068,9 +1134,20 @@ export default function TicketsPage() {
     { label: 'Delete', icon: Trash2, onClick: bulkDeleteTickets, destructive: true, confirmMessage: `Permanently delete ${bulk.selectedCount} ticket(s)? This cannot be undone.` },
   ];
 
-  /** Friendly time-ago label */
+  /** Friendly time-ago / time-until label */
   const timeAgo = (date: string) => {
     const diff = Date.now() - new Date(date).getTime();
+    // Future dates (e.g. snoozed until)
+    if (diff < 0) {
+      const absMins = Math.floor(-diff / 60000);
+      if (absMins < 1) return 'now';
+      if (absMins < 60) return `in ${absMins}m`;
+      const hrs = Math.floor(absMins / 60);
+      if (hrs < 24) return `in ${hrs}h`;
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return `in ${days}d`;
+      return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return 'just now';
     if (mins < 60) return `${mins}m`;
@@ -1094,6 +1171,7 @@ export default function TicketsPage() {
     if (statusFilter === 'open') return ['new', 'reviewed'].includes(status);
     if (statusFilter === 'mine') return ['new', 'reviewed'].includes(status) && assignedTo === currentUserId;
     if (statusFilter === 'unassigned') return ['new', 'reviewed'].includes(status) && !assignedTo;
+    if (statusFilter === 'sent') return status !== 'spam'; // Sent is metadata-based; at minimum exclude spam
     if (statusFilter === 'done') return ['resolved', 'archived'].includes(status);
     if (statusFilter === 'spam') return status === 'spam';
     if (statusFilter === 'all') return status !== 'spam';
@@ -1103,12 +1181,18 @@ export default function TicketsPage() {
   /** Remove ticket from list and auto-advance to next one */
   const removeAndAdvance = (ticketId: string) => {
     const idx = filteredTickets.findIndex(t => t.id === ticketId);
-    const nextTicket = filteredTickets[idx + 1] || filteredTickets[idx - 1] || null;
+    const nextId = filteredTickets[idx + 1]?.id || filteredTickets[idx - 1]?.id || null;
     setTickets(prev => prev.filter(t => t.id !== ticketId));
     setTotalCount(prev => Math.max(0, prev - 1));
     if (selectedTicket?.id === ticketId) {
-      if (nextTicket && nextTicket.id !== ticketId) {
-        openTicketDetail(nextTicket);
+      if (nextId) {
+        // Look up the latest version from the ref to avoid stale data
+        const latest = ticketsRef.current.find(t => t.id === nextId);
+        if (latest) {
+          openTicketDetail(latest);
+        } else {
+          setSelectedTicket(null);
+        }
       } else {
         setSelectedTicket(null);
       }
@@ -1204,7 +1288,7 @@ export default function TicketsPage() {
               />
             </div>
             {/* Filter popover button */}
-            <div className="relative">
+            <div className="relative" data-popover="filter">
               <button
                 onClick={() => setShowFilterPopover(!showFilterPopover)}
                 className={`h-9 px-2.5 border rounded-md text-sm flex items-center gap-1.5 transition-colors ${
@@ -1479,7 +1563,7 @@ export default function TicketsPage() {
               <div className="w-px h-6 bg-border" />
 
               {/* Snooze */}
-              <div className="relative">
+              <div className="relative" data-popover="snooze">
                 {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
                   <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-8 px-3 border rounded-md text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-1.5 font-medium" title="Click to unsnooze">
                     <AlarmClock className="h-3.5 w-3.5" /> Snoozed
@@ -1586,7 +1670,7 @@ export default function TicketsPage() {
                         }`}>
                           {note.htmlBody ? (
                             <SafeHtmlViewer html={note.htmlBody} />
-                          ) : note.content.startsWith('<') ? (
+                          ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
                             <SafeHtmlViewer html={note.content} />
                           ) : (
                             <p className="text-sm whitespace-pre-wrap">{note.content}</p>
@@ -1603,7 +1687,7 @@ export default function TicketsPage() {
             <div className="bg-card border-t-2 px-5 py-4 shrink-0 space-y-3">
               <div className="flex items-center gap-2">
                 {cannedResponses.length > 0 && !isInternalNote && (
-                  <div className="relative">
+                  <div className="relative" data-popover="canned">
                     <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-2.5 py-1.5 rounded-md hover:bg-muted border border-transparent hover:border-border font-medium">
                       <Zap className="h-3.5 w-3.5" /> Templates <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
                     </button>
@@ -1791,7 +1875,7 @@ export default function TicketsPage() {
                         }`}>
                           {note.htmlBody ? (
                             <SafeHtmlViewer html={note.htmlBody} />
-                          ) : note.content.startsWith('<') ? (
+                          ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
                             <SafeHtmlViewer html={note.content} />
                           ) : (
                             <p className="text-sm whitespace-pre-wrap">{note.content}</p>
