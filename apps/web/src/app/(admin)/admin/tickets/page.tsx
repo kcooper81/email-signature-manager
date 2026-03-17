@@ -189,6 +189,9 @@ export default function TicketsPage() {
   // Delete confirmation
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  // Toast notifications
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
   const initialLoadDone = useRef(false);
@@ -532,6 +535,9 @@ export default function TicketsPage() {
     setUpdating(id);
     const supabase = createClient();
 
+    // Find the ticket to check assignedTo for filter matching
+    const ticket = tickets.find(t => t.id === id);
+
     const { error } = await supabase
       .from('feedback')
       .update({ status: newStatus, updated_at: new Date().toISOString() })
@@ -539,11 +545,18 @@ export default function TicketsPage() {
 
     if (error) {
       console.error('Error updating status:', error);
+      showToast('Failed to update status', 'error');
     } else {
-      setTickets(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
-      if (selectedTicket?.id === id) {
-        setSelectedTicket(prev => prev ? { ...prev, status: newStatus } : null);
+      const shouldRemove = !matchesCurrentFilter(newStatus, ticket?.assignedTo || null);
+      if (shouldRemove) {
+        removeAndAdvance(id);
+      } else {
+        setTickets(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+        if (selectedTicket?.id === id) {
+          setSelectedTicket(prev => prev ? { ...prev, status: newStatus } : null);
+        }
       }
+      showToast(`Ticket marked as ${statusLabels[newStatus] || newStatus}`);
     }
 
     setUpdating(null);
@@ -560,11 +573,13 @@ export default function TicketsPage() {
 
     if (error) {
       console.error('Error updating priority:', error);
+      showToast('Failed to update priority', 'error');
     } else {
       setTickets(prev => prev.map(t => t.id === id ? { ...t, priority: newPriority } : t));
       if (selectedTicket?.id === id) {
         setSelectedTicket(prev => prev ? { ...prev, priority: newPriority } : null);
       }
+      showToast(`Priority set to ${newPriority}`);
     }
 
     setUpdating(null);
@@ -609,11 +624,14 @@ export default function TicketsPage() {
         setShowReplyCcBcc(false);
 
         if (result.warning) {
-          console.warn(result.warning);
+          showToast(result.warning, 'error');
+        } else {
+          showToast(isInternalNote ? 'Internal note added' : 'Reply sent');
         }
       }
     } catch (error) {
       console.error('Error adding note:', error);
+      showToast('Failed to send reply', 'error');
     }
 
     setAddingNote(false);
@@ -748,8 +766,16 @@ export default function TicketsPage() {
         body: JSON.stringify({ action: 'spam' }),
       });
       if (res.ok) {
-        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'spam' as const } : t));
-        if (selectedTicket?.id === ticketId) setSelectedTicket(null);
+        const shouldRemove = !matchesCurrentFilter('spam', tickets.find(t => t.id === ticketId)?.assignedTo || null);
+        if (shouldRemove) {
+          removeAndAdvance(ticketId);
+        } else {
+          setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'spam' as const } : t));
+          if (selectedTicket?.id === ticketId) {
+            setSelectedTicket(prev => prev ? { ...prev, status: 'spam' as const } : null);
+          }
+        }
+        showToast('Marked as spam');
       }
     } catch { console.error('Failed to mark spam'); }
   };
@@ -762,10 +788,16 @@ export default function TicketsPage() {
         body: JSON.stringify({ action: 'not_spam' }),
       });
       if (res.ok) {
-        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'new' as const } : t));
-        if (selectedTicket?.id === ticketId) {
-          setSelectedTicket(prev => prev ? { ...prev, status: 'new' as const } : null);
+        const shouldRemove = !matchesCurrentFilter('new', tickets.find(t => t.id === ticketId)?.assignedTo || null);
+        if (shouldRemove) {
+          removeAndAdvance(ticketId);
+        } else {
+          setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'new' as const } : t));
+          if (selectedTicket?.id === ticketId) {
+            setSelectedTicket(prev => prev ? { ...prev, status: 'new' as const } : null);
+          }
         }
+        showToast('Removed from spam');
       }
     } catch { console.error('Failed to unmark spam'); }
   };
@@ -779,7 +811,10 @@ export default function TicketsPage() {
       });
       if (res.ok) {
         setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'new' as const } : t));
-        if (selectedTicket?.id === ticketId) setSelectedTicket(null);
+        if (selectedTicket?.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, status: 'new' as const } : null);
+        }
+        showToast('Marked as unread');
       }
     } catch { console.error('Failed to mark unread'); }
   };
@@ -789,9 +824,8 @@ export default function TicketsPage() {
     try {
       const res = await fetch(`/api/admin/tickets/${ticketId}`, { method: 'DELETE' });
       if (res.ok) {
-        setTickets(prev => prev.filter(t => t.id !== ticketId));
-        if (selectedTicket?.id === ticketId) setSelectedTicket(null);
-        setTotalCount(prev => Math.max(0, prev - 1));
+        removeAndAdvance(ticketId);
+        showToast('Ticket deleted');
       }
     } catch { console.error('Failed to delete ticket'); }
     setDeleting(false);
@@ -817,16 +851,23 @@ export default function TicketsPage() {
 
   const assignTicket = async (ticketId: string, userId: string | null) => {
     const supabase = createClient();
+    const ticket = tickets.find(t => t.id === ticketId);
     const { error } = await supabase
       .from('feedback')
       .update({ assigned_to: userId, updated_at: new Date().toISOString() })
       .eq('id', ticketId);
     if (!error) {
       const assignedEmail = adminUsers.find(a => a.id === userId)?.email || null;
-      setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, assignedTo: userId, assignedEmail: assignedEmail } : t));
-      if (selectedTicket?.id === ticketId) {
-        setSelectedTicket(prev => prev ? { ...prev, assignedTo: userId, assignedEmail: assignedEmail } : null);
+      const shouldRemove = !matchesCurrentFilter(ticket?.status || 'new', userId);
+      if (shouldRemove) {
+        removeAndAdvance(ticketId);
+      } else {
+        setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, assignedTo: userId, assignedEmail: assignedEmail } : t));
+        if (selectedTicket?.id === ticketId) {
+          setSelectedTicket(prev => prev ? { ...prev, assignedTo: userId, assignedEmail: assignedEmail } : null);
+        }
       }
+      showToast(userId ? `Assigned to ${assignedEmail?.split('@')[0] || 'user'}` : 'Unassigned');
     }
   };
 
@@ -844,6 +885,7 @@ export default function TicketsPage() {
           setSelectedTicket(prev => prev ? { ...prev, snoozedUntil: until } : null);
         }
         setShowSnoozeMenu(false);
+        showToast('Ticket snoozed');
       }
     } catch {
       console.error('Snooze failed');
@@ -862,6 +904,7 @@ export default function TicketsPage() {
         if (selectedTicket?.id === ticketId) {
           setSelectedTicket(prev => prev ? { ...prev, snoozedUntil: null } : null);
         }
+        showToast('Ticket unsnoozed');
       }
     } catch {
       console.error('Unsnooze failed');
@@ -950,8 +993,23 @@ export default function TicketsPage() {
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .in('id', ids);
     if (!error) {
-      setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, status: newStatus } : t));
+      // Check if any of the updated tickets should be removed from current view
+      const idsToRemove = ids.filter(id => {
+        const ticket = tickets.find(t => t.id === id);
+        return !matchesCurrentFilter(newStatus, ticket?.assignedTo || null);
+      });
+      if (idsToRemove.length > 0) {
+        setTickets(prev => prev.filter(t => !idsToRemove.includes(t.id)));
+        setTotalCount(prev => Math.max(0, prev - idsToRemove.length));
+        if (selectedTicket && idsToRemove.includes(selectedTicket.id)) setSelectedTicket(null);
+      }
+      // Update remaining tickets that still match
+      const idsToUpdate = ids.filter(id => !idsToRemove.includes(id));
+      if (idsToUpdate.length > 0) {
+        setTickets(prev => prev.map(t => idsToUpdate.includes(t.id) ? { ...t, status: newStatus } : t));
+      }
       bulk.clearSelection();
+      showToast(`${ids.length} ticket(s) marked as ${statusLabels[newStatus] || newStatus}`);
     }
   };
 
@@ -965,6 +1023,7 @@ export default function TicketsPage() {
     if (!error) {
       setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, priority: newPriority } : t));
       bulk.clearSelection();
+      showToast(`${ids.length} ticket(s) priority set to ${newPriority}`);
     }
   };
 
@@ -977,6 +1036,7 @@ export default function TicketsPage() {
     if (!error) {
       setTickets(prev => prev.map(t => ids.includes(t.id) ? { ...t, assignedTo: currentUserId, assignedEmail: myEmail } : t));
       bulk.clearSelection();
+      showToast(`${ids.length} ticket(s) assigned to you`);
     }
   };
 
@@ -989,6 +1049,7 @@ export default function TicketsPage() {
       setTotalCount(prev => Math.max(0, prev - ids.length));
       if (selectedTicket && ids.includes(selectedTicket.id)) setSelectedTicket(null);
       bulk.clearSelection();
+      showToast(`${ids.length} ticket(s) deleted`);
     }
   };
 
@@ -1021,6 +1082,38 @@ export default function TicketsPage() {
   };
 
   const hasActiveFilters = typeFilter !== 'all' || priorityFilter !== 'all' || partnerFilter !== 'all';
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ message, type });
+    toastTimer.current = setTimeout(() => setToast(null), 2500);
+  };
+
+  /** Check if a ticket with the given status still belongs in the current filter view */
+  const matchesCurrentFilter = (status: FeedbackEntry['status'], assignedTo: string | null) => {
+    if (statusFilter === 'open') return ['new', 'reviewed'].includes(status);
+    if (statusFilter === 'mine') return ['new', 'reviewed'].includes(status) && assignedTo === currentUserId;
+    if (statusFilter === 'unassigned') return ['new', 'reviewed'].includes(status) && !assignedTo;
+    if (statusFilter === 'done') return ['resolved', 'archived'].includes(status);
+    if (statusFilter === 'spam') return status === 'spam';
+    if (statusFilter === 'all') return status !== 'spam';
+    return true;
+  };
+
+  /** Remove ticket from list and auto-advance to next one */
+  const removeAndAdvance = (ticketId: string) => {
+    const idx = filteredTickets.findIndex(t => t.id === ticketId);
+    const nextTicket = filteredTickets[idx + 1] || filteredTickets[idx - 1] || null;
+    setTickets(prev => prev.filter(t => t.id !== ticketId));
+    setTotalCount(prev => Math.max(0, prev - 1));
+    if (selectedTicket?.id === ticketId) {
+      if (nextTicket && nextTicket.id !== ticketId) {
+        openTicketDetail(nextTicket);
+      } else {
+        setSelectedTicket(null);
+      }
+    }
+  };
 
   const STATUS_TABS = [
     { key: 'open', label: 'Open' },
@@ -1321,7 +1414,32 @@ export default function TicketsPage() {
                   <span className="text-xs text-emerald-600 font-medium shrink-0">→ {selectedTicket.receivedAtMailbox}</span>
                 )}
               </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-muted rounded-md shrink-0 ml-2" title="Close (Esc)">
+              {/* Quick action buttons */}
+              <div className="flex items-center gap-1.5 ml-auto shrink-0">
+                {selectedTicket.status !== 'resolved' && (
+                  <button
+                    onClick={() => updateStatus(selectedTicket.id, 'resolved')}
+                    disabled={updating === selectedTicket.id}
+                    className="h-8 px-3 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+                    title="Resolve (e)"
+                  >
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    Resolve
+                  </button>
+                )}
+                {selectedTicket.status !== 'archived' && (
+                  <button
+                    onClick={() => updateStatus(selectedTicket.id, 'archived')}
+                    disabled={updating === selectedTicket.id}
+                    className="h-8 px-3 rounded-md text-sm font-medium bg-slate-600 text-white hover:bg-slate-700 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
+                    title="Close ticket"
+                  >
+                    <Archive className="h-3.5 w-3.5" />
+                    Close
+                  </button>
+                )}
+              </div>
+              <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-muted rounded-md shrink-0 ml-2" title="Close panel (Esc)">
                 <X className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
@@ -1582,6 +1700,29 @@ export default function TicketsPage() {
                 <span className="text-sm font-semibold truncate">
                   {selectedTicket.userEmail || 'Anonymous'}
                 </span>
+              </div>
+              {/* Mobile quick action buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                {selectedTicket.status !== 'resolved' && (
+                  <button
+                    onClick={() => updateStatus(selectedTicket.id, 'resolved')}
+                    disabled={updating === selectedTicket.id}
+                    className="h-8 px-2.5 rounded-md text-xs font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 flex items-center gap-1 transition-colors"
+                  >
+                    <CheckCircle className="h-3.5 w-3.5" />
+                    Resolve
+                  </button>
+                )}
+                {selectedTicket.status !== 'archived' && (
+                  <button
+                    onClick={() => updateStatus(selectedTicket.id, 'archived')}
+                    disabled={updating === selectedTicket.id}
+                    className="h-8 px-2.5 rounded-md text-xs font-medium bg-slate-600 text-white hover:bg-slate-700 disabled:opacity-50 flex items-center gap-1 transition-colors"
+                  >
+                    <Archive className="h-3.5 w-3.5" />
+                    Close
+                  </button>
+                )}
               </div>
             </div>
 
@@ -1891,6 +2032,24 @@ export default function TicketsPage() {
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <div className={`flex items-center gap-2 px-4 py-2.5 rounded-lg shadow-lg text-sm font-medium ${
+            toast.type === 'success'
+              ? 'bg-foreground text-background'
+              : 'bg-red-600 text-white'
+          }`}>
+            {toast.type === 'success' ? (
+              <CheckCircle className="h-4 w-4 shrink-0" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+            )}
+            {toast.message}
           </div>
         </div>
       )}
