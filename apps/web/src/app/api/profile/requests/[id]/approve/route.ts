@@ -34,9 +34,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Apply changes — use service client for reliability
     const serviceClient = createServiceClient();
+    const ALLOWED_FIELDS = new Set([
+      'first_name', 'last_name', 'title', 'department', 'phone', 'mobile',
+      'linkedin_url', 'twitter_url', 'calendly_url', 'personal_website',
+      'instagram_url', 'facebook_url', 'youtube_url', 'github_url',
+      'google_booking_url', 'pronouns', 'bio',
+    ]);
     const updates: Record<string, any> = {};
     for (const fc of (profileRequest.field_changes || [])) {
-      updates[fc.field] = fc.newValue;
+      if (ALLOWED_FIELDS.has(fc.field)) {
+        updates[fc.field] = fc.newValue;
+      }
+    }
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'No valid field changes to apply' }, { status: 400 });
     }
     const { error: applyErr } = await serviceClient.from('users').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', profileRequest.user_id).eq('organization_id', userData.organization_id);
     if (applyErr) {

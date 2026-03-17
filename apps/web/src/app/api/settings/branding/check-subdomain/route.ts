@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     // If there's a real error (not just no rows), return unavailable
     if (queryError) {
       console.error('Subdomain check error:', queryError);
-      return NextResponse.json({ available: false, error: queryError.message });
+      return NextResponse.json({ available: false, error: 'Unable to check subdomain availability' });
     }
 
     return NextResponse.json({

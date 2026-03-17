@@ -21,6 +21,12 @@ export async function GET(request: NextRequest) {
   const supabase = createClient();
   const serviceClient = createServiceClient();
 
+  // Require authentication
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  if (!authUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const email = searchParams.get('email');

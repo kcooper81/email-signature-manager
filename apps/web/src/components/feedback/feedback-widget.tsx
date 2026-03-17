@@ -30,12 +30,14 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     if (!message.trim() || !feedbackType) return;
-    
+
     setIsSubmitting(true);
-    
+    setSubmitError(null);
+
     try {
       const response = await fetch('/api/feedback', {
         method: 'POST',
@@ -50,20 +52,23 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
       if (!response.ok) {
         throw new Error('Failed to submit feedback');
       }
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+
+      // Reset after showing success
+      setTimeout(() => {
+        onClose();
+        setIsSubmitted(false);
+        setFeedbackType(null);
+        setMessage('');
+      }, 2000);
+      return;
     } catch (error) {
       console.error('Feedback submission error:', error);
+      setSubmitError('Failed to submit. Please try again.');
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    
-    // Reset after showing success
-    setTimeout(() => {
-      onClose();
-      setIsSubmitted(false);
-      setFeedbackType(null);
-      setMessage('');
-    }, 2000);
   };
 
   const handleClose = () => {
@@ -71,6 +76,7 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
     setFeedbackType(null);
     setMessage('');
     setIsSubmitted(false);
+    setSubmitError(null);
   };
 
   if (!isOpen) return null;
@@ -149,6 +155,10 @@ export function FeedbackWidget({ isOpen, onClose }: FeedbackWidgetProps) {
                   autoFocus
                 />
                 
+                {submitError && (
+                  <p className="text-sm text-destructive">{submitError}</p>
+                )}
+
                 <Button
                   onClick={handleSubmit}
                   disabled={!message.trim() || isSubmitting}

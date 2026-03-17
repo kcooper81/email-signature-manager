@@ -42,9 +42,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Parse state to get config ID and sandbox flag
+    // Parse state to get config ID and sandbox flag, verify userId ownership
     const stateData = JSON.parse(Buffer.from(state, 'base64').toString());
     const { configId, useSandbox } = stateData;
+
+    if (stateData.userId && stateData.userId !== user.id) {
+      return NextResponse.redirect(
+        new URL('/settings/hr-sync?error=state_mismatch', request.url)
+      );
+    }
 
     // Exchange code for tokens
     const tokens = await exchangeGustoCode(code, useSandbox);

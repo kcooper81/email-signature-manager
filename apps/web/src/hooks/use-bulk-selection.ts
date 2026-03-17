@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 
 interface UseBulkSelectionProps {
   itemIds: string[];
@@ -8,6 +8,16 @@ interface UseBulkSelectionProps {
 
 export function useBulkSelection({ itemIds }: UseBulkSelectionProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Prune stale IDs when itemIds changes
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const currentSet = new Set(itemIds);
+      const pruned = new Set([...prev].filter((id) => currentSet.has(id)));
+      if (pruned.size !== prev.size) return pruned;
+      return prev;
+    });
+  }, [itemIds]);
 
   const isSelected = useCallback(
     (id: string) => selectedIds.has(id),

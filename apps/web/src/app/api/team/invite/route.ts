@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
       invitedCount: invites.length,
       emailsSent,
       emailsFailed,
-      invites: invites.map(i => ({ email: i.email, inviteUrl: i.inviteUrl, emailSent: i.emailSent })),
+      invites: invites.map(i => ({ email: i.email, emailSent: i.emailSent })),
       message: emailsFailed > 0 
         ? `Created ${invites.length} invite${invites.length !== 1 ? 's' : ''}. ${emailsSent} email${emailsSent !== 1 ? 's' : ''} sent successfully, ${emailsFailed} failed.`
         : `Sent ${invites.length} invite${invites.length !== 1 ? 's' : ''}. Users will receive an email to set up their account.`,

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
     const signature = request.headers.get('x-gusto-signature');
-    
+
     // Parse the webhook payload
     let event: GustoWebhookEvent;
     try {
@@ -61,15 +61,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No active configuration found' }, { status: 200 });
     }
 
-    // Verify webhook signature if webhook_secret is configured
-    if (config.webhook_secret) {
-      if (!signature) {
-        return NextResponse.json({ error: 'Missing signature header' }, { status: 401 });
-      }
-      const isValid = verifyGustoSignature(body, signature, config.webhook_secret);
-      if (!isValid) {
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-      }
+    // Verify webhook signature — reject if no webhook_secret is configured
+    if (!config.webhook_secret) {
+      console.error('Gusto webhook received but no webhook_secret configured for company:', event.company_id);
+      return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
+    }
+
+    if (!signature) {
+      return NextResponse.json({ error: 'Missing signature header' }, { status: 401 });
+    }
+
+    const isValid = verifyGustoSignature(body, signature, config.webhook_secret);
+    if (!isValid) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     // Handle employee events

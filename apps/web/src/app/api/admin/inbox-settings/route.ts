@@ -57,7 +57,8 @@ export async function PUT(request: NextRequest) {
 
   // Update auto-responder
   if (body.type === 'auto_responder') {
-    const { is_enabled, subject, body: responderBody, only_outside_hours, business_hours_start, business_hours_end, business_timezone } = body;
+    const { id, is_enabled, subject, body: responderBody, only_outside_hours, business_hours_start, business_hours_end, business_timezone } = body;
+    if (!id) return NextResponse.json({ error: 'Auto-responder id is required' }, { status: 400 });
     const { error } = await supabase
       .from('auto_responder_settings')
       .update({
@@ -70,7 +71,7 @@ export async function PUT(request: NextRequest) {
         business_timezone: business_timezone || 'America/New_York',
         updated_at: new Date().toISOString(),
       })
-      .limit(1);
+      .eq('id', id);
     if (error) return NextResponse.json({ error: 'Failed to update auto-responder' }, { status: 500 });
     return NextResponse.json({ success: true });
   }

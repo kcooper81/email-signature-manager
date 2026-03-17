@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
@@ -123,7 +123,8 @@ export default function TeamMembersPage() {
   const [generatedSignatures, setGeneratedSignatures] = useState<GeneratedSignature[]>([]);
   const [generating, setGenerating] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
   // Search, sort, filter state
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('name');
@@ -202,6 +203,11 @@ export default function TeamMembersPage() {
     loadData();
     loadTemplates();
   }, [currentClientOrg]); // Reload when MSP context changes
+
+  // Cleanup copiedId timeout on unmount
+  useEffect(() => {
+    return () => clearTimeout(copiedTimeoutRef.current);
+  }, []);
 
   const loadData = async () => {
     const supabase = createClient();
@@ -345,7 +351,8 @@ export default function TeamMembersPage() {
     try {
       await navigator.clipboard.writeText(html);
       setCopiedId(userId);
-      setTimeout(() => setCopiedId(null), 2000);
+      clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
       setErrorMessage('Failed to copy to clipboard');
     }
@@ -363,10 +370,11 @@ export default function TeamMembersPage() {
     URL.revokeObjectURL(url);
   };
 
-  const downloadAllSignatures = () => {
-    generatedSignatures.forEach(sig => {
+  const downloadAllSignatures = async () => {
+    for (const sig of generatedSignatures) {
       downloadSignature(sig.html, sig.userName);
-    });
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
   };
 
   const closeShareModal = () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from '@/components/ui';
 import {
@@ -36,7 +36,15 @@ interface UsageStats {
   userCount: number;
 }
 
-export default function BillingPage() {
+export default function BillingPageWrapper() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>}>
+      <BillingPage />
+    </Suspense>
+  );
+}
+
+function BillingPage() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [usage, setUsage] = useState<UsageStats>({ templateCount: 0, userCount: 0 });
   const [loading, setLoading] = useState(true);

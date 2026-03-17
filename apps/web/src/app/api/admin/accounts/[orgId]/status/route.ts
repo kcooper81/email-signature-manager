@@ -46,7 +46,8 @@ export async function PATCH(
       .eq('id', orgId);
 
     if (updateError) {
-      return NextResponse.json({ error: 'Failed to update organization: ' + updateError.message }, { status: 500 });
+      console.error('Failed to update organization:', updateError.message);
+      return NextResponse.json({ error: 'Failed to update organization' }, { status: 500 });
     }
 
     // Audit log

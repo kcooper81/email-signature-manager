@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { SignaturePreview } from '@/components/templates/preview';
 import type { SignatureBlock } from '@/components/templates/types';
 import { Button } from '@/components/ui/button';
+import { useMspContext } from '@/hooks/use-msp-context';
 import {
   Card,
   CardContent,
@@ -89,6 +90,7 @@ interface UserDeploymentHistory {
 }
 
 export default function DeploymentsPage() {
+  const { currentClientOrg } = useMspContext();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
@@ -119,7 +121,7 @@ export default function DeploymentsPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [currentClientOrg]);
 
   const loadData = async () => {
     const supabase = createClient();
@@ -142,7 +144,7 @@ export default function DeploymentsPage() {
       return;
     }
 
-    const organizationId = currentUser.organization_id;
+    const organizationId = currentClientOrg?.id || currentUser.organization_id;
 
     // Load templates with blocks for preview - FILTERED BY ORGANIZATION
     const { data: templatesData } = await supabase

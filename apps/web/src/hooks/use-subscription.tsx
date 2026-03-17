@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getPlan, canAccessFeature, isWithinLimit, Plan, PlanFeatures } from '@/lib/billing/plans';
 import { getImpersonatedOrgId } from '@/hooks/use-impersonation';
@@ -68,6 +68,7 @@ const SubscriptionContext = createContext<SubscriptionState>(defaultState);
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SubscriptionState>(defaultState);
   const [bypassState, setBypassState] = useState(getDevBypassEnabled());
+  const shouldBypassRef = useRef(false);
 
   const loadSubscription = async () => {
     const supabase = createClient();
@@ -143,32 +144,33 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     };
 
     // Create helper functions with dev bypass and super admin bypass
-    const shouldBypass = getDevBypassEnabled() || isSuperAdmin;
+    // Use ref so helper closures always read the latest value
+    shouldBypassRef.current = getDevBypassEnabled() || isSuperAdmin;
 
     const canAccess = (feature: keyof PlanFeatures): boolean => {
-      if (shouldBypass) return true;
+      if (shouldBypassRef.current) return true;
       return canAccessFeature(planId, feature);
     };
 
     const isWithinTemplateLimit = (): boolean => {
-      if (shouldBypass) return true;
+      if (shouldBypassRef.current) return true;
       return isWithinLimit(planId, 'maxTemplates', usage.templateCount);
     };
 
     const isWithinTeamMemberLimit = (): boolean => {
-      if (shouldBypass) return true;
+      if (shouldBypassRef.current) return true;
       return isWithinLimit(planId, 'maxUsers', usage.teamMemberCount);
     };
 
     const canCreateTemplate = (): boolean => {
-      if (shouldBypass) return true;
+      if (shouldBypassRef.current) return true;
       // Can create if within limit (current count < max)
       if (limits.maxTemplates === -1) return true;
       return usage.templateCount < limits.maxTemplates;
     };
 
     const canAddTeamMember = (): boolean => {
-      if (shouldBypass) return true;
+      if (shouldBypassRef.current) return true;
       // Can add if within limit
       if (limits.maxTeamMembers === -1) return true;
       return usage.teamMemberCount < limits.maxTeamMembers;
@@ -206,7 +208,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     };
 
     // Check on interval (since we can't listen to localStorage changes from same tab)
-    const interval = setInterval(checkBypass, 500);
+    const interval = setInterval(checkBypass, 5000);
     return () => clearInterval(interval);
   }, [bypassState]);
 
