@@ -7,6 +7,7 @@ import { ToastProvider } from '@/components/ui/toast';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://siggly.io'),
   title: {
     default: 'Siggly - Email Signature Management for Teams',
     template: '%s | Siggly',
