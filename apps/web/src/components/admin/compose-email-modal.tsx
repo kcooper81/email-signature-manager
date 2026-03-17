@@ -105,7 +105,8 @@ export function ComposeEmailModal({
     }
   };
 
-  const canSend = to.trim() && subject.trim() && body.trim() && body !== '<p></p>' && !sending;
+  const editorContent = editorRef.current?.getHTML() || body;
+  const canSend = to.trim() && subject.trim() && editorContent.trim() && editorContent !== '<p></p>' && !sending;
 
   return (
     <Modal open={open} onClose={onClose} className="max-w-2xl">

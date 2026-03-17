@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     const { data: userData } = await supabase
       .from('users')
-      .select('organization_id, email')
+      .select('organization_id, email, role')
       .eq('auth_id', user.id)
       .single();
 
@@ -26,6 +26,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Organization not found' },
         { status: 404 }
+      );
+    }
+
+    // Only owners and admins can trigger a sync
+    if (!['owner', 'admin'].includes(userData.role)) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions. Only owners and admins can sync users.' },
+        { status: 403 }
       );
     }
 

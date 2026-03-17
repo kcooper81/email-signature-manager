@@ -28,16 +28,23 @@ export async function GET() {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // --- Orphaned auth users ---
-    const { data: authData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
-      perPage: 1000,
-    });
-
-    if (listError) {
-      return NextResponse.json({ error: 'Failed to list auth users' }, { status: 500 });
+    // --- Orphaned auth users --- paginate through all auth users
+    let authUsers: User[] = [];
+    let page = 1;
+    const perPage = 1000;
+    while (true) {
+      const { data: authData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
+        page,
+        perPage,
+      });
+      if (listError) {
+        return NextResponse.json({ error: 'Failed to list auth users' }, { status: 500 });
+      }
+      const batch = authData?.users || [];
+      authUsers = authUsers.concat(batch);
+      if (batch.length < perPage) break;
+      page++;
     }
-
-    const authUsers = authData?.users || [];
 
     // Get all auth_ids that have user records
     const { data: allUsers } = await supabaseAdmin

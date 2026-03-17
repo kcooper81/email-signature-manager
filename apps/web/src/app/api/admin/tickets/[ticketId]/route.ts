@@ -22,6 +22,12 @@ export async function PATCH(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
+  // Validate ticketId is a valid UUID
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(params.ticketId)) {
+    return NextResponse.json({ error: 'Invalid ticket ID format' }, { status: 400 });
+  }
+
   let body: any;
   try {
     body = await request.json();
@@ -89,6 +95,12 @@ export async function DELETE(
   const supabase = createClient();
   if (!await requireSuperAdmin(supabase)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
+  // Validate ticketId is a valid UUID
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(params.ticketId)) {
+    return NextResponse.json({ error: 'Invalid ticket ID format' }, { status: 400 });
   }
 
   const { error } = await supabase

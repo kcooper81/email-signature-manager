@@ -3,11 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { sendPartnerApplicationConfirmationEmail, sendPartnerApplicationTeamNotification } from '@/lib/email/resend';
 
-// Use service role to bypass RLS for inserting applications
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabaseAdmin() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 // Reserved subdomains that cannot be used
 const RESERVED_SUBDOMAINS = [
@@ -34,6 +35,7 @@ interface PartnerApplicationRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabaseAdmin = getSupabaseAdmin();
     const body: PartnerApplicationRequest = await request.json();
 
     // Check if user is logged in and wants to convert their existing org

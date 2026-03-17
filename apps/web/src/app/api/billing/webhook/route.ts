@@ -69,6 +69,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Idempotency check: skip if this event was already processed
+    const supabaseIdempotency = getSupabaseAdmin();
+    const { data: existingEvent } = await supabaseIdempotency
+      .from('subscription_events')
+      .select('id')
+      .eq('stripe_event_id', event.id)
+      .maybeSingle();
+
+    if (existingEvent) {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
