@@ -18,6 +18,9 @@ export async function GET(request: NextRequest) {
     timestamp: Date.now(),
   });
   const hmacSecret = process.env.NEXTAUTH_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  if (!hmacSecret) {
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
   const sig = crypto.createHmac('sha256', hmacSecret).update(statePayload).digest('hex');
   const state = Buffer.from(statePayload + '.' + sig).toString('base64');
 

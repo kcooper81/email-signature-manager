@@ -5,11 +5,12 @@ import { stripe } from '@/lib/billing/stripe';
 import { getOrCreatePartnerCoupon, type PartnerTier } from '@/lib/billing/partner-coupons';
 import { sendPartnerApprovalEmail, sendPartnerRejectionEmail } from '@/lib/email/resend';
 
-// Use service role for admin operations
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabaseAdmin() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 // Reserved subdomains
 const RESERVED_SUBDOMAINS = [
@@ -41,6 +42,7 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = await createClient();
 
     // Verify user is platform admin
@@ -101,6 +103,7 @@ async function handleApprove(
   application: any,
   reviewerId: string
 ) {
+  const supabaseAdmin = getSupabaseAdmin();
   const { subdomain, partnerTier = 'registered', reviewNotes } = body;
 
   // Validate subdomain
@@ -143,8 +146,9 @@ async function handleApprove(
       .eq('id', application.existing_organization_id);
 
     if (convertError) {
+      console.error('Failed to convert organization:', convertError.message);
       return NextResponse.json(
-        { error: 'Failed to convert organization: ' + convertError.message },
+        { error: 'Failed to convert organization' },
         { status: 500 }
       );
     }
@@ -174,8 +178,9 @@ async function handleApprove(
       .single();
 
     if (orgError || !newOrg) {
+      console.error('Failed to create organization:', orgError?.message);
       return NextResponse.json(
-        { error: 'Failed to create organization: ' + orgError?.message },
+        { error: 'Failed to create organization' },
         { status: 500 }
       );
     }
@@ -269,7 +274,7 @@ async function handleApprove(
       await supabaseAdmin.from('organizations').delete().eq('id', finalOrgId);
     }
     return NextResponse.json(
-      { error: 'Failed to create billing account: ' + stripeError.message },
+      { error: 'Failed to create billing account' },
       { status: 500 }
     );
   }
@@ -307,8 +312,9 @@ async function handleApprove(
       await supabaseAdmin.from('organizations').delete().eq('id', finalOrgId);
       await stripe.customers.del(stripeCustomerId);
     }
+    console.error('Failed to update application:', updateError.message);
     return NextResponse.json(
-      { error: 'Failed to update application: ' + updateError.message },
+      { error: 'Failed to update application' },
       { status: 500 }
     );
   }
@@ -374,6 +380,7 @@ async function handleReject(
   application: any,
   reviewerId: string
 ) {
+  const supabaseAdmin = getSupabaseAdmin();
   const { reviewNotes, sendNotification } = body;
 
   const { error: updateError } = await supabaseAdmin
@@ -388,8 +395,9 @@ async function handleReject(
     .eq('id', applicationId);
 
   if (updateError) {
+    console.error('Failed to update application:', updateError.message);
     return NextResponse.json(
-      { error: 'Failed to update application: ' + updateError.message },
+      { error: 'Failed to update application' },
       { status: 500 }
     );
   }

@@ -18,6 +18,7 @@ import type {
 import { ComplianceBlockPreview } from './compliance-block';
 import { Mail, Phone, Globe, MapPin, Calendar, Briefcase, User, Building2, Link as LinkIcon } from 'lucide-react';
 import { getSocialIconUrl } from '@/lib/social-icons';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 interface SignaturePreviewProps {
   blocks: SignatureBlock[];
@@ -499,9 +500,8 @@ function renderHtmlBlock(content: HtmlBlockContent): React.ReactNode {
     return null;
   }
   return (
-    <div
-      dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.html) }}
-      style={{ marginTop: 8 }}
-    />
+    <div style={{ marginTop: 8 }}>
+      <SafeHtmlViewer html={sanitizeHtml(content.html)} />
+    </div>
   );
 }
