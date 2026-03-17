@@ -216,6 +216,25 @@ export async function POST(request: NextRequest) {
       // Don't fail the whole operation, but log it
     }
 
+    // Create the client admin user record first so we can reference user_id in the invite
+    const { data: clientAdmin, error: clientAdminError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        email: adminEmail.toLowerCase(),
+        first_name: adminFirstName || null,
+        last_name: adminLastName || null,
+        organization_id: newClient.id,
+        role: 'owner',
+      })
+      .select('id')
+      .single();
+
+    if (clientAdminError) {
+      // Rollback: delete the org if user creation fails
+      await supabase.from('organizations').delete().eq('id', newClient.id);
+      throw clientAdminError;
+    }
+
     // Create an invite for the client admin
     const inviteToken = crypto.randomUUID();
     const expiresAt = new Date();
@@ -224,6 +243,7 @@ export async function POST(request: NextRequest) {
     const { error: inviteError } = await supabase
       .from('user_invites')
       .insert({
+        user_id: clientAdmin.id,
         email: adminEmail.toLowerCase(),
         token: inviteToken,
         expires_at: expiresAt.toISOString(),

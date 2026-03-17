@@ -106,19 +106,28 @@ export async function POST(request: NextRequest) {
     } else {
       // BUG-18 fix: Use paginated listUsers with filter instead of fetching all
       // BUG-19 fix: Never delete existing auth users — reuse or create new
-      // Paginate through all auth users to find by email
+      // Look up existing auth user by checking if another users row already has this email linked
       let existingAuthUser: any = null;
-      let page = 1;
-      const perPage = 50;
-      while (!existingAuthUser) {
-        const { data: listData } = await supabaseAdmin.auth.admin.listUsers({
-          page,
-          perPage,
-        });
-        if (!listData?.users || listData.users.length === 0) break;
-        existingAuthUser = listData.users.find(u => u.email === email) || null;
-        if (listData.users.length < perPage) break;
-        page++;
+      const { data: userWithSameEmail } = await supabaseAdmin
+        .from('users')
+        .select('auth_id')
+        .eq('email', email)
+        .not('auth_id', 'is', null)
+        .neq('id', userId)
+        .maybeSingle();
+
+      if (userWithSameEmail?.auth_id) {
+        // Another user row already has an auth account with this email
+        const { data: authData } = await supabaseAdmin.auth.admin.getUserById(userWithSameEmail.auth_id);
+        if (authData?.user && authData.user.email === email) {
+          existingAuthUser = authData.user;
+        }
+      }
+
+      // If not found via users table, try listing with a single page (covers orphaned auth users)
+      if (!existingAuthUser) {
+        const { data: listData } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 50 });
+        existingAuthUser = listData?.users?.find(u => u.email === email) || null;
       }
 
       if (existingAuthUser) {
