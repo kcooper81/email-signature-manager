@@ -46,6 +46,9 @@ import {
   Forward,
   MailOpen,
   CircleDot,
+  MoreHorizontal,
+  ChevronUp,
+  MessageCircle,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -159,7 +162,6 @@ export default function TicketsPage() {
   const editorRef = useRef<RichTextEditorRef>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [isInternalNote, setIsInternalNote] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
   const [showCannedPicker, setShowCannedPicker] = useState(false);
@@ -189,6 +191,10 @@ export default function TicketsPage() {
   // Delete confirmation
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  // Thread & composer UI state
+  const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
+  const [composerMode, setComposerMode] = useState<'reply' | 'note' | 'forward' | null>(null);
+  const [showMoreActions, setShowMoreActions] = useState(false);
   // Toast notifications
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -540,6 +546,9 @@ export default function TicketsPage() {
 
   const openTicketDetail = async (ticket: FeedbackEntry) => {
     navigatingRef.current = true;
+    setComposerMode(null);
+    setExpandedNotes(new Set());
+    setShowMoreActions(false);
     const notes = await loadTicketNotes(ticket.id);
     // Re-read latest version of the ticket from state to avoid stale data
     const latest = ticketsRef.current.find(t => t.id === ticket.id);
@@ -623,6 +632,8 @@ export default function TicketsPage() {
     const textContent = editorRef.current?.getText()?.trim() || '';
     if (!selectedTicket || !textContent || addNoteRef.current) return;
 
+    const isNote = composerMode === 'note';
+
     addNoteRef.current = true;
     setAddingNote(true);
 
@@ -632,9 +643,9 @@ export default function TicketsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: htmlContent,
-          isInternal: isInternalNote,
+          isInternal: isNote,
           isHtml: true,
-          replyAs: selectedTicket.receivedAtMailbox || null,
+          replyAs: !isNote ? (selectedTicket.receivedAtMailbox || null) : null,
           cc: replyCc || undefined,
           bcc: replyBcc || undefined,
         }),
@@ -650,15 +661,15 @@ export default function TicketsPage() {
         // Clear the form — the realtime subscription will add the note to the UI
         setNewNote('');
         editorRef.current?.clear();
-        setIsInternalNote(false);
         setReplyCc('');
         setReplyBcc('');
         setShowReplyCcBcc(false);
+        setComposerMode(null);
 
         if (result.warning) {
           showToast(result.warning, 'error');
         } else {
-          showToast(isInternalNote ? 'Internal note added' : 'Reply sent');
+          showToast(isNote ? 'Internal note added' : 'Reply sent');
         }
       }
     } catch (error) {
@@ -885,6 +896,7 @@ export default function TicketsPage() {
       `${fwdBody}</div>`
     );
     setShowCompose(true);
+    setComposerMode(null);
   };
 
   // Apply pending forward content once compose modal is mounted
@@ -985,10 +997,11 @@ export default function TicketsPage() {
       if (showFilterPopover && !target.closest('[data-popover="filter"]')) setShowFilterPopover(false);
       if (showSnoozeMenu && !target.closest('[data-popover="snooze"]')) setShowSnoozeMenu(false);
       if (showCannedPicker && !target.closest('[data-popover="canned"]')) setShowCannedPicker(false);
+      if (showMoreActions && !target.closest('[data-popover="more-actions"]')) setShowMoreActions(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showFilterPopover, showSnoozeMenu, showCannedPicker]);
+  }, [showFilterPopover, showSnoozeMenu, showCannedPicker, showMoreActions]);
 
   // Keyboard shortcuts: j/k navigate, r reply, e resolve, Escape close
   useEffect(() => {
@@ -1020,7 +1033,8 @@ export default function TicketsPage() {
       if (selectedTicket) {
         if (e.key === 'r') {
           e.preventDefault();
-          editorRef.current?.focus?.();
+          setComposerMode('reply');
+          setTimeout(() => editorRef.current?.focus?.(), 100);
           return;
         }
         if (e.key === 'e') {
@@ -1478,276 +1492,354 @@ export default function TicketsPage() {
         {selectedTicket && (
           <div className="hidden lg:flex lg:flex-col flex-1 min-w-0 border-l overflow-hidden">
 
-            {/* Header — ticket identity + close */}
-            <div className="bg-card border-b px-5 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
+            {/* Condensed header — identity + controls + actions in one row */}
+            <div className="bg-card border-b px-4 py-2 flex items-center gap-3 shrink-0">
+              {/* Ticket identity */}
+              <div className="flex items-center gap-2 min-w-0 shrink">
                 {(() => {
                   const TypeIcon = typeIcons[selectedTicket.type];
                   return (
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${typeColors[selectedTicket.type]}`}>
-                      <TypeIcon className="h-3.5 w-3.5" />
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold shrink-0 ${typeColors[selectedTicket.type]}`}>
+                      <TypeIcon className="h-3 w-3" />
                       {selectedTicket.type}
                     </span>
                   );
                 })()}
-                <span className="text-xs font-mono text-muted-foreground shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
                 <span className="text-sm font-semibold text-foreground truncate">
                   {selectedTicket.userEmail || 'Anonymous'}
                 </span>
-                {selectedTicket.receivedAtMailbox && (
-                  <span className="text-xs text-emerald-600 font-medium shrink-0">→ {selectedTicket.receivedAtMailbox}</span>
-                )}
+                <span className="text-[10px] font-mono text-muted-foreground shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
               </div>
-              {/* Quick action buttons */}
-              <div className="flex items-center gap-1.5 ml-auto shrink-0">
-                {selectedTicket.status !== 'resolved' && (
-                  <button
-                    onClick={() => updateStatus(selectedTicket.id, 'resolved')}
-                    disabled={updating === selectedTicket.id}
-                    className="h-8 px-3 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
-                    title="Resolve (e)"
-                  >
-                    <CheckCircle className="h-3.5 w-3.5" />
-                    Resolve
-                  </button>
-                )}
-                {selectedTicket.status !== 'archived' && (
-                  <button
-                    onClick={() => updateStatus(selectedTicket.id, 'archived')}
-                    disabled={updating === selectedTicket.id}
-                    className="h-8 px-3 rounded-md text-sm font-medium bg-slate-600 text-white hover:bg-slate-700 disabled:opacity-50 flex items-center gap-1.5 transition-colors"
-                    title="Close ticket"
-                  >
-                    <Archive className="h-3.5 w-3.5" />
-                    Close
-                  </button>
-                )}
-              </div>
-              <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-muted rounded-md shrink-0 ml-2" title="Close panel (Esc)">
-                <X className="h-4 w-4 text-muted-foreground" />
-              </button>
-            </div>
 
-            {/* Controls bar — grouped: status+priority | assignee | snooze */}
-            <div className="bg-muted/30 border-b px-5 py-2.5 flex items-center gap-4 shrink-0 flex-wrap">
-              {/* Status & Priority group */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</span>
-                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
+              {/* Inline controls */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-background font-medium">
                   <option value="new">New</option>
                   <option value="reviewed">In Progress</option>
                   <option value="resolved">Resolved</option>
                   <option value="archived">Closed</option>
                   <option value="spam">Spam</option>
                 </select>
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Priority</span>
-                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
+                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-background font-medium">
                   <option value="low">Low</option>
                   <option value="normal">Normal</option>
                   <option value="high">High</option>
                   <option value="urgent">Urgent</option>
                 </select>
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Assignee */}
-              <div className="flex items-center gap-2">
-                <UserCheck className="h-3.5 w-3.5 text-muted-foreground" />
-                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-8 px-2 border rounded-md text-sm bg-background">
+                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-7 px-1.5 border rounded text-xs bg-background max-w-[120px]">
                   <option value="">Unassigned</option>
-                  {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
+                  {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email.split('@')[0]}</option>))}
                 </select>
               </div>
 
-              <div className="w-px h-6 bg-border" />
-
-              {/* Snooze */}
-              <div className="relative" data-popover="snooze">
-                {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
-                  <button onClick={() => unsnoozeTicket(selectedTicket.id)} className="h-8 px-3 border rounded-md text-sm bg-amber-50 text-amber-700 hover:bg-amber-100 flex items-center gap-1.5 font-medium" title="Click to unsnooze">
-                    <AlarmClock className="h-3.5 w-3.5" /> Snoozed
-                  </button>
-                ) : (
-                  <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="h-8 px-3 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Snooze">
-                    <AlarmClock className="h-3.5 w-3.5" /> Snooze
+              {/* Quick resolve/close */}
+              <div className="flex items-center gap-1 shrink-0 ml-auto">
+                {selectedTicket.status !== 'resolved' && (
+                  <button onClick={() => updateStatus(selectedTicket.id, 'resolved')} disabled={updating === selectedTicket.id} className="h-7 px-2.5 rounded text-xs font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 flex items-center gap-1 transition-colors" title="Resolve (e)">
+                    <CheckCircle className="h-3 w-3" /> Resolve
                   </button>
                 )}
-                {showSnoozeMenu && (
-                  <div className="absolute left-0 top-9 bg-popover border rounded-lg shadow-lg py-1 z-20 w-40">
-                    {[{ label: '1 hour', hours: 1 }, { label: '4 hours', hours: 4 }, { label: 'Tomorrow', hours: 24 }, { label: '3 days', hours: 72 }, { label: '1 week', hours: 168 }].map(opt => (
-                      <button key={opt.hours} onClick={() => snoozeTicket(selectedTicket.id, opt.hours)} className="w-full text-left px-3 py-2 text-sm hover:bg-muted">{opt.label}</button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Quick actions */}
-              <div className="flex items-center gap-1">
-                <button onClick={() => forwardTicket(selectedTicket)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Forward">
-                  <Forward className="h-3.5 w-3.5" /> <span className="hidden xl:inline">Forward</span>
-                </button>
-                {selectedTicket.status !== 'new' && (
-                  <button onClick={() => markUnread(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Mark unread">
-                    <MailOpen className="h-3.5 w-3.5" /> <span className="hidden xl:inline">Unread</span>
+                {selectedTicket.status !== 'archived' && (
+                  <button onClick={() => updateStatus(selectedTicket.id, 'archived')} disabled={updating === selectedTicket.id} className="h-7 px-2.5 rounded text-xs font-medium bg-slate-600 text-white hover:bg-slate-700 disabled:opacity-50 flex items-center gap-1 transition-colors" title="Close">
+                    <Archive className="h-3 w-3" /> Close
                   </button>
                 )}
-                {selectedTicket.status === 'spam' ? (
-                  <button onClick={() => markNotSpam(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-green-600 hover:bg-green-50 flex items-center gap-1.5" title="Not spam">
-                    <ShieldCheck className="h-3.5 w-3.5" /> Not Spam
-                  </button>
-                ) : (
-                  <button onClick={() => markAsSpam(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-muted flex items-center gap-1.5" title="Spam">
-                    <ShieldBan className="h-3.5 w-3.5" />
-                  </button>
-                )}
-                <button onClick={() => setDeleteConfirmId(selectedTicket.id)} className="h-8 px-2.5 border rounded-md text-sm text-muted-foreground hover:bg-red-50 hover:text-red-600 flex items-center gap-1.5" title="Delete">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
 
-              {/* Meta */}
-              <div className="flex items-center gap-2 ml-auto text-xs text-muted-foreground">
-                <span>{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
-                {selectedTicket.organizationName && (
-                  <><span>·</span><span className="font-medium">{selectedTicket.organizationName}</span></>
-                )}
-                {selectedTicket.pageUrl && (
-                  <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {/* Scrollable conversation area */}
-            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-0 bg-muted/20">
-              {/* Original message — prominent */}
-              <div className="relative">
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Original Message</div>
-                <div className="bg-card rounded-lg border shadow-sm p-5">
-                  {selectedTicket.htmlBody ? (
-                    <SafeHtmlViewer html={selectedTicket.htmlBody} />
-                  ) : (
-                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{selectedTicket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}</p>
+                {/* More actions menu */}
+                <div className="relative" data-popover="more-actions">
+                  <button onClick={() => setShowMoreActions(!showMoreActions)} className="h-7 w-7 flex items-center justify-center border rounded hover:bg-muted text-muted-foreground" title="More actions">
+                    <MoreHorizontal className="h-3.5 w-3.5" />
+                  </button>
+                  {showMoreActions && (
+                    <div className="absolute right-0 top-8 bg-popover border rounded-lg shadow-lg py-1 z-20 w-48">
+                      {/* Snooze */}
+                      <div data-popover="snooze" className="relative">
+                        {selectedTicket.snoozedUntil && new Date(selectedTicket.snoozedUntil) > new Date() ? (
+                          <button onClick={() => { unsnoozeTicket(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2 text-amber-700">
+                            <AlarmClock className="h-3.5 w-3.5" /> Unsnooze
+                          </button>
+                        ) : (
+                          <>
+                            <button onClick={() => setShowSnoozeMenu(!showSnoozeMenu)} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
+                              <AlarmClock className="h-3.5 w-3.5" /> Snooze <ChevronRight className="h-3 w-3 ml-auto" />
+                            </button>
+                            {showSnoozeMenu && (
+                              <div className="absolute left-full top-0 ml-1 bg-popover border rounded-lg shadow-lg py-1 z-30 w-36">
+                                {[{ label: '1 hour', hours: 1 }, { label: '4 hours', hours: 4 }, { label: 'Tomorrow', hours: 24 }, { label: '3 days', hours: 72 }, { label: '1 week', hours: 168 }].map(opt => (
+                                  <button key={opt.hours} onClick={() => { snoozeTicket(selectedTicket.id, opt.hours); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted">{opt.label}</button>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      {selectedTicket.status !== 'new' && (
+                        <button onClick={() => { markUnread(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
+                          <MailOpen className="h-3.5 w-3.5" /> Mark unread
+                        </button>
+                      )}
+                      {selectedTicket.status === 'spam' ? (
+                        <button onClick={() => { markNotSpam(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2 text-green-600">
+                          <ShieldCheck className="h-3.5 w-3.5" /> Not Spam
+                        </button>
+                      ) : (
+                        <button onClick={() => { markAsSpam(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
+                          <ShieldBan className="h-3.5 w-3.5" /> Mark as Spam
+                        </button>
+                      )}
+                      <div className="border-t my-1" />
+                      <button onClick={() => { setDeleteConfirmId(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-red-50 text-red-600 flex items-center gap-2">
+                        <Trash2 className="h-3.5 w-3.5" /> Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Timeline thread */}
-              {selectedTicket.notes.length > 0 && (
-                <div className="relative ml-5 mt-5">
-                  {/* Timeline line */}
-                  <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
-
-                  {selectedTicket.notes.map((note, idx) => {
-                    const isCustomer = note.authorEmail === 'External Reply';
-                    const isInternal = note.isInternal;
-                    return (
-                      <div key={note.id} className="relative pl-7 pb-5 last:pb-0">
-                        {/* Timeline dot */}
-                        <div className={`absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full -translate-x-[5px] ring-2 ring-background ${
-                          isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'
-                        }`} />
-
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className={`text-xs font-semibold ${
-                            isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'
-                          }`}>
-                            {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{timeAgo(note.createdAt)}</span>
-                        </div>
-
-                        <div className={`rounded-lg p-4 ${
-                          isCustomer
-                            ? 'bg-card border'
-                            : isInternal
-                            ? 'bg-amber-50/70 border border-amber-200/50'
-                            : 'bg-blue-50/70 border border-blue-200/50'
-                        }`}>
-                          {note.htmlBody ? (
-                            <SafeHtmlViewer html={note.htmlBody} />
-                          ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
-                            <SafeHtmlViewer html={note.content} />
-                          ) : (
-                            <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-muted rounded shrink-0" title="Close (Esc)">
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
             </div>
 
-            {/* Sticky reply composer — polished */}
-            <div className="bg-card border-t-2 px-5 py-4 shrink-0 space-y-3">
-              <div className="flex items-center gap-2">
-                {cannedResponses.length > 0 && !isInternalNote && (
-                  <div className="relative" data-popover="canned">
-                    <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground px-2.5 py-1.5 rounded-md hover:bg-muted border border-transparent hover:border-border font-medium">
-                      <Zap className="h-3.5 w-3.5" /> Templates <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
-                    </button>
-                    {showCannedPicker && (
-                      <div className="absolute left-0 bottom-9 bg-popover border rounded-lg shadow-lg py-1 z-20 w-80 max-h-52 overflow-y-auto">
-                        {cannedResponses.map(cr => (
-                          <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-4 py-2.5 hover:bg-muted border-b last:border-0">
-                            <p className="text-sm font-medium">{cr.title}</p>
-                            <p className="text-xs text-muted-foreground truncate mt-0.5">{cr.content.slice(0, 80)}</p>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+            {/* Meta bar — date, org, page url (minimal) */}
+            {(selectedTicket.organizationName || selectedTicket.receivedAtMailbox || selectedTicket.pageUrl) && (
+              <div className="bg-muted/20 border-b px-4 py-1.5 flex items-center gap-3 text-[11px] text-muted-foreground shrink-0">
+                <span>{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                {selectedTicket.receivedAtMailbox && (
+                  <span className="text-emerald-600 font-medium">→ {selectedTicket.receivedAtMailbox}</span>
                 )}
-                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground hover:text-foreground px-2.5 py-1.5 rounded-md hover:bg-muted font-medium">
-                  <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
-                  Internal
-                </label>
-                {!isInternalNote && (
-                  <button onClick={() => setShowReplyCcBcc(!showReplyCcBcc)} className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted font-medium">
+                {selectedTicket.organizationName && (
+                  <span className="font-medium">{selectedTicket.organizationName}</span>
+                )}
+                {selectedTicket.pageUrl && (
+                  <a href={selectedTicket.pageUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+              </div>
+            )}
+
+            {/* Scrollable conversation area — collapsible thread */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
+              {(() => {
+                const allMessages = [
+                  { id: '__original', type: 'original' as const, createdAt: selectedTicket.createdAt },
+                  ...selectedTicket.notes.map(n => ({ id: n.id, type: 'note' as const, note: n, createdAt: n.createdAt })),
+                ];
+                const totalMessages = allMessages.length;
+                const hasCollapsible = totalMessages > 2;
+                // Last message is always shown, original is always shown if it's the only one or there are collapsed
+                const collapsedMessages = hasCollapsible ? allMessages.slice(1, -1) : [];
+                const lastMessage = totalMessages > 1 ? allMessages[totalMessages - 1] : null;
+                const allExpanded = !hasCollapsible || expandedNotes.has('__all');
+
+                return (
+                  <>
+                    {/* Original message — always visible */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-xs font-semibold text-foreground/70">
+                          {selectedTicket.userEmail?.split('@')[0] || 'Customer'}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground">{timeAgo(selectedTicket.createdAt)}</span>
+                      </div>
+                      <div className="bg-card rounded-lg border p-4">
+                        {selectedTicket.htmlBody ? (
+                          <SafeHtmlViewer html={selectedTicket.htmlBody} />
+                        ) : (
+                          <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{selectedTicket.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '')}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Collapsed middle messages */}
+                    {hasCollapsible && !allExpanded && (
+                      <button
+                        onClick={() => setExpandedNotes(prev => new Set([...prev, '__all']))}
+                        className="w-full flex items-center gap-2 py-2 px-3 text-xs text-primary hover:bg-primary/5 rounded-lg transition-colors font-medium"
+                      >
+                        <div className="flex-1 h-px bg-border" />
+                        <span className="flex items-center gap-1">
+                          <ChevronDown className="h-3 w-3" />
+                          {collapsedMessages.length} earlier message{collapsedMessages.length !== 1 ? 's' : ''}
+                        </span>
+                        <div className="flex-1 h-px bg-border" />
+                      </button>
+                    )}
+
+                    {/* Expanded middle messages (when uncollapsed) */}
+                    {hasCollapsible && allExpanded && collapsedMessages.map(msg => {
+                      if (msg.type !== 'note' || !msg.note) return null;
+                      const note = msg.note;
+                      const isCustomer = note.authorEmail === 'External Reply';
+                      const isInternal = note.isInternal;
+                      const isNoteExpanded = expandedNotes.has(note.id);
+                      return (
+                        <div key={note.id}>
+                          <button
+                            onClick={() => setExpandedNotes(prev => {
+                              const next = new Set(prev);
+                              if (next.has(note.id)) next.delete(note.id); else next.add(note.id);
+                              return next;
+                            })}
+                            className="w-full flex items-center gap-2 text-left"
+                          >
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
+                            <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
+                              {isCustomer ? 'Customer' : isInternal ? 'Note' : note.authorEmail.split('@')[0]}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
+                            {!isNoteExpanded && (
+                              <span className="text-xs text-muted-foreground truncate flex-1">{note.content.replace(/<[^>]*>/g, '').slice(0, 60)}</span>
+                            )}
+                            <ChevronDown className={`h-3 w-3 text-muted-foreground shrink-0 transition-transform ${isNoteExpanded ? 'rotate-180' : ''}`} />
+                          </button>
+                          {isNoteExpanded && (
+                            <div className={`rounded-lg p-4 mt-1.5 ${
+                              isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'
+                            }`}>
+                              {note.htmlBody ? (
+                                <SafeHtmlViewer html={note.htmlBody} />
+                              ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
+                                <SafeHtmlViewer html={note.content} />
+                              ) : (
+                                <p className="text-sm whitespace-pre-wrap">{note.content}</p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Latest message — always expanded */}
+                    {lastMessage && lastMessage.type === 'note' && lastMessage.note && (() => {
+                      const note = lastMessage.note;
+                      const isCustomer = note.authorEmail === 'External Reply';
+                      const isInternal = note.isInternal;
+                      return (
+                        <div>
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
+                            <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
+                              {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
+                          </div>
+                          <div className={`rounded-lg p-4 ${
+                            isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'
+                          }`}>
+                            {note.htmlBody ? (
+                              <SafeHtmlViewer html={note.htmlBody} />
+                            ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
+                              <SafeHtmlViewer html={note.content} />
+                            ) : (
+                              <p className="text-sm whitespace-pre-wrap">{note.content}</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Bottom action bar — Reply / Note / Forward buttons + collapsible composer */}
+            <div className="bg-card border-t shrink-0">
+              {/* Mode buttons */}
+              <div className="flex items-center gap-1 px-4 py-2 border-b bg-muted/30">
+                <button
+                  onClick={() => setComposerMode(composerMode === 'reply' ? null : 'reply')}
+                  className={`h-8 px-3 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                    composerMode === 'reply' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted border'
+                  }`}
+                >
+                  <Reply className="h-3.5 w-3.5" /> Reply
+                </button>
+                <button
+                  onClick={() => setComposerMode(composerMode === 'note' ? null : 'note')}
+                  className={`h-8 px-3 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors ${
+                    composerMode === 'note' ? 'bg-amber-600 text-white' : 'text-muted-foreground hover:bg-muted border'
+                  }`}
+                >
+                  <MessageCircle className="h-3.5 w-3.5" /> Note
+                </button>
+                <button
+                  onClick={() => { forwardTicket(selectedTicket); }}
+                  className="h-8 px-3 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors text-muted-foreground hover:bg-muted border"
+                >
+                  <Forward className="h-3.5 w-3.5" /> Forward
+                </button>
+
+                {composerMode === 'reply' && selectedTicket.receivedAtMailbox && (
+                  <span className="text-[11px] text-primary flex items-center gap-1 ml-auto font-medium">
+                    <Reply className="h-3 w-3" /> via {selectedTicket.receivedAtMailbox}
+                  </span>
+                )}
+                {composerMode === 'reply' && (
+                  <button onClick={() => setShowReplyCcBcc(!showReplyCcBcc)} className="text-[11px] text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted font-medium ml-auto">
                     Cc/Bcc
                   </button>
                 )}
-                {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
-                  <span className="text-xs text-primary flex items-center gap-1 ml-auto font-medium">
-                    <Reply className="h-3.5 w-3.5" /> Reply via {selectedTicket.receivedAtMailbox}
-                  </span>
+                {composerMode && (
+                  <button onClick={() => setComposerMode(null)} className="p-1 hover:bg-muted rounded ml-auto shrink-0" title="Collapse">
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
                 )}
               </div>
 
-              {/* CC/BCC fields for reply */}
-              {showReplyCcBcc && !isInternalNote && (
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Input
-                      placeholder="Cc (comma-separated)"
-                      value={replyCc}
-                      onChange={(e) => setReplyCc(e.target.value)}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Input
-                      placeholder="Bcc (comma-separated)"
-                      value={replyBcc}
-                      onChange={(e) => setReplyBcc(e.target.value)}
-                      className="h-8 text-xs"
-                    />
-                  </div>
+              {/* Expanded composer */}
+              {composerMode && (composerMode === 'reply' || composerMode === 'note') && (
+                <div className="px-4 py-3 space-y-2.5">
+                  {/* CC/BCC for reply */}
+                  {showReplyCcBcc && composerMode === 'reply' && (
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Input placeholder="Cc (comma-separated)" value={replyCc} onChange={(e) => setReplyCc(e.target.value)} className="h-7 text-xs" />
+                      </div>
+                      <div className="flex-1">
+                        <Input placeholder="Bcc (comma-separated)" value={replyBcc} onChange={(e) => setReplyBcc(e.target.value)} className="h-7 text-xs" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Canned responses for reply mode */}
+                  {cannedResponses.length > 0 && composerMode === 'reply' && (
+                    <div className="relative" data-popover="canned">
+                      <button onClick={() => setShowCannedPicker(!showCannedPicker)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted font-medium">
+                        <Zap className="h-3 w-3" /> Templates <ChevronDown className={`h-3 w-3 transition-transform ${showCannedPicker ? 'rotate-180' : ''}`} />
+                      </button>
+                      {showCannedPicker && (
+                        <div className="absolute left-0 bottom-7 bg-popover border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
+                          {cannedResponses.map(cr => (
+                            <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-muted border-b last:border-0">
+                              <p className="text-sm font-medium">{cr.title}</p>
+                              <p className="text-xs text-muted-foreground truncate mt-0.5">{cr.content.slice(0, 60)}</p>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <RichTextEditor
+                    ref={editorRef}
+                    placeholder={composerMode === 'note' ? "Internal note (not visible to user)..." : "Write a reply..."}
+                    onChange={(html) => setNewNote(html)}
+                    initialContent={newNote}
+                  />
+
+                  <Button
+                    onClick={addNote}
+                    disabled={(!newNote || newNote === '<p></p>') || addingNote}
+                    className={`w-full h-9 text-sm font-medium ${composerMode === 'note' ? 'bg-amber-600 hover:bg-amber-700' : ''}`}
+                  >
+                    {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                    {composerMode === 'note' ? 'Add Internal Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
+                    {!addingNote && <span className="ml-2 text-xs opacity-70">⌘↵</span>}
+                  </Button>
                 </div>
               )}
-
-              <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note (not visible to user)..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
-
-              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-10 text-sm font-medium ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
-                {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-                {isInternalNote ? 'Add Internal Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
-                {!addingNote && <span className="ml-2 text-xs opacity-70">⌘↵</span>}
-              </Button>
             </div>
 
           </div>
@@ -1765,81 +1857,34 @@ export default function TicketsPage() {
         <div className="fixed inset-0 z-50 flex justify-end lg:hidden">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setSelectedTicket(null)} />
           <div className="relative w-full max-w-2xl bg-background shadow-xl flex flex-col animate-in slide-in-from-right">
-            {/* Header */}
-            <div className="bg-card border-b px-4 py-3 flex items-center justify-between z-10 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <button onClick={() => setSelectedTicket(null)} className="p-1.5 hover:bg-muted rounded-md shrink-0">
-                  <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+            {/* Condensed mobile header */}
+            <div className="bg-card border-b px-3 py-2 flex items-center gap-2 z-10 shrink-0">
+              <button onClick={() => setSelectedTicket(null)} className="p-1 hover:bg-muted rounded shrink-0">
+                <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+              </button>
+              <span className="text-sm font-semibold truncate flex-1">{selectedTicket.userEmail || 'Anonymous'}</span>
+              <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-7 px-1.5 border rounded text-xs bg-background font-medium">
+                <option value="new">New</option>
+                <option value="reviewed">In Progress</option>
+                <option value="resolved">Resolved</option>
+                <option value="archived">Closed</option>
+              </select>
+              {selectedTicket.status !== 'resolved' && (
+                <button onClick={() => updateStatus(selectedTicket.id, 'resolved')} disabled={updating === selectedTicket.id} className="h-7 px-2 rounded text-xs font-medium bg-green-600 text-white flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" /> Resolve
                 </button>
-                {(() => {
-                  const TypeIcon = typeIcons[selectedTicket.type];
-                  return (
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 ${typeColors[selectedTicket.type]}`}>
-                      <TypeIcon className="h-3.5 w-3.5" />
-                      {selectedTicket.type}
-                    </span>
-                  );
-                })()}
-                <span className="text-xs font-mono text-muted-foreground shrink-0">#{selectedTicket.id.slice(0, 8)}</span>
-                <span className="text-sm font-semibold truncate">
-                  {selectedTicket.userEmail || 'Anonymous'}
-                </span>
-              </div>
-              {/* Mobile quick action buttons */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                {selectedTicket.status !== 'resolved' && (
-                  <button
-                    onClick={() => updateStatus(selectedTicket.id, 'resolved')}
-                    disabled={updating === selectedTicket.id}
-                    className="h-8 px-2.5 rounded-md text-xs font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 flex items-center gap-1 transition-colors"
-                  >
-                    <CheckCircle className="h-3.5 w-3.5" />
-                    Resolve
-                  </button>
-                )}
-                {selectedTicket.status !== 'archived' && (
-                  <button
-                    onClick={() => updateStatus(selectedTicket.id, 'archived')}
-                    disabled={updating === selectedTicket.id}
-                    className="h-8 px-2.5 rounded-md text-xs font-medium bg-slate-600 text-white hover:bg-slate-700 disabled:opacity-50 flex items-center gap-1 transition-colors"
-                  >
-                    <Archive className="h-3.5 w-3.5" />
-                    Close
-                  </button>
-                )}
-              </div>
+              )}
             </div>
 
-            {/* Controls bar */}
-            <div className="bg-muted/30 border-b px-4 py-2.5 shrink-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <select value={selectedTicket.status} onChange={(e) => updateStatus(selectedTicket.id, e.target.value as FeedbackEntry['status'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
-                  <option value="new">New</option>
-                  <option value="reviewed">In Progress</option>
-                  <option value="resolved">Resolved</option>
-                  <option value="archived">Closed</option>
-                  <option value="spam">Spam</option>
-                </select>
-                <select value={selectedTicket.priority} onChange={(e) => updatePriority(selectedTicket.id, e.target.value as FeedbackEntry['priority'])} disabled={updating === selectedTicket.id} className="h-8 px-2 border rounded-md text-sm bg-background font-medium">
-                  <option value="low">Low</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-                <select value={selectedTicket.assignedTo || ''} onChange={(e) => assignTicket(selectedTicket.id, e.target.value || null)} className="h-8 px-2 border rounded-md text-sm bg-background">
-                  <option value="">Unassigned</option>
-                  {adminUsers.map(admin => (<option key={admin.id} value={admin.id}>{admin.email}</option>))}
-                </select>
-                <span className="ml-auto text-xs text-muted-foreground">{new Date(selectedTicket.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
-              </div>
-            </div>
-
-            {/* Scrollable conversation */}
-            <div className="flex-1 overflow-y-auto px-4 py-5 space-y-4 bg-muted/20">
+            {/* Mobile conversation — same collapsible pattern */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-muted/20">
               {/* Original message */}
               <div>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Original Message</div>
-                <div className="bg-card rounded-lg border shadow-sm p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-xs font-semibold text-foreground/70">{selectedTicket.userEmail?.split('@')[0] || 'Customer'}</span>
+                  <span className="text-[11px] text-muted-foreground">{timeAgo(selectedTicket.createdAt)}</span>
+                </div>
+                <div className="bg-card rounded-lg border p-4">
                   {selectedTicket.htmlBody ? (
                     <SafeHtmlViewer html={selectedTicket.htmlBody} />
                   ) : (
@@ -1848,64 +1893,79 @@ export default function TicketsPage() {
                 </div>
               </div>
 
-              {/* Timeline thread */}
-              {selectedTicket.notes.length > 0 && (
-                <div className="relative ml-3">
-                  <div className="absolute left-0 top-0 bottom-0 w-px bg-border" />
-                  {selectedTicket.notes.map((note) => {
-                    const isCustomer = note.authorEmail === 'External Reply';
-                    const isInternal = note.isInternal;
-                    return (
-                      <div key={note.id} className="relative pl-6 pb-4 last:pb-0">
-                        <div className={`absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full -translate-x-[5px] ring-2 ring-background ${
-                          isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'
-                        }`} />
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className={`text-xs font-semibold ${
-                            isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'
-                          }`}>
-                            {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
-                          </span>
-                          <span className="text-xs text-muted-foreground">{timeAgo(note.createdAt)}</span>
-                        </div>
-                        <div className={`rounded-lg p-4 ${
-                          isCustomer ? 'bg-card border'
-                            : isInternal ? 'bg-amber-50/70 border border-amber-200/50'
-                            : 'bg-blue-50/70 border border-blue-200/50'
-                        }`}>
-                          {note.htmlBody ? (
-                            <SafeHtmlViewer html={note.htmlBody} />
-                          ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
-                            <SafeHtmlViewer html={note.content} />
-                          ) : (
-                            <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              {/* Collapsed older messages */}
+              {selectedTicket.notes.length > 1 && !expandedNotes.has('__all') && (
+                <button onClick={() => setExpandedNotes(prev => new Set([...prev, '__all']))} className="w-full flex items-center gap-2 py-2 px-3 text-xs text-primary hover:bg-primary/5 rounded-lg font-medium">
+                  <div className="flex-1 h-px bg-border" />
+                  <ChevronDown className="h-3 w-3" /> {selectedTicket.notes.length - 1} earlier
+                  <div className="flex-1 h-px bg-border" />
+                </button>
               )}
+
+              {/* Middle messages (when expanded) */}
+              {selectedTicket.notes.length > 1 && expandedNotes.has('__all') && selectedTicket.notes.slice(0, -1).map(note => {
+                const isCustomer = note.authorEmail === 'External Reply';
+                const isInternal = note.isInternal;
+                return (
+                  <div key={note.id}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className={`w-2 h-2 rounded-full ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
+                      <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
+                        {isCustomer ? 'Customer' : isInternal ? 'Note' : note.authorEmail.split('@')[0]}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
+                    </div>
+                    <div className={`rounded-lg p-3 ${isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'}`}>
+                      {note.htmlBody ? <SafeHtmlViewer html={note.htmlBody} /> : /^<[a-z][\s\S]*>/i.test(note.content) ? <SafeHtmlViewer html={note.content} /> : <p className="text-sm whitespace-pre-wrap">{note.content}</p>}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Latest message — always visible */}
+              {selectedTicket.notes.length > 0 && (() => {
+                const note = selectedTicket.notes[selectedTicket.notes.length - 1];
+                const isCustomer = note.authorEmail === 'External Reply';
+                const isInternal = note.isInternal;
+                return (
+                  <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className={`w-2 h-2 rounded-full ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
+                      <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
+                        {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
+                    </div>
+                    <div className={`rounded-lg p-3 ${isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'}`}>
+                      {note.htmlBody ? <SafeHtmlViewer html={note.htmlBody} /> : /^<[a-z][\s\S]*>/i.test(note.content) ? <SafeHtmlViewer html={note.content} /> : <p className="text-sm whitespace-pre-wrap">{note.content}</p>}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
-            {/* Sticky reply composer */}
-            <div className="bg-card border-t-2 px-4 py-3 shrink-0 space-y-2.5">
-              <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 cursor-pointer text-sm text-muted-foreground font-medium">
-                  <input type="checkbox" checked={isInternalNote} onChange={(e) => setIsInternalNote(e.target.checked)} className="w-3.5 h-3.5 rounded" />
-                  Internal
-                </label>
-                {selectedTicket.userEmail && !isInternalNote && selectedTicket.receivedAtMailbox && (
-                  <span className="text-xs text-primary flex items-center gap-1 ml-auto font-medium">
-                    <Reply className="h-3.5 w-3.5" /> via {selectedTicket.receivedAtMailbox}
-                  </span>
-                )}
+            {/* Mobile Reply/Note/Forward buttons + collapsible composer */}
+            <div className="bg-card border-t shrink-0">
+              <div className="flex items-center gap-1 px-3 py-2 border-b bg-muted/30">
+                <button onClick={() => setComposerMode(composerMode === 'reply' ? null : 'reply')} className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1 transition-colors ${composerMode === 'reply' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted border'}`}>
+                  <Reply className="h-3.5 w-3.5" /> Reply
+                </button>
+                <button onClick={() => setComposerMode(composerMode === 'note' ? null : 'note')} className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1 transition-colors ${composerMode === 'note' ? 'bg-amber-600 text-white' : 'text-muted-foreground hover:bg-muted border'}`}>
+                  <MessageCircle className="h-3.5 w-3.5" /> Note
+                </button>
+                <button onClick={() => forwardTicket(selectedTicket)} className="h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-muted-foreground hover:bg-muted border">
+                  <Forward className="h-3.5 w-3.5" /> Forward
+                </button>
               </div>
-              <RichTextEditor ref={editorRef} placeholder={isInternalNote ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
-              <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-10 text-sm font-medium ${isInternalNote ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
-                {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-                {isInternalNote ? 'Add Note' : (selectedTicket.userEmail ? 'Send Reply' : 'Add Note')}
-              </Button>
+              {composerMode && (composerMode === 'reply' || composerMode === 'note') && (
+                <div className="px-3 py-2.5 space-y-2">
+                  <RichTextEditor ref={editorRef} placeholder={composerMode === 'note' ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
+                  <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-9 text-sm font-medium ${composerMode === 'note' ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
+                    {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                    {composerMode === 'note' ? 'Add Note' : 'Send Reply'}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
