@@ -179,10 +179,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: emailSent 
-        ? `Admin invite sent to ${email}` 
-        : `Admin invite created for ${email} but email failed to send. Share this link: ${inviteUrl}`,
-      inviteUrl,
+      message: emailSent
+        ? `Admin invite sent to ${email}`
+        : `Admin invite created for ${email} but email failed to send`,
+      ...(emailSent ? {} : { inviteUrl }),
       emailSent,
     });
 

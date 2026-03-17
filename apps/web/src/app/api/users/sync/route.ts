@@ -54,7 +54,19 @@ export async function POST(request: NextRequest) {
 
     // Use service client to bypass RLS for upsert operations
     const serviceClient = createServiceClient();
-    
+
+    // Look up existing users to preserve their roles
+    const googleEmails = googleUsers.map(u => u.email);
+    const { data: existingUsers } = await serviceClient
+      .from('users')
+      .select('email, role')
+      .eq('organization_id', organizationId)
+      .in('email', googleEmails);
+
+    const existingUserMap = new Map(
+      (existingUsers || []).map(u => [u.email, u])
+    );
+
     // Upsert users into database
     let syncedCount = 0;
     let errorCount = 0;
@@ -63,6 +75,7 @@ export async function POST(request: NextRequest) {
       const nameParts = googleUser.name.split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
+      const existing = existingUserMap.get(googleUser.email);
 
       const { error } = await serviceClient
         .from('users')
@@ -73,7 +86,7 @@ export async function POST(request: NextRequest) {
           title: googleUser.title || null,
           department: googleUser.department || null,
           organization_id: organizationId,
-          role: 'member',
+          role: existing?.role || 'member',
           source: 'google',
           updated_at: new Date().toISOString(),
         }, {

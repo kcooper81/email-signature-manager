@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { SignaturePreview } from '@/components/templates/preview';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 import type { SignatureBlock } from '@/components/templates/types';
 import { Button } from '@/components/ui/button';
 import { useMspContext } from '@/hooks/use-msp-context';
@@ -564,7 +565,7 @@ export default function DeploymentsPage() {
                     </div>
                   </div>
                   <div className="bg-muted border rounded p-3 max-h-32 overflow-auto">
-                    <div dangerouslySetInnerHTML={{ __html: sig.html }} />
+                    <SafeHtmlViewer html={sig.html} />
                   </div>
                 </div>
               ))}

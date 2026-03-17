@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Mail, Monitor, Smartphone, AlertCircle, ExternalLink, Apple, Moon, Sun } from 'lucide-react';
 import { getSocialIconUrl } from '@/lib/social-icons';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 type EmailClient = 'gmail' | 'outlook' | 'apple-mail';
 
@@ -583,10 +584,9 @@ function BlockPreview({ block, client, isMobile, colorMode = 'light' }: { block:
       if (!content.html) return null;
       return (
         <tr>
-          <td 
-            style={{ padding: '4px 0' }}
-            dangerouslySetInnerHTML={{ __html: content.html }}
-          />
+          <td style={{ padding: '4px 0' }}>
+            <SafeHtmlViewer html={content.html} />
+          </td>
         </tr>
       );
 

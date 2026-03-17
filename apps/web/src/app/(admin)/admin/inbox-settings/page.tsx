@@ -14,6 +14,7 @@ import {
   X,
   Check,
 } from 'lucide-react';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 interface MailboxSignature {
   id: string;
@@ -235,7 +236,7 @@ export default function InboxSettingsPage() {
                   />
                 ) : (
                   mb.signature_html ? (
-                    <div className="bg-slate-50 rounded p-3 text-sm" dangerouslySetInnerHTML={{ __html: mb.signature_html }} />
+                    <div className="bg-slate-50 rounded p-3 text-sm"><SafeHtmlViewer html={mb.signature_html} /></div>
                   ) : (
                     <p className="text-xs text-slate-400 italic">No signature set — will use admin's personal signature</p>
                   )

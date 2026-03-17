@@ -42,6 +42,11 @@ export async function GET(request: NextRequest) {
     const statePayload = stateRaw.substring(0, dotIndex);
     const stateSig = stateRaw.substring(dotIndex + 1);
     const hmacSecret = process.env.NEXTAUTH_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    if (!hmacSecret) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=callback_failed', request.url)
+      );
+    }
     const expectedSig = crypto.createHmac('sha256', hmacSecret).update(statePayload).digest('hex');
     if (!crypto.timingSafeEqual(Buffer.from(stateSig), Buffer.from(expectedSig))) {
       return NextResponse.redirect(

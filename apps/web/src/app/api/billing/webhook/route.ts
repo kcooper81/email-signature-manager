@@ -84,26 +84,26 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        await handleCheckoutCompleted(session);
+        await handleCheckoutCompleted(session, event.id);
         break;
       }
 
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
-        await handleSubscriptionUpdated(subscription);
+        await handleSubscriptionUpdated(subscription, event.id);
         break;
       }
 
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        await handleSubscriptionDeleted(subscription);
+        await handleSubscriptionDeleted(subscription, event.id);
         break;
       }
 
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
-        await handlePaymentFailed(invoice);
+        await handlePaymentFailed(invoice, event.id);
         break;
       }
 
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripeEventId: string) {
   const customerId = session.customer as string;
   const subscriptionId = session.subscription as string;
 
@@ -192,6 +192,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         toPlan: plan,
         fromStatus: existingSub.status,
         toStatus: subscription.status === 'trialing' ? 'trialing' : 'active',
+        stripeEventId,
       });
 
       // Notify admins of new/upgraded subscription
@@ -208,7 +209,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 }
 
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+async function handleSubscriptionUpdated(subscription: Stripe.Subscription, stripeEventId: string) {
   const customerId = subscription.customer as string;
 
   const status = mapStripeStatus(subscription.status);
@@ -254,6 +255,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         toPlan: plan,
         fromStatus: existingSub.status,
         toStatus: status,
+        stripeEventId,
       });
 
       // Notify admins of plan changes
@@ -270,7 +272,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 }
 
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription, stripeEventId: string) {
   const customerId = subscription.customer as string;
 
   const supabase = getSupabaseAdmin();
@@ -304,6 +306,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       toPlan: 'free',
       fromStatus: existingSub.status,
       toStatus: 'canceled',
+      stripeEventId,
     });
 
     await sendSubscriptionNotification(
@@ -316,7 +319,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   }
 }
 
-async function handlePaymentFailed(invoice: Stripe.Invoice) {
+async function handlePaymentFailed(invoice: Stripe.Invoice, stripeEventId: string) {
   const customerId = invoice.customer as string;
 
   const supabase = getSupabaseAdmin();
@@ -344,6 +347,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       eventType: 'payment_failed',
       fromStatus: existingSub.status,
       toStatus: 'past_due',
+      stripeEventId,
     });
 
     await sendSubscriptionNotification(

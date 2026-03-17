@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getMicrosoftAuthUrl } from '@/lib/microsoft/oauth';
 import { getPlan } from '@/lib/billing/plans';
+import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
   const supabase = createClient();
@@ -32,10 +33,17 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const state = Buffer.from(JSON.stringify({
+  // Create a state token to prevent CSRF, signed with HMAC
+  const statePayload = JSON.stringify({
     userId: user.id,
     timestamp: Date.now(),
-  })).toString('base64');
+  });
+  const hmacSecret = process.env.NEXTAUTH_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  if (!hmacSecret) {
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
+  const sig = crypto.createHmac('sha256', hmacSecret).update(statePayload).digest('hex');
+  const state = Buffer.from(statePayload + '.' + sig).toString('base64');
 
   const authUrl = getMicrosoftAuthUrl(state);
 

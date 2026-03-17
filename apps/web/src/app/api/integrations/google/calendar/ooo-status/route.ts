@@ -74,6 +74,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Verify target user belongs to the same organization as the requesting user
+    const { data: requestingUser } = await serviceClient
+      .from('users')
+      .select('organization_id')
+      .eq('auth_id', authUser.id)
+      .single();
+
+    if (!requestingUser || requestingUser.organization_id !== userData.organization_id) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
     // Check if OOO banner is enabled for this user
     if (!userData.ooo_banner_enabled) {
       return NextResponse.json({

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Monitor, Smartphone, Tablet, Eye, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 type Client = {
   id: string;
@@ -292,13 +293,10 @@ export default function EmailPreviewPage() {
                             style={{
                               borderTop: `1px solid ${currentClient.darkMode ? '#444' : '#e5e7eb'}`,
                               paddingTop: 16,
-                              fontFamily: currentClient.fontFamily,
-                              fontSize: currentClient.fontSize,
-                              lineHeight: currentClient.lineHeight,
-                              color: currentClient.textColor,
                             }}
-                            dangerouslySetInnerHTML={{ __html: inputHtml }}
-                          />
+                          >
+                            <SafeHtmlViewer html={inputHtml} />
+                          </div>
                         ) : (
                           <div
                             style={{
