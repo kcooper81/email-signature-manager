@@ -230,7 +230,7 @@ export default function TicketsPage() {
 
   useEffect(() => {
     bulk.clearSelection();
-  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter]);
+  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter, bulk.clearSelection]);
 
   useEffect(() => {
     loadCurrentUser();
@@ -1782,11 +1782,12 @@ export default function TicketsPage() {
                 >
                   <MessageCircle className="h-3.5 w-3.5" /> Note
                 </button>
+                <span className="text-border mx-0.5">|</span>
                 <button
                   onClick={() => { forwardTicket(selectedTicket); }}
                   className="h-8 px-3 rounded-md text-sm font-medium flex items-center gap-1.5 transition-colors text-muted-foreground hover:bg-muted border"
                 >
-                  <Forward className="h-3.5 w-3.5" /> Forward
+                  <Forward className="h-3.5 w-3.5" /> Forward <ExternalLink className="h-3 w-3 opacity-60" />
                 </button>
 
                 {composerMode === 'reply' && selectedTicket.receivedAtMailbox && (
@@ -1911,17 +1912,20 @@ export default function TicketsPage() {
                 </div>
               </div>
 
-              {/* Collapsed older messages */}
-              {selectedTicket.notes.length > 1 && !expandedNotes.has('__all') && (
+              {/* Collapsed older messages — use same logic as desktop: total messages (original + notes) > 2 */}
+              {(1 + selectedTicket.notes.length) > 2 && !expandedNotes.has('__all') && (
                 <button onClick={() => setExpandedNotes(prev => new Set([...prev, '__all']))} className="w-full flex items-center gap-2 py-2 px-3 text-xs text-primary hover:bg-primary/5 rounded-lg font-medium">
                   <div className="flex-1 h-px bg-border" />
-                  <ChevronDown className="h-3 w-3" /> {selectedTicket.notes.length - 1} earlier
+                  <span className="flex items-center gap-1">
+                    <ChevronDown className="h-3 w-3" />
+                    {selectedTicket.notes.length - 1} earlier message{selectedTicket.notes.length - 1 !== 1 ? 's' : ''}
+                  </span>
                   <div className="flex-1 h-px bg-border" />
                 </button>
               )}
 
               {/* Middle messages (when expanded) */}
-              {selectedTicket.notes.length > 1 && expandedNotes.has('__all') && selectedTicket.notes.slice(0, -1).map(note => {
+              {(1 + selectedTicket.notes.length) > 2 && expandedNotes.has('__all') && selectedTicket.notes.slice(0, -1).map(note => {
                 const isCustomer = note.authorEmail === 'External Reply';
                 const isInternal = note.isInternal;
                 return (
@@ -1971,8 +1975,9 @@ export default function TicketsPage() {
                 <button onClick={() => setComposerMode(composerMode === 'note' ? null : 'note')} className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1 transition-colors ${composerMode === 'note' ? 'bg-amber-600 text-white' : 'text-muted-foreground hover:bg-muted border'}`}>
                   <MessageCircle className="h-3.5 w-3.5" /> Note
                 </button>
+                <span className="text-border mx-0.5">|</span>
                 <button onClick={() => forwardTicket(selectedTicket)} className="h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-muted-foreground hover:bg-muted border">
-                  <Forward className="h-3.5 w-3.5" /> Forward
+                  <Forward className="h-3.5 w-3.5" /> Forward <ExternalLink className="h-3 w-3 opacity-60" />
                 </button>
               </div>
               {composerMode && (composerMode === 'reply' || composerMode === 'note') && (
