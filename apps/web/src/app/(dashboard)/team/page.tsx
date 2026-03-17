@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 import { EditMemberModal } from './edit-member-modal';
 import { 
   Users as UsersIcon, 
@@ -1685,7 +1686,7 @@ export default function TeamMembersPage() {
                       </div>
                     </div>
                     <div className="bg-muted rounded p-2 text-xs max-h-32 overflow-auto">
-                      <div dangerouslySetInnerHTML={{ __html: sig.html }} />
+                      <SafeHtmlViewer html={sig.html} />
                     </div>
                   </div>
                 ))}

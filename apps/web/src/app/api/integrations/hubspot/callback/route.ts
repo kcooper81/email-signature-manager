@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getHubSpotTokens } from '@/lib/hubspot/oauth';
 import { logException } from '@/lib/error-logging';
+import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -23,7 +24,29 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const stateData = JSON.parse(Buffer.from(state, 'base64').toString());
+    // Decode and verify state with HMAC signature
+    const stateRaw = Buffer.from(state, 'base64').toString();
+    const dotIndex = stateRaw.lastIndexOf('.');
+    if (dotIndex === -1) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=invalid_state', request.url)
+      );
+    }
+    const statePayload = stateRaw.substring(0, dotIndex);
+    const stateSig = stateRaw.substring(dotIndex + 1);
+    const hmacSecret = process.env.NEXTAUTH_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+    if (!hmacSecret) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=callback_failed', request.url)
+      );
+    }
+    const expectedSig = crypto.createHmac('sha256', hmacSecret).update(statePayload).digest('hex');
+    if (!crypto.timingSafeEqual(Buffer.from(stateSig), Buffer.from(expectedSig))) {
+      return NextResponse.redirect(
+        new URL('/integrations?error=invalid_state', request.url)
+      );
+    }
+    const stateData = JSON.parse(statePayload);
     const { userId, timestamp } = stateData;
 
     if (Date.now() - timestamp > 5 * 60 * 1000) {

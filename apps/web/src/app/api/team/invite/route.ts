@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get current user's organization
+    // Get current user's organization and role
     const { data: currentUser } = await supabase
       .from('users')
-      .select('organization_id, first_name, last_name')
+      .select('organization_id, first_name, last_name, role')
       .eq('auth_id', user.id)
       .single();
 
@@ -35,6 +35,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Organization not found' },
         { status: 404 }
+      );
+    }
+
+    // Only owners and admins can send invites
+    if (currentUser.role !== 'owner' && currentUser.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only owners and admins can invite users' },
+        { status: 403 }
       );
     }
 

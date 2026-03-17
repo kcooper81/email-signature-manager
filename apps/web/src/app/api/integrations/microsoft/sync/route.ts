@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
       console.error('Failed to sync Microsoft users:', upsertError);
       console.error('Upsert error details:', JSON.stringify(upsertError, null, 2));
       return NextResponse.json(
-        { error: 'Failed to sync users', details: upsertError.message },
+        { error: 'Failed to sync users' },
         { status: 500 }
       );
     }

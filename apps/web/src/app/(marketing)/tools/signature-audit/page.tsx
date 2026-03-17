@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, ClipboardCheck, AlertTriangle, CheckCircle2, XCircle, Info, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 
 interface AuditResult {
   score: number;
@@ -274,7 +275,7 @@ export default function SignatureAuditPage() {
                 <div className="mt-6">
                   <Label className="text-sm font-semibold text-gray-500 mb-2 block">Live Preview</Label>
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                    <div dangerouslySetInnerHTML={{ __html: inputHtml }} />
+                    <SafeHtmlViewer html={inputHtml} />
                   </div>
                 </div>
               )}

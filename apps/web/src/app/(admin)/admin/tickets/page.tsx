@@ -203,6 +203,8 @@ export default function TicketsPage() {
   const composeTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout>>();
   const navigatingRef = useRef(false);
+  const updateStatusRef = useRef<typeof updateStatus>(null!);
+  const openTicketDetailRef = useRef<typeof openTicketDetail>(null!);
   const sort = useSortableTable<FeedbackEntry>('createdAt', 'desc');
   const ticketListRef = useRef<HTMLDivElement>(null);
   const initialLoadDone = useRef(false);
@@ -603,6 +605,9 @@ export default function TicketsPage() {
     setUpdating(null);
   };
 
+  updateStatusRef.current = updateStatus;
+  openTicketDetailRef.current = openTicketDetail;
+
   const updatePriority = async (id: string, newPriority: FeedbackEntry['priority']) => {
     setUpdating(id);
     const supabase = createClient();
@@ -901,9 +906,19 @@ export default function TicketsPage() {
 
   // Apply pending forward content once compose modal is mounted
   useEffect(() => {
-    if (showCompose && pendingForwardContent && composeEditorRef.current) {
+    if (!showCompose || !pendingForwardContent) return;
+    if (composeEditorRef.current) {
       composeEditorRef.current.setContent(pendingForwardContent);
       setPendingForwardContent(null);
+    } else {
+      // Retry after a short delay if the editor ref isn't ready yet
+      const timer = setTimeout(() => {
+        if (composeEditorRef.current) {
+          composeEditorRef.current.setContent(pendingForwardContent);
+          setPendingForwardContent(null);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [showCompose, pendingForwardContent]);
 
@@ -980,14 +995,17 @@ export default function TicketsPage() {
       );
     });
     const sorted = sort.sortData(filtered);
-    // Pin unread (new) tickets to top, then sort by most recent activity
-    const unread = sorted.filter(t => t.status === 'new').sort((a, b) =>
-      new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()
-    );
-    const read = sorted.filter(t => t.status !== 'new').sort((a, b) =>
-      new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()
-    );
-    return [...unread, ...read];
+    // Pin unread (new) tickets to top only when sorting by createdAt (default)
+    if (sort.sortField === 'createdAt') {
+      const unread = sorted.filter(t => t.status === 'new').sort((a, b) =>
+        new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()
+      );
+      const read = sorted.filter(t => t.status !== 'new').sort((a, b) =>
+        new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()
+      );
+      return [...unread, ...read];
+    }
+    return sorted;
   }, [tickets, hideSnoozed, search, sort.sortField, sort.sortDir]);
 
   // Close popovers on outside click
@@ -1025,7 +1043,7 @@ export default function TicketsPage() {
           ? Math.min(currentIdx + 1, filteredTickets.length - 1)
           : Math.max(currentIdx - 1, 0);
         if (filteredTickets[nextIdx]) {
-          openTicketDetail(filteredTickets[nextIdx]);
+          openTicketDetailRef.current(filteredTickets[nextIdx]);
         }
         return;
       }
@@ -1039,7 +1057,7 @@ export default function TicketsPage() {
         }
         if (e.key === 'e') {
           e.preventDefault();
-          updateStatus(selectedTicket.id, 'resolved');
+          updateStatusRef.current(selectedTicket.id, 'resolved');
           return;
         }
       }
