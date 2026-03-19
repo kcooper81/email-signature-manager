@@ -70,18 +70,30 @@ export async function POST(request: NextRequest) {
     // Create Google client — supports both OAuth and Marketplace (service account) auth
     let googleAuth: any = null;
     let useServiceAccount = false;
+    let noEmailProvider = false;
     try {
       googleAuth = await createOrgGoogleClient(organizationId);
     } catch (err: any) {
       if (err.message === 'MARKETPLACE_AUTH') {
         // Marketplace connection — use service account for deployment
         useServiceAccount = true;
+      } else if (err.message === 'Google Workspace not connected') {
+        // No Google connection — deployment will be manual-only
+        noEmailProvider = true;
       } else {
         return NextResponse.json(
-          { error: 'Internal server error' },
+          { error: err.message || 'Failed to connect to Google Workspace' },
           { status: 400 }
         );
       }
+    }
+
+    // If no email provider is connected, can't deploy via API
+    if (noEmailProvider) {
+      return NextResponse.json(
+        { error: 'No email provider connected. Use the "Copy Manually" option to generate signatures for your team members.' },
+        { status: 400 }
+      );
     }
 
     // Get the template - MUST be in user's organization (no fallback for security)
