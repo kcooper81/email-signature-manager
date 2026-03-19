@@ -268,6 +268,7 @@ export default function DeploymentsPage() {
 
   const startDeployment = async () => {
     setDeploying(true);
+    setDeployError(null);
 
     try {
       const response = await fetch('/api/deployments/start', {
