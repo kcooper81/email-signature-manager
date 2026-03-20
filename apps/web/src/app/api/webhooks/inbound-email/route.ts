@@ -95,6 +95,18 @@ export async function POST(request: NextRequest) {
 
   const emailData = payload.data || payload;
   const { from, to, subject, email_id } = emailData;
+
+  // Log raw from/to for debugging payload structure
+  console.log('[inbound-email] Raw fields', {
+    fromType: typeof from,
+    fromValue: JSON.stringify(from),
+    toType: typeof to,
+    toValue: JSON.stringify(to),
+    subject: subject || '(none)',
+    email_id,
+    payloadKeys: Object.keys(emailData),
+  });
+
   const senderEmail = typeof from === 'string' ? from : from?.address || from?.[0]?.address;
   const receivedAt = typeof to === 'string' ? to
     : Array.isArray(to) ? (to[0]?.address || to[0] || null)
@@ -116,6 +128,7 @@ export async function POST(request: NextRequest) {
   // Only process emails addressed to @siggly.io — ignore other domains
   const recipientStr = typeof receivedAt === 'string' ? receivedAt : '';
   if (!recipientStr.toLowerCase().includes('@siggly.io')) {
+    console.log('[inbound-email] Skipping — not a siggly.io recipient', { receivedAt, recipientStr });
     return NextResponse.json({ skipped: true, reason: 'Not a siggly.io recipient' });
   }
 
@@ -219,6 +232,8 @@ export async function POST(request: NextRequest) {
             email_sent: false,
           });
 
+        console.log('[inbound-email] Note added to existing ticket', { ticketId: existingTicketId, senderEmail });
+
         // Reopen if resolved/archived
         await supabase
           .from('feedback')
@@ -267,7 +282,12 @@ export async function POST(request: NextRequest) {
       .select('id, type, user_email, message')
       .single();
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error('[inbound-email] DB insert failed', { error: insertError.message, code: insertError.code, details: insertError.details });
+      throw insertError;
+    }
+
+    console.log('[inbound-email] Ticket created', { ticketId: newTicket?.id, type: ticketType, senderEmail });
 
     // Notify admins + auto-respond to sender (fire-and-forget)
     if (newTicket) {
