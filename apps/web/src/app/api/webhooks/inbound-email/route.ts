@@ -135,6 +135,7 @@ export async function POST(request: NextRequest) {
   // Resend webhook only includes metadata — fetch body via Received Emails API
   let bodyText = '';
   let bodyHtml = '';
+  let attachments: Array<{ filename: string; content_type: string; content: string; content_id?: string }> = [];
   if (email_id && process.env.RESEND_API_KEY) {
     try {
       // Use the /emails/receiving/{id} endpoint (not /emails/{id} which is for outbound)
@@ -145,6 +146,7 @@ export async function POST(request: NextRequest) {
         const fullEmail = await res.json();
         bodyText = fullEmail.text || '';
         bodyHtml = fullEmail.html || '';
+        attachments = fullEmail.attachments || [];
       } else {
         console.error('[inbound-email] Resend API error', { status: res.status, statusText: res.statusText });
       }
@@ -152,11 +154,30 @@ export async function POST(request: NextRequest) {
         hasText: !!bodyText,
         hasHtml: !!bodyHtml,
         textLength: bodyText.length,
+        attachmentCount: attachments.length,
       });
     } catch (fetchErr) {
       console.error('[inbound-email] Failed to fetch email body', fetchErr);
     }
   }
+
+  // Replace cid: references in HTML with inline base64 data URIs so images render
+  if (bodyHtml && attachments.length > 0) {
+    for (const att of attachments) {
+      if (att.content_id && att.content) {
+        const cid = att.content_id.replace(/^<|>$/g, '');
+        bodyHtml = bodyHtml.replace(
+          new RegExp(`cid:${cid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'),
+          `data:${att.content_type};base64,${att.content}`
+        );
+      }
+    }
+  }
+
+  // Build attachment metadata for non-inline attachments (no content_id = regular attachment)
+  const fileAttachments = attachments
+    .filter(att => !att.content_id && att.filename)
+    .map(att => ({ filename: att.filename, content_type: att.content_type, size: att.content?.length || 0 }));
 
   // Convert HTML to clean plaintext: strip style/script blocks, then tags, then collapse whitespace
   const htmlToPlainText = (html: string) =>
@@ -277,6 +298,7 @@ export async function POST(request: NextRequest) {
           source: 'inbound_email',
           original_subject: subject || null,
           submitted_at: new Date().toISOString(),
+          ...(fileAttachments.length > 0 ? { attachments: fileAttachments } : {}),
         },
       })
       .select('id, type, user_email, message')
