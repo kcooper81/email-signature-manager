@@ -40,6 +40,7 @@ interface SubscriptionEntry {
   currentPeriodEnd: string | null;
   userCount: number;
   mrr: number;
+  createdAt: string;
 }
 
 interface SubscriptionEvent {
@@ -72,7 +73,7 @@ export default function SubscriptionsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'events'>('subscriptions');
-  const sort = useSortableTable<SubscriptionEntry>('orgName', 'asc');
+  const sort = useSortableTable<SubscriptionEntry>('createdAt', 'desc');
   const [composeTarget, setComposeTarget] = useState<{ email: string; name: string; orgId: string } | null>(null);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function SubscriptionsPage() {
     // Get all subscriptions with org info
     const { data: subs } = await supabase
       .from('subscriptions')
-      .select('id, organization_id, plan, status, stripe_customer_id, stripe_subscription_id, current_period_end')
+      .select('id, organization_id, plan, status, stripe_customer_id, stripe_subscription_id, current_period_end, created_at')
       .order('created_at', { ascending: false });
 
     if (!subs) {
@@ -96,10 +97,10 @@ export default function SubscriptionsPage() {
     // Get ALL organizations (not just those with subscriptions)
     const { data: allOrgsData } = await supabase
       .from('organizations')
-      .select('id, name')
+      .select('id, name, created_at')
       .order('created_at', { ascending: false });
 
-    const orgMap = new Map(allOrgsData?.map(o => [o.id, o.name]) || []);
+    const orgMap = new Map(allOrgsData?.map(o => [o.id, { name: o.name, createdAt: o.created_at }]) || []);
 
     // Find orgs that don't have a subscription record (they're on free)
     const orgsWithSubs = new Set(subs.map(s => s.organization_id));
@@ -147,7 +148,7 @@ export default function SubscriptionsPage() {
     const mappedEvents: SubscriptionEvent[] = (recentEvents || []).map(e => ({
       id: e.id,
       organizationId: e.organization_id,
-      orgName: orgMap.get(e.organization_id) || 'Unknown',
+      orgName: orgMap.get(e.organization_id)?.name || 'Unknown',
       eventType: e.event_type,
       fromPlan: e.from_plan,
       toPlan: e.to_plan,
@@ -191,7 +192,7 @@ export default function SubscriptionsPage() {
       return {
         id: sub.id,
         orgId: sub.organization_id,
-        orgName: orgMap.get(sub.organization_id) || 'Unknown',
+        orgName: orgMap.get(sub.organization_id)?.name || 'Unknown',
         ownerEmail: ownerEmailByOrg.get(sub.organization_id) || null,
         plan: sub.plan,
         status: sub.status,
@@ -200,6 +201,7 @@ export default function SubscriptionsPage() {
         currentPeriodEnd: sub.current_period_end,
         userCount,
         mrr,
+        createdAt: sub.created_at,
       };
     });
 
@@ -216,6 +218,7 @@ export default function SubscriptionsPage() {
       currentPeriodEnd: null,
       userCount: userCountByOrg.get(org.id) || 0,
       mrr: 0,
+      createdAt: org.created_at,
     }));
 
     setSubscriptions([...enrichedSubs, ...freeOrgEntries]);
@@ -523,6 +526,7 @@ export default function SubscriptionsPage() {
                         <SortableHeader field="status" label="Status" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                         <SortableHeader field="userCount" label="Users" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                         <SortableHeader field="mrr" label="MRR" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
+                        <SortableHeader field="createdAt" label="Created" currentSort={sort.sortField} currentDir={sort.sortDir} onToggle={sort.toggleSort} />
                         <th className="pb-3 font-medium text-slate-500">Period End</th>
                         <th className="pb-3 font-medium text-slate-500">Stripe</th>
                         <th className="pb-3 font-medium text-slate-500 w-10"></th>
@@ -550,6 +554,11 @@ export default function SubscriptionsPage() {
                           </td>
                           <td className="py-3 font-medium text-slate-900">
                             ${sub.mrr.toFixed(2)}
+                          </td>
+                          <td className="py-3 text-slate-500">
+                            {sub.createdAt
+                              ? new Date(sub.createdAt).toLocaleDateString()
+                              : '-'}
                           </td>
                           <td className="py-3 text-slate-500">
                             {sub.currentPeriodEnd 

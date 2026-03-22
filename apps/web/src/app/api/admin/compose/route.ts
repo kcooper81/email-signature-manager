@@ -5,13 +5,12 @@ import { logException } from '@/lib/error-logging';
 
 /**
  * POST /api/admin/compose
- * Compose a new outbound email from the admin area.
- * Creates a ticket in the inbox and sends the email via Resend.
- * Replies from the recipient thread back into the ticket automatically.
+ * Compose and send a new outbound email from the admin area.
+ * Works like a regular email — no ticket is created.
  */
 export async function POST(request: NextRequest) {
   try {
-    const { to, subject, body, sendAs, context, cc, bcc } = await request.json();
+    const { to, subject, body, sendAs, cc, bcc } = await request.json();
 
     if (!to?.trim() || !subject?.trim() || !body?.trim()) {
       return NextResponse.json(
@@ -37,51 +36,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Resolve the mailbox to send from
     const mailboxAddress = sendAs || 'support@siggly.io';
 
-    // Create the ticket
-    const { data: ticket, error: ticketError } = await supabase
-      .from('feedback')
-      .insert({
-        user_id: null,
-        user_email: to.trim(),
-        type: 'email',
-        priority: 'normal',
-        message: `To: ${to.trim()}\nSubject: ${subject.trim()}\n\n${body.replace(/<[^>]+>/g, '').trim()}`,
-        html_body: body.trim(),
-        status: 'reviewed',
-        inbox_email: mailboxAddress,
-        metadata: {
-          source: 'admin_compose',
-          original_subject: subject.trim(),
-          submitted_at: new Date().toISOString(),
-          context: context || null,
-          composed_by: userData.email,
-        },
-      })
-      .select('id')
-      .single();
+    // Parse and validate CC/BCC — accept comma-separated strings or arrays
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const parsedCc = (Array.isArray(cc) ? cc : (cc || '').split(','))
+      .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
+    const parsedBcc = (Array.isArray(bcc) ? bcc : (bcc || '').split(','))
+      .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
 
-    if (ticketError || !ticket) {
-      console.error('Error creating ticket:', ticketError);
-      return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 });
-    }
-
-    // Send the email (with signature, proper headers for deliverability)
     try {
-      // Parse and validate CC/BCC — accept comma-separated strings or arrays
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const parsedCc = (Array.isArray(cc) ? cc : (cc || '').split(','))
-        .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
-      const parsedBcc = (Array.isArray(bcc) ? bcc : (bcc || '').split(','))
-        .map((e: string) => e.trim()).filter((e: string) => emailRegex.test(e));
-
       await sendComposeEmail({
         to: to.trim(),
         subject: subject.trim(),
         body: body.trim(),
-        ticketId: ticket.id,
         adminUserId: userData.id,
         replyAs: mailboxAddress,
         cc: parsedCc.length ? parsedCc : undefined,
@@ -90,7 +58,6 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        ticketId: ticket.id,
         emailSent: true,
       });
     } catch (emailError) {
@@ -99,14 +66,12 @@ export async function POST(request: NextRequest) {
         route: '/api/admin/compose',
         method: 'POST',
         errorType: 'api_error',
-        metadata: { ticketId: ticket.id },
       });
 
-      return NextResponse.json({
-        success: true,
-        ticketId: ticket.id,
-        warning: 'Ticket created but email failed to send',
-      });
+      return NextResponse.json(
+        { error: 'Failed to send email' },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Compose email error:', error);
