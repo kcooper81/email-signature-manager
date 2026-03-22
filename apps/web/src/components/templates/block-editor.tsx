@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Modal, ModalHeader, ModalTitle, ModalDescription } from '@/components/ui';
+import { Modal, ModalHeader, ModalTitle, ModalDescription, useToast } from '@/components/ui';
 import { Upload, Plus, Trash2, Link as LinkIcon, Library, Image as ImageIcon } from 'lucide-react';
 import type {
   SignatureBlock,
@@ -173,15 +173,16 @@ function ImageEditor({
   const [dragOver, setDragOver] = useState(false);
   const [showAssetPicker, setShowAssetPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
 
   const handleFileUpload = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file');
+      toast.error('Please upload an image file');
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      alert('Image must be less than 2MB');
+      toast.error('Image must be less than 2MB');
       return;
     }
 
@@ -198,7 +199,7 @@ function ImageEditor({
 
       if (uploadError) {
         console.error('Upload error:', uploadError);
-        alert('Failed to upload image. Make sure the storage bucket exists.');
+        toast.error('Failed to upload image. Make sure the storage bucket exists.');
         return;
       }
 
@@ -209,7 +210,7 @@ function ImageEditor({
       onChange({ ...content, src: publicUrl });
     } catch (err) {
       console.error('Upload error:', err);
-      alert('Failed to upload image');
+      toast.error('Failed to upload image');
     } finally {
       setUploading(false);
     }

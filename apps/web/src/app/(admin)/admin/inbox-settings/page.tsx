@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Textarea } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Textarea, useToast } from '@/components/ui';
 import {
   Loader2,
   Mail,
@@ -45,6 +45,7 @@ interface CannedResponse {
 export default function InboxSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const toast = useToast();
   const [mailboxes, setMailboxes] = useState<MailboxSignature[]>([]);
   const [autoResponder, setAutoResponder] = useState<AutoResponderSettings>({
     is_enabled: false,
@@ -88,63 +89,94 @@ export default function InboxSettingsPage() {
 
   const saveMailboxSignature = async (mb: MailboxSignature) => {
     setSaving(mb.id);
-    await fetch('/api/admin/inbox-settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'mailbox',
-        id: mb.id,
-        signature_html: mb.signature_html,
-        is_enabled: mb.is_enabled,
-      }),
-    });
-    setSaving(null);
-    setEditingMailbox(null);
+    try {
+      const res = await fetch('/api/admin/inbox-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'mailbox',
+          id: mb.id,
+          signature_html: mb.signature_html,
+          is_enabled: mb.is_enabled,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      toast.success('Mailbox signature saved');
+      setEditingMailbox(null);
+    } catch {
+      toast.error('Failed to save mailbox signature');
+    } finally {
+      setSaving(null);
+    }
   };
 
   const saveAutoResponder = async () => {
     setSaving('autoresponder');
-    await fetch('/api/admin/inbox-settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        type: 'auto_responder',
-        ...autoResponder,
-      }),
-    });
-    setSaving(null);
+    try {
+      const res = await fetch('/api/admin/inbox-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'auto_responder',
+          ...autoResponder,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      toast.success('Auto-responder settings saved');
+    } catch {
+      toast.error('Failed to save auto-responder settings');
+    } finally {
+      setSaving(null);
+    }
   };
 
   const createCannedResponse = async () => {
     if (!newCanned?.title?.trim() || !newCanned?.content?.trim()) return;
     setSaving('new-canned');
-    const res = await fetch('/api/admin/canned-responses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newCanned),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch('/api/admin/canned-responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCanned),
+      });
+      if (!res.ok) throw new Error('Failed to create');
       const { data } = await res.json();
       setCannedResponses(prev => [...prev, data]);
       setNewCanned(null);
+      toast.success('Canned response created');
+    } catch {
+      toast.error('Failed to create canned response');
+    } finally {
+      setSaving(null);
     }
-    setSaving(null);
   };
 
   const updateCannedResponse = async (cr: CannedResponse) => {
     setSaving(cr.id);
-    await fetch(`/api/admin/canned-responses/${cr.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cr),
-    });
-    setSaving(null);
-    setEditingCanned(null);
+    try {
+      const res = await fetch(`/api/admin/canned-responses/${cr.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cr),
+      });
+      if (!res.ok) throw new Error('Failed to update');
+      toast.success('Canned response updated');
+      setEditingCanned(null);
+    } catch {
+      toast.error('Failed to update canned response');
+    } finally {
+      setSaving(null);
+    }
   };
 
   const deleteCannedResponse = async (id: string) => {
-    await fetch(`/api/admin/canned-responses/${id}`, { method: 'DELETE' });
-    setCannedResponses(prev => prev.filter(c => c.id !== id));
+    try {
+      const res = await fetch(`/api/admin/canned-responses/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      setCannedResponses(prev => prev.filter(c => c.id !== id));
+    } catch {
+      toast.error('Failed to delete canned response');
+    }
   };
 
   if (loading) {
