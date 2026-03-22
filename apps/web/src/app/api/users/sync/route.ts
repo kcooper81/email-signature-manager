@@ -29,8 +29,14 @@ export async function POST(request: NextRequest) {
 
     const organizationId = userData.organization_id;
 
-    // Get the domain from the user's email
-    const domain = user.email?.split('@')[1];
+    // Get the org's configured domain, fall back to user's email domain
+    const { data: orgData } = await supabase
+      .from('organizations')
+      .select('domain')
+      .eq('id', organizationId)
+      .single();
+
+    const domain = orgData?.domain || user.email?.split('@')[1];
     if (!domain) {
       return NextResponse.json(
         { error: 'Could not determine domain' },
@@ -110,15 +116,30 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: any) {
     console.error('User sync error:', err);
-    
+
     await logException(err, {
       route: '/api/users/sync',
       method: 'POST',
       errorType: 'sync_error',
     });
 
+    // Surface actionable messages for known Google API errors
+    const msg = err.message || '';
+    if (msg.includes('Domain not found') || msg.includes('domain')) {
+      return NextResponse.json(
+        { error: 'Google Workspace domain not found. Check your organization domain settings.' },
+        { status: 400 }
+      );
+    }
+    if (msg.includes('Not Authorized') || msg.includes('insufficient')) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions. Admin directory access is required to sync users.' },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to sync users. Please try again.' },
       { status: 500 }
     );
   }
