@@ -298,6 +298,7 @@ export async function POST(request: NextRequest) {
           source: 'inbound_email',
           original_subject: subject || null,
           submitted_at: new Date().toISOString(),
+          ...(email_id ? { resend_email_id: email_id } : {}),
           ...(fileAttachments.length > 0 ? { attachments: fileAttachments } : {}),
         },
       })
