@@ -59,10 +59,11 @@ export async function POST(
         ticket_id: params.ticketId,
         author_id: userData.id,
         content: content.trim(),
+        html_body: isHtml ? content.trim() : null,
         is_internal: isInternal !== false,
         email_sent: false,
       })
-      .select('id, content, is_internal, created_at')
+      .select('id, content, html_body, is_internal, created_at')
       .single();
 
     if (insertError) {
