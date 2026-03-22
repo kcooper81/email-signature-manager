@@ -29,7 +29,10 @@ export function decryptToken(encryptedToken: string): string {
   }
   
   const parts = encryptedToken.split(':');
-  if (parts.length !== 3) return encryptedToken;
+  if (parts.length !== 3) {
+    console.warn('decryptToken: token is not in encrypted format (iv:tag:data), returning as-is');
+    return encryptedToken;
+  }
   
   const [ivHex, authTagHex, encrypted] = parts;
   const iv = Buffer.from(ivHex, 'hex');

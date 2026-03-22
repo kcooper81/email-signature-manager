@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, EmptyState } from '@/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, EmptyState, useToast } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
 import { Plus, FileSignature, Pencil, Trash2, Users, Lock, Grid3X3, List, Calendar, LayoutTemplate } from 'lucide-react';
 import { SignaturePreview } from '@/components/templates/preview';
@@ -31,6 +31,7 @@ export default function TemplatesPage() {
   const devBypass = usePayGatesBypass();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const toast = useToast();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { currentClientOrg } = useMspContext();
 
@@ -109,7 +110,7 @@ export default function TemplatesPage() {
 
     if (error) {
       console.error('Failed to delete template:', error);
-      alert('Failed to delete template. Please try again.');
+      toast.error('Failed to delete template. Please try again.');
       setDeleting(false);
       return;
     }

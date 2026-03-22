@@ -58,9 +58,20 @@ export async function PATCH(
     const body = await request.json();
     const adminClient = createServiceClient();
 
+    // Whitelist allowed fields to prevent mass assignment
+    const allowedFields = ['title', 'slug', 'content', 'category', 'is_published', 'sort_order', 'meta_description'];
+    const safeUpdate: Record<string, any> = {};
+    for (const key of allowedFields) {
+      if (key in body) safeUpdate[key] = body[key];
+    }
+
+    if (Object.keys(safeUpdate).length === 0) {
+      return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+    }
+
     const { data, error } = await adminClient
       .from('help_articles')
-      .update(body)
+      .update(safeUpdate)
       .eq('id', articleId)
       .select()
       .single();

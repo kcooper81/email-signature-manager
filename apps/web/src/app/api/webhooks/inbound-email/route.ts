@@ -141,6 +141,7 @@ export async function POST(request: NextRequest) {
       // Use the /emails/receiving/{id} endpoint (not /emails/{id} which is for outbound)
       const res = await fetch(`https://api.resend.com/emails/receiving/${email_id}`, {
         headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
+        signal: AbortSignal.timeout(10000),
       });
       if (res.ok) {
         const fullEmail = await res.json();

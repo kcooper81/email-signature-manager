@@ -136,7 +136,7 @@ export default function BrandAssetsPage() {
     for (const file of Array.from(files)) {
       if (!file.type.startsWith('image/')) continue;
       if (file.size > 5 * 1024 * 1024) {
-        alert(`${file.name} is too large (max 5MB)`);
+        toast.error(`${file.name} is too large (max 5MB)`);
         continue;
       }
 

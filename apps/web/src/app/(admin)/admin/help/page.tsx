@@ -251,12 +251,18 @@ export default function AdminHelpPage() {
 
   const bulkPublish = async () => {
     const ids = [...bulk.selectedIds];
-    for (const id of ids) {
-      await fetch(`/api/admin/help/articles/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_published: true }),
-      });
+    try {
+      for (const id of ids) {
+        const res = await fetch(`/api/admin/help/articles/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_published: true }),
+        });
+        if (!res.ok) throw new Error('Failed to publish');
+      }
+      setSuccess(`Published ${ids.length} article(s)`);
+    } catch {
+      setError('Failed to publish some articles');
     }
     await loadData();
     bulk.clearSelection();
@@ -264,12 +270,18 @@ export default function AdminHelpPage() {
 
   const bulkUnpublish = async () => {
     const ids = [...bulk.selectedIds];
-    for (const id of ids) {
-      await fetch(`/api/admin/help/articles/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_published: false }),
-      });
+    try {
+      for (const id of ids) {
+        const res = await fetch(`/api/admin/help/articles/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_published: false }),
+        });
+        if (!res.ok) throw new Error('Failed to unpublish');
+      }
+      setSuccess(`Unpublished ${ids.length} article(s)`);
+    } catch {
+      setError('Failed to unpublish some articles');
     }
     await loadData();
     bulk.clearSelection();
@@ -277,8 +289,14 @@ export default function AdminHelpPage() {
 
   const bulkDeleteArticles = async () => {
     const ids = [...bulk.selectedIds];
-    for (const id of ids) {
-      await fetch(`/api/admin/help/articles/${id}`, { method: 'DELETE' });
+    try {
+      for (const id of ids) {
+        const res = await fetch(`/api/admin/help/articles/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete');
+      }
+      setSuccess(`Deleted ${ids.length} article(s)`);
+    } catch {
+      setError('Failed to delete some articles');
     }
     await loadData();
     bulk.clearSelection();

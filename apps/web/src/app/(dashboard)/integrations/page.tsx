@@ -270,7 +270,7 @@ function IntegrationsPage() {
       setSyncSuccess(`Synced ${data.count || 0} users from Google Workspace`);
       
       setTimeout(() => {
-        window.location.reload();
+        loadConnections();
       }, 2000);
     } catch (err: any) {
       setSyncError(err.message || 'Failed to sync Google Workspace users. Please try again.');
@@ -305,7 +305,7 @@ function IntegrationsPage() {
       setSyncSuccess(`Synced ${data.count || 0} users from Microsoft 365`);
       
       setTimeout(() => {
-        window.location.reload();
+        loadConnections();
       }, 2000);
     } catch (err: any) {
       setSyncError(err.message || 'Failed to sync Microsoft 365 users. Please try again.');
@@ -359,7 +359,7 @@ function IntegrationsPage() {
       setSyncSuccess(`Synced ${data.count || 0} contacts from HubSpot`);
       
       setTimeout(() => {
-        window.location.reload();
+        loadConnections();
       }, 2000);
     } catch (err: any) {
       setSyncError(err.message || 'Failed to sync HubSpot contacts. Please try again.');
