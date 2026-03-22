@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       googleAuth = await createOrgGoogleClient(organizationId);
     } catch (err: any) {
       return NextResponse.json(
-        { error: 'Internal server error' },
+        { error: 'Google Workspace is not connected. Please reconnect in Settings.' },
         { status: 400 }
       );
     }
@@ -63,11 +63,13 @@ export async function POST(request: NextRequest) {
 
     // Look up existing users to preserve their roles
     const googleEmails = googleUsers.map(u => u.email);
-    const { data: existingUsers } = await serviceClient
-      .from('users')
-      .select('email, role')
-      .eq('organization_id', organizationId)
-      .in('email', googleEmails);
+    const { data: existingUsers } = googleEmails.length > 0
+      ? await serviceClient
+          .from('users')
+          .select('email, role')
+          .eq('organization_id', organizationId)
+          .in('email', googleEmails)
+      : { data: [] };
 
     const existingUserMap = new Map(
       (existingUsers || []).map(u => [u.email, u])
@@ -125,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     // Surface actionable messages for known Google API errors
     const msg = err.message || '';
-    if (msg.includes('Domain not found') || msg.includes('domain')) {
+    if (msg.includes('Domain not found') || msg.includes('Resource Not Found: domain')) {
       return NextResponse.json(
         { error: 'Google Workspace domain not found. Check your organization domain settings.' },
         { status: 400 }
