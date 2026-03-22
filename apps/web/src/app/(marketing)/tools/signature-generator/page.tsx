@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Mail, ArrowRight, Download, Copy, Check, Globe } from 'lucide-react';
+import { Mail, ArrowRight, Download, Copy, Check, Globe, Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,8 +23,14 @@ export default function SignatureGeneratorPage() {
     jobTitle: 'Marketing Director',
     company: 'Acme Inc.',
     email: 'john@acme.com',
+    phone: '',
     website: 'www.acme.com',
   });
+
+  // Email capture state
+  const [captureEmail, setCaptureEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [emailMessage, setEmailMessage] = useState('');
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -36,6 +41,62 @@ export default function SignatureGeneratorPage() {
     navigator.clipboard.writeText(signatureHtml);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const signatureHtml = generateSignatureHtml();
+    const blob = new Blob([signatureHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'email-signature.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleEmailCapture = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!captureEmail || !captureEmail.includes('@')) {
+      setEmailStatus('error');
+      setEmailMessage('Please enter a valid email');
+      return;
+    }
+
+    setEmailStatus('loading');
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: captureEmail,
+          source: 'signature-generator',
+          metadata: {
+            url: window.location.href,
+            referrer: document.referrer,
+            timestamp: new Date().toISOString(),
+            template: selectedTemplate,
+            signatureName: formData.fullName,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        setEmailStatus('success');
+        setEmailMessage('Sent! Check your inbox for signature tips.');
+        // Auto-copy the signature as a bonus
+        const signatureHtml = generateSignatureHtml();
+        navigator.clipboard.writeText(signatureHtml);
+      } else {
+        const data = await response.json();
+        setEmailStatus('error');
+        setEmailMessage(data.error || 'Something went wrong');
+      }
+    } catch {
+      setEmailStatus('error');
+      setEmailMessage('Failed to send. Please try again.');
+    }
   };
 
   const generateSignatureHtml = () => {
@@ -60,8 +121,12 @@ export default function SignatureGeneratorPage() {
       <div style="color: ${c.primary}; font-weight: 500;">${formData.jobTitle}</div>
       <div style="font-weight: 500;">${formData.company}</div>
       <div style="margin-top: 8px; font-size: 13px;">
-        ${formData.email ? `<div>✉️ ${formData.email}</div>` : ''}
-        ${formData.website ? `<div>🌐 ${formData.website}</div>` : ''}
+        ${formData.email ? `<div>&#9993; ${formData.email}</div>` : ''}
+        ${formData.phone ? `<div>&#9742; ${formData.phone}</div>` : ''}
+        ${formData.website ? `<div>&#127760; ${formData.website}</div>` : ''}
+      </div>
+      <div style="margin-top: 10px; font-size: 11px;">
+        <a href="https://siggly.io?utm_source=signature&utm_medium=free-tool&utm_campaign=powered-by" style="color: #9ca3af; text-decoration: none;">Made with Siggly</a>
       </div>
     </td>
   </tr>
@@ -76,7 +141,7 @@ export default function SignatureGeneratorPage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Free Email Signature Generator</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Create a professional email signature in seconds. No signup required. 
+            Create a professional email signature in seconds. No signup required.
             Copy the HTML and paste it into Gmail, Outlook, or any email client.
           </p>
         </div>
@@ -105,9 +170,15 @@ export default function SignatureGeneratorPage() {
                     <Label htmlFor="company">Company</Label>
                     <Input id="company" value={formData.company} onChange={(e) => handleChange('company', e.target.value)} />
                   </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input id="phone" type="tel" value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Optional" />
+                    </div>
                   </div>
                   <div>
                     <Label htmlFor="website">Website</Label>
@@ -146,7 +217,7 @@ export default function SignatureGeneratorPage() {
                 <div className="bg-gray-50 border border-gray-200 rounded-xl p-8">
                   <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <div className="flex gap-4">
-                      <div 
+                      <div
                         className="h-20 w-20 rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0"
                         style={{ backgroundColor: selectedTemplate === 'modern' ? '#7c3aed' : selectedTemplate === 'bold' ? '#2563eb' : selectedTemplate === 'minimal' ? '#64748b' : '#374151' }}
                       >
@@ -160,7 +231,11 @@ export default function SignatureGeneratorPage() {
                         <div className="font-medium text-gray-700">{formData.company}</div>
                         <div className="mt-2 text-sm text-gray-600 space-y-1">
                           {formData.email && <div className="flex items-center gap-2"><Mail className="h-3 w-3" /> {formData.email}</div>}
+                          {formData.phone && <div className="flex items-center gap-2"><span className="text-xs">&#9742;</span> {formData.phone}</div>}
                           {formData.website && <div className="flex items-center gap-2"><Globe className="h-3 w-3" /> {formData.website}</div>}
+                        </div>
+                        <div className="mt-2">
+                          <span className="text-[11px] text-gray-400">Made with <a href="https://siggly.io" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-violet-500 transition-colors">Siggly</a></span>
                         </div>
                       </div>
                     </div>
@@ -168,21 +243,57 @@ export default function SignatureGeneratorPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="mt-6 flex gap-4">
+                <div className="mt-6 flex gap-3">
                   <Button onClick={handleCopy} className="flex-1">
                     {copied ? <><Check className="h-4 w-4 mr-2" /> Copied!</> : <><Copy className="h-4 w-4 mr-2" /> Copy HTML</>}
                   </Button>
+                  <Button onClick={handleDownload} variant="outline">
+                    <Download className="h-4 w-4 mr-2" /> Download
+                  </Button>
+                </div>
+
+                {/* Email Capture */}
+                <div className="mt-6 bg-gradient-to-br from-violet-50 to-blue-50 border border-violet-200 rounded-xl p-5">
+                  <h3 className="font-semibold text-gray-900 mb-1">Get signature setup tips</h3>
+                  <p className="text-sm text-gray-600 mb-3">Enter your email and we'll send you a guide for installing your signature in any email client.</p>
+                  {emailStatus === 'success' ? (
+                    <div className="flex items-center gap-2 text-green-600">
+                      <Check className="h-5 w-5" />
+                      <span className="text-sm font-medium">{emailMessage}</span>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleEmailCapture} className="flex gap-2">
+                      <Input
+                        type="email"
+                        value={captureEmail}
+                        onChange={(e) => setCaptureEmail(e.target.value)}
+                        placeholder="you@company.com"
+                        disabled={emailStatus === 'loading'}
+                        className={`flex-1 bg-white ${emailStatus === 'error' ? 'border-red-500' : ''}`}
+                      />
+                      <Button type="submit" disabled={emailStatus === 'loading'}>
+                        {emailStatus === 'loading' ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <><Send className="h-4 w-4 mr-2" /> Send</>
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                  {emailStatus === 'error' && (
+                    <p className="text-sm text-red-600 mt-2">{emailMessage}</p>
+                  )}
                 </div>
 
                 {/* Instructions */}
                 <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4">
                   <h3 className="font-semibold text-blue-900 mb-2">How to use</h3>
                   <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                    <li>Click "Copy HTML" above</li>
+                    <li>Click &quot;Copy HTML&quot; above</li>
                     <li>Open your email settings (Gmail, Outlook, etc.)</li>
                     <li>Find the signature settings</li>
                     <li>Paste the HTML code</li>
-                    <li>Save and you're done!</li>
+                    <li>Save and you&apos;re done!</li>
                   </ol>
                 </div>
               </div>
