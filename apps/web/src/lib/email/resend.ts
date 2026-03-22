@@ -567,7 +567,8 @@ export interface ComposeEmailData {
   subject: string;
   /** HTML body from the rich text editor */
   body: string;
-  ticketId: string;
+  /** Optional ticket ID — when omitted the email is sent without ticket threading headers */
+  ticketId?: string;
   adminUserId: string;
   replyAs?: string | null;
   cc?: string[];
@@ -642,12 +643,14 @@ export async function sendComposeEmail(data: ComposeEmailData) {
         </html>
       `,
       replyTo: replyToAddress,
-      headers: {
-        'X-Entity-Ref-ID': ticketId,
-        // Embed ticket ID so inbound webhook can thread replies
-        'References': `<ticket-${ticketId}@siggly.io>`,
-        'Message-ID': `<compose-${ticketId}-${Date.now()}@siggly.io>`,
-      },
+      ...(ticketId ? {
+        headers: {
+          'X-Entity-Ref-ID': ticketId,
+          // Embed ticket ID so inbound webhook can thread replies
+          'References': `<ticket-${ticketId}@siggly.io>`,
+          'Message-ID': `<compose-${ticketId}-${Date.now()}@siggly.io>`,
+        },
+      } : {}),
     });
 
     if (error) {

@@ -42,7 +42,7 @@ export function ComposeEmailModal({
   const [body, setBody] = useState('');
   const [sendAs, setSendAs] = useState('support@siggly.io');
   const [sending, setSending] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string; ticketId?: string } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const editorRef = useRef<RichTextEditorRef>(null);
 
   // Sync state when modal opens or recipient changes
@@ -82,8 +82,7 @@ export function ComposeEmailModal({
       if (data.success) {
         setResult({
           success: true,
-          message: data.warning || 'Email sent and ticket created',
-          ticketId: data.ticketId,
+          message: 'Email sent successfully',
         });
         // Auto-close after success
         setTimeout(() => {
