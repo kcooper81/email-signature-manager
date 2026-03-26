@@ -57,6 +57,7 @@ export default function InboxSettingsPage() {
     business_timezone: 'America/New_York',
   });
   const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [editingMailbox, setEditingMailbox] = useState<string | null>(null);
   const [editingCanned, setEditingCanned] = useState<string | null>(null);
   const [newCanned, setNewCanned] = useState<{ title: string; content: string; category: string } | null>(null);
@@ -68,22 +69,32 @@ export default function InboxSettingsPage() {
 
   const loadAll = async () => {
     setLoading(true);
-    const [settingsRes, cannedRes] = await Promise.all([
-      fetch('/api/admin/inbox-settings'),
-      fetch('/api/admin/canned-responses'),
-    ]);
+    setLoadError(null);
+    try {
+      const [settingsRes, cannedRes] = await Promise.all([
+        fetch('/api/admin/inbox-settings'),
+        fetch('/api/admin/canned-responses'),
+      ]);
 
-    if (settingsRes.ok) {
-      const data = await settingsRes.json();
-      setMailboxes(data.mailboxes || []);
-      if (data.autoResponder) setAutoResponder(data.autoResponder);
+      if (!settingsRes.ok && !cannedRes.ok) {
+        setLoadError('Failed to load inbox settings. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      if (settingsRes.ok) {
+        const data = await settingsRes.json();
+        setMailboxes(data.mailboxes || []);
+        if (data.autoResponder) setAutoResponder(data.autoResponder);
+      }
+
+      if (cannedRes.ok) {
+        const data = await cannedRes.json();
+        setCannedResponses(data.data || []);
+      }
+    } catch {
+      setLoadError('Failed to load inbox settings. Please try again.');
     }
-
-    if (cannedRes.ok) {
-      const data = await cannedRes.json();
-      setCannedResponses(data.data || []);
-    }
-
     setLoading(false);
   };
 
@@ -174,6 +185,7 @@ export default function InboxSettingsPage() {
       const res = await fetch(`/api/admin/canned-responses/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete');
       setCannedResponses(prev => prev.filter(c => c.id !== id));
+      toast.success('Canned response deleted');
     } catch {
       toast.error('Failed to delete canned response');
     }
@@ -183,6 +195,15 @@ export default function InboxSettingsPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-3">
+        <p className="text-muted-foreground">{loadError}</p>
+        <button onClick={loadAll} className="text-sm text-primary hover:underline">Retry</button>
       </div>
     );
   }

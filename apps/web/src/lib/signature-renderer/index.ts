@@ -1,5 +1,6 @@
 import { buildTrackableUrl, detectLinkType } from '@/lib/analytics/url-builder';
 import { SOCIAL_ICONS } from '@/lib/social-icons';
+import { escapeHtml } from '@/lib/utils';
 
 // Template block types matching the actual database structure
 interface TemplateBlock {
@@ -176,19 +177,22 @@ function blockToHtml(block: TemplateBlock, context: RenderContext): string {
 
 function replacePlaceholders(text: string, context: RenderContext): string {
   const { user, organization } = context;
-  
+  const esc = (s: string | undefined) => escapeHtml(s || '');
+
   let result = text
-    .replace(/\{\{first_name\}\}/gi, user.firstName || '')
-    .replace(/\{\{last_name\}\}/gi, user.lastName || '')
-    .replace(/\{\{full_name\}\}/gi, [user.firstName, user.lastName].filter(Boolean).join(' '))
-    .replace(/\{\{email\}\}/gi, user.email || '')
-    .replace(/\{\{phone\}\}/gi, user.phone || '')
-    .replace(/\{\{mobile\}\}/gi, user.mobile || '')
-    .replace(/\{\{job_title\}\}/gi, user.title || '')
-    .replace(/\{\{department\}\}/gi, user.department || '')
-    .replace(/\{\{company\}\}/gi, organization.name || '');
-  
+    .replace(/\{\{first_name\}\}/gi, esc(user.firstName))
+    .replace(/\{\{last_name\}\}/gi, esc(user.lastName))
+    .replace(/\{\{full_name\}\}/gi, esc([user.firstName, user.lastName].filter(Boolean).join(' ')))
+    .replace(/\{\{email\}\}/gi, esc(user.email))
+    .replace(/\{\{phone\}\}/gi, esc(user.phone))
+    .replace(/\{\{mobile\}\}/gi, esc(user.mobile))
+    .replace(/\{\{job_title\}\}/gi, esc(user.title))
+    .replace(/\{\{department\}\}/gi, esc(user.department))
+    .replace(/\{\{company\}\}/gi, esc(organization.name));
+
   // Personal link replacements (per-user URLs)
+  // URLs are NOT HTML-escaped — they pass through tracking URL builders before
+  // being placed in href attributes, where the browser handles encoding.
   result = result
     .replace(/\{\{calendly_url\}\}/gi, user.calendlyUrl || '')
     .replace(/\{\{calendly_link\}\}/gi, user.calendlyUrl || '') // Alias for backwards compatibility
@@ -426,10 +430,16 @@ function renderButtonBlock(content: any, context: RenderContext): string {
 }
 
 function renderBannerBlock(content: any, context: RenderContext): string {
-  // Banner scheduling enforcement: check startDate/endDate
-  const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
-  if (content.startDate && today < content.startDate) return '';
-  if (content.endDate && today > content.endDate) return '';
+  // Banner scheduling enforcement: compare dates in UTC at day boundaries
+  const now = new Date();
+  if (content.startDate) {
+    const start = new Date(content.startDate + 'T00:00:00Z');
+    if (now < start) return '';
+  }
+  if (content.endDate) {
+    const end = new Date(content.endDate + 'T23:59:59Z');
+    if (now > end) return '';
+  }
 
   const src = content.src || '';
   const alt = content.alt || 'Banner';

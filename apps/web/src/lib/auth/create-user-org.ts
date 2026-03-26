@@ -76,17 +76,32 @@ export async function createUserWithOrganization(
     slug = `${baseSlug}-${crypto.randomUUID().substring(0, 8)}`;
   }
 
-  // Step 1: Create organization
-  const { data: newOrg, error: orgError } = await supabaseAdmin
-    .from('organizations')
-    .insert({
-      name: trimmedOrgName,
-      slug,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .select('id')
-    .single();
+  // Step 1: Create organization (retry on slug conflict)
+  let newOrg: { id: string } | null = null;
+  let orgError: any = null;
+  for (let insertAttempt = 0; insertAttempt < 3; insertAttempt++) {
+    const { data, error } = await supabaseAdmin
+      .from('organizations')
+      .insert({
+        name: trimmedOrgName,
+        slug,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (error?.code === '23505') {
+      // Unique constraint violation — regenerate slug and retry
+      slug = `${baseSlug}-${crypto.randomUUID().substring(0, 8)}`;
+      orgError = error;
+      continue;
+    }
+
+    orgError = error;
+    newOrg = data;
+    break;
+  }
 
   if (orgError || !newOrg) {
     console.error('Failed to create organization:', orgError);

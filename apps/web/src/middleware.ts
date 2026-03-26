@@ -109,7 +109,7 @@ export async function middleware(request: NextRequest) {
           const safeType = (org.organization_type || 'standard').replace(/[\r\n]/g, '');
           response.headers.set('x-msp-org-id', org.id);
           response.headers.set('x-msp-org-name', safeName);
-          response.headers.set('x-msp-branding', JSON.stringify(org.branding || {}));
+          response.headers.set('x-msp-branding', JSON.stringify(org.branding || {}).replace(/[\r\n]/g, ''));
           response.headers.set('x-msp-org-type', safeType);
         }
       } catch {

@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     const currentCount = existingUserCount || 0;
 
     // Check if dev bypass is enabled
-    const devBypass = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+    const devBypass = process.env.BYPASS_PAY_GATES === 'true';
 
     // Filter contacts to only sync up to the limit (unless unlimited or dev bypass)
     let contactsToSync = contacts;

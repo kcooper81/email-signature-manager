@@ -830,7 +830,7 @@ export default function TicketsPage() {
         }
         showToast('Marked as spam');
       }
-    } catch { console.error('Failed to mark spam'); }
+    } catch { showToast('Failed to mark as spam', 'error'); }
   };
 
   const markNotSpam = async (ticketId: string) => {
@@ -851,8 +851,10 @@ export default function TicketsPage() {
           }
         }
         showToast('Removed from spam');
+      } else {
+        showToast('Failed to remove from spam', 'error');
       }
-    } catch { console.error('Failed to unmark spam'); }
+    } catch { showToast('Failed to remove from spam', 'error'); }
   };
 
   const markUnread = async (ticketId: string) => {
@@ -868,8 +870,10 @@ export default function TicketsPage() {
           setSelectedTicket(prev => prev ? { ...prev, status: 'new' as const } : null);
         }
         showToast('Marked as unread');
+      } else {
+        showToast('Failed to mark as unread', 'error');
       }
-    } catch { console.error('Failed to mark unread'); }
+    } catch { showToast('Failed to mark as unread', 'error'); }
   };
 
   const deleteTicket = async (ticketId: string) => {
@@ -879,8 +883,10 @@ export default function TicketsPage() {
       if (res.ok) {
         removeAndAdvance(ticketId);
         showToast('Ticket deleted');
+      } else {
+        showToast('Failed to delete ticket', 'error');
       }
-    } catch { console.error('Failed to delete ticket'); }
+    } catch { showToast('Failed to delete ticket', 'error'); }
     setDeleting(false);
     setDeleteConfirmId(null);
   };

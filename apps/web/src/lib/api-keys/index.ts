@@ -99,22 +99,14 @@ export async function authenticateApiKey(
     return planDenied('Public Signature API', 'Professional');
   }
 
-  // Rate limiting
+  // Rate limiting with optimistic locking
   const now = new Date();
   const windowStart = new Date(keyRow.rate_limit_window);
   const windowAge = now.getTime() - windowStart.getTime();
 
-  let newCount: number;
-  let newWindow: string;
-
-  if (windowAge > RATE_LIMIT_WINDOW_MS) {
-    // Window expired — reset
-    newCount = 1;
-    newWindow = now.toISOString();
-  } else {
-    newCount = keyRow.rate_limit_count + 1;
-    newWindow = keyRow.rate_limit_window;
-  }
+  const windowExpired = windowAge > RATE_LIMIT_WINDOW_MS;
+  const newCount = windowExpired ? 1 : keyRow.rate_limit_count + 1;
+  const newWindow = windowExpired ? now.toISOString() : keyRow.rate_limit_window;
 
   if (newCount > RATE_LIMIT_MAX) {
     const retryAfter = Math.ceil((RATE_LIMIT_WINDOW_MS - windowAge) / 1000);
@@ -127,15 +119,32 @@ export async function authenticateApiKey(
     );
   }
 
-  // Update last_used_at + rate limit in one query
-  await supabase
+  // Optimistic locking: only update if count hasn't changed since we read it
+  const { data: updated } = await supabase
     .from('api_keys')
     .update({
       last_used_at: now.toISOString(),
       rate_limit_count: newCount,
       rate_limit_window: newWindow,
     })
-    .eq('id', keyRow.id);
+    .eq('id', keyRow.id)
+    .eq('rate_limit_count', keyRow.rate_limit_count)
+    .select('id');
+
+  // If update affected 0 rows, another request incremented the counter — re-check
+  if (!updated?.length) {
+    const { data: freshKey } = await supabase
+      .from('api_keys')
+      .select('rate_limit_count, rate_limit_window')
+      .eq('id', keyRow.id)
+      .single();
+    if (freshKey && freshKey.rate_limit_count >= RATE_LIMIT_MAX) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Max 60 requests per minute.' },
+        { status: 429 },
+      );
+    }
+  }
 
   return {
     keyId: keyRow.id,

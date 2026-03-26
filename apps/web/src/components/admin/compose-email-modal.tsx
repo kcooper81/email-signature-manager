@@ -108,7 +108,7 @@ export function ComposeEmailModal({
   const canSend = to.trim() && subject.trim() && editorContent.trim() && editorContent !== '<p></p>' && !sending;
 
   return (
-    <Modal open={open} onClose={onClose} className="max-w-2xl">
+    <Modal open={open} onClose={onClose} className="max-w-4xl">
       <ModalHeader onClose={onClose}>
         <ModalTitle>Compose Email</ModalTitle>
         {recipientLabel && (

@@ -10,36 +10,28 @@ import type { WorkflowRunContext } from '../workflow-runner';
 export async function deploySignature(context: WorkflowRunContext, _config: Record<string, any>) {
   const supabase = createServiceClient();
 
-  // Get user's assigned template
-  const { data: assignment } = await supabase
-    .from('signature_assignments')
-    .select('template_id')
-    .eq('user_id', context.userId)
-    .eq('organization_id', context.organizationId)
-    .order('priority', { ascending: false })
-    .limit(1)
-    .single();
+  // Fetch assignment with template and user data in parallel
+  const [assignmentResult, userResult] = await Promise.all([
+    supabase
+      .from('signature_assignments')
+      .select('template_id, template:template_id(id, name, blocks)')
+      .eq('user_id', context.userId)
+      .eq('organization_id', context.organizationId)
+      .order('priority', { ascending: false })
+      .limit(1)
+      .single(),
+    supabase
+      .from('users')
+      .select('*')
+      .eq('id', context.userId)
+      .single(),
+  ]);
 
-  if (!assignment) return;
+  const assignment = assignmentResult.data;
+  const template = (assignment as any)?.template;
+  const userData = userResult.data;
 
-  // Fetch the template blocks
-  const { data: template } = await supabase
-    .from('signature_templates')
-    .select('*')
-    .eq('id', assignment.template_id)
-    .eq('organization_id', context.organizationId)
-    .single();
-
-  if (!template) return;
-
-  // Fetch user data
-  const { data: userData } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', context.userId)
-    .single();
-
-  if (!userData) return;
+  if (!assignment || !template || !userData) return;
 
   // Render signature HTML
   const renderContext = {
