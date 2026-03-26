@@ -32,7 +32,8 @@ export async function GET() {
     let authUsers: User[] = [];
     let page = 1;
     const perPage = 1000;
-    while (true) {
+    const MAX_PAGES = 100; // Safety guard: max 100k users
+    while (page <= MAX_PAGES) {
       const { data: authData, error: listError } = await supabaseAdmin.auth.admin.listUsers({
         page,
         perPage,

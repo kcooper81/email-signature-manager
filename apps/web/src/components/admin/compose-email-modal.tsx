@@ -61,6 +61,13 @@ export function ComposeEmailModal({
     const htmlContent = editorRef.current?.getHTML() || body;
     if (!to.trim() || !subject.trim() || !htmlContent.trim() || htmlContent === '<p></p>') return;
 
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(to.trim())) {
+      setResult({ success: false, message: 'Please enter a valid email address' });
+      return;
+    }
+
     setSending(true);
     setResult(null);
 

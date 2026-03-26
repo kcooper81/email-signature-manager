@@ -146,6 +146,11 @@ export function MspContextProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const switchToClient = (client: ClientOrgData) => {
+    // Validate client is in the available clients list
+    if (!availableClients.some(c => c.id === client.id)) {
+      console.error('switchToClient: client not in available clients list', client.id);
+      return;
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(client));
     setMspCookie(client.id);
     setCurrentClientOrg(client);

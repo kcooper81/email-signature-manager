@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error: any) {
-    console.error('Webhook handler error:', error);
+    console.error(`Webhook handler error [${event?.type || 'unknown'}]:`, error);
     
     await logException(error, {
       route: '/api/billing/webhook',

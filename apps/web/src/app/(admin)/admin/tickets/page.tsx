@@ -522,7 +522,7 @@ export default function TicketsPage() {
       .from('ticket_notes')
       .select('id, content, html_body, is_internal, created_at, author_id')
       .eq('ticket_id', ticketId)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false });
 
     if (!notes) return [];
 
@@ -1646,20 +1646,85 @@ export default function TicketsPage() {
             {/* Scrollable conversation area — collapsible thread */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
               {(() => {
+                // Notes are fetched newest-first; build thread with latest at top
                 const allMessages = [
-                  { id: '__original', type: 'original' as const, createdAt: selectedTicket.createdAt },
                   ...selectedTicket.notes.map(n => ({ id: n.id, type: 'note' as const, note: n, createdAt: n.createdAt })),
+                  { id: '__original', type: 'original' as const, createdAt: selectedTicket.createdAt },
                 ];
                 const totalMessages = allMessages.length;
                 const hasCollapsible = totalMessages > 2;
-                // Last message is always shown, original is always shown if it's the only one or there are collapsed
+                const firstMessage = allMessages[0]; // newest
                 const collapsedMessages = hasCollapsible ? allMessages.slice(1, -1) : [];
-                const lastMessage = totalMessages > 1 ? allMessages[totalMessages - 1] : null;
                 const allExpanded = !hasCollapsible || expandedNotes.has('__all');
+
+                const renderNote = (note: any, alwaysExpanded = false) => {
+                  const isCustomer = note.authorEmail === 'External Reply';
+                  const isInternal = note.isInternal;
+                  const isNoteExpanded = alwaysExpanded || expandedNotes.has(note.id);
+                  return (
+                    <div key={note.id}>
+                      <button
+                        onClick={() => !alwaysExpanded && setExpandedNotes(prev => {
+                          const next = new Set(prev);
+                          if (next.has(note.id)) next.delete(note.id); else next.add(note.id);
+                          return next;
+                        })}
+                        className={`w-full flex items-center gap-2 text-left ${alwaysExpanded ? 'cursor-default' : ''}`}
+                      >
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
+                        <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
+                          {isCustomer ? 'Customer' : isInternal ? (alwaysExpanded ? 'Internal Note' : 'Note') : note.authorEmail.split('@')[0]}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
+                        {!isNoteExpanded && (
+                          <span className="text-xs text-muted-foreground truncate flex-1">{note.content.replace(/<[^>]*>/g, '').slice(0, 60)}</span>
+                        )}
+                        {!alwaysExpanded && <ChevronDown className={`h-3 w-3 text-muted-foreground shrink-0 transition-transform ${isNoteExpanded ? 'rotate-180' : ''}`} />}
+                      </button>
+                      {isNoteExpanded && (
+                        <div className={`rounded-lg p-4 mt-1.5 ${
+                          isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'
+                        }`}>
+                          {note.htmlBody ? (
+                            <SafeHtmlViewer html={note.htmlBody} />
+                          ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
+                            <SafeHtmlViewer html={note.content} />
+                          ) : (
+                            <p className="text-sm whitespace-pre-wrap">{note.content}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                };
 
                 return (
                   <>
-                    {/* Original message — always visible */}
+                    {/* Latest message — always expanded at top */}
+                    {firstMessage && firstMessage.type === 'note' && firstMessage.note && renderNote(firstMessage.note, true)}
+
+                    {/* Collapsed older messages */}
+                    {hasCollapsible && !allExpanded && (
+                      <button
+                        onClick={() => setExpandedNotes(prev => new Set([...prev, '__all']))}
+                        className="w-full flex items-center gap-2 py-2 px-3 text-xs text-primary hover:bg-primary/5 rounded-lg transition-colors font-medium"
+                      >
+                        <div className="flex-1 h-px bg-border" />
+                        <span className="flex items-center gap-1">
+                          <ChevronDown className="h-3 w-3" />
+                          {collapsedMessages.length} older message{collapsedMessages.length !== 1 ? 's' : ''}
+                        </span>
+                        <div className="flex-1 h-px bg-border" />
+                      </button>
+                    )}
+
+                    {/* Expanded older messages */}
+                    {hasCollapsible && allExpanded && collapsedMessages.map(msg => {
+                      if (msg.type === 'note' && msg.note) return renderNote(msg.note);
+                      return null;
+                    })}
+
+                    {/* Original message — always visible at bottom */}
                     <div>
                       <div className="flex items-center gap-2 mb-1.5">
                         <span className="text-xs font-semibold text-foreground/70">
@@ -1675,94 +1740,6 @@ export default function TicketsPage() {
                         )}
                       </div>
                     </div>
-
-                    {/* Collapsed middle messages */}
-                    {hasCollapsible && !allExpanded && (
-                      <button
-                        onClick={() => setExpandedNotes(prev => new Set([...prev, '__all']))}
-                        className="w-full flex items-center gap-2 py-2 px-3 text-xs text-primary hover:bg-primary/5 rounded-lg transition-colors font-medium"
-                      >
-                        <div className="flex-1 h-px bg-border" />
-                        <span className="flex items-center gap-1">
-                          <ChevronDown className="h-3 w-3" />
-                          {collapsedMessages.length} earlier message{collapsedMessages.length !== 1 ? 's' : ''}
-                        </span>
-                        <div className="flex-1 h-px bg-border" />
-                      </button>
-                    )}
-
-                    {/* Expanded middle messages (when uncollapsed) */}
-                    {hasCollapsible && allExpanded && collapsedMessages.map(msg => {
-                      if (msg.type !== 'note' || !msg.note) return null;
-                      const note = msg.note;
-                      const isCustomer = note.authorEmail === 'External Reply';
-                      const isInternal = note.isInternal;
-                      const isNoteExpanded = expandedNotes.has(note.id);
-                      return (
-                        <div key={note.id}>
-                          <button
-                            onClick={() => setExpandedNotes(prev => {
-                              const next = new Set(prev);
-                              if (next.has(note.id)) next.delete(note.id); else next.add(note.id);
-                              return next;
-                            })}
-                            className="w-full flex items-center gap-2 text-left"
-                          >
-                            <div className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
-                            <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
-                              {isCustomer ? 'Customer' : isInternal ? 'Note' : note.authorEmail.split('@')[0]}
-                            </span>
-                            <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
-                            {!isNoteExpanded && (
-                              <span className="text-xs text-muted-foreground truncate flex-1">{note.content.replace(/<[^>]*>/g, '').slice(0, 60)}</span>
-                            )}
-                            <ChevronDown className={`h-3 w-3 text-muted-foreground shrink-0 transition-transform ${isNoteExpanded ? 'rotate-180' : ''}`} />
-                          </button>
-                          {isNoteExpanded && (
-                            <div className={`rounded-lg p-4 mt-1.5 ${
-                              isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'
-                            }`}>
-                              {note.htmlBody ? (
-                                <SafeHtmlViewer html={note.htmlBody} />
-                              ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
-                                <SafeHtmlViewer html={note.content} />
-                              ) : (
-                                <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    {/* Latest message — always expanded */}
-                    {lastMessage && lastMessage.type === 'note' && lastMessage.note && (() => {
-                      const note = lastMessage.note;
-                      const isCustomer = note.authorEmail === 'External Reply';
-                      const isInternal = note.isInternal;
-                      return (
-                        <div>
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <div className={`w-2 h-2 rounded-full shrink-0 ${isCustomer ? 'bg-slate-400' : isInternal ? 'bg-amber-400' : 'bg-blue-500'}`} />
-                            <span className={`text-xs font-semibold ${isCustomer ? 'text-foreground/70' : isInternal ? 'text-amber-600' : 'text-blue-600'}`}>
-                              {isCustomer ? 'Customer' : isInternal ? 'Internal Note' : note.authorEmail.split('@')[0]}
-                            </span>
-                            <span className="text-[11px] text-muted-foreground">{timeAgo(note.createdAt)}</span>
-                          </div>
-                          <div className={`rounded-lg p-4 ${
-                            isCustomer ? 'bg-card border' : isInternal ? 'bg-amber-50/70 border border-amber-200/50' : 'bg-blue-50/70 border border-blue-200/50'
-                          }`}>
-                            {note.htmlBody ? (
-                              <SafeHtmlViewer html={note.htmlBody} />
-                            ) : /^<[a-z][\s\S]*>/i.test(note.content) ? (
-                              <SafeHtmlViewer html={note.content} />
-                            ) : (
-                              <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })()}
                   </>
                 );
               })()}
