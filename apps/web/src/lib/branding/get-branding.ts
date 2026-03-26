@@ -61,8 +61,8 @@ export function validateSubdomain(subdomain: string): string | null {
     return null;
   }
   
-  // Must start and end with alphanumeric
-  if (!/^[a-z0-9].*[a-z0-9]$/i.test(subdomain)) {
+  // Must start and end with alphanumeric, only contain alphanumeric and hyphens
+  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/i.test(subdomain)) {
     return null;
   }
   

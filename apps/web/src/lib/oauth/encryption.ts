@@ -30,8 +30,8 @@ export function decryptToken(encryptedToken: string): string {
   
   const parts = encryptedToken.split(':');
   if (parts.length !== 3) {
-    console.warn('decryptToken: token is not in encrypted format (iv:tag:data), returning as-is');
-    return encryptedToken;
+    console.error('decryptToken: token is not in encrypted format (iv:tag:data). Token may need re-encryption.');
+    throw new Error('Invalid encrypted token format. Please reconnect the integration.');
   }
   
   const [ivHex, authTagHex, encrypted] = parts;

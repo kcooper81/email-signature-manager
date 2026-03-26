@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     const currentPlan = getPlan(planSub?.plan || 'free');
-    const devBypassEnabled = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+    const devBypassEnabled = process.env.BYPASS_PAY_GATES === 'true';
     if (!devBypassEnabled && !currentPlan.features.microsoft365) {
       return NextResponse.json(
         { error: 'Microsoft 365 integration requires the Professional plan' },
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     const currentCount = existingUserCount || 0;
 
     // Check if dev bypass is enabled
-    const devBypass = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+    const devBypass = process.env.BYPASS_PAY_GATES === 'true';
 
     // Filter users to only sync up to the limit (unless unlimited or dev bypass)
     let usersToSync = microsoftUsers;

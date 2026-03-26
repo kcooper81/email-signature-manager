@@ -198,7 +198,7 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
       content: initialContent || '',
       editorProps: {
         attributes: {
-          class: 'prose prose-sm max-w-none focus:outline-none min-h-[60px] px-3 py-2 text-sm',
+          class: 'prose prose-sm max-w-none focus:outline-none min-h-[200px] px-3 py-2 text-sm',
         },
       },
       onUpdate: ({ editor }) => {

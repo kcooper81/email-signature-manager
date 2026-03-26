@@ -10,6 +10,7 @@ import { BrandNav } from '@/components/dashboard';
 export default function BrandHubPage() {
   const [hubData, setHubData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadHubData();
@@ -18,10 +19,12 @@ export default function BrandHubPage() {
   async function loadHubData() {
     try {
       const res = await fetch('/api/brand/hub');
+      if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
       setHubData(data);
     } catch (err) {
       console.error('Failed to load brand hub:', err);
+      setError('Failed to load brand hub data. Please try again.');
     }
     setLoading(false);
   }
@@ -30,6 +33,15 @@ export default function BrandHubPage() {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 gap-3">
+        <p className="text-muted-foreground">{error}</p>
+        <Button variant="outline" onClick={() => { setError(null); setLoading(true); loadHubData(); }}>Retry</Button>
       </div>
     );
   }
