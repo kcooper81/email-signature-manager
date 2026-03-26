@@ -71,8 +71,9 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const shouldBypassRef = useRef(false);
 
   const loadSubscription = async () => {
+    try {
     const supabase = createClient();
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -191,6 +192,10 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       canAddTeamMember,
       refresh: loadSubscription,
     });
+    } catch (err) {
+      console.error('Failed to load subscription:', err);
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
   };
 
   useEffect(() => {
