@@ -38,6 +38,13 @@ const DEFAULT_MAPPINGS: Record<string, Record<string, string>> = {
   },
 };
 
+// Only these user table columns are allowed as mapping targets
+const ALLOWED_TARGET_FIELDS = new Set([
+  'first_name', 'last_name', 'email', 'title', 'department',
+  'phone', 'mobile', 'avatar_url', 'office_location',
+  'manager_email', 'start_date',
+]);
+
 export function mapFields(
   record: Record<string, any>,
   customMapping: Record<string, string>
@@ -47,7 +54,7 @@ export function mapFields(
 
   for (const [sourceField, value] of Object.entries(record)) {
     const targetField = mapping[sourceField];
-    if (targetField && value !== undefined && value !== null && value !== '') {
+    if (targetField && ALLOWED_TARGET_FIELDS.has(targetField) && value !== undefined && value !== null && value !== '') {
       result[targetField] = value;
     }
   }

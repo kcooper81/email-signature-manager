@@ -496,7 +496,12 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
 
   // Fallback sign-off when no signature is available
   const fallbackSignOff = !signatureHtml
-    ? `<p style="font-size: 16px; color: #374151; margin-bottom: 0;">Best regards,<br><strong>The Siggly Team</strong></p>`
+    ? `<div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <p style="font-size: 14px; color: #374151; margin: 0 0 12px 0;">Best regards,<br><strong>The Siggly Team</strong></p>
+        <a href="https://siggly.io" style="text-decoration: none;"><img src="https://siggly.io/siggly-logo.png" alt="Siggly" width="80" style="display: block;" /></a>
+        <p style="font-size: 12px; color: #6b7280; margin: 8px 0 0 0;">Email Signature Management</p>
+        <p style="font-size: 12px; margin: 4px 0 0 0;"><a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">siggly.io</a> &middot; <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">support@siggly.io</a></p>
+      </div>`
     : '';
 
   // Build plain text version for deliverability
@@ -521,7 +526,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;">
             <div style="font-size: 15px; color: #374151; margin-top: 0;${isHtml ? '' : ' white-space: pre-wrap;'}">${responseMessage}</div>
 
             ${fallbackSignOff}
@@ -534,7 +539,7 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
               </div>
             </div>
 
-            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
+            <div style="padding: 20px 0; color: #9ca3af; font-size: 11px;">
               <p style="margin: 5px 0;">Ticket #${ticketId.slice(0, 8)}</p>
             </div>
           </body>
@@ -611,7 +616,12 @@ export async function sendComposeEmail(data: ComposeEmailData) {
   }
 
   const fallbackSignOff = !signatureHtml
-    ? `<p style="font-size: 16px; color: #374151; margin-bottom: 0;">Best regards,<br><strong>The Siggly Team</strong></p>`
+    ? `<div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <p style="font-size: 14px; color: #374151; margin: 0 0 12px 0;">Best regards,<br><strong>The Siggly Team</strong></p>
+        <a href="https://siggly.io" style="text-decoration: none;"><img src="https://siggly.io/siggly-logo.png" alt="Siggly" width="80" style="display: block;" /></a>
+        <p style="font-size: 12px; color: #6b7280; margin: 8px 0 0 0;">Email Signature Management</p>
+        <p style="font-size: 12px; margin: 4px 0 0 0;"><a href="https://siggly.io" style="color: #4d52de; text-decoration: none;">siggly.io</a> &middot; <a href="mailto:support@siggly.io" style="color: #4d52de; text-decoration: none;">support@siggly.io</a></p>
+      </div>`
     : '';
 
   const plainSignature = signatureHtml ? '\n--\nSiggly Team' : '\nBest regards,\nThe Siggly Team';
@@ -634,7 +644,7 @@ export async function sendComposeEmail(data: ComposeEmailData) {
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;">
             <div style="font-size: 15px; color: #374151;">${safeBody}</div>
 
             ${fallbackSignOff}
@@ -745,10 +755,10 @@ export async function sendAutoResponse(opts: {
         <!DOCTYPE html>
         <html>
           <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;">
             <p style="font-size: 15px; color: #374151; white-space: pre-wrap; margin-top: 0;">${body}</p>
             ${sigBlock}
-            <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 11px;">
+            <div style="padding: 20px 0; color: #9ca3af; font-size: 11px;">
               <p style="margin: 5px 0;">Ticket #${opts.ticketId.slice(0, 8)}</p>
             </div>
           </body>

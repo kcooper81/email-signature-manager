@@ -19,7 +19,7 @@ export async function getOrgPlan(
   orgId: string,
   options?: { authId?: string },
 ): Promise<OrgPlan> {
-  let devBypass = process.env.NEXT_PUBLIC_BYPASS_PAY_GATES === 'true';
+  let devBypass = process.env.BYPASS_PAY_GATES === 'true';
 
   // Check if the requesting user is a super admin
   if (!devBypass && options?.authId) {
