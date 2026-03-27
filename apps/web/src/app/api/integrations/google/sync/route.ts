@@ -171,7 +171,22 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Google sync error:', error);
-    
+
+    // Handle known Google API errors without logging them as exceptions
+    const msg = error.message || '';
+    if (msg.includes('Domain not found') || msg.includes('Resource Not Found: domain')) {
+      return NextResponse.json(
+        { error: 'Google Workspace domain not found. Check your organization domain in Settings.' },
+        { status: 400 }
+      );
+    }
+    if (msg.includes('Not Authorized') || msg.includes('insufficient')) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions. The connected Google account needs Admin Directory access to sync users. Please reconnect with an admin account.' },
+        { status: 403 }
+      );
+    }
+
     await logException(error, {
       route: '/api/integrations/google/sync',
       method: 'POST',
