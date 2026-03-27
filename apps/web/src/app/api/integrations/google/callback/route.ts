@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Determine actually-granted scopes and check for missing ones
-    const grantedScopes = tokens.scope?.split(' ') || [];
+    const grantedScopes = tokens.scope?.split(' ').filter(Boolean) || [];
     const missingScopes = SCOPES.filter(
       (required) => !grantedScopes.includes(required)
     );
