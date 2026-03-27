@@ -158,6 +158,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Update last_sync_at timestamp
+    await supabase
+      .from('provider_connections')
+      .update({ last_sync_at: new Date().toISOString() })
+      .eq('id', connection.id);
+
     return NextResponse.json({
       success: true,
       count: upsertedUsers?.length || 0,

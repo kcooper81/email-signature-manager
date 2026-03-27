@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { SignaturePreview } from '@/components/templates/preview';
@@ -35,6 +35,7 @@ import {
   Copy,
   Download,
   Check,
+  RefreshCw,
 } from 'lucide-react';
 
 interface Template {
@@ -76,6 +77,7 @@ interface User {
 interface UserDeploymentHistory {
   id: string;
   user_id: string;
+  deployment_id: string | null;
   template_id: string;
   status: string;
   deployed_at: string;
@@ -113,12 +115,95 @@ export default function DeploymentsPage() {
   const [showTeamDeployments, setShowTeamDeployments] = useState(true);
   const [teamSearchQuery, setTeamSearchQuery] = useState('');
   const [deployError, setDeployError] = useState<string | null>(null);
+
+  // Deployment progress polling state
+  const [deploymentProgress, setDeploymentProgress] = useState<{
+    deploymentId: string;
+    total_users: number;
+    successful_count: number;
+    failed_count: number;
+    status: string;
+  } | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   // Manual copy state (for users without integrations)
   const [showManualCopy, setShowManualCopy] = useState(false);
   const [generatedSignatures, setGeneratedSignatures] = useState<Array<{ userId: string; userName: string; email: string; html: string }>>([]);
   const [generating, setGenerating] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Retry state
+  const [retryingUserId, setRetryingUserId] = useState<string | null>(null);
+
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, []);
+
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  }, []);
+
+  // Start polling by first discovering the active deployment, then polling its status
+  const startPollingForActive = useCallback((totalUsers: number) => {
+    stopPolling();
+
+    // Show optimistic progress immediately
+    setDeploymentProgress({
+      deploymentId: '',
+      total_users: totalUsers,
+      successful_count: 0,
+      failed_count: 0,
+      status: 'running',
+    });
+
+    let foundId = '';
+    pollingRef.current = setInterval(async () => {
+      try {
+        if (!foundId) {
+          // Try to discover the active deployment
+          const res = await fetch('/api/deployments/active');
+          if (!res.ok) return;
+          const data = await res.json();
+          if (data.deployment?.id) {
+            foundId = data.deployment.id;
+            setDeploymentProgress({
+              deploymentId: foundId,
+              total_users: data.deployment.total_users,
+              successful_count: data.deployment.successful_count,
+              failed_count: data.deployment.failed_count,
+              status: data.deployment.status,
+            });
+            if (data.deployment.status === 'completed' || data.deployment.status === 'failed') {
+              stopPolling();
+            }
+          }
+        } else {
+          // We have the ID, poll the specific status endpoint
+          const res = await fetch(`/api/deployments/${foundId}/status`);
+          if (!res.ok) return;
+          const data = await res.json();
+          setDeploymentProgress({
+            deploymentId: foundId,
+            total_users: data.total_users,
+            successful_count: data.successful_count,
+            failed_count: data.failed_count,
+            status: data.status,
+          });
+          if (data.status === 'completed' || data.status === 'failed') {
+            stopPolling();
+          }
+        }
+      } catch {
+        // Silently ignore polling errors; will retry on next interval
+      }
+    }, 2000);
+  }, [stopPolling]);
 
   useEffect(() => {
     loadData();
@@ -202,6 +287,7 @@ export default function DeploymentsPage() {
       .select(`
         id,
         user_id,
+        deployment_id,
         template_id,
         status,
         deployed_at,
@@ -269,12 +355,24 @@ export default function DeploymentsPage() {
   const startDeployment = async () => {
     setDeploying(true);
     setDeployError(null);
+    setDeploymentProgress(null);
+
+    // Determine total user count for progress display
+    const totalUsers = deployTarget === 'me' ? 1
+      : deployTarget === 'all' ? users.length
+      : selectedUsers.length;
 
     try {
+      // Start polling for progress immediately (the API creates the DB record
+      // before processing users, so polling will pick it up quickly)
+      if (totalUsers > 1) {
+        startPollingForActive(totalUsers);
+      }
+
       const response = await fetch('/api/deployments/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           templateId: selectedTemplate,
           target: deployTarget,
           userIds: deployTarget === 'selected' ? selectedUsers : undefined,
@@ -286,6 +384,10 @@ export default function DeploymentsPage() {
       if (!response.ok) {
         throw new Error(data.error || 'Deployment failed');
       }
+
+      // Stop polling and clear progress
+      stopPolling();
+      setDeploymentProgress(null);
 
       // Show success modal
       setDeploymentResult({
@@ -301,6 +403,8 @@ export default function DeploymentsPage() {
       setSelectedUsers([]);
       await loadData();
     } catch (err: any) {
+      stopPolling();
+      setDeploymentProgress(null);
       setDeployError(err.message || 'Failed to start deployment');
     } finally {
       setDeploying(false);
@@ -403,6 +507,30 @@ export default function DeploymentsPage() {
   const closeManualCopyModal = () => {
     setShowManualCopy(false);
     setGeneratedSignatures([]);
+  };
+
+  const retryUserDeployment = async (deploymentId: string, userId: string) => {
+    setRetryingUserId(userId);
+    try {
+      const response = await fetch('/api/deployments/retry-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deploymentId, userId }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Retry failed');
+      }
+
+      // Reload data to reflect updated status
+      await loadData();
+    } catch (err: any) {
+      setDeployError(err.message || 'Failed to retry deployment');
+    } finally {
+      setRetryingUserId(null);
+    }
   };
 
   const googleConnected = connections.some(c => c.provider === 'google' && c.is_active);
@@ -958,13 +1086,40 @@ export default function DeploymentsPage() {
 
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
                 <p className="text-sm text-amber-600">
-                  <strong>Note:</strong> This will update the email signature for {getTargetSummary().toLowerCase()}. 
+                  <strong>Note:</strong> This will update the email signature for {getTargetSummary().toLowerCase()}.
                   The change will take effect immediately.
                 </p>
               </div>
-              
+
+              {/* Deployment progress indicator */}
+              {deploying && deploymentProgress && (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                    <span className="text-sm font-medium text-blue-700">
+                      Deploying signatures... {deploymentProgress.successful_count + deploymentProgress.failed_count}/{deploymentProgress.total_users} users complete
+                    </span>
+                  </div>
+                  <div className="w-full bg-blue-100 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${deploymentProgress.total_users > 0
+                          ? Math.round(((deploymentProgress.successful_count + deploymentProgress.failed_count) / deploymentProgress.total_users) * 100)
+                          : 0}%`,
+                      }}
+                    />
+                  </div>
+                  {deploymentProgress.failed_count > 0 && (
+                    <p className="text-xs text-red-600">
+                      {deploymentProgress.failed_count} failed so far
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="flex justify-between pt-4">
-                <Button variant="outline" onClick={() => setStep(2)}>
+                <Button variant="outline" onClick={() => setStep(2)} disabled={deploying}>
                   <ChevronLeft className="mr-2 h-4 w-4" /> Back
                 </Button>
                 <Button onClick={startDeployment} disabled={deploying}>
@@ -1114,6 +1269,7 @@ export default function DeploymentsPage() {
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell">Current Signature</th>
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell">Last Deployed</th>
                         <th className="p-3 text-left text-xs font-medium text-muted-foreground">Status</th>
+                        <th className="p-3 text-left text-xs font-medium text-muted-foreground hidden sm:table-cell">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1187,6 +1343,24 @@ export default function DeploymentsPage() {
                                     <Clock className="h-3 w-3" />
                                     Not deployed
                                   </span>
+                                )}
+                              </td>
+                              <td className="p-3 hidden sm:table-cell">
+                                {userHistory && userHistory.status === 'failed' && userHistory.deployment_id && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={retryingUserId === user.id}
+                                    onClick={() => retryUserDeployment(userHistory.deployment_id!, user.id)}
+                                    className="h-7 px-2 text-xs"
+                                  >
+                                    {retryingUserId === user.id ? (
+                                      <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                    ) : (
+                                      <RefreshCw className="h-3 w-3 mr-1" />
+                                    )}
+                                    Retry
+                                  </Button>
                                 )}
                               </td>
                             </tr>

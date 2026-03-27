@@ -11,15 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  ExternalLink, 
+import {
+  CheckCircle2,
+  XCircle,
+  ExternalLink,
   Loader2,
   AlertCircle,
   Lock,
   Copy,
   Check,
+  Users,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import Link from 'next/link';
@@ -32,6 +33,7 @@ interface ProviderConnection {
   token_expires_at: string | null;
   auth_type?: 'oauth' | 'marketplace';
   domain?: string;
+  last_sync_at?: string | null;
 }
 
 interface HubSpotList {
@@ -39,6 +41,19 @@ interface HubSpotList {
   name: string;
   listType: 'STATIC' | 'DYNAMIC';
   size: number;
+}
+
+function formatTimeAgo(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
 }
 
 export default function IntegrationsPageWrapper() {
@@ -89,6 +104,14 @@ function IntegrationsPage() {
 
   const success = searchParams.get('success');
   const error = searchParams.get('error');
+  const missingScopes = searchParams.get('missingScopes');
+
+  const scopeDescriptions: Record<string, string> = {
+    'admin.directory.user.readonly': 'User sync',
+    'calendar.readonly': 'Calendar/OOO detection',
+    'gmail.settings.basic': 'Signature management',
+    'gmail.settings.sharing': 'Signature sharing',
+  };
 
   useEffect(() => {
     loadConnections();
@@ -118,7 +141,7 @@ function IntegrationsPage() {
     // Load connections - ONLY for current organization
     const { data, error } = await supabase
       .from('provider_connections')
-      .select('id, provider, is_active, created_at, token_expires_at, auth_type, domain')
+      .select('id, provider, is_active, created_at, token_expires_at, auth_type, domain, last_sync_at')
       .eq('organization_id', currentUser.organization_id);
 
     if (!error && data) {
@@ -267,8 +290,16 @@ function IntegrationsPage() {
         throw new Error(data.error || 'Failed to sync users');
       }
       
-      setSyncSuccess(`Synced ${data.count || 0} users from Google Workspace`);
-      
+      const synced = data.count || 0;
+      const total = data.total || 0;
+      if (total === 0 && synced === 0) {
+        setSyncError('No users found. Your organization domain may not match your Google Workspace domain. Check your domain in Settings.');
+      } else if (total > synced) {
+        setSyncSuccess(`Synced ${synced} of ${total} users from Google Workspace. Upgrade your plan to sync all users.`);
+      } else {
+        setSyncSuccess(`Synced ${synced} users from Google Workspace`);
+      }
+
       setTimeout(() => {
         loadConnections();
       }, 2000);
@@ -302,8 +333,14 @@ function IntegrationsPage() {
         throw new Error(data.error || 'Failed to sync users');
       }
       
-      setSyncSuccess(`Synced ${data.count || 0} users from Microsoft 365`);
-      
+      const synced = data.count || 0;
+      const total = data.total || 0;
+      if (total > synced) {
+        setSyncSuccess(`Synced ${synced} of ${total} users from Microsoft 365. Upgrade your plan to sync all users.`);
+      } else {
+        setSyncSuccess(`Synced ${synced} users from Microsoft 365`);
+      }
+
       setTimeout(() => {
         loadConnections();
       }, 2000);
@@ -424,9 +461,29 @@ function IntegrationsPage() {
 
       {/* Status messages */}
       {success === 'google_connected' && (
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-          <p className="text-emerald-500">Google Workspace connected successfully!</p>
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+            <div className="flex-1">
+              <p className="text-emerald-600 font-medium">Google Workspace connected!</p>
+              <p className="text-sm text-emerald-600/80 mt-0.5">
+                Ready to import your team. Sync now to pull in your Google Workspace users.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10 shrink-0"
+              onClick={syncGoogle}
+              disabled={syncing === 'google'}
+            >
+              {syncing === 'google' ? (
+                <><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Syncing...</>
+              ) : (
+                'Sync Users Now'
+              )}
+            </Button>
+          </div>
         </div>
       )}
 
@@ -471,24 +528,49 @@ function IntegrationsPage() {
             <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
             <div>
               <p className="font-medium text-amber-600">
-                {error === 'oauth_denied' && 'Connection was denied'}
-                {error === 'missing_params' && 'Invalid callback'}
+                {error === 'oauth_denied' && 'You declined the connection'}
+                {error === 'missing_params' && 'Connection interrupted'}
                 {error === 'state_expired' && 'Session timed out'}
                 {error === 'callback_failed' && 'Connection failed'}
-                {error === 'access_not_configured' && 'Workspace admin approval required'}
+                {error === 'access_not_configured' && 'Admin approval required'}
                 {error === 'no_organization' && 'Organization not found'}
                 {error === 'storage_failed' && 'Failed to save connection'}
-                {error === 'oauth_failed' && 'OAuth failed'}
+                {error === 'oauth_failed' && 'Connection failed'}
+                {error === 'auth_mismatch' && 'Account mismatch'}
+                {error === 'invalid_state' && 'Connection interrupted'}
               </p>
               <p className="text-sm text-amber-600 mt-1">
-                {error === 'oauth_denied' && 'You declined the permission request. Please try connecting again.'}
-                {error === 'missing_params' && 'The callback was missing required parameters. Please try connecting again.'}
-                {error === 'state_expired' && 'The authorization took too long. This can happen if you needed to get admin approval first. Simply try connecting again.'}
-                {error === 'callback_failed' && 'Something went wrong saving your connection. Please try again.'}
-                {error === 'access_not_configured' && 'Your admin needs to approve this app before you can connect. Contact your admin or check the admin console.'}
-                {error === 'no_organization' && 'Your account is not associated with an organization. Please contact support.'}
-                {error === 'storage_failed' && 'Failed to store the connection in the database. Please try again.'}
-                {error === 'oauth_failed' && 'The OAuth flow failed. Please try again or contact support if the issue persists.'}
+                {error === 'oauth_denied' && 'You chose not to grant permissions. Click "Connect" above to try again — all permissions are needed for signature management.'}
+                {error === 'missing_params' && 'The connection was interrupted. This can happen if you closed the Google popup. Please try again.'}
+                {error === 'state_expired' && 'The authorization took too long. This can happen if you needed admin approval first. Simply try connecting again.'}
+                {error === 'callback_failed' && 'Something went wrong while saving your connection. Please try again.'}
+                {error === 'access_not_configured' && 'Your Google Workspace admin needs to approve Siggly before you can connect. Ask your admin to allow the app in the Google Admin Console.'}
+                {error === 'no_organization' && 'Your account is not linked to an organization. Please contact support@siggly.io for help.'}
+                {error === 'storage_failed' && 'We couldn\'t save your connection. Please try again.'}
+                {error === 'oauth_failed' && 'Google returned an error during sign-in. Please try again. If this keeps happening, try a different browser or clear your cookies.'}
+                {error === 'auth_mismatch' && 'You signed into a different Google account than expected. Make sure you\'re using the same browser session, then try again.'}
+                {error === 'invalid_state' && 'The connection link expired or was invalid. Please try connecting again.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {missingScopes && missingScopes.length > 0 && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-amber-600">Some permissions were not granted</p>
+              <p className="text-sm text-amber-600 mt-1">
+                The following features may not work:{' '}
+                {missingScopes.split(',').map((scope) => scopeDescriptions[scope] || scope).join(', ')}.{' '}
+                <button
+                  onClick={connectGoogle}
+                  className="underline font-medium hover:text-amber-700"
+                >
+                  Reconnect to grant all permissions
+                </button>.
               </p>
             </div>
           </div>
@@ -533,12 +615,22 @@ function IntegrationsPage() {
                   Connected on {new Date(googleConnection.created_at).toLocaleDateString()}
                   {googleConnection.auth_type === 'marketplace' && (
                     <span className="ml-2 px-2 py-0.5 bg-blue-500/15 text-blue-500 rounded text-xs">
-                      Marketplace
+                      Organization
+                    </span>
+                  )}
+                  {googleConnection.auth_type !== 'marketplace' && (
+                    <span className="ml-2 px-2 py-0.5 bg-violet-500/15 text-violet-500 rounded text-xs">
+                      Individual
                     </span>
                   )}
                   {googleConnection.domain && (
                     <span className="ml-2 text-muted-foreground">
                       ({googleConnection.domain})
+                    </span>
+                  )}
+                  {googleConnection.last_sync_at && (
+                    <span className="ml-2">
+                      &middot; Last synced {formatTimeAgo(new Date(googleConnection.last_sync_at))}
                     </span>
                   )}
                 </div>
@@ -563,9 +655,9 @@ function IntegrationsPage() {
                       Reconnect
                     </Button>
                   )}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="text-destructive"
                     onClick={() => handleDisconnectClick('google')}
                   >
@@ -574,25 +666,38 @@ function IntegrationsPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <Button onClick={() => setShowGoogleOAuthSetup(true)} disabled={connecting === 'google'} variant="outline">
-                    {connecting === 'google' ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Connecting...
-                      </>
-                    ) : (
-                      'Connect with OAuth'
-                    )}
-                  </Button>
-                  <Button onClick={() => setShowMarketplaceSetup(true)} variant="default">
-                    Connect Organization
-                  </Button>
+              <div className="space-y-4">
+                <div className="grid gap-3">
+                  <button
+                    onClick={() => setShowMarketplaceSetup(true)}
+                    className="flex items-start gap-3 p-3 rounded-lg border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Users className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Connect my organization</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Deploy signatures to all employees. Requires Google Workspace admin access.
+                      </p>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setShowGoogleOAuthSetup(true)}
+                    disabled={connecting === 'google'}
+                    className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Connect just my account</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Manage only your own Gmail signature. No admin access needed.
+                      </p>
+                    </div>
+                  </button>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  <strong>Recommended:</strong> Connect Organization for automatic domain-wide signature management.
-                </p>
               </div>
             )}
           </CardContent>
@@ -644,6 +749,11 @@ function IntegrationsPage() {
               <div className="space-y-3">
                 <div className="text-xs text-muted-foreground">
                   Connected on {new Date(microsoftConnection.created_at).toLocaleDateString()}
+                  {microsoftConnection.last_sync_at && (
+                    <span className="ml-2">
+                      &middot; Last synced {formatTimeAgo(new Date(microsoftConnection.last_sync_at))}
+                    </span>
+                  )}
                 </div>
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 text-xs text-blue-600">
                   <strong>Note:</strong> Signatures deploy to Outlook Web only. Desktop users can copy their signature from Outlook Web or use the Copy button in the editor.
@@ -1006,66 +1116,93 @@ function IntegrationsPage() {
         </div>
       )}
 
-      {/* Google Workspace Marketplace Setup Modal */}
+      {/* Google Workspace Organization Setup Modal */}
       {showMarketplaceSetup && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-lg mx-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
+          <Card className="w-full max-w-lg mx-4 my-8">
             <CardHeader>
-              <CardTitle>Connect Google Workspace</CardTitle>
+              <CardTitle>Connect your organization</CardTitle>
               <CardDescription>
-                Connect your Google Workspace organization for centralized signature management.
+                Allow Siggly to manage Gmail signatures for everyone in your Google Workspace.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-                <p className="text-sm text-amber-600">
-                  <strong>First time?</strong> You&apos;ll need to{' '}
-                  <a 
-                    href="/help/google-workspace-setup#org-setup" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="underline font-medium"
-                  >
-                    configure domain-wide delegation
-                  </a>
-                  {' '}in your Google Admin Console (5 min).
+              {/* Step 1: Domain-wide delegation setup */}
+              <div className="rounded-lg border p-4 space-y-3">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center shrink-0">1</span>
+                  Set up domain-wide delegation
                 </p>
-              </div>
-
-              <div className="space-y-3">
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Admin Email</label>
-                  <input
-                    type="email"
-                    className="w-full px-3 py-2 border rounded-md text-sm"
-                    placeholder="admin@yourcompany.com"
-                    value={marketplaceAdminEmail}
-                    onChange={(e) => setMarketplaceAdminEmail(e.target.value)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Domain</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border rounded-md text-sm"
-                    placeholder="yourcompany.com"
-                    value={marketplaceDomain}
-                    onChange={(e) => setMarketplaceDomain(e.target.value)}
-                  />
-                </div>
-
-                {marketplaceError && (
-                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                    <p className="text-sm text-red-600">{marketplaceError}</p>
+                <ol className="text-xs text-muted-foreground space-y-1.5 ml-7 list-decimal list-outside">
+                  <li>Open <a href="https://admin.google.com/ac/owl/domainwidedelegation" target="_blank" rel="noopener noreferrer" className="text-primary underline">Google Admin &rarr; Domain-wide Delegation</a></li>
+                  <li>Click <strong>Add new</strong></li>
+                  <li>Paste the Client ID and scopes below, then click <strong>Authorize</strong></li>
+                </ol>
+                <div className="space-y-2 ml-7">
+                  <div className="flex items-center gap-2 bg-muted rounded px-2 py-1.5">
+                    <code className="text-xs font-mono flex-1 truncate">{process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_CLIENT_ID || ''}</code>
+                    <button
+                      onClick={() => copyToClipboard(process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_CLIENT_ID || '', 'mp-clientId')}
+                      className="text-xs text-primary hover:underline shrink-0"
+                    >
+                      {copiedField === 'mp-clientId' ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
                   </div>
-                )}
+                  <div className="flex items-center gap-2 bg-muted rounded px-2 py-1.5">
+                    <code className="text-xs font-mono flex-1 truncate">https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/calendar.readonly</code>
+                    <button
+                      onClick={() => copyToClipboard('https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/calendar.readonly', 'mp-scopes')}
+                      className="text-xs text-primary hover:underline shrink-0"
+                    >
+                      {copiedField === 'mp-scopes' ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex gap-3 pt-2">
-                <Button 
-                  variant="outline" 
+              {/* Step 2: Enter details */}
+              <div className="rounded-lg border p-4 space-y-3">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center shrink-0">2</span>
+                  Enter your workspace details
+                </p>
+
+                <div className="space-y-3 ml-7">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Google Workspace admin email</label>
+                    <input
+                      type="email"
+                      className="w-full px-3 py-2 border rounded-md text-sm"
+                      placeholder="admin@yourcompany.com"
+                      value={marketplaceAdminEmail}
+                      onChange={(e) => setMarketplaceAdminEmail(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">The email of a Super Admin in your Google Workspace.</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Workspace domain</label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border rounded-md text-sm"
+                      placeholder="yourcompany.com"
+                      value={marketplaceDomain}
+                      onChange={(e) => setMarketplaceDomain(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">Your primary Google Workspace domain (e.g. yourcompany.com).</p>
+                  </div>
+                </div>
+              </div>
+
+              {marketplaceError && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                  <p className="text-sm text-red-600">{marketplaceError}</p>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-2">
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setShowMarketplaceSetup(false);
                     setMarketplaceError(null);
@@ -1075,7 +1212,7 @@ function IntegrationsPage() {
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={verifyMarketplaceInstall}
                   disabled={verifyingMarketplace || !marketplaceAdminEmail || !marketplaceDomain}
                 >
@@ -1088,6 +1225,14 @@ function IntegrationsPage() {
                     'Verify & Connect'
                   )}
                 </Button>
+                <a
+                  href="/help/google-workspace-setup#org-setup"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted-foreground hover:underline ml-auto"
+                >
+                  Need help?
+                </a>
               </div>
             </CardContent>
           </Card>
@@ -1099,31 +1244,35 @@ function IntegrationsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-lg mx-4">
             <CardHeader>
-              <CardTitle>Connect Google Workspace via OAuth</CardTitle>
+              <CardTitle>Connect your Google account</CardTitle>
               <CardDescription>
-                Connect using your Google Workspace admin account for direct OAuth access.
+                Sign in with Google to let Siggly manage your Gmail signature.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-3">
-                <p className="text-sm font-medium text-blue-600">Before you connect:</p>
+                <p className="text-sm font-medium text-blue-600">What happens next:</p>
                 <ol className="text-sm text-blue-600 space-y-2 list-decimal list-inside">
-                  <li>You must be a <strong>Google Workspace administrator</strong></li>
-                  <li>You&apos;ll be asked to grant permissions to manage Gmail signatures</li>
-                  <li>The app will only access signature settings, not email content</li>
+                  <li>You&apos;ll sign in with your Google account</li>
+                  <li>Google will ask you to approve signature management permissions</li>
+                  <li>You&apos;ll be redirected back here once connected</li>
                 </ol>
+                <p className="text-xs text-blue-600/80 mt-2">
+                  Siggly only accesses signature settings — we cannot read your emails.
+                </p>
               </div>
 
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
                 <p className="text-sm text-amber-600">
-                  <strong>Note:</strong> If you see &quot;This app isn&apos;t verified&quot;, click &quot;Advanced&quot; then &quot;Go to Siggly&quot; to continue. 
-                  Our app is currently in the verification process with Google.
+                  <strong>Heads up:</strong> Google may show an &quot;unverified app&quot; warning.
+                  Click <strong>Advanced</strong> &rarr; <strong>Go to Siggly (unsafe)</strong> to continue.
+                  This is normal while our app completes Google&apos;s verification process.
                 </p>
               </div>
 
               <div className="flex gap-3 pt-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setShowGoogleOAuthSetup(false)}
                 >
                   Cancel

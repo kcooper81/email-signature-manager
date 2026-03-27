@@ -14,3 +14,4 @@ export { LoadingSpinner, LoadingPage } from './loading';
 export { ConfirmDialog } from './confirm-dialog';
 export { Checkbox } from './checkbox';
 export { ToastProvider, useToast } from './toast';
+export { FieldError } from './field-error';
