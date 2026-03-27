@@ -20,7 +20,6 @@ import {
   Lock,
   Copy,
   Check,
-  Users,
 } from 'lucide-react';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import Link from 'next/link';
@@ -667,38 +666,24 @@ function IntegrationsPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="grid gap-3">
-                  <button
-                    onClick={() => setShowMarketplaceSetup(true)}
-                    className="flex items-start gap-3 p-3 rounded-lg border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors text-left"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <Users className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Connect my organization</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Deploy signatures to all employees. Requires Google Workspace admin access.
-                      </p>
-                    </div>
-                  </button>
+              <div className="space-y-3">
+                <Button
+                  onClick={() => setShowMarketplaceSetup(true)}
+                  className="w-full"
+                  size="lg"
+                >
+                  Connect Google Workspace
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                  Manage signatures for your entire team.{' '}
                   <button
                     onClick={() => setShowGoogleOAuthSetup(true)}
+                    className="text-primary hover:underline"
                     disabled={connecting === 'google'}
-                    className="flex items-start gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors text-left"
                   >
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
-                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Connect just my account</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Manage only your own Gmail signature. No admin access needed.
-                      </p>
-                    </div>
+                    Or connect just your account
                   </button>
-                </div>
+                </p>
               </div>
             )}
           </CardContent>
@@ -789,17 +774,14 @@ function IntegrationsPage() {
                 </div>
               </div>
             ) : (
-              <Button onClick={() => setShowMicrosoftSetup(true)} disabled={connecting === 'microsoft'}>
+              <Button onClick={() => setShowMicrosoftSetup(true)} disabled={connecting === 'microsoft'} className="w-full" size="lg">
                 {connecting === 'microsoft' ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Connecting...
                   </>
                 ) : (
-                  <>
-                    Connect Microsoft 365
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </>
+                  'Connect Microsoft 365'
                 )}
               </Button>
             )}
@@ -847,17 +829,14 @@ function IntegrationsPage() {
                     <strong>Note:</strong> HubSpot typically contains customers/leads. We recommend using Google Workspace or Microsoft 365 for employee management.
                   </p>
                 </div>
-                <Button onClick={connectHubSpot} disabled={connecting === 'hubspot'}>
+                <Button onClick={connectHubSpot} disabled={connecting === 'hubspot'} className="w-full" size="lg">
                   {connecting === 'hubspot' ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Connecting...
                     </>
                   ) : (
-                    <>
-                      Connect HubSpot CRM
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </>
+                    'Connect HubSpot CRM'
                   )}
                 </Button>
               </>
@@ -977,17 +956,14 @@ function IntegrationsPage() {
                     <li>Recipients can book time with one click</li>
                   </ol>
                 </div>
-                <Button onClick={connectCalendly} disabled={connecting === 'calendly'}>
+                <Button onClick={connectCalendly} disabled={connecting === 'calendly'} className="w-full" size="lg">
                   {connecting === 'calendly' ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Connecting...
                     </>
                   ) : (
-                    <>
-                      Connect Calendly
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </>
+                    'Connect Calendly'
                   )}
                 </Button>
               </>
