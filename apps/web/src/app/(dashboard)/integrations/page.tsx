@@ -46,6 +46,7 @@ interface HubSpotList {
 function formatTimeAgo(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
+  if (diffMs < 0) return 'just now';
   const diffMins = Math.floor(diffMs / 60000);
   if (diffMins < 1) return 'just now';
   if (diffMins < 60) return `${diffMins}m ago`;

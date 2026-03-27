@@ -31,15 +31,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get caller's organization
+    // Get caller's organization and role
     const { data: callerData } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, role')
       .eq('auth_id', user.id)
       .single();
 
     if (!callerData?.organization_id) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
+    if (!['owner', 'admin'].includes(callerData.role)) {
+      return NextResponse.json(
+        { error: 'Insufficient permissions. Only admins can retry deployments.' },
+        { status: 403 }
+      );
     }
 
     const organizationId = callerData.organization_id;
@@ -228,7 +235,7 @@ export async function POST(request: NextRequest) {
         .update({
           successful_count: successCount || 0,
           failed_count: failCount || 0,
-          status: (failCount || 0) === 0 ? 'completed' : 'completed',
+          status: (failCount || 0) > 0 ? 'failed' : 'completed',
         })
         .eq('id', deploymentId);
     }

@@ -686,7 +686,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={twitterUrl}
-                        onChange={(e) => setTwitterUrl(e.target.value)}
+                        onChange={(e) => { setTwitterUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://twitter.com/yourname"
                       />
                     </div>
@@ -699,7 +699,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={githubUrl}
-                        onChange={(e) => setGithubUrl(e.target.value)}
+                        onChange={(e) => { setGithubUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://github.com/yourname"
                       />
                     </div>
@@ -712,7 +712,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={personalWebsite}
-                        onChange={(e) => setPersonalWebsite(e.target.value)}
+                        onChange={(e) => { setPersonalWebsite(e.target.value); setIsDirty(true); }}
                         placeholder="https://yourwebsite.com"
                       />
                     </div>
@@ -725,7 +725,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={instagramUrl}
-                        onChange={(e) => setInstagramUrl(e.target.value)}
+                        onChange={(e) => { setInstagramUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://instagram.com/yourname"
                       />
                     </div>
@@ -738,7 +738,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={facebookUrl}
-                        onChange={(e) => setFacebookUrl(e.target.value)}
+                        onChange={(e) => { setFacebookUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://facebook.com/yourname"
                       />
                     </div>
@@ -751,7 +751,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={youtubeUrl}
-                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                        onChange={(e) => { setYoutubeUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://youtube.com/@yourname"
                       />
                     </div>
@@ -852,7 +852,7 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         checked={orgSettings.allow_employee_self_manage}
-                        onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_self_manage: checked })}
+                        onCheckedChange={(checked) => { setOrgSettings({ ...orgSettings, allow_employee_self_manage: checked }); setIsDirty(true); }}
                       />
                     </div>
 
@@ -870,7 +870,7 @@ export default function SettingsPage() {
                           </div>
                           <Switch
                             checked={orgSettings.allow_employee_personal_links}
-                            onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_personal_links: checked })}
+                            onCheckedChange={(checked) => { setOrgSettings({ ...orgSettings, allow_employee_personal_links: checked }); setIsDirty(true); }}
                           />
                         </div>
 
@@ -886,7 +886,7 @@ export default function SettingsPage() {
                           </div>
                           <Switch
                             checked={orgSettings.allow_employee_calendar_integration}
-                            onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_calendar_integration: checked })}
+                            onCheckedChange={(checked) => { setOrgSettings({ ...orgSettings, allow_employee_calendar_integration: checked }); setIsDirty(true); }}
                           />
                         </div>
 
@@ -902,7 +902,7 @@ export default function SettingsPage() {
                           </div>
                           <Switch
                             checked={orgSettings.allow_employee_ooo_banners}
-                            onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, allow_employee_ooo_banners: checked })}
+                            onCheckedChange={(checked) => { setOrgSettings({ ...orgSettings, allow_employee_ooo_banners: checked }); setIsDirty(true); }}
                           />
                         </div>
                       </>
@@ -925,7 +925,7 @@ export default function SettingsPage() {
                     </div>
                     <Switch
                       checked={orgSettings.google_calendar_enabled}
-                      onCheckedChange={(checked) => setOrgSettings({ ...orgSettings, google_calendar_enabled: checked })}
+                      onCheckedChange={(checked) => { setOrgSettings({ ...orgSettings, google_calendar_enabled: checked }); setIsDirty(true); }}
                     />
                   </div>
                 </div>
@@ -963,7 +963,7 @@ export default function SettingsPage() {
                     </div>
                     <Switch
                       checked={emailNotifications}
-                      onCheckedChange={setEmailNotifications}
+                      onCheckedChange={(v) => { setEmailNotifications(v); setIsDirty(true); }}
                     />
                   </div>
 
@@ -976,7 +976,7 @@ export default function SettingsPage() {
                     </div>
                     <Switch
                       checked={deploymentAlerts}
-                      onCheckedChange={setDeploymentAlerts}
+                      onCheckedChange={(v) => { setDeploymentAlerts(v); setIsDirty(true); }}
                     />
                   </div>
 
@@ -989,7 +989,7 @@ export default function SettingsPage() {
                     </div>
                     <Switch
                       checked={weeklyDigest}
-                      onCheckedChange={setWeeklyDigest}
+                      onCheckedChange={(v) => { setWeeklyDigest(v); setIsDirty(true); }}
                     />
                   </div>
                 </div>
