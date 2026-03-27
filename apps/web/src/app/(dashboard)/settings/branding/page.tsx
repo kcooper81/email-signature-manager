@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, redirect } from 'next/navigation';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,8 @@ export default function BrandingSettingsPage() {
   const [organizationType, setOrganizationType] = useState<string>('standard');
   const [uploadingLogo, setUploadingLogo] = useState<string | null>(null);
   const subdomainDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  useUnsavedChanges(isDirty);
   const fileInputRefs = {
     logoUrl: useRef<HTMLInputElement>(null),
     logoIconUrl: useRef<HTMLInputElement>(null),
@@ -35,7 +38,7 @@ export default function BrandingSettingsPage() {
     faviconUrl: useRef<HTMLInputElement>(null),
   };
   
-  const [formData, setFormData] = useState<BrandingFormData>({
+  const [formData, _setFormData] = useState<BrandingFormData>({
     primaryColor: '#4d52de',
     secondaryColor: '#f8fafc',
     accentColor: '#10b981',
@@ -51,6 +54,7 @@ export default function BrandingSettingsPage() {
     hideHelpLinks: false,
     customSubdomain: '',
   });
+  const setFormData: typeof _setFormData = (val) => { _setFormData(val); setIsDirty(true); };
 
   useEffect(() => {
     fetchBrandingSettings();
@@ -69,7 +73,7 @@ export default function BrandingSettingsPage() {
         return;
       }
       
-      setFormData({
+      _setFormData({
         ...formData,
         ...data.branding,
         customSubdomain: data.customSubdomain || '',
@@ -213,6 +217,7 @@ export default function BrandingSettingsPage() {
         throw new Error(data.error || 'Failed to save branding settings');
       }
 
+      setIsDirty(false);
       setSuccess('Branding settings saved successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {

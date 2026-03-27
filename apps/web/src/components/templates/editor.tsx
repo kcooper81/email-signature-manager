@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import {
   DndContext,
   closestCenter,
@@ -85,6 +86,8 @@ export function TemplateEditor({
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [addBlockExpanded, setAddBlockExpanded] = useState(true);
+  const [isDirty, setIsDirty] = useState(false);
+  useUnsavedChanges(isDirty);
 
   useEffect(() => {
     if (blocks.length > 0 && !selectedBlockId) {
@@ -111,6 +114,7 @@ export function TemplateEditor({
         const newIndex = items.findIndex((i) => i.id === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
+      setIsDirty(true);
     }
   };
 
@@ -122,10 +126,12 @@ export function TemplateEditor({
     };
     setBlocks([...blocks, newBlock]);
     setSelectedBlockId(newBlock.id);
+    setIsDirty(true);
   };
 
   const updateBlock = (id: string, content: SignatureBlock['content']) => {
     setBlocks(blocks.map((b) => (b.id === id ? { ...b, content } : b)));
+    setIsDirty(true);
   };
 
   const deleteBlock = (id: string) => {
@@ -133,6 +139,7 @@ export function TemplateEditor({
     if (selectedBlockId === id) {
       setSelectedBlockId(null);
     }
+    setIsDirty(true);
   };
 
   const handleSave = async () => {
@@ -142,6 +149,7 @@ export function TemplateEditor({
     }
     setValidationError(null);
     await onSave(name, description, blocks);
+    setIsDirty(false);
   };
 
   const selectedBlock = blocks.find((b) => b.id === selectedBlockId);
@@ -158,7 +166,7 @@ export function TemplateEditor({
           <div className="flex-1">
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); setIsDirty(true); }}
               placeholder="Untitled Template"
               className="text-lg font-semibold bg-transparent border-none outline-none w-full"
             />

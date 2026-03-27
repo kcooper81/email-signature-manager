@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-const SCOPES = [
+export const SCOPES = [
   'https://www.googleapis.com/auth/gmail.settings.basic',
   'https://www.googleapis.com/auth/gmail.settings.sharing',
   'https://www.googleapis.com/auth/admin.directory.user.readonly',

@@ -119,13 +119,7 @@ export async function POST(request: NextRequest) {
   } catch (err: any) {
     console.error('User sync error:', err);
 
-    await logException(err, {
-      route: '/api/users/sync',
-      method: 'POST',
-      errorType: 'sync_error',
-    });
-
-    // Surface actionable messages for known Google API errors
+    // Surface actionable messages for known Google API errors (don't log these as exceptions)
     const msg = err.message || '';
     if (msg.includes('Domain not found') || msg.includes('Resource Not Found: domain')) {
       return NextResponse.json(
@@ -139,6 +133,13 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+
+    // Only log unexpected errors as exceptions
+    await logException(err, {
+      route: '/api/users/sync',
+      method: 'POST',
+      errorType: 'sync_error',
+    });
 
     return NextResponse.json(
       { error: 'Failed to sync users. Please try again.' },

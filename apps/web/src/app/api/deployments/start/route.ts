@@ -375,6 +375,15 @@ export async function POST(request: NextRequest) {
             deployed_at: new Date().toISOString(),
           });
       }
+
+      // Update deployment record with incremental progress so polling clients can see it
+      await serviceClient
+        .from('signature_deployments')
+        .update({
+          successful_count: successCount,
+          failed_count: failCount,
+        })
+        .eq('id', deployment.id);
     }
 
     // Update deployment status

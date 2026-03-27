@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       installed: true,
       message: 'Marketplace app verified and connected successfully',
+      ...(result.warning ? { warning: result.warning } : {}),
     });
   } catch (error: any) {
     console.error('Marketplace verification error:', error);

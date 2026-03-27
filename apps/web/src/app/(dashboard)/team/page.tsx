@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label } from '@/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Avatar, EmptyState, Input, Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter, Label, FieldError } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
 import { SafeHtmlViewer } from '@/components/admin/safe-html-viewer';
 import { EditMemberModal } from './edit-member-modal';
@@ -152,6 +152,10 @@ export default function TeamMembersPage() {
     youtube_url: '',
   });
   const [adding, setAdding] = useState(false);
+  const [addMemberFieldErrors, setAddMemberFieldErrors] = useState<{
+    email?: string;
+    first_name?: string;
+  }>({});
   
   // Edit team member modal
   const [showEditModal, setShowEditModal] = useState(false);
@@ -1452,8 +1456,15 @@ export default function TeamMembersPage() {
                 id="first_name"
                 value={newMember.first_name}
                 onChange={(e) => setNewMember({ ...newMember, first_name: e.target.value })}
+                onBlur={() => {
+                  setAddMemberFieldErrors((prev) => ({
+                    ...prev,
+                    first_name: !newMember.first_name.trim() ? 'First name is required' : undefined,
+                  }));
+                }}
                 placeholder="John"
               />
+              <FieldError error={addMemberFieldErrors.first_name} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="last_name">Last Name</Label>
@@ -1472,9 +1483,19 @@ export default function TeamMembersPage() {
               type="email"
               value={newMember.email}
               onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+              onBlur={() => {
+                if (!newMember.email.trim()) {
+                  setAddMemberFieldErrors((prev) => ({ ...prev, email: 'Email is required' }));
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newMember.email)) {
+                  setAddMemberFieldErrors((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
+                } else {
+                  setAddMemberFieldErrors((prev) => ({ ...prev, email: undefined }));
+                }
+              }}
               placeholder="john@company.com"
               required
             />
+            <FieldError error={addMemberFieldErrors.email} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="title">Job Title</Label>

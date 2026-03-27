@@ -202,30 +202,45 @@ export async function setSignatureWithServiceAccount(
 export async function verifyMarketplaceInstallation(
   adminEmail: string,
   domain: string
-): Promise<{ installed: boolean; error?: string }> {
+): Promise<{ installed: boolean; error?: string; warning?: string }> {
   try {
     const admin = createAdminClient(adminEmail);
-    
+
     // Try to list just 1 user to verify access
-    await admin.users.list({
+    const response = await admin.users.list({
       domain,
       maxResults: 1,
     });
 
+    const userCount = response.data.users?.length ?? 0;
+    if (userCount === 0) {
+      return {
+        installed: true,
+        warning: `No users found for domain "${domain}". This domain may not match your Google Workspace domain. Please verify the domain and try again.`,
+      };
+    }
+
     return { installed: true };
   } catch (error: any) {
     console.error('Marketplace verification failed:', error);
-    
-    if (error.code === 403) {
-      return { 
-        installed: false, 
-        error: 'Domain-wide delegation not configured or app not installed from Marketplace' 
+
+    if (error.code === 404 || (error.message && error.message.includes('Domain not found'))) {
+      return {
+        installed: false,
+        error: `Domain "${domain}" was not found. Please check the domain name matches your Google Workspace domain.`,
       };
     }
-    
-    return { 
-      installed: false, 
-      error: error.message || 'Failed to verify installation' 
+
+    if (error.code === 403) {
+      return {
+        installed: false,
+        error: 'Domain-wide delegation not configured or app not installed from Marketplace'
+      };
+    }
+
+    return {
+      installed: false,
+      error: error.message || 'Failed to verify installation'
     };
   }
 }

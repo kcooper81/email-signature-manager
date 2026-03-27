@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/card';
 import { Loader2, CheckCircle, Mail } from 'lucide-react';
 import { trackSignUpStart, trackSignUpComplete, trackEvent } from '@/components/analytics';
+import { FieldError } from '@/components/ui/field-error';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -32,6 +33,12 @@ export default function SignupPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    orgName?: string;
+  }>({});
 
   // Check for existing session on mount (cross-tab detection)
   useEffect(() => {
@@ -84,11 +91,62 @@ export default function SignupPage() {
     }
   };
 
+  const validateEmail = (email: string): string | undefined => {
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    return undefined;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    // Real-time validation for password fields
+    if (name === 'password') {
+      setFieldErrors((prev) => ({
+        ...prev,
+        password: value.length > 0 && value.length < 8
+          ? 'Password must be at least 8 characters'
+          : undefined,
+        // Re-validate confirm password when password changes
+        confirmPassword:
+          formData.confirmPassword && value !== formData.confirmPassword
+            ? "Passwords don't match"
+            : undefined,
+      }));
+    }
+
+    if (name === 'confirmPassword') {
+      setFieldErrors((prev) => ({
+        ...prev,
+        confirmPassword:
+          value && value !== formData.password
+            ? "Passwords don't match"
+            : undefined,
+      }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === 'email') {
+      setFieldErrors((prev) => ({
+        ...prev,
+        email: validateEmail(value),
+      }));
+    }
+
+    if (name === 'organizationName') {
+      setFieldErrors((prev) => ({
+        ...prev,
+        orgName: value.trim() === '' ? 'Organization name is required' : undefined,
+      }));
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -266,9 +324,11 @@ export default function SignupPage() {
               placeholder="Acme Inc."
               value={formData.organizationName}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
               disabled={loading}
             />
+            <FieldError error={fieldErrors.orgName} />
           </div>
 
           <div className="space-y-2">
@@ -280,9 +340,11 @@ export default function SignupPage() {
               placeholder="you@company.com"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
               disabled={loading}
             />
+            <FieldError error={fieldErrors.email} />
           </div>
 
           <div className="space-y-2">
@@ -297,9 +359,13 @@ export default function SignupPage() {
               required
               disabled={loading}
             />
-            <p className="text-xs text-muted-foreground">
-              Must be at least 8 characters
-            </p>
+            {fieldErrors.password ? (
+              <FieldError error={fieldErrors.password} />
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Must be at least 8 characters
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -314,6 +380,7 @@ export default function SignupPage() {
               required
               disabled={loading}
             />
+            <FieldError error={fieldErrors.confirmPassword} />
           </div>
         </CardContent>
 

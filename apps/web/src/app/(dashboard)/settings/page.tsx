@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useUnsavedChanges } from '@/hooks/use-unsaved-changes';
 import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Switch } from '@/components/ui';
 import {
   Building2,
@@ -107,6 +108,8 @@ export default function SettingsPage() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [qrCode, setQrCode] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
+  const [isDirty, setIsDirty] = useState(false);
+  useUnsavedChanges(isDirty);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   interface Session {
@@ -245,6 +248,7 @@ export default function SettingsPage() {
       setSaveError(error.message || 'Failed to save profile');
       return;
     }
+    setIsDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -294,6 +298,7 @@ export default function SettingsPage() {
       setSaveError(settingsError.message || 'Failed to save organization settings');
       return;
     }
+    setIsDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -314,6 +319,7 @@ export default function SettingsPage() {
       .eq('id', profile.id);
 
     setSaving(false);
+    setIsDirty(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -610,7 +616,7 @@ export default function SettingsPage() {
                     <label className="block text-sm font-medium mb-2">First Name</label>
                     <Input
                       value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
+                      onChange={(e) => { setFirstName(e.target.value); setIsDirty(true); }}
                       placeholder="John"
                     />
                   </div>
@@ -618,7 +624,7 @@ export default function SettingsPage() {
                     <label className="block text-sm font-medium mb-2">Last Name</label>
                     <Input
                       value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                      onChange={(e) => { setLastName(e.target.value); setIsDirty(true); }}
                       placeholder="Doe"
                     />
                   </div>
@@ -654,7 +660,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={calendlyUrl}
-                        onChange={(e) => setCalendlyUrl(e.target.value)}
+                        onChange={(e) => { setCalendlyUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://calendly.com/yourname"
                       />
                     </div>
@@ -667,7 +673,7 @@ export default function SettingsPage() {
                       <Input
                         type="url"
                         value={linkedinUrl}
-                        onChange={(e) => setLinkedinUrl(e.target.value)}
+                        onChange={(e) => { setLinkedinUrl(e.target.value); setIsDirty(true); }}
                         placeholder="https://linkedin.com/in/yourname"
                       />
                     </div>
@@ -785,7 +791,7 @@ export default function SettingsPage() {
                   <label className="block text-sm font-medium mb-2">Organization Name</label>
                   <Input
                     value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
+                    onChange={(e) => { setOrgName(e.target.value); setIsDirty(true); }}
                     placeholder="Acme Inc."
                   />
                 </div>
@@ -794,7 +800,7 @@ export default function SettingsPage() {
                   <label className="block text-sm font-medium mb-2">Domain</label>
                   <Input
                     value={orgDomain}
-                    onChange={(e) => setOrgDomain(e.target.value)}
+                    onChange={(e) => { setOrgDomain(e.target.value); setIsDirty(true); }}
                     disabled={domainSource !== 'manual' && domainSource !== null}
                     className={domainSource !== 'manual' && domainSource !== null ? 'bg-muted' : ''}
                     placeholder="company.com"

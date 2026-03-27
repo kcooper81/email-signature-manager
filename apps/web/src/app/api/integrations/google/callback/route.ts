@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { getGoogleTokens } from '@/lib/google/oauth';
+import { getGoogleTokens, SCOPES } from '@/lib/google/oauth';
 import { logException } from '@/lib/error-logging';
 import crypto from 'crypto';
 
@@ -69,6 +69,16 @@ export async function GET(request: NextRequest) {
     if (!tokens.access_token || !tokens.refresh_token) {
       throw new Error('Missing tokens from Google');
     }
+
+    // Determine actually-granted scopes and check for missing ones
+    const grantedScopes = tokens.scope?.split(' ') || [];
+    const missingScopes = SCOPES.filter(
+      (required) => !grantedScopes.includes(required)
+    );
+    // Extract short scope names for the redirect URL (e.g. "admin.directory.user.readonly")
+    const missingScopeNames = missingScopes.map((s) =>
+      s.replace('https://www.googleapis.com/auth/', '')
+    );
 
     // Store the connection in the database
     const supabase = createClient();
@@ -146,7 +156,7 @@ export async function GET(request: NextRequest) {
         token_expires_at: tokens.expiry_date 
           ? new Date(tokens.expiry_date).toISOString() 
           : null,
-        scopes: tokens.scope?.split(' ') || [],
+        scopes: grantedScopes,
         is_active: true,
       }, {
         onConflict: 'organization_id,provider',
@@ -157,9 +167,11 @@ export async function GET(request: NextRequest) {
       throw new Error('Failed to save connection');
     }
 
-    return NextResponse.redirect(
-      new URL('/integrations?success=google_connected', request.url)
-    );
+    const redirectUrl = new URL('/integrations?success=google_connected', request.url);
+    if (missingScopeNames.length > 0) {
+      redirectUrl.searchParams.set('missingScopes', missingScopeNames.join(','));
+    }
+    return NextResponse.redirect(redirectUrl);
   } catch (err) {
     console.error('Google callback error:', err);
     
