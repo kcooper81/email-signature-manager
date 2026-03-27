@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/card';
 import { Mail, Loader2, Chrome, CheckCircle, ArrowLeft, Shield } from 'lucide-react';
 import { Suspense } from 'react';
+import { FieldError } from '@/components/ui/field-error';
 
 // BUG-01 fix: Validate redirect URL to prevent open redirects
 function sanitizeNextUrl(url: string | null): string {
@@ -40,6 +41,10 @@ function LoginForm() {
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [mfaCode, setMfaCode] = useState('');
   const [mfaLoading, setMfaLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
 
   // Check for existing session on mount (cross-tab detection)
   useEffect(() => {
@@ -370,9 +375,17 @@ function LoginForm() {
               placeholder="you@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => {
+                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                  setFieldErrors((prev) => ({ ...prev, email: 'Please enter a valid email address' }));
+                } else {
+                  setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                }
+              }}
               required
               disabled={loading}
             />
+            <FieldError error={fieldErrors.email} />
           </div>
 
           <div className="space-y-2">
@@ -391,9 +404,17 @@ function LoginForm() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => {
+                if (!password) {
+                  setFieldErrors((prev) => ({ ...prev, password: 'Password is required' }));
+                } else {
+                  setFieldErrors((prev) => ({ ...prev, password: undefined }));
+                }
+              }}
               required
               disabled={loading}
             />
+            <FieldError error={fieldErrors.password} />
           </div>
         </CardContent>
 
