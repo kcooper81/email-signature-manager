@@ -3,22 +3,24 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'insurance-email-signature',
-  'Insurance Agent Email Signatures: Compliance Guide',
-  'Create compliant email signatures for insurance agents. Includes license numbers, carrier info, and regulatory requirements.',
+  'Insurance Email Signatures: Complete 2026 Guide',
+  'Create compliant insurance email signatures that win client trust. Covers license numbers, carrier info, and state requirements. Free templates for agents.',
   ['insurance agent email signature', 'insurance broker signature', 'insurance email compliance']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Insurance Agent Email Signatures: Compliance Guide',
-    description: 'Create compliant email signatures for insurance agents. Includes license numbers, carrier info, and regulatory requirements.',
+    title: 'Insurance Email Signatures: Complete 2026 Guide',
+    description: 'Create compliant insurance email signatures that win client trust. Covers license numbers, carrier info, and state requirements. Free templates for agents.',
     url: '/blog/insurance-email-signature',
     image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=600&fit=crop',
     datePublished: '2026-01-01',
-    author: 'Siggly Team',
+    author: 'Sarah Chen',
     readTime: '6 min',
     category: 'Insurance',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 1, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
+        <AuthorCard authorSlug="sarah-chen" />
         <Image src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=600&fit=crop" alt="Insurance documents" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Insurance professionals need signatures that display credentials and meet state licensing requirements while building trust with clients.</p>
@@ -80,6 +83,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/insurance-email-signature" count={3} />
     </>
   );
 }

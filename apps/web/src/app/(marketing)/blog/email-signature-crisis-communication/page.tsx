@@ -3,22 +3,24 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-crisis-communication',
-  'Email Signatures in Crisis Communication',
-  'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
+  'Crisis Communication Email Signatures: Fast Guide',
+  'Update 1,000+ email signatures in minutes during a crisis. Proven playbook for emergency messaging, status banners, and rapid company-wide deployment.',
   ['crisis communication email', 'emergency signature update', 'company crisis email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures in Crisis Communication',
-    description: 'Update email signatures during a crisis. Emergency messaging, status updates, and rapid deployment for crisis response.',
+    title: 'Crisis Communication Email Signatures: Fast Guide',
+    description: 'Update 1,000+ email signatures in minutes during a crisis. Proven playbook for emergency messaging, status banners, and rapid company-wide deployment.',
     url: '/blog/email-signature-crisis-communication',
     image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop',
     datePublished: '2025-11-05',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '5 min',
     category: 'Crisis Management',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> November 5, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
+        <AuthorCard authorSlug="emily-nakamura" />
         <Image src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop" alt="Crisis communication" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">During a crisis, email signatures can quickly communicate important updates to everyone your company emails.</p>
@@ -85,6 +88,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/email-signature-crisis-communication" count={3} />
     </>
   );
 }

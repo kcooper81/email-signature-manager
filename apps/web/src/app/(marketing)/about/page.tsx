@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Mail, ArrowLeft, Users, Shield, Zap, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MarketingCTA } from '@/components/marketing/cta';
+import { TrustBadges } from '@/components/marketing/trust-badges';
 import { generateMetadata as genMeta } from '@/lib/seo/metadata';
 
 export const metadata = genMeta({
@@ -89,6 +90,14 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Trust & Recognition */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center">Trusted by Teams Worldwide</h2>
+          <TrustBadges variant="full" />
         </div>
       </section>
 

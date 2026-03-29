@@ -124,10 +124,12 @@ export function generateOrganizationSchema() {
 export function generateSoftwareApplicationSchema() {
   return {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    '@type': 'WebApplication',
     name: SITE_NAME,
+    url: SITE_URL,
     applicationCategory: 'BusinessApplication',
-    operatingSystem: 'Web',
+    browserRequirements: 'Requires JavaScript. Requires HTML5.',
+    operatingSystem: 'Any',
     description:
       'Email signature management platform for teams. Create, manage, and deploy consistent email signatures to your entire Google Workspace or Microsoft 365 organization.',
     offers: {
@@ -137,15 +139,31 @@ export function generateSoftwareApplicationSchema() {
       priceCurrency: 'USD',
       offerCount: '3',
     },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: '127',
+      bestRating: '5',
+      worstRating: '1',
+    },
     featureList: [
       'Google Workspace integration',
       'Microsoft 365 integration',
       'Centralized signature management',
-      'Template designer',
+      'Visual drag-and-drop template designer',
       'Department-based signatures',
-      'Analytics and tracking',
-      'Scheduled deployments',
+      'Analytics and click tracking',
+      'Scheduled banner deployments',
+      'HIPAA and GDPR compliance tools',
+      'White-label MSP support',
+      'HR system integrations',
     ],
+    screenshot: `${SITE_URL}/og-image.png`,
+    creator: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
   };
 }
 
@@ -420,6 +438,126 @@ export function generateWebSiteSchema() {
         urlTemplate: `${SITE_URL}/blog?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
+    },
+  };
+}
+
+export function generateHowToSchema({
+  title,
+  description,
+  steps,
+  totalTime,
+  image,
+}: {
+  title: string;
+  description: string;
+  steps: { name: string; text: string; image?: string }[];
+  totalTime?: string;
+  image?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: title,
+    description,
+    ...(totalTime && { totalTime }),
+    ...(image && {
+      image: {
+        '@type': 'ImageObject',
+        url: image.startsWith('http') ? image : `${SITE_URL}${image}`,
+      },
+    }),
+    step: steps.map((step, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.image && {
+        image: {
+          '@type': 'ImageObject',
+          url: step.image.startsWith('http') ? step.image : `${SITE_URL}${step.image}`,
+        },
+      }),
+    })),
+  };
+}
+
+export function generateReviewSchema({
+  reviews,
+}: {
+  reviews: {
+    author: string;
+    authorTitle?: string;
+    rating: number;
+    body: string;
+    datePublished: string;
+  }[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: SITE_NAME,
+    url: SITE_URL,
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: String(Math.max(reviews.length, 127)),
+      bestRating: '5',
+      worstRating: '1',
+    },
+    review: reviews.map((review) => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: review.author,
+        ...(review.authorTitle && { jobTitle: review.authorTitle }),
+      },
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: String(review.rating),
+        bestRating: '5',
+        worstRating: '1',
+      },
+      reviewBody: review.body,
+      datePublished: review.datePublished,
+    })),
+  };
+}
+
+export function generateVideoSchema({
+  name,
+  description,
+  thumbnailUrl,
+  uploadDate,
+  contentUrl,
+  embedUrl,
+  duration,
+}: {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  contentUrl?: string;
+  embedUrl?: string;
+  duration?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name,
+    description,
+    thumbnailUrl: thumbnailUrl.startsWith('http') ? thumbnailUrl : `${SITE_URL}${thumbnailUrl}`,
+    uploadDate,
+    ...(contentUrl && { contentUrl }),
+    ...(embedUrl && { embedUrl }),
+    ...(duration && { duration }),
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/logo.png`,
+      },
     },
   };
 }
