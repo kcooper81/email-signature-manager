@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'microsoft-365-signature-management',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/microsoft-365-signature-management',
     image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',
     datePublished: '2026-01-31',
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: '10 min',
     category: 'Microsoft 365',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 31, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
         <Image src="https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop" alt="Microsoft Office apps" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Managing email signatures for a Microsoft 365 organization presents unique challenges. This guide covers the native options available and their limitations.</p>
@@ -122,6 +125,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/microsoft-365-signature-management" count={3} />
     </>
   );
 }

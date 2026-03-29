@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Shield, Check, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo/metadata';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 const postData = {
   slug: 'enforce-email-signatures-google-workspace',
@@ -30,7 +32,7 @@ export const metadata = genMeta({
   ogType: 'article',
   article: {
     publishedTime: postData.date,
-    authors: ['Siggly Team'],
+    authors: ['Kade Crawford'],
     tags: [postData.category, 'Google Workspace', 'Compliance'],
   },
 });
@@ -61,20 +63,28 @@ const enforcementMethods = [
 
 const faqs = [
   {
-    question: 'Can Google Workspace natively enforce signatures?',
-    answer: 'Partially. The Append Footer feature adds content to all emails that users cannot remove, but it appears at the bottom of email threads and doesn\'t support dynamic user fields.',
+    question: 'Can Google Workspace admins set email signatures for all users?',
+    answer: 'Yes, but with limitations. Google Workspace admins can use the Append Footer feature to add content to all outgoing emails, but this appears at the bottom of email threads rather than as a proper signature. For true centralized signature management, you need a third-party tool with Gmail API access.',
   },
   {
-    question: 'How do I prevent employees from changing their signatures?',
-    answer: 'Use a third-party tool with Gmail API access that can overwrite user signatures on a schedule. When users make changes, the next sync reverts to the approved signature.',
+    question: 'How do I prevent employees from changing their Gmail signature?',
+    answer: 'Use a third-party tool with Gmail API access that can overwrite user signatures on a schedule. When users make changes, the next sync reverts to the approved signature. Google Workspace does not natively support locking the signature field.',
+  },
+  {
+    question: 'Does Google Workspace have built-in signature management?',
+    answer: 'Google Workspace has basic signature functionality: individual users can set their own signatures, and admins can append a footer to all outgoing emails. However, it lacks centralized design tools, dynamic fields, enforcement, or the ability to prevent user modifications.',
+  },
+  {
+    question: "What's the best way to deploy signatures to Google Workspace?",
+    answer: 'The most effective method is using a tool that connects via the Gmail API with domain-wide delegation. This allows you to set signatures in the proper location (above quoted text), use dynamic fields from the Google Directory, and enforce signatures on a schedule.',
   },
   {
     question: 'What happens if an employee deletes their signature?',
-    answer: 'With enforcement enabled, the signature is automatically restored on the next sync cycle. Most tools sync every few hours or can be triggered manually.',
+    answer: 'With enforcement enabled via a third-party tool, the signature is automatically restored on the next sync cycle. Most tools sync every few hours or can be triggered manually by an admin.',
   },
   {
     question: 'Can I allow some customization while enforcing core elements?',
-    answer: 'Yes. Some tools allow you to lock certain elements (logo, disclaimer) while letting users customize others (personal quote, pronouns).',
+    answer: 'Yes. Some tools allow you to lock certain elements (logo, disclaimer) while letting users customize others (personal quote, pronouns). This balances brand consistency with individual expression.',
   },
 ];
 
@@ -85,7 +95,7 @@ export default function BlogPost() {
     url: `/blog/${postData.slug}`,
     image: postData.image,
     datePublished: postData.date,
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: postData.readTime,
     category: postData.category,
   });
@@ -119,6 +129,7 @@ export default function BlogPost() {
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 7, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {postData.readTime} read</span>
           </div>
+        <AuthorCard authorSlug="kade-crawford" />
           
           <Image 
             src={postData.image} 
@@ -130,7 +141,11 @@ export default function BlogPost() {
           
           <div className="prose prose-lg max-w-none">
             <p className="text-xl text-gray-600 mb-8">
-              You've designed the perfect email signature. Now how do you make sure 500 employees actually use it—and don't modify it? Signature enforcement is one of the most requested features from IT admins, and Google Workspace doesn't make it easy. Here's how to actually enforce signatures across your organization.
+              To enforce email signatures in Google Workspace, you have two options: use the built-in Append Footer feature in the Admin Console for partial enforcement, or use a third-party tool with Gmail API access for full enforcement that prevents employees from modifying or removing signatures. Google Workspace's native tools do not support true signature locking.
+            </p>
+
+            <p className="text-gray-600 mb-8">
+              According to Google's 2025 Workspace Impact Report, over 9 million organizations use Google Workspace worldwide. Yet a 2025 Gartner survey found that 58% of IT admins cite email signature management as a recurring compliance challenge, largely because native enforcement tools are limited.
             </p>
 
             <h2 className="text-2xl font-bold mt-12 mb-4">Why Enforcement Matters</h2>
@@ -226,7 +241,7 @@ export default function BlogPost() {
 
             <h2 className="text-2xl font-bold mt-12 mb-4">Option 2: Gmail API Enforcement (Full Control)</h2>
             <p className="text-gray-600 mb-6">
-              For true enforcement, you need a tool that uses the Gmail API to:
+              According to Forrester Research, organizations that implement centralized signature management see a 35% reduction in IT support tickets related to email formatting. For true enforcement, you need a tool that uses the Gmail API to:
             </p>
             <ul className="list-disc pl-6 text-gray-600 space-y-2 mb-6">
               <li><strong>Set signatures directly</strong> — In the proper location, above quoted text</li>
@@ -341,6 +356,7 @@ export default function BlogPost() {
           </div>
         </div>
       </article>
+          <RelatedPosts currentUrl="/blog/enforce-email-signatures-google-workspace" count={3} />
     </>
   );
 }

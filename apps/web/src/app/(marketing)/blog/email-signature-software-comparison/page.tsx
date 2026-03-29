@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-software-comparison',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-software-comparison',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
     datePublished: '2025-12-10',
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: '8 min',
     category: 'Comparisons',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 10, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
         <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Choosing the right email signature software depends on your organization's size, platform, and needs. Here's how the leading tools compare.</p>
@@ -95,6 +98,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-software-comparison" count={3} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-troubleshooting',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-troubleshooting',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop',
     datePublished: '2026-01-06',
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: '8 min',
     category: 'Troubleshooting',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 6, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
         <Image src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop" alt="Troubleshooting" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures can break in frustrating ways. Here's how to diagnose and fix the most common issues.</p>
@@ -110,6 +113,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-troubleshooting" count={3} />
     </>
   );
 }

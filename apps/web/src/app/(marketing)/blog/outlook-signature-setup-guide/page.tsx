@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'outlook-signature-setup-guide',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/outlook-signature-setup-guide',
     image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',
     datePublished: '2026-02-04',
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: '9 min',
     category: 'Tutorials',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 4, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 9 min read</span>
         </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
 
         <Image
           src="https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop"
@@ -210,6 +213,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/outlook-signature-setup-guide" count={3} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-design-tips',
@@ -17,7 +19,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-design-tips',
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
     datePublished: '2026-01-07',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '7 min',
     category: 'Email Signatures',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 7, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
           </div>
+        <AuthorCard authorSlug="emily-nakamura" />
 
           <Image
             src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop"
@@ -185,6 +188,7 @@ export default function BlogPost() {
         </div>
       </article>
 
+          <RelatedPosts currentUrl="/blog/email-signature-design-tips" count={3} />
     </>
   );
 }

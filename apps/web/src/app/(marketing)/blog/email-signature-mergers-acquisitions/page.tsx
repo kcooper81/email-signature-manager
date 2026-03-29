@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { createBlogMetadata, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo';
 import { AuthorCard } from '@/components/blog/author-card';
 import { RelatedPosts } from '@/components/blog/related-posts';
 
@@ -25,11 +25,36 @@ export default function BlogPost() {
     category: 'M&A',
   });
 
+  const faqs = [
+    {
+      question: 'When should you update email signatures during a merger?',
+      answer: 'Email signatures should be updated in phases aligned with the legal close and public announcement. Before the deal closes, maintain existing signatures. On announcement day, add transition messaging. During the integration period, use dual branding if needed. After full consolidation, switch to the unified brand.',
+    },
+    {
+      question: 'Should you rebrand email signatures immediately after an acquisition?',
+      answer: 'Not necessarily. Many organizations use a phased approach with dual branding during the transition period. Immediate rebranding can confuse customers who don\'t yet know about the acquisition. A common approach is to add "now part of [Acquiring Company]" messaging before fully transitioning.',
+    },
+    {
+      question: 'How do you manage signatures across two different email tenants?',
+      answer: 'Use a centralized signature management platform that supports multiple email tenants (e.g., both Google Workspace and Microsoft 365). This allows you to deploy consistent signatures across both organizations from a single dashboard, even before tenant migration is complete.',
+    },
+    {
+      question: 'What legal considerations apply to email signatures during M&A?',
+      answer: 'Coordinate with legal counsel on announcement timing, as premature branding changes can violate deal terms or SEC regulations for public companies. Ensure disclaimers are updated to reflect the new legal entity, and verify that regulatory disclosures remain compliant during the transition.',
+    },
+  ];
+
+  const faqSchema = generateFAQSchema(faqs);
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
     <article className="py-12">
       <div className="max-w-3xl mx-auto px-6">
@@ -47,8 +72,10 @@ export default function BlogPost() {
         <AuthorCard authorSlug="kade-crawford" />
         <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" alt="Business merger" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
-          <p className="text-xl text-gray-600 mb-8">Mergers and acquisitions require careful signature transitions. Email is often the first place customers see the new brand.</p>
-          
+          <p className="text-xl text-gray-600 mb-8">To manage email signatures during a merger or acquisition, follow a phased approach: maintain existing signatures pre-announcement, add transition messaging on announcement day, use dual branding during integration, and consolidate to the new brand once complete. According to PwC's 2025 Global M&A Trends report, over 50,000 M&A deals were completed globally in 2025, and email branding is consistently one of the most overlooked integration tasks.</p>
+
+          <p className="text-gray-600 mb-8">A McKinsey study found that 70% of mergers fail to achieve their expected value, often due to poor integration execution. Brand consistency across customer-facing communications, including email signatures, is a measurable factor in maintaining client confidence during transitions.</p>
+
           <h2 className="text-2xl font-bold mt-12 mb-4">Transition Phases</h2>
           <ol className="list-decimal pl-6 text-gray-600 space-y-3 mb-6">
             <li><strong>Pre-announcement:</strong> Maintain existing signatures</li>
@@ -75,12 +102,23 @@ export default function BlogPost() {
           </ul>
 
           <h2 className="text-2xl font-bold mt-12 mb-4">Common Challenges</h2>
+          <p className="text-gray-600 mb-4">According to Deloitte's 2025 M&A Integration Survey, 62% of IT leaders cite email and communication systems as the most time-consuming integration workstream. Common challenges include:</p>
           <ul className="list-disc pl-6 text-gray-600 space-y-2 mb-6">
             <li>Different email platforms between companies</li>
             <li>Timing coordination across organizations</li>
             <li>Multiple brand identities during transition</li>
             <li>Employee communication</li>
           </ul>
+
+          <h2 className="text-2xl font-bold mt-12 mb-4">Frequently Asked Questions</h2>
+          <div className="space-y-6 my-8">
+            {faqs.map((faq, index) => (
+              <div key={index} className="border-b border-gray-200 pb-6 last:border-0">
+                <h3 className="font-semibold text-lg mb-2">{faq.question}</h3>
+                <p className="text-gray-600">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-8 my-12">
             <h3 className="text-xl font-bold mb-4">Smooth M&A transitions</h3>

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'consulting-firm-email-signature',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/consulting-firm-email-signature',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',
     datePublished: '2025-12-29',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '5 min',
     category: 'Consulting',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 29, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
+        <AuthorCard authorSlug="emily-nakamura" />
         <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" alt="Consulting meeting" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Consultants sell expertise. Your email signature should reinforce your professional credibility while making it easy for clients and prospects to connect.</p>
@@ -87,6 +90,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/consulting-firm-email-signature" count={3} />
     </>
   );
 }

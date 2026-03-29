@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'html-email-signature-guide',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/html-email-signature-guide',
     image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',
     datePublished: '2026-02-01',
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: '12 min',
     category: 'Technical',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 1, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 12 min read</span>
         </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
         <Image src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop" alt="Code on screen" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Creating HTML email signatures that render consistently across Gmail, Outlook, and Apple Mail requires specific techniques. This guide covers everything you need to know.</p>
@@ -119,6 +122,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/html-email-signature-guide" count={3} />
     </>
   );
 }

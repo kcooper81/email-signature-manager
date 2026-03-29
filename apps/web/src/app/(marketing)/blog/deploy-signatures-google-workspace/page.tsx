@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'deploy-signatures-google-workspace',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/deploy-signatures-google-workspace',
     image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
     datePublished: '2026-01-22',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '10 min',
     category: 'Google Workspace',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 22, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
+        <AuthorCard authorSlug="kade-crawford" />
         <Image src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop" alt="Google Workspace" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Deploying consistent email signatures across a Google Workspace organization can be done through the Admin Console or specialized tools. Here's how each approach works.</p>
@@ -121,6 +124,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/deploy-signatures-google-workspace" count={3} />
     </>
   );
 }

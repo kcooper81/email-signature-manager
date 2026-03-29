@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'brand-consistency-guide',
@@ -17,7 +19,7 @@ export default function BlogPost() {
     url: '/blog/brand-consistency-guide',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
     datePublished: '2026-01-21',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '8 min',
     category: 'Email Signatures',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 21, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
           </div>
+        <AuthorCard authorSlug="emily-nakamura" />
 
           <Image
             src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop"
@@ -182,6 +185,7 @@ export default function BlogPost() {
         </div>
       </article>
 
+          <RelatedPosts currentUrl="/blog/brand-consistency-guide" count={3} />
     </>
   );
 }

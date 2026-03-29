@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'real-estate-email-signature',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/real-estate-email-signature',
     image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop',
     datePublished: '2026-01-27',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '7 min',
     category: 'Real Estate',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 27, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
+        <AuthorCard authorSlug="emily-nakamura" />
         <Image src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop" alt="Real estate" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Real estate professionals need signatures that build trust, meet licensing requirements, and showcase their brand. Here's how to create effective agent and broker signatures.</p>
@@ -136,6 +139,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/real-estate-email-signature" count={3} />
     </>
   );
 }
