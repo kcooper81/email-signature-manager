@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-marketing-roi',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-marketing-roi',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
     datePublished: '2026-01-25',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '9 min',
     category: 'Marketing',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 25, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 9 min read</span>
         </div>
+        <AuthorCard authorSlug="emily-nakamura" />
         <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Marketing analytics" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Your employees send thousands of emails every week. Each one is an opportunity to promote your brand, drive traffic, and generate leads. Here's how to measure and maximize email signature marketing ROI.</p>
@@ -132,6 +135,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-marketing-roi" count={3} />
     </>
   );
 }

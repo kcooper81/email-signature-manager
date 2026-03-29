@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, AlertTriangle, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'legal-requirements-email-signatures',
@@ -17,7 +19,7 @@ export default function BlogPost() {
     url: '/blog/legal-requirements-email-signatures',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
     datePublished: '2025-12-21',
-    author: 'Siggly Team',
+    author: 'Sarah Chen',
     readTime: '6 min',
     category: 'Email Signatures',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 21, 2025</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
           </div>
+        <AuthorCard authorSlug="sarah-chen" />
 
           <Image
             src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop"
@@ -199,6 +202,7 @@ export default function BlogPost() {
         </div>
       </article>
 
+          <RelatedPosts currentUrl="/blog/legal-requirements-email-signatures" count={3} />
     </>
   );
 }

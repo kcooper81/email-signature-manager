@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'google-workspace-signature-management',
@@ -17,7 +19,7 @@ export default function BlogPost() {
     url: '/blog/google-workspace-signature-management',
     image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
     datePublished: '2026-01-14',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '6 min',
     category: 'Email Signatures',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 14, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
           </div>
+        <AuthorCard authorSlug="kade-crawford" />
 
           <Image
             src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop"
@@ -175,6 +178,7 @@ export default function BlogPost() {
         </div>
       </article>
 
+          <RelatedPosts currentUrl="/blog/google-workspace-signature-management" count={3} />
     </>
   );
 }
