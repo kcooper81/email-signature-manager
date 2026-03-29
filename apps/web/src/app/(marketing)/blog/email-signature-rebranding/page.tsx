@@ -3,22 +3,24 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-rebranding',
-  'Updating Email Signatures During Rebranding',
-  'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
+  'Email Signature Rebrand: 6-Step Rollout Plan',
+  'Rebrand your company email signatures without the chaos. Our 6-step rollout plan covers logos, colors, and messaging for every employee. Free timeline template.',
   ['email signature rebrand', 'update company signature', 'signature brand refresh']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Updating Email Signatures During Rebranding',
-    description: 'How to update email signatures during a company rebrand. Plan and execute signature rollout for new logos, colors, and messaging.',
+    title: 'Email Signature Rebrand: 6-Step Rollout Plan',
+    description: 'Rebrand your company email signatures without the chaos. Our 6-step rollout plan covers logos, colors, and messaging for every employee. Free timeline template.',
     url: '/blog/email-signature-rebranding',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
     datePublished: '2025-12-13',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '6 min',
     category: 'Rebranding',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 13, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
+        <AuthorCard authorSlug="emily-nakamura" />
         <Image src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop" alt="Brand design" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A rebrand means updating everything — including email signatures. Here's how to execute a smooth signature rollout.</p>
@@ -96,6 +99,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/email-signature-rebranding" count={3} />
     </>
   );
 }

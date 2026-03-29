@@ -39,6 +39,30 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: 'Claude-Web',
         allow: '/',
       },
+      {
+        userAgent: 'PerplexityBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'CCBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'Bytespider',
+        allow: '/',
+      },
+      {
+        userAgent: 'FacebookBot',
+        allow: '/',
+      },
+      {
+        userAgent: 'cohere-ai',
+        allow: '/',
+      },
+      {
+        userAgent: 'Applebot-Extended',
+        allow: '/',
+      },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };

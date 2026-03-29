@@ -100,9 +100,9 @@ export const compliancePages: SEOLandingPageData[] = [
     slug: 'hipaa',
     category: 'compliance',
     meta: {
-      title: 'HIPAA Email Signature Requirements | Siggly',
+      title: 'HIPAA Email Signatures: Free Compliance Guide | Siggly',
       description:
-        'Learn how HIPAA regulations affect email signatures in healthcare. Understand the Privacy Rule, Security Rule, and how to ensure email signatures protect PHI.',
+        'Ensure your healthcare email signatures meet HIPAA requirements. Covers Privacy Rule, Security Rule, and PHI protection with ready-to-use compliant templates.',
       keywords: ['hipaa email signature', 'hipaa compliance email', 'healthcare email signature', 'phi email protection', 'hipaa security rule email'],
       canonical: '/compliance/hipaa',
     },

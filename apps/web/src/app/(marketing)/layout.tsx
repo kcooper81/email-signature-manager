@@ -5,6 +5,7 @@ import { MarketingHeader } from '@/components/marketing/header';
 import { MarketingFooter } from '@/components/marketing/footer';
 import { JsonLd } from '@/components/seo/json-ld';
 import { BreadcrumbJsonLd } from '@/components/seo/breadcrumb-jsonld';
+import { VisualBreadcrumbs } from '@/components/seo/visual-breadcrumbs';
 import { generateOrganizationSchema, generateSoftwareApplicationSchema, generateWebSiteSchema } from '@/lib/seo';
 
 export default function MarketingLayout({
@@ -21,6 +22,7 @@ export default function MarketingLayout({
       <BreadcrumbJsonLd />
       <MarketingHeader transparent={isHomepage} variant={isHomepage ? 'homepage' : 'default'} />
       <main className={isHomepage ? '' : 'pt-[73px]'}>
+        {!isHomepage && <VisualBreadcrumbs />}
         {children}
       </main>
       <MarketingFooter />

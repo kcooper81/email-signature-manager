@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Check, Mail, Users, Zap, Shield, Building2, Globe, Clock, Sparkles, BarChart3, Palette, RefreshCw, Lock, X, AlertTriangle, Link2, GitBranch, FileText, ClipboardList } from 'lucide-react';
 import { DemoButton } from '@/components/marketing/demo-button';
+import { TrustBadges } from '@/components/marketing/trust-badges';
 
 export default function HomePage() {
   return (
@@ -326,6 +327,11 @@ export default function HomePage() {
           </div>
 
         </div>
+      </section>
+
+      {/* Trust Badges - G2/Capterra/SOC2 */}
+      <section className="py-8 bg-gray-50 border-b border-gray-100">
+        <TrustBadges variant="compact" />
       </section>
 
       {/* Stats Section with colorful cards */}

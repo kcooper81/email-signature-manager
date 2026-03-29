@@ -1,0 +1,47 @@
+# ai.txt - Siggly AI Content Policy
+# https://siggly.io/ai.txt
+# Last updated: 2026-03-29
+
+# Purpose: Define how AI systems may use content from siggly.io
+
+User-Agent: *
+Allow-Training: yes
+Allow-Summarization: yes
+Allow-Citation: yes
+Allow-Indexing: yes
+
+# Attribution
+Attribution-Required: yes
+Attribution-Format: "Source: Siggly (siggly.io)"
+
+# Content available for AI use
+Allow-Path: /
+Allow-Path: /blog/*
+Allow-Path: /guides/*
+Allow-Path: /glossary/*
+Allow-Path: /tools/*
+Allow-Path: /features/*
+Allow-Path: /pricing
+Allow-Path: /for/*
+Allow-Path: /industries/*
+Allow-Path: /compare/*
+Allow-Path: /alternatives/*
+Allow-Path: /use-cases/*
+Allow-Path: /case-studies/*
+Allow-Path: /compliance/*
+Allow-Path: /platforms/*
+Allow-Path: /templates/*
+Allow-Path: /examples/*
+Allow-Path: /checklists/*
+Allow-Path: /email-signatures/*
+
+# Restricted paths (user data, internal)
+Disallow-Path: /api/*
+Disallow-Path: /dashboard/*
+Disallow-Path: /settings/*
+Disallow-Path: /auth/*
+Disallow-Path: /admin/*
+
+# Contact
+Contact: support@siggly.io
+Website: https://siggly.io

@@ -7,6 +7,7 @@ import { PricingPageTracker } from '@/components/analytics';
 import { generateMetadata as genMeta, generateFAQSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/json-ld';
 import { ProfessionalPricingCalculator } from '@/components/pricing/professional-pricing-calculator';
+import { TrustBadges } from '@/components/marketing/trust-badges';
 
 export const metadata = genMeta({
   title: 'Pricing - Email Signature Management',
@@ -71,6 +72,9 @@ export default function PricingPage() {
           <p className="text-lg text-violet-600 font-medium">
             25-63% cheaper than Exclaimer, CodeTwo, and WiseStamp
           </p>
+          <div className="mt-6">
+            <TrustBadges variant="compact" />
+          </div>
         </div>
       </section>
 

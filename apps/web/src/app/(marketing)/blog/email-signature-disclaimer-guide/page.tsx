@@ -3,22 +3,24 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-disclaimer-guide',
-  'Email Signature Disclaimers: When & What to Include',
-  'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
+  'Email Signature Disclaimers: 7 Essential Templates',
+  'Discover which email signature disclaimers you actually need in 2026. Copy-paste legal, confidentiality, and industry templates. Complete compliance checklist.',
   ['email signature disclaimer', 'email confidentiality notice', 'legal email disclaimer']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signature Disclaimers: When & What to Include',
-    description: 'Learn when email disclaimers are necessary and what to include. Covers confidentiality, legal, and industry-specific disclaimers.',
+    title: 'Email Signature Disclaimers: 7 Essential Templates',
+    description: 'Discover which email signature disclaimers you actually need in 2026. Copy-paste legal, confidentiality, and industry templates. Complete compliance checklist.',
     url: '/blog/email-signature-disclaimer-guide',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
     datePublished: '2025-12-16',
-    author: 'Siggly Team',
+    author: 'Sarah Chen',
     readTime: '7 min',
     category: 'Compliance',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 16, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
+        <AuthorCard authorSlug="sarah-chen" />
         <Image src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop" alt="Legal documents" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email disclaimers are standard in many industries, but do they actually do anything? Here's when they matter and what to include.</p>
@@ -94,6 +97,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/email-signature-disclaimer-guide" count={3} />
     </>
   );
 }

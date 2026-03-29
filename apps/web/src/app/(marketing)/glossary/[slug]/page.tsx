@@ -25,12 +25,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   if (!page) return {};
   const overrides = await getMetaOverrides(page.meta.canonical);
-  return genMeta({
+  const baseMeta = genMeta({
     title: overrides?.title || page.meta.title,
     description: overrides?.description || page.meta.description,
     keywords: overrides?.keywords || page.meta.keywords,
     canonical: page.meta.canonical,
   });
+  // Glossary term pages are thin content — noindex to preserve site quality signals,
+  // but follow links so Google can discover linked high-value pages.
+  return {
+    ...baseMeta,
+    robots: {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    },
+  };
 }
 
 export default async function GlossaryPage({ params }: PageProps) {
