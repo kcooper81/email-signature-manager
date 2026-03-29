@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'gmail-signature-setup-guide',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/gmail-signature-setup-guide',
     image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&h=600&fit=crop',
     datePublished: '2026-02-05',
-    author: 'Siggly Team',
+    author: 'Emily Nakamura',
     readTime: '8 min',
     category: 'Tutorials',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 5, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
+        <AuthorCard authorSlug="emily-nakamura" />
 
         <Image
           src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&h=600&fit=crop"
@@ -190,6 +193,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/gmail-signature-setup-guide" count={3} />
     </>
   );
 }

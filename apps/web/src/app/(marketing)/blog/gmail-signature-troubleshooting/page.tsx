@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, AlertTriangle, Check, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo/metadata';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 const postData = {
   slug: 'gmail-signature-troubleshooting',
@@ -30,7 +32,7 @@ export const metadata = genMeta({
   ogType: 'article',
   article: {
     publishedTime: postData.date,
-    authors: ['Siggly Team'],
+    authors: ['Marcus Rodriguez'],
     tags: [postData.category, 'Google Workspace', 'Gmail'],
   },
 });
@@ -161,7 +163,7 @@ export default function BlogPost() {
     url: `/blog/${postData.slug}`,
     image: postData.image,
     datePublished: postData.date,
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: postData.readTime,
     category: postData.category,
   });
@@ -195,6 +197,7 @@ export default function BlogPost() {
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 7, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {postData.readTime} read</span>
           </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
           
           <Image 
             src={postData.image} 
@@ -332,6 +335,7 @@ export default function BlogPost() {
           </div>
         </div>
       </article>
+          <RelatedPosts currentUrl="/blog/gmail-signature-troubleshooting" count={3} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-update-guide',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-update-guide',
     image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop',
     datePublished: '2025-12-21',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '6 min',
     category: 'How-To',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 21, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
+        <AuthorCard authorSlug="kade-crawford" />
         <Image src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop" alt="Computer setup" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Need to update your email signature? Here's how to do it in every major email client.</p>
@@ -102,6 +105,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-update-guide" count={3} />
     </>
   );
 }

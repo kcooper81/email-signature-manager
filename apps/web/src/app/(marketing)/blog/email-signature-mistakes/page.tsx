@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-mistakes',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-mistakes',
     image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&h=600&fit=crop',
     datePublished: '2026-01-23',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '8 min',
     category: 'Best Practices',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 23, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
+        <AuthorCard authorSlug="kade-crawford" />
         <Image src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&h=600&fit=crop" alt="Professional working" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Your email signature appears on every message you send. These common mistakes can undermine your professionalism and damage your brand.</p>
@@ -113,6 +116,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-mistakes" count={3} />
     </>
   );
 }

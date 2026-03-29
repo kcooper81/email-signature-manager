@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-examples',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-examples',
     image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
     datePublished: '2026-02-03',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '12 min',
     category: 'Design',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 3, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 12 min read</span>
         </div>
+        <AuthorCard authorSlug="kade-crawford" />
 
         <Image
           src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop"
@@ -296,6 +299,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-examples" count={3} />
     </>
   );
 }

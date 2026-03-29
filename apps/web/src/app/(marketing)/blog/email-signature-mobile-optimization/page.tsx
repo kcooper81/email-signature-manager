@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-mobile-optimization',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-mobile-optimization',
     image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop',
     datePublished: '2025-11-15',
-    author: 'Siggly Team',
+    author: 'Marcus Rodriguez',
     readTime: '5 min',
     category: 'Mobile',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> November 15, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
+        <AuthorCard authorSlug="marcus-rodriguez" />
         <Image src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop" alt="Mobile email" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Over half of emails are read on mobile devices. Your signature needs to look great and function well on small screens.</p>
@@ -87,6 +90,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+          <RelatedPosts currentUrl="/blog/email-signature-mobile-optimization" count={3} />
     </>
   );
 }
