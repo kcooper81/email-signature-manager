@@ -3,22 +3,24 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'healthcare-email-signature',
-  'Healthcare Email Signatures: HIPAA Compliant Guide',
-  'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
+  'Healthcare Email Signatures: 2026 HIPAA Guide',
+  'Build HIPAA-compliant healthcare email signatures with our proven guide. Covers confidentiality notices, NPI numbers, and credentials. Free templates included.',
   ['healthcare email signature', 'HIPAA email signature', 'medical email signature', 'doctor email signature']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Healthcare Email Signatures: HIPAA Compliant Guide',
-    description: 'Create HIPAA-compliant email signatures for healthcare professionals. Includes confidentiality notices, NPI numbers, and credential formatting.',
+    title: 'Healthcare Email Signatures: 2026 HIPAA Guide',
+    description: 'Build HIPAA-compliant healthcare email signatures with our proven guide. Covers confidentiality notices, NPI numbers, and credentials. Free templates included.',
     url: '/blog/healthcare-email-signature',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop',
     datePublished: '2026-01-28',
-    author: 'Siggly Team',
+    author: 'Sarah Chen',
     readTime: '7 min',
     category: 'Healthcare',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 28, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
+        <AuthorCard authorSlug="sarah-chen" />
         <Image src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop" alt="Healthcare professional" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Healthcare email signatures require special attention to HIPAA compliance and professional credential display. This guide covers requirements for medical professionals.</p>
@@ -120,6 +123,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+    <RelatedPosts currentUrl="/blog/healthcare-email-signature" count={3} />
     </>
   );
 }

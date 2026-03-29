@@ -11,7 +11,7 @@ import { templatesPages } from '@/lib/seo-pages/data/templates';
 import { emailSignaturesPages } from '@/lib/seo-pages/data/email-signatures';
 import { alternativesPages } from '@/lib/seo-pages/data/alternatives';
 import { platformsPages } from '@/lib/seo-pages/data/platforms';
-import { glossaryPages } from '@/lib/seo-pages/data/glossary';
+// glossaryPages intentionally not imported — excluded from sitemap (thin content)
 import { migrationsPages } from '@/lib/seo-pages/data/migrations';
 import { examplesPages } from '@/lib/seo-pages/data/examples';
 import { caseStudiesPages } from '@/lib/seo-pages/data/case-studies';
@@ -158,23 +158,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Fixed date for static content pages (approximately when they were created)
+  const staticPageDate = new Date('2026-03-01');
+
   // Solution pages (high-value for SEO)
   const solutionPages: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/for/it-admins`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/for/marketing`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/for/small-business`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/for/agencies`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/for/enterprise`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/google-workspace`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${baseUrl}/integrations/microsoft-365`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${baseUrl}/use-cases`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/for/it-admins`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/for/marketing`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/for/small-business`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/for/agencies`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/for/enterprise`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/google-workspace`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/integrations/microsoft-365`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/use-cases`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
   ];
 
   // Comparison pages (very high-value for competitor keywords)
   const comparisonPages: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/compare/exclaimer`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/compare/codetwo`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
-    { url: `${baseUrl}/compare/wisestamp`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/compare/exclaimer`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/compare/codetwo`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/compare/wisestamp`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
   ];
 
   // Blog pagination (12 posts per page = 9 pages for 106 posts)
@@ -207,37 +210,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Tool pages (for organic traffic)
   const toolPages: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/tools`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/tools/signature-generator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/tools/signature-templates`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/tools/html-signature-converter`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/tools/roi-calculator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/tools/signature-audit`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/tools/disclaimer-generator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/tools/email-preview`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/tools/signature-generator`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/signature-templates`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/html-signature-converter`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/roi-calculator`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/signature-audit`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/disclaimer-generator`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/email-preview`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
   ];
 
   // Industry pages (high-value for niche SEO)
   const industryPages: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/industries/legal`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/industries/healthcare`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/industries/finance`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/industries/real-estate`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/legal`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/healthcare`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/finance`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/industries/real-estate`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
   ];
 
   // Other pages
   const otherPages: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/demo`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${baseUrl}/glossary`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${baseUrl}/migrate-from`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/examples`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/case-studies`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/checklists`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${baseUrl}/compliance`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
-    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
-    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${baseUrl}/demo`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/about`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/contact`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/glossary`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/migrate-from`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/examples`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/case-studies`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/checklists`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/compliance`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/privacy`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.3 },
+    { url: `${baseUrl}/terms`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.3 },
   ];
 
   // SEO landing pages - dynamically generated from data files
@@ -253,7 +256,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { pages: emailSignaturesPages, priority: 0.8, changeFrequency: 'monthly' },
     { pages: alternativesPages, priority: 0.85, changeFrequency: 'weekly' },
     { pages: platformsPages, priority: 0.8, changeFrequency: 'monthly' },
-    { pages: glossaryPages, priority: 0.7, changeFrequency: 'monthly' },
+    // Glossary term pages excluded from sitemap — thin content that dilutes crawl budget.
+    // The glossary index page (/glossary) is still included in otherPages above.
+    // { pages: glossaryPages, priority: 0.7, changeFrequency: 'monthly' },
     { pages: migrationsPages, priority: 0.85, changeFrequency: 'monthly' },
     { pages: examplesPages, priority: 0.8, changeFrequency: 'monthly' },
     { pages: caseStudiesPages, priority: 0.8, changeFrequency: 'monthly' },
@@ -265,7 +270,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ({ pages, priority, changeFrequency }) =>
       pages.map((page) => ({
         url: `${baseUrl}${page.meta.canonical}`,
-        lastModified: new Date(),
+        lastModified: staticPageDate,
         changeFrequency,
         priority,
       }))

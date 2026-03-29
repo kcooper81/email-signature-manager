@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-best-practices',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-best-practices',
     image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop',
     datePublished: '2026-02-02',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '10 min',
     category: 'Best Practices',
   });
@@ -45,6 +47,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 2, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
+        <AuthorCard authorSlug="kade-crawford" />
 
         <Image
           src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop"
@@ -290,6 +293,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/email-signature-best-practices" count={3} />
     </>
   );
 }

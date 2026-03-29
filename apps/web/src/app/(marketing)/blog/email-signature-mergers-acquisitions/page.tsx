@@ -3,22 +3,24 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-mergers-acquisitions',
-  'Email Signatures During M&A: Transition Guide',
-  'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
+  'M&A Email Signatures: 5-Step Transition Plan (2026)',
+  'Follow our proven 5-step plan to manage email signatures during mergers and acquisitions. Avoid brand confusion and ensure day-one readiness. Free checklist.',
   ['email signature merger', 'acquisition rebrand signature', 'company merger email']
 );
 
 export default function BlogPost() {
   const blogSchema = generateBlogPostSchema({
-    title: 'Email Signatures During M&A: Transition Guide',
-    description: 'Manage email signature transitions during mergers and acquisitions. Planning, timing, and execution for brand consolidation.',
+    title: 'M&A Email Signatures: 5-Step Transition Plan (2026)',
+    description: 'Follow our proven 5-step plan to manage email signatures during mergers and acquisitions. Avoid brand confusion and ensure day-one readiness. Free checklist.',
     url: '/blog/email-signature-mergers-acquisitions',
     image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',
     datePublished: '2025-11-29',
-    author: 'Siggly Team',
+    author: 'Kade Crawford',
     readTime: '6 min',
     category: 'M&A',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> November 29, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
+        <AuthorCard authorSlug="kade-crawford" />
         <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" alt="Business merger" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Mergers and acquisitions require careful signature transitions. Email is often the first place customers see the new brand.</p>
@@ -87,6 +90,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/email-signature-mergers-acquisitions" count={3} />
     </>
   );
 }

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema } from '@/lib/seo';
+import { AuthorCard } from '@/components/blog/author-card';
+import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'law-firm-email-signature',
@@ -18,7 +20,7 @@ export default function BlogPost() {
     url: '/blog/law-firm-email-signature',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
     datePublished: '2026-01-29',
-    author: 'Siggly Team',
+    author: 'Sarah Chen',
     readTime: '8 min',
     category: 'Legal Industry',
   });
@@ -42,6 +44,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> January 29, 2026</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
+        <AuthorCard authorSlug="sarah-chen" />
         <Image src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop" alt="Law office" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Attorney email signatures must balance professionalism with compliance requirements. This guide covers what law firms need to include and common mistakes to avoid.</p>
@@ -115,6 +118,7 @@ export default function BlogPost() {
         </div>
       </div>
     </article>
+      <RelatedPosts currentUrl="/blog/law-firm-email-signature" count={3} />
     </>
   );
 }
