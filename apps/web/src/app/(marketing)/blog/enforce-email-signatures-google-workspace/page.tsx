@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Calendar, Clock, ArrowRight, Shield, Check, X, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, ArrowRight, Shield, Check, X, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo/metadata';
 import { AuthorCard } from '@/components/blog/author-card';
@@ -95,6 +95,7 @@ export default function BlogPost() {
     url: `/blog/${postData.slug}`,
     image: postData.image,
     datePublished: postData.date,
+    dateModified: '2026-03-29',
     author: 'Kade Crawford',
     readTime: postData.readTime,
     category: postData.category,
@@ -118,21 +119,22 @@ export default function BlogPost() {
           <Link href="/blog" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-900 mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to blog
           </Link>
-          
+
           <div className="mb-8">
             <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">{postData.category}</span>
           </div>
-          
+
           <h1 className="text-3xl sm:text-4xl font-bold mb-6">{postData.title}</h1>
-          
+
           <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 7, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {postData.readTime} read</span>
+            <span className="flex items-center gap-2 text-emerald-600 font-medium"><RefreshCw className="h-3.5 w-3.5" /> Updated Mar 2026</span>
           </div>
         <AuthorCard authorSlug="kade-crawford" />
-          
-          <Image 
-            src={postData.image} 
+
+          <Image
+            src={postData.image}
             alt="Email signature enforcement and security" 
             width={1200} 
             height={600} 

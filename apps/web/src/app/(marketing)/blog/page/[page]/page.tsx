@@ -18,7 +18,25 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { page: string } }) {
   const page = parseInt(params.page, 10);
   const totalPages = getTotalPages();
-  return generateBlogIndexMetadata(page, totalPages);
+  const base = generateBlogIndexMetadata(page, totalPages);
+
+  const prevPage = page > 2 ? `/blog/page/${page - 1}` : page === 2 ? '/blog' : null;
+  const nextPage = page < totalPages ? `/blog/page/${page + 1}` : null;
+
+  return {
+    ...base,
+    alternates: {
+      ...base.alternates,
+      ...(prevPage || nextPage
+        ? {
+            types: {
+              ...(prevPage && { prev: prevPage }),
+              ...(nextPage && { next: nextPage }),
+            },
+          }
+        : {}),
+    },
+  };
 }
 
 export default function BlogPaginatedPage({ params }: { params: { page: string } }) {
