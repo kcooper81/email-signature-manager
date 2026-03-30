@@ -7,7 +7,16 @@ import { BlogListJsonLd } from '@/components/seo';
 import { generateBlogIndexMetadata } from '@/lib/seo';
 import { blogPosts, getPostsForPage, getTotalPages } from './blog-data';
 
-export const metadata = generateBlogIndexMetadata(1, getTotalPages());
+const baseMeta = generateBlogIndexMetadata(1, getTotalPages());
+export const metadata = {
+  ...baseMeta,
+  alternates: {
+    ...baseMeta.alternates,
+    ...(getTotalPages() > 1
+      ? { types: { next: '/blog/page/2' } }
+      : {}),
+  },
+};
 
 export default function BlogPage() {
   const totalPages = getTotalPages();

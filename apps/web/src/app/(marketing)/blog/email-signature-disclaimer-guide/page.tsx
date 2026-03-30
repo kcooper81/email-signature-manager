@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Calendar, Clock, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, ArrowRight, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createBlogMetadata, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo';
 import { AuthorCard } from '@/components/blog/author-card';
@@ -20,6 +20,7 @@ export default function BlogPost() {
     url: '/blog/email-signature-disclaimer-guide',
     image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
     datePublished: '2025-12-16',
+    dateModified: '2026-03-29',
     author: 'Sarah Chen',
     readTime: '7 min',
     category: 'Compliance',
@@ -68,6 +69,7 @@ export default function BlogPost() {
         <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
           <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> December 16, 2025</span>
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
+          <span className="flex items-center gap-2 text-emerald-600 font-medium"><RefreshCw className="h-3.5 w-3.5" /> Updated Mar 2026</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
         <Image src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop" alt="Legal documents" width={1200} height={600} className="rounded-2xl mb-12" />

@@ -21,6 +21,7 @@ import { QuickActionsPanel } from './quick-actions';
 import { IntegrationStatusWidget } from './integration-status';
 import { PendingActionsWidget } from './pending-actions';
 import { UpgradeBanner } from './upgrade-banner';
+import { ReviewPrompt } from '@/components/dashboard/review-prompt';
 import { getEffectiveOrg } from '@/lib/msp/get-effective-org';
 
 export default async function DashboardPage() {
@@ -194,6 +195,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      <ReviewPrompt />
+
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
           Welcome{isNewUser ? '' : ' back'}, {firstName}!
