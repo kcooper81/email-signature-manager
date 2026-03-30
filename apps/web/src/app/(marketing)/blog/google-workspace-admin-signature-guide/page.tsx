@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Calendar, Clock, ArrowRight, Check, AlertTriangle, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, ArrowRight, Check, AlertTriangle, Lightbulb, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { generateMetadata as genMeta, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo/metadata';
 import { AuthorCard } from '@/components/blog/author-card';
@@ -70,6 +70,7 @@ export default function BlogPost() {
     url: `/blog/${postData.slug}`,
     image: postData.image,
     datePublished: postData.date,
+    dateModified: '2026-03-29',
     author: 'Kade Crawford',
     readTime: postData.readTime,
     category: postData.category,
@@ -103,6 +104,7 @@ export default function BlogPost() {
           <div className="flex items-center gap-6 text-sm text-gray-500 mb-8">
             <span className="flex items-center gap-2"><Calendar className="h-4 w-4" /> February 7, 2026</span>
             <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> {postData.readTime} read</span>
+            <span className="flex items-center gap-2 text-emerald-600 font-medium"><RefreshCw className="h-3.5 w-3.5" /> Updated Mar 2026</span>
           </div>
         <AuthorCard authorSlug="kade-crawford" />
           
