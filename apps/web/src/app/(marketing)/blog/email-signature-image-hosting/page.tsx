@@ -8,9 +8,9 @@ import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-image-hosting',
-  'Email Signature Image Hosting: Best Practices Guide',
-  'Learn where and how to host images for email signatures. Compare hosting options and avoid common image display problems.',
-  ['email signature image hosting', 'host signature logo', 'email signature image url']
+  'Best Image Hosting for Email Signatures — Free & Paid Options Compared',
+  'Your signature images keep breaking? Here are the 7 most reliable hosting options for email signature logos and headshots, with pros/cons and setup instructions.',
+  ['email signature image hosting', 'best image hosting email signatures', 'host signature logo', 'email signature image url', 'free image hosting email signature']
 );
 
 export default function BlogPost() {

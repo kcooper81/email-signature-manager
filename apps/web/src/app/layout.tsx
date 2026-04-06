@@ -65,9 +65,9 @@ export const metadata: Metadata = {
   verification: {
     google: 'C__U2dgBYDEMGP3dJ1luDoSeOP2K6sVQEJq-Q7xpbwo',
   },
-  alternates: {
-    canonical: 'https://siggly.io',
-  },
+  // NOTE: Do NOT set alternates.canonical here — it bleeds into child pages
+  // and tells Google every page's canonical is the homepage. Each page sets
+  // its own canonical via generateMetadata() or createBlogMetadata().
 };
 
 export default function RootLayout({

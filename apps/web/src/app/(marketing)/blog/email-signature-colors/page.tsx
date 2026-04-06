@@ -8,9 +8,9 @@ import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-colors',
-  'Email Signature Colors: Brand Color Best Practices',
-  'Choose the right colors for email signatures. Learn about brand colors, contrast, and what works across all email clients.',
-  ['email signature colors', 'signature color scheme', 'brand colors email']
+  'Best Colors for Email Signatures — What Actually Works in 2026',
+  'Not all colors render the same in every inbox. Learn which brand colors work across Gmail, Outlook, and Apple Mail — plus contrast tips and hex codes you can copy.',
+  ['email signature colors', 'best colors for email signature', 'signature color scheme', 'brand colors email', 'email signature design colors']
 );
 
 export default function BlogPost() {
