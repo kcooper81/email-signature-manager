@@ -1964,14 +1964,16 @@ export const useCasesPages: SEOLandingPageData[] = [
     slug: 'mergers-acquisitions',
     category: 'use-cases',
     meta: {
-      title: 'M&A Email Signatures: Day-One Ready | Siggly',
+      title: 'Centralized Email Signature Management for Mergers & Acquisitions',
       description:
-        'Unify email signatures across both companies from day one. Manage dual-brand transitions, legal entity changes, and 100% employee coverage during M&A.',
+        'Unify email signatures across both companies from day one. Centrally manage dual-brand transitions, legal entity changes, and deploy consistent signatures to every employee post-merger.',
       keywords: [
         'merger email signatures',
-        'acquisition brand unification',
+        'centralized email signature management mergers acquisitions',
         'M&A email branding',
         'corporate merger signatures',
+        'central email signature solution mergers',
+        'post-acquisition email branding',
       ],
       canonical: '/use-cases/mergers-acquisitions',
     },

@@ -8,9 +8,9 @@ import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'email-signature-photo-guidelines',
-  'Email Signature Photo Guidelines: Look Professional',
-  'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
-  ['email signature photo', 'signature headshot', 'professional photo email']
+  'Email Signature Photo Size, Format & Style — The Complete Guide',
+  'Get the exact dimensions, file formats, and cropping tips for headshots that look sharp in Gmail, Outlook, and Apple Mail. Includes free templates.',
+  ['email signature photo', 'email signature photo size', 'signature headshot', 'professional photo email', 'email signature image guidelines']
 );
 
 export default function BlogPost() {

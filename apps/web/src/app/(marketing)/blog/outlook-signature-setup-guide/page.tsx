@@ -8,9 +8,9 @@ import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'outlook-signature-setup-guide',
-  'How to Set Up Outlook Signature: Step-by-Step Guide 2026',
-  'Create a professional Outlook email signature with this complete guide. Covers Outlook desktop, web, and mobile signature setup.',
-  ['outlook signature', 'outlook signature setup', 'how to change outlook signature', 'microsoft outlook email signature']
+  'How to Set Up an Outlook Signature (Desktop, Web & Mobile) — 2026',
+  'Set up your Outlook email signature in under 5 minutes. Step-by-step for New Outlook, classic desktop, OWA, and mobile — with screenshots and admin deployment tips.',
+  ['outlook signature', 'outlook signature setup', 'how to change outlook signature', 'microsoft outlook email signature', 'new outlook signature settings', 'outlook on the web signature']
 );
 
 export default function BlogPost() {

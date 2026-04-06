@@ -3,6 +3,14 @@ import Image from 'next/image';
 import { ArrowRight, Check, Mail, Users, Zap, Shield, Building2, Globe, Clock, Sparkles, BarChart3, Palette, RefreshCw, Lock, X, AlertTriangle, Link2, GitBranch, FileText, ClipboardList } from 'lucide-react';
 import { DemoButton } from '@/components/marketing/demo-button';
 import { TrustBadges } from '@/components/marketing/trust-badges';
+import { generateMetadata as genMeta } from '@/lib/seo';
+
+export const metadata = genMeta({
+  title: 'Siggly - Email Signature Management for Teams',
+  description: 'Create, manage, and deploy consistent email signatures to your entire Google Workspace or Microsoft 365 team in seconds. Free forever for small teams.',
+  canonical: '/',
+  keywords: ['email signature management', 'team email signatures', 'Google Workspace signatures', 'Microsoft 365 signatures', 'corporate email branding'],
+});
 
 export default function HomePage() {
   return (

@@ -8,9 +8,9 @@ import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'healthcare-email-signature',
-  'Healthcare Email Signatures: 2026 HIPAA Guide',
-  'Build HIPAA-compliant healthcare email signatures with our proven guide. Covers confidentiality notices, NPI numbers, and credentials. Free templates included.',
-  ['healthcare email signature', 'HIPAA email signature', 'medical email signature', 'doctor email signature']
+  'Healthcare Email Signature Examples — HIPAA Compliant Templates (2026)',
+  'Copy-paste HIPAA-compliant email signature templates for doctors, nurses, and healthcare admins. Includes required disclaimers, NPI formatting, and credential display best practices.',
+  ['healthcare email signature', 'HIPAA email signature', 'HIPAA compliant email signature', 'medical email signature', 'doctor email signature', 'healthcare email signature best practices']
 );
 
 export default function BlogPost() {

@@ -8,9 +8,9 @@ import { RelatedPosts } from '@/components/blog/related-posts';
 
 export const metadata = createBlogMetadata(
   'gdpr-email-signature-requirements',
-  'GDPR Email Signature Requirements: EU Compliance Guide',
-  'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
-  ['GDPR email signature', 'EU email compliance', 'email signature privacy', 'GDPR disclaimer email']
+  'GDPR Email Signature Requirements — What You Must Include (2026)',
+  'Avoid fines: learn exactly what GDPR, HIPAA, and CAN-SPAM require in business email signatures. Includes copy-paste compliant disclaimer examples for regulated industries.',
+  ['GDPR email signature', 'EU email compliance', 'email signature privacy', 'GDPR disclaimer email', 'email signature compliance HIPAA', 'email signature legal requirements']
 );
 
 export default function BlogPost() {
