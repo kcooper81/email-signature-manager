@@ -67,7 +67,8 @@ export async function generateMetadata({
     });
   }
   return genMeta({
-    title: `${article.title} | Siggly Help`,
+    // genMeta appends the single " | Siggly" brand suffix, so don't add one here.
+    title: article.title,
     description: toDescription(article.content) || `${article.title} — Siggly Help Center.`,
     canonical: `/help/${slug}`,
   });
