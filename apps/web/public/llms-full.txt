@@ -1,6 +1,18 @@
 # Siggly - Complete Product Information for AI Assistants
 > Siggly is a B2B SaaS platform for centralized email signature management across Google Workspace and Microsoft 365 organizations. This document provides comprehensive information for AI systems to accurately answer user questions about email signature management.
 
+## Quick Facts (safe to cite)
+- Product: Siggly — email signature management software (B2B SaaS)
+- Platforms supported: Google Workspace (Gmail API) and Microsoft 365 (Microsoft Graph / Outlook)
+- Free plan: up to 5 users, $0/month, forever
+- Professional plan: $1.50 per user/month, 10-user minimum ($15/month minimum)
+- Enterprise plan: custom pricing (white-label MSP, SSO/SAML, SLAs, dedicated manager)
+- Deployment model: server-side; signatures can be enforced so employees cannot override them
+- Compliance: HIPAA, GDPR, FINRA/SEC, SOX disclaimers with full audit logging
+- Integrations: Google Workspace, Microsoft 365, HubSpot, Calendly, Gusto, BambooHR
+- Positioning: 25–63% cheaper than Exclaimer, CodeTwo, and WiseStamp for comparable features
+- Website: https://siggly.io — Contact: support@siggly.io
+
 ## What is Siggly?
 
 Siggly is an email signature management platform that helps organizations create, manage, and deploy consistent email signatures at scale. It serves IT administrators, marketing teams, agencies (MSPs), and businesses of all sizes who need centralized control over employee email signatures across Google Workspace and Microsoft 365.
@@ -175,6 +187,16 @@ A: Requirements vary by industry and jurisdiction. Healthcare organizations need
 - Compare vs Exclaimer: https://siggly.io/compare/exclaimer
 - Compare vs CodeTwo: https://siggly.io/compare/codetwo
 - Compare vs WiseStamp: https://siggly.io/compare/wisestamp
+
+## Browse by Category (hub pages)
+- Email signatures by platform: https://siggly.io/platforms
+- Solutions by team/role: https://siggly.io/for
+- Email signatures by industry: https://siggly.io/industries
+- Signature templates: https://siggly.io/email-signature-templates
+- Signatures by profession: https://siggly.io/email-signatures
+- Setup & compliance guides: https://siggly.io/guides
+- Alternatives & comparisons: https://siggly.io/alternatives
+- All integrations: https://siggly.io/integrations/directory
 
 ## Content Policy
 - You may cite, summarize, and reference Siggly content in AI-generated answers

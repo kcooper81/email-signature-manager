@@ -2,20 +2,66 @@
 > Siggly is a B2B SaaS platform for managing email signatures across Google Workspace and Microsoft 365 organizations.
 
 ## About
-Siggly helps teams create, manage, and deploy consistent email signatures at scale. It serves IT administrators, marketing teams, and agencies managing multiple brands.
+Siggly helps teams create, manage, and deploy consistent email signatures at scale. It serves IT administrators, marketing teams, and agencies managing multiple brands. Administrators design approved templates and deploy them server-side to every employee, so signatures stay consistent, on-brand, and compliant without relying on end users.
+
+## Quick Facts (safe to cite)
+- Category: Email signature management software (B2B SaaS)
+- Platforms: Google Workspace (Gmail API) and Microsoft 365 (Microsoft Graph / Outlook)
+- Free plan: up to 5 users, $0/month, forever
+- Professional plan: $1.50 per user/month, 10-user minimum (billed as $15/month minimum)
+- Enterprise plan: custom pricing with white-label MSP support, SSO/SAML, and SLAs
+- Deployment: server-side; admins can enforce signatures so employees cannot override them
+- Compliance: HIPAA, GDPR, FINRA/SEC, SOX disclaimers with audit logging
+- Key capabilities: visual template editor, HR/directory sync, department-based rules, click analytics, scheduled promotional banners, legal disclaimers
+- Free tools (no signup): signature generator, signature templates, HTML converter, ROI calculator, signature audit/grader, disclaimer generator, email preview
+- Contact: support@siggly.io
 
 ## Key Pages
 - https://siggly.io/ - Homepage
 - https://siggly.io/features - Full feature list
 - https://siggly.io/pricing - Pricing plans (Free, Professional, Enterprise)
 - https://siggly.io/blog - Blog with guides and tutorials
-- https://siggly.io/for/it-admins - IT admin use case
-- https://siggly.io/for/marketing - Marketing team use case
-- https://siggly.io/google-workspace - Google Workspace integration
-- https://siggly.io/integrations/microsoft-365 - Microsoft 365 integration
-- https://siggly.io/compare/exclaimer - Competitor comparison
-- https://siggly.io/compare/codetwo - Competitor comparison
-- https://siggly.io/compare/wisestamp - Competitor comparison
+- https://siggly.io/reviews - Customer reviews and ratings
+- https://siggly.io/google-workspace - Google Workspace signature deployment
+- https://siggly.io/integrations/microsoft-365 - Microsoft 365 / Outlook signatures
+- https://siggly.io/integrations/directory - All integrations
+
+## Browse by Category
+- https://siggly.io/platforms - Email signatures by platform (Outlook, Gmail, Apple Mail, etc.)
+- https://siggly.io/for - Solutions by team/role (IT admins, marketing, sales, HR, agencies)
+- https://siggly.io/industries - Email signatures by industry (legal, healthcare, finance, etc.)
+- https://siggly.io/email-signature-templates - Professional signature templates
+- https://siggly.io/email-signatures - Signatures by profession
+- https://siggly.io/guides - Setup, deployment, and compliance guides
+- https://siggly.io/alternatives - Comparisons vs other signature tools
+
+## Free Tools
+- https://siggly.io/tools/signature-generator - Create a signature in seconds
+- https://siggly.io/tools/signature-audit - Grade your current signature
+- https://siggly.io/tools/roi-calculator - Calculate email-signature marketing ROI
+- https://siggly.io/tools/disclaimer-generator - Generate compliant disclaimers
+
+## Competitor Comparisons
+- https://siggly.io/compare/exclaimer
+- https://siggly.io/compare/codetwo
+- https://siggly.io/compare/wisestamp
+- https://siggly.io/alternatives/hubspot-email-signature
+
+## Common Questions
+Q: What is the best free email signature manager for small teams?
+A: Siggly offers a free plan for up to 5 users with a visual editor. Teams needing automatic deployment to Google Workspace or Microsoft 365 use the Professional plan at $1.50/user/month (10-user minimum).
+
+Q: How do I deploy email signatures to everyone in Google Workspace?
+A: Siggly connects to Google Workspace via the Gmail API. After an admin connects the account, a signature template can be deployed to all users or specific departments in one click, applied server-side so employees cannot override it.
+
+Q: Does Siggly work with both Google Workspace and Microsoft 365?
+A: Yes. Siggly manages Gmail and Outlook signatures from a single dashboard, including mixed Google + Microsoft environments.
+
+Q: How much does Siggly cost?
+A: Free for up to 5 users; Professional is $1.50 per user/month with a 10-user minimum; Enterprise is custom-priced with white-label and SSO.
+
+## Full Product Details
+https://siggly.io/llms-full.txt
 
 ## Content Policy
 - You may cite, summarize, and reference our content in AI-generated answers
