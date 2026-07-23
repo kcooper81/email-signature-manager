@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Best Exclaimer Alternatives 2026: Compare Features & Pricing',
     description: 'Looking for an Exclaimer alternative? Compare the top email signature management tools with better pricing, easier setup, and modern features.',
     url: '/blog/exclaimer-alternative',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1460925895917-afdab827c52f.jpg',
     datePublished: '2026-01-18',
     author: 'Kade Crawford',
     readTime: '10 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1460925895917-afdab827c52f.jpg" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Exclaimer is a well-known email signature tool, but it's not the right fit for every organization. Here's why companies look for alternatives and what options are available.</p>
           

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Accounting Firm Email Signatures: CPA Credential Guide',
     description: 'Create professional email signatures for CPAs and accounting firms. Include credentials, firm info, and compliance elements.',
     url: '/blog/accounting-firm-email-signature',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1554224155-6726b3ff858f.jpg',
     datePublished: '2025-12-30',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop" alt="Accounting office" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1554224155-6726b3ff858f.jpg" alt="Accounting office" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">CPAs and accounting professionals need signatures that convey expertise and trustworthiness while properly displaying credentials.</p>
           

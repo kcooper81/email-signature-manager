@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'IT Admin Guide to Email Signature Management',
     description: 'Everything IT admins need to know about deploying and managing email signatures. Covers Google Workspace, Microsoft 365, and best practices.',
     url: '/blog/it-admin-email-signature-guide',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1551288049-bebda4e38f71.jpg',
     datePublished: '2026-01-10',
     author: 'Kade Crawford',
     readTime: '10 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop" alt="IT administration" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="IT administration" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures seem simple until you're responsible for hundreds of them. This guide covers what IT admins need to know about deploying and maintaining signatures at scale.</p>
           

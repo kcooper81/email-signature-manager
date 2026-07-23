@@ -907,7 +907,7 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signature for Mortgage Brokers | Siggly',
       description:
-        'Build professional email signatures for mortgage brokers with NMLS number, equal housing logo, and pre-approval application links. Stand out in a competitive market.',
+        'Build professional email signatures for mortgage brokers with NMLS number, equal housing logo, and pre-approval links. Stand out in a competitive market.',
       keywords: [
         'mortgage broker email signature',
         'NMLS email signature',
@@ -1665,7 +1665,7 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signature for Recruiters | Siggly',
       description:
-        'Create recruiter email signatures that showcase open roles, scheduling links, and agency branding. Improve candidate response rates with a polished professional signature.',
+        'Create recruiter email signatures that showcase open roles, scheduling links, and agency branding. Improve candidate response rates with a polished look.',
       keywords: [
         'recruiter email signature',
         'talent acquisition email branding',
@@ -2162,7 +2162,7 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signature for Therapists | Siggly',
       description:
-        'Build confidential, professional email signatures for therapists. Display your LMFT, LPC, or PsyD credentials with HIPAA-compliant confidentiality notices in every email.',
+        'Build confidential email signatures for therapists. Display your LMFT, LPC, or PsyD credentials with HIPAA-compliant confidentiality notices in every email.',
       keywords: [
         'therapist email signature',
         'LMFT email signature',
@@ -2286,7 +2286,7 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signature for Veterinarians | Siggly',
       description:
-        'Create email signatures for veterinarians that display your DVM credentials, AVMA membership, and online appointment booking. Professional branding for every practice.',
+        'Create email signatures for veterinarians displaying DVM credentials, AVMA membership, and online booking. Professional branding for every practice.',
       keywords: [
         'veterinarian email signature',
         'DVM email signature',

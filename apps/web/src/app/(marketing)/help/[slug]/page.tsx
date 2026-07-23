@@ -1,10 +1,14 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Loader2, BookOpen, Mail, ArrowRight, Clock, Tag } from 'lucide-react';
+import { ArrowLeft, Mail, Clock, Tag } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { createServiceClient } from '@/lib/supabase/server';
+import { generateMetadata as genMeta, generateArticleSchema } from '@/lib/seo';
+import { JsonLd } from '@/components/seo/json-ld';
+
+export const revalidate = 3600;
+export const dynamicParams = true;
 
 interface HelpArticle {
   id: string;
@@ -23,75 +27,70 @@ const typeLabels: Record<string, string> = {
   tutorial: 'Tutorial',
 };
 
-export default function HelpArticlePage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [article, setArticle] = useState<HelpArticle | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+async function getArticle(slug: string): Promise<HelpArticle | null> {
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from('help_articles')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .single();
+  if (error || !data) return null;
+  return data as HelpArticle;
+}
 
-  useEffect(() => {
-    const fetchArticle = async () => {
-      try {
-        const response = await fetch(`/api/help/articles/${slug}`);
-        if (!response.ok) {
-          throw new Error('Article not found');
-        }
-        const data = await response.json();
-        setArticle(data.article);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load article');
-      } finally {
-        setLoading(false);
-      }
-    };
+/** Strip markdown to a plain-text meta description, trimmed to ~155 chars. */
+function toDescription(markdown: string): string {
+  const plain = markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[#>*_`~-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return plain.length > 155 ? `${plain.slice(0, 152).trimEnd()}…` : plain;
+}
 
-    fetchArticle();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-500 text-sm">Loading article...</p>
-        </div>
-      </div>
-    );
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticle(slug);
+  if (!article) {
+    return genMeta({
+      title: 'Help Article Not Found',
+      description: 'The help article you are looking for could not be found.',
+      canonical: `/help/${slug}`,
+      noIndex: true,
+    });
   }
+  return genMeta({
+    title: `${article.title} | Siggly Help`,
+    description: toDescription(article.content) || `${article.title} — Siggly Help Center.`,
+    canonical: `/help/${slug}`,
+  });
+}
 
-  if (error || !article) {
-    return (
-      <div className="min-h-[60vh] bg-gray-50">
-        <div className="max-w-3xl mx-auto px-6 py-16">
-          <Link
-            href="/help"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 mb-8 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Help Center
-          </Link>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center">
-            <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-5">
-              <BookOpen className="h-7 w-7 text-gray-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Article Not Found</h1>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              The help article you&apos;re looking for doesn&apos;t exist or has been removed.
-            </p>
-            <Link href="/help">
-              <button className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors">
-                Browse Help Center
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+export default async function HelpArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const article = await getArticle(slug);
+  if (!article) notFound();
+
+  const articleSchema = generateArticleSchema({
+    title: article.title,
+    description: toDescription(article.content) || article.title,
+    url: `/help/${slug}`,
+  });
 
   return (
     <div className="bg-gray-50 min-h-[60vh]">
+      <JsonLd data={articleSchema} />
       {/* Breadcrumb bar */}
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-3xl mx-auto px-6 py-4">
@@ -126,7 +125,7 @@ export default function HelpArticlePage() {
               Last updated {new Date(article.updated_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
               })}
             </div>
           </div>

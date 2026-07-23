@@ -15,12 +15,18 @@ export async function POST(request: NextRequest) {
     // Get current user's organization
     const { data: currentUser } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, role')
       .eq('auth_id', user.id)
       .single();
 
     if (!currentUser?.organization_id) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+    if (!['owner', 'admin'].includes(currentUser.role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: only owners and admins can share signatures to other users' },
+        { status: 403 }
+      );
     }
 
     const { signatureId, userIds } = await request.json();

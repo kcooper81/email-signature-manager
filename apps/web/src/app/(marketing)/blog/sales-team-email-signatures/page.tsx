@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Sales Team Email Signatures: Convert More Leads',
     description: 'Create high-converting email signatures for sales teams. Includes meeting links, social proof, and CTA best practices for sales professionals.',
     url: '/blog/sales-team-email-signatures',
-    image: 'https://images.unsplash.com/photo-1552581234-26160f608093?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1552581234-26160f608093.jpg',
     datePublished: '2026-01-08',
     author: 'Emily Nakamura',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1552581234-26160f608093?w=1200&h=600&fit=crop" alt="Sales team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1552581234-26160f608093.jpg" alt="Sales team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Sales emails need signatures that build trust and make it easy to take the next step. Here's how to optimize signatures for conversion.</p>
           

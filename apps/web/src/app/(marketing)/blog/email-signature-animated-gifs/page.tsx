@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Animated GIF Email Signatures: Do They Work?',
     description: 'Before adding animated GIFs to your email signature, read this. We tested file sizes, client support, and deliverability across 12 email clients. See results.',
     url: '/blog/email-signature-animated-gifs',
-    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1550745165-9bc0b252726f.jpg',
     datePublished: '2025-10-30',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=600&fit=crop" alt="Animation" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1550745165-9bc0b252726f.jpg" alt="Animation" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Animated GIFs can make signatures eye-catching, but they come with significant drawbacks. Here's what to consider.</p>
           

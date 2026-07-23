@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signatures for Marketing Agencies: Client Management',
     description: 'Manage email signatures for agency teams and clients. Learn multi-brand strategies and how agencies use signatures for client services.',
     url: '/blog/email-signature-for-agencies',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1552664730-d307ca884978.jpg',
     datePublished: '2026-01-05',
     author: 'Emily Nakamura',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=600&fit=crop" alt="Agency team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1552664730-d307ca884978.jpg" alt="Agency team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Marketing agencies have unique signature needs — managing their own brand while potentially helping clients with theirs. Here's how to handle both.</p>
           

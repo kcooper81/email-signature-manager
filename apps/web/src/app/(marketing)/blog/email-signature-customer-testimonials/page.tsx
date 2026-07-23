@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Using Testimonials in Email Signatures',
     description: 'Include customer testimonials and reviews in email signatures. Social proof that builds trust with every email sent.',
     url: '/blog/email-signature-customer-testimonials',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1522202176988-66273c2fd55f.jpg',
     datePublished: '2025-11-01',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop" alt="Customer testimonials" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1522202176988-66273c2fd55f.jpg" alt="Customer testimonials" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Customer testimonials build trust. Including them in signatures puts social proof in front of every recipient.</p>
           

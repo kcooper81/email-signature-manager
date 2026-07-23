@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Real Estate Email Signatures: Stand Out to Clients',
     description: 'Create professional real estate email signatures with property listings, virtual tour links, and trust-building elements for agents and brokers.',
     url: '/blog/real-estate-email-signature',
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1560518883-ce09059eeffa.jpg',
     datePublished: '2026-01-27',
     author: 'Emily Nakamura',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=600&fit=crop" alt="Real estate" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1560518883-ce09059eeffa.jpg" alt="Real estate" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Real estate professionals need signatures that build trust, meet licensing requirements, and showcase their brand. Here's how to create effective agent and broker signatures.</p>
           

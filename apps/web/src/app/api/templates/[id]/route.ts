@@ -12,9 +12,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { data: userData } = await supabase
-      .from('users').select('id, organization_id').eq('auth_id', user.id).single();
+      .from('users').select('id, organization_id, role').eq('auth_id', user.id).single();
     if (!userData?.organization_id) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+    if (!['owner', 'admin'].includes(userData.role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: only owners and admins can edit templates' },
+        { status: 403 }
+      );
     }
 
     // Verify template belongs to this org

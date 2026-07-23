@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Accessible Email Signatures: Inclusive Design',
     description: 'Create accessible email signatures for all users. Alt text, color contrast, screen readers, and inclusive design practices.',
     url: '/blog/email-signature-accessibility',
-    image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1573164713988-8665fc963095.jpg',
     datePublished: '2025-11-16',
     author: 'Sarah Chen',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop" alt="Accessibility" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1573164713988-8665fc963095.jpg" alt="Accessibility" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures should be accessible to everyone, including people using screen readers or with visual impairments. Here's how to design inclusively.</p>
           

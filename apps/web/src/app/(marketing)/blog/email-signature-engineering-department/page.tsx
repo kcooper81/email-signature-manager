@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Engineering Department Email Signatures',
     description: 'Email signature best practices for engineering and technical teams. Developer-friendly signatures that balance professionalism with tech culture.',
     url: '/blog/email-signature-engineering-department',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1461749280684-dccba630e2f6.jpg',
     datePublished: '2025-11-18',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop" alt="Engineering" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1461749280684-dccba630e2f6.jpg" alt="Engineering" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Engineering teams often have different communication needs. Here's how to create signatures that work for developers while maintaining brand standards.</p>
           

@@ -3,7 +3,8 @@ import { ArrowLeft, Star, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MarketingCTA } from '@/components/marketing/cta';
 import { TrustBadges } from '@/components/marketing/trust-badges';
-import { generateMetadata as genMeta } from '@/lib/seo/metadata';
+import { generateMetadata as genMeta, generateReviewSchema } from '@/lib/seo/metadata';
+import { JsonLd } from '@/components/seo/json-ld';
 
 export const metadata = genMeta({
   title: 'Siggly Reviews: What Our Customers Say | Siggly',
@@ -102,8 +103,19 @@ function StarRating({ count = 5 }: { count?: number }) {
 }
 
 export default function ReviewsPage() {
+  // Review + AggregateRating schema lives only here, alongside the real reviews.
+  const reviewSchema = generateReviewSchema({
+    reviews: testimonials.map((t) => ({
+      author: t.author,
+      authorTitle: t.title,
+      rating: 5,
+      body: t.quote,
+    })),
+  });
+
   return (
     <>
+      <JsonLd data={reviewSchema} />
       {/* Hero */}
       <section className="py-20 bg-gradient-to-b from-violet-50 to-white">
         <div className="max-w-4xl mx-auto px-6 text-center">

@@ -97,7 +97,7 @@ export default function MarketingPage() {
         primaryButtonText="Get Started Free"
         primaryButtonHref="/signup"
         image={{
-          src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop',
+          src: '/blog-images/photo-1552664730-d307ca884978.jpg',
           alt: 'Marketing team collaboration',
         }}
         imageOverlay={
@@ -206,7 +206,7 @@ export default function MarketingPage() {
             </div>
             <div>
               <Image
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1551288049-bebda4e38f71.jpg"
                 alt="Marketing analytics dashboard"
                 width={800}
                 height={600}
@@ -231,7 +231,7 @@ export default function MarketingPage() {
         author={{
           name: 'Sarah Mitchell',
           title: 'VP of Marketing, GrowthCo',
-          image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+          image: '/blog-images/photo-1494790108377-be9c29b29330.jpg',
         }}
         variant="violet"
       />

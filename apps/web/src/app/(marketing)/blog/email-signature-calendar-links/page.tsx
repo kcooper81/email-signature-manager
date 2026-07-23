@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Add Calendar Booking Links to Email Signatures',
     description: 'Add Calendly, HubSpot, or Cal.com booking links to your email signature. Reduce scheduling friction and book more meetings.',
     url: '/blog/email-signature-calendar-links',
-    image: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1506784983877-45594efa4cbe.jpg',
     datePublished: '2026-01-02',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&h=600&fit=crop" alt="Calendar scheduling" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1506784983877-45594efa4cbe.jpg" alt="Calendar scheduling" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A calendar booking link in your signature eliminates back-and-forth scheduling emails. Recipients can book time with you instantly.</p>
           

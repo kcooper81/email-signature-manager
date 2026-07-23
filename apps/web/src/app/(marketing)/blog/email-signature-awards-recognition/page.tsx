@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Showcasing Awards in Email Signatures',
     description: 'Display company awards and recognition in email signatures. Badges, certifications, and trust signals that build credibility.',
     url: '/blog/email-signature-awards-recognition',
-    image: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1567427017947-545c5f8d16ad.jpg',
     datePublished: '2025-11-03',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=1200&h=600&fit=crop" alt="Awards" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1567427017947-545c5f8d16ad.jpg" alt="Awards" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Awards and recognition build trust. Adding them to email signatures ensures every recipient sees your achievements.</p>
           

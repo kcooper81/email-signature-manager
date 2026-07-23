@@ -92,7 +92,7 @@ export default function RealEstateIndustryPage() {
             </div>
             <div className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1560518883-ce09059eeffa.jpg"
                 alt="Real estate professional"
                 width={800}
                 height={600}

@@ -1063,7 +1063,7 @@ export const comparisonsPages: SEOLandingPageData[] = [
     slug: 'sigparser',
     category: 'comparisons',
     meta: {
-      title: 'Siggly vs SigParser - Signature Management vs Parsing | Siggly',
+      title: 'Siggly vs SigParser: Management vs Parsing | Siggly',
       description:
         'Understand the difference between Siggly and SigParser. One manages signatures, the other parses them. See why teams that need both choose Siggly first.',
       keywords: [

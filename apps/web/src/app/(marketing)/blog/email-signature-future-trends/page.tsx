@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'The Future of Email Signatures: 2026 Trends',
     description: 'Emerging trends in email signatures. AI personalization, dynamic content, analytics, and what to expect in the coming years.',
     url: '/blog/email-signature-future-trends',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1451187580459-43490279c0fa.jpg',
     datePublished: '2025-10-29',
     author: 'Kade Crawford',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop" alt="Future technology" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1451187580459-43490279c0fa.jpg" alt="Future technology" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures are evolving beyond static text and images. Here are the trends shaping the future of signature management.</p>
           

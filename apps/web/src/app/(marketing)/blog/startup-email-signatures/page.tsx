@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Startup Email Signatures: Build Credibility on a Budget',
     description: 'Create professional email signatures for your startup. Budget-friendly tips to look established and build trust with investors and customers.',
     url: '/blog/startup-email-signatures',
-    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1519389950473-47ba0277781c.jpg',
     datePublished: '2026-01-04',
     author: 'Kade Crawford',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop" alt="Startup team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1519389950473-47ba0277781c.jpg" alt="Startup team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Startups need to look professional from day one. A polished email signature helps you compete with established companies when pitching investors and customers.</p>
           

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Microsoft 365 Email Signature Management Guide',
     description: 'Deploy and manage email signatures across your Microsoft 365 organization. Learn about transport rules, OWA signatures, and centralized management.',
     url: '/blog/microsoft-365-signature-management',
-    image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1633409361618-c73427e4e206.jpg',
     datePublished: '2026-01-31',
     author: 'Marcus Rodriguez',
     readTime: '10 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop" alt="Microsoft Office apps" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1633409361618-c73427e4e206.jpg" alt="Microsoft Office apps" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Managing email signatures for a Microsoft 365 organization presents unique challenges. This guide covers the native options available and their limitations.</p>
           
@@ -69,7 +69,7 @@ export default function BlogPost() {
           <h3 className="text-xl font-semibold mt-8 mb-3">3. Outlook on the Web Signatures</h3>
           <p className="text-gray-600 mb-6">OWA has its own signature settings separate from desktop Outlook, requiring users to configure signatures in multiple places.</p>
 
-          <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop" alt="Dashboard analytics" width={800} height={400} className="rounded-xl my-8" />
+          <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Dashboard analytics" width={800} height={400} className="rounded-xl my-8" />
 
           <h2 className="text-2xl font-bold mt-12 mb-4">Setting Up Transport Rules</h2>
           <p className="text-gray-600 mb-6">To create a signature via Exchange transport rules:</p>

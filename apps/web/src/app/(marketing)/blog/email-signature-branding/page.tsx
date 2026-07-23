@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Branding: Build Consistency Across Your Team',
     description: 'Create branded email signatures that reinforce your company identity. Learn color, font, and logo best practices for signature branding.',
     url: '/blog/email-signature-branding',
-    image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1542744094-3a31f272c490.jpg',
     datePublished: '2026-01-11',
     author: 'Emily Nakamura',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop" alt="Brand consistency" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1542744094-3a31f272c490.jpg" alt="Brand consistency" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Your email signature is an extension of your brand. Every email your team sends is an opportunity to reinforce brand recognition and professionalism.</p>
           

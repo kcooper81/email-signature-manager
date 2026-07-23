@@ -877,7 +877,7 @@ export const featuresPages: SEOLandingPageData[] = [
     slug: 'department-segmentation',
     category: 'features',
     meta: {
-      title: 'Department Segmentation - Email Signature Management | Siggly',
+      title: 'Department Segmentation for Signatures | Siggly',
       description:
         'Assign unique email signature templates by department, team, or office. Ensure each group has the right branding and messaging.',
       keywords: [
@@ -1301,7 +1301,7 @@ export const featuresPages: SEOLandingPageData[] = [
     slug: 'role-based-access-control',
     category: 'features',
     meta: {
-      title: 'Role-Based Access Control - Email Signature Management | Siggly',
+      title: 'Role-Based Access Control for Signatures | Siggly',
       description:
         'Control who can view, edit, and deploy email signatures with granular role-based permissions. Secure your signature management workflow.',
       keywords: [
@@ -1939,7 +1939,7 @@ export const featuresPages: SEOLandingPageData[] = [
     meta: {
       title: 'Multi-Brand Email Signature Management | Siggly',
       description:
-        'Manage email signatures for multiple brands, subsidiaries, and acquisitions from a single platform. Enforce brand guidelines and switch between brands effortlessly.',
+        'Manage email signatures for multiple brands, subsidiaries, and acquisitions from one platform. Enforce brand guidelines and switch brands effortlessly.',
       keywords: [
         'multi-brand email signatures',
         'subsidiary signature management',

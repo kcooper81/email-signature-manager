@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { GoogleAnalytics } from '@/components/analytics';
 import { ToastProvider } from '@/components/ui/toast';
@@ -77,14 +78,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script src="https://script.supademo.com/supademo.js"></script>
-      </head>
       <body className={inter.className}>
         <GoogleAnalytics />
         <ToastProvider>
           {children}
         </ToastProvider>
+        <Script
+          src="https://script.supademo.com/supademo.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

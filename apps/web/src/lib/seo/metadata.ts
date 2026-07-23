@@ -30,7 +30,16 @@ export function generateMetadata({
   noIndex = false,
   article,
 }: SEOConfig): Metadata {
-  const fullTitle = title;
+  // Guarantee exactly one " | Siggly" suffix. Many programmatic data titles
+  // already bake in "| Siggly"; the root layout also defines a `%s | Siggly`
+  // template. Returning a plain string title let the template double-append it
+  // ("… | Siggly | Siggly"). We normalize here and return an absolute title so
+  // the template is bypassed and <title> matches og:title exactly.
+  const BRAND_SUFFIX = ' | Siggly';
+  const baseTitle = title.endsWith(BRAND_SUFFIX)
+    ? title.slice(0, -BRAND_SUFFIX.length)
+    : title;
+  const fullTitle = `${baseTitle}${BRAND_SUFFIX}`;
   const url = canonical ? `${SITE_URL}${canonical}` : SITE_URL;
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
 
@@ -45,7 +54,7 @@ export function generateMetadata({
   ];
 
   return {
-    title: fullTitle,
+    title: { absolute: fullTitle },
     description,
     keywords: [...baseKeywords, ...keywords],
     authors: [{ name: SITE_NAME }],
@@ -108,7 +117,7 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: SITE_NAME,
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/siggly-logo.png`,
     sameAs: [
       'https://twitter.com/siggly',
       'https://linkedin.com/company/siggly',
@@ -139,13 +148,10 @@ export function generateSoftwareApplicationSchema() {
       priceCurrency: 'USD',
       offerCount: '3',
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '127',
-      bestRating: '5',
-      worstRating: '1',
-    },
+    // NOTE: aggregateRating is intentionally NOT emitted here. This schema renders
+    // on every marketing page, and a site-wide self-serving rating risks a Google
+    // structured-data manual action. The rating lives only on /reviews, next to the
+    // actual sourced reviews (see generateReviewSchema).
     featureList: [
       'Google Workspace integration',
       'Microsoft 365 integration',
@@ -209,7 +215,7 @@ export function generateBlogPostSchema({
       name: SITE_NAME,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/siggly-logo.png`,
       },
     },
     mainEntityOfPage: {
@@ -218,6 +224,47 @@ export function generateBlogPostSchema({
     },
     ...(readTime && { timeRequired: `PT${readTime.replace(' min', 'M')}` }),
     ...(category && { articleSection: category }),
+  };
+}
+
+export function generateArticleSchema({
+  title,
+  description,
+  url,
+  image,
+}: {
+  title: string;
+  description: string;
+  url: string;
+  image?: string;
+}) {
+  const imageUrl = image
+    ? (image.startsWith('http') ? image : `${SITE_URL}${image}`)
+    : `${SITE_URL}${DEFAULT_OG_IMAGE}`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    image: imageUrl,
+    url: `${SITE_URL}${url}`,
+    author: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/siggly-logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}${url}`,
+    },
   };
 }
 
@@ -490,7 +537,7 @@ export function generateReviewSchema({
     authorTitle?: string;
     rating: number;
     body: string;
-    datePublished: string;
+    datePublished?: string;
   }[];
 }) {
   return {
@@ -519,7 +566,7 @@ export function generateReviewSchema({
         worstRating: '1',
       },
       reviewBody: review.body,
-      datePublished: review.datePublished,
+      ...(review.datePublished && { datePublished: review.datePublished }),
     })),
   };
 }
@@ -556,7 +603,7 @@ export function generateVideoSchema({
       name: SITE_NAME,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/siggly-logo.png`,
       },
     },
   };

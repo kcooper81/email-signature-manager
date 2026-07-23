@@ -818,7 +818,7 @@ export const platformsPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signatures for Samsung Email App | Siggly',
       description:
-        'Set up professional email signatures in the Samsung Email app on Galaxy devices. Understand HTML rendering quirks, Knox integration, and signature best practices.',
+        'Set up professional email signatures in the Samsung Email app on Galaxy devices, covering HTML rendering quirks, Knox integration, and best practices.',
       keywords: [
         'Samsung Email signature',
         'Samsung Galaxy email signature',

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Tech Company Email Signatures: Modern Design Guide',
     description: 'Create modern email signatures for technology companies. Balance innovation with professionalism in your tech startup or enterprise.',
     url: '/blog/email-signature-technology-companies',
-    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1519389950473-47ba0277781c.jpg',
     datePublished: '2025-12-03',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=600&fit=crop" alt="Tech company" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1519389950473-47ba0277781c.jpg" alt="Tech company" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Tech companies can be more creative with signatures while maintaining professionalism. Here's how to strike the right balance.</p>
           

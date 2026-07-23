@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Directory Sync: Automate Updates',
     description: 'Sync email signatures with your user directory. Automatically update signatures when employee info changes in AD or Google Directory.',
     url: '/blog/email-signature-directory-sync',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1558494949-ef010cbdcc31.jpg',
     datePublished: '2025-12-12',
     author: 'Marcus Rodriguez',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=600&fit=crop" alt="Directory sync" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1558494949-ef010cbdcc31.jpg" alt="Directory sync" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Directory sync ensures signatures automatically reflect current employee information. When someone gets promoted, their signature updates without manual intervention.</p>
           

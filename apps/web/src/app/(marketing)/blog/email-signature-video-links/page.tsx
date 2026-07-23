@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Adding Video Links to Email Signatures',
     description: 'Include video content links in your email signature. Product demos, introductions, and video CTAs that engage recipients.',
     url: '/blog/email-signature-video-links',
-    image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1516321497487-e288fb19713f.jpg',
     datePublished: '2025-11-26',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=1200&h=600&fit=crop" alt="Video content" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1516321497487-e288fb19713f.jpg" alt="Video content" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Video is highly engaging. Adding video links to your signature can significantly increase engagement with your content.</p>
           

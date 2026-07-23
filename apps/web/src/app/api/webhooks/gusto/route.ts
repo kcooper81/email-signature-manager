@@ -47,12 +47,15 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServiceClient();
 
-    // Find the sync configuration for this company
+    // Find the sync configuration for this company.
+    // OAuth-connected orgs store the Gusto company id in oauth_company_id (api_url
+    // is null); API-key orgs store it in api_url. Match either so real-time events
+    // are not silently dropped for OAuth integrations.
     const { data: config } = await supabase
       .from('sync_configurations')
       .select('*')
       .eq('provider', 'gusto')
-      .eq('api_url', event.company_id)
+      .or(`oauth_company_id.eq.${event.company_id},api_url.eq.${event.company_id}`)
       .eq('is_active', true)
       .maybeSingle();
 

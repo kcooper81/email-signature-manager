@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Social Media Icons in Email Signatures: Best Practices',
     description: 'Add social media icons to your email signature the right way. Learn which platforms to include, icon sizing, and linking best practices.',
     url: '/blog/email-signature-social-icons',
-    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1611162617474-5b21e879e113.jpg',
     datePublished: '2026-01-19',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop" alt="Social media icons" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1611162617474-5b21e879e113.jpg" alt="Social media icons" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Social media icons can enhance your email signature by connecting recipients to your professional profiles. But adding too many or the wrong ones can hurt more than help.</p>
           

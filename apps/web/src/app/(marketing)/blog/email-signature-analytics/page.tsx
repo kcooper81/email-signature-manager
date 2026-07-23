@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Analytics: Track Performance & ROI',
     description: 'Measure email signature performance with analytics. Track clicks, conversions, and ROI from signature links and campaign banners.',
     url: '/blog/email-signature-analytics',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1551288049-bebda4e38f71.jpg',
     datePublished: '2026-01-09',
     author: 'Marcus Rodriguez',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop" alt="Analytics dashboard" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Analytics dashboard" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Your email signatures generate thousands of impressions. Analytics help you understand what's working and prove ROI to stakeholders.</p>
           

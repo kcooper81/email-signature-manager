@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Mobile-Optimized Email Signatures: Design Tips',
     description: 'Create email signatures that look great on mobile. Responsive design, touch-friendly links, and mobile email considerations.',
     url: '/blog/email-signature-mobile-optimization',
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1512941937669-90a1b58e7e9c.jpg',
     datePublished: '2025-11-15',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop" alt="Mobile email" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1512941937669-90a1b58e7e9c.jpg" alt="Mobile email" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Over half of emails are read on mobile devices. Your signature needs to look great and function well on small screens.</p>
           

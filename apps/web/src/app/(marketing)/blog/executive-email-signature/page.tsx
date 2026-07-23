@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Executive Email Signatures: CEO & C-Suite Guide',
     description: 'Create executive email signatures that convey authority. Guidance for CEOs, C-suite executives, and senior leadership.',
     url: '/blog/executive-email-signature',
-    image: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1560179707-f14e90ef3623.jpg',
     datePublished: '2025-12-19',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=1200&h=600&fit=crop" alt="Executive office" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1560179707-f14e90ef3623.jpg" alt="Executive office" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Executive signatures should convey authority while remaining accessible. Balance professionalism with approachability.</p>
           

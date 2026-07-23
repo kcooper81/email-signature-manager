@@ -55,10 +55,35 @@ export default function PricingPage() {
     pricePerUser: p.pricePerUser,
   }));
 
+  // Product schema with per-plan Offers (prices are stored in cents).
+  const pricingSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'Siggly — Email Signature Management',
+    description:
+      'Email signature management for teams. Free forever for up to 5 users; Professional at $1.50/user/month with a 10-user minimum.',
+    brand: { '@type': 'Brand', name: 'Siggly' },
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'USD',
+      lowPrice: '0',
+      highPrice: '1.50',
+      offerCount: String(PLANS_LIST.length),
+      offers: PLANS_LIST.filter((p) => p.id !== 'enterprise').map((p) => ({
+        '@type': 'Offer',
+        name: `${p.name} plan`,
+        price: (p.pricePerUser / 100).toFixed(2),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: 'https://siggly.io/pricing',
+      })),
+    },
+  };
+
   return (
     <>
       <PricingPageTracker plans={trackablePlans} />
-      <JsonLd data={generateFAQSchema(faqs)} />
+      <JsonLd data={[generateFAQSchema(faqs), pricingSchema]} />
 
       {/* Hero */}
       <section className="py-20 bg-gradient-to-b from-violet-50 to-white">

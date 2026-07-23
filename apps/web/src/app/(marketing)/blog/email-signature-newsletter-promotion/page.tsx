@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Growing Your Newsletter with Email Signatures',
     description: 'Use email signatures to grow newsletter subscribers. Add signup CTAs, promote content, and convert contacts to subscribers.',
     url: '/blog/email-signature-newsletter-promotion',
-    image: 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1586339949916-3e9457bef6d3.jpg',
     datePublished: '2025-11-07',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=1200&h=600&fit=crop" alt="Newsletter" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1586339949916-3e9457bef6d3.jpg" alt="Newsletter" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures are an overlooked channel for growing your newsletter subscriber list. Everyone you email is a potential subscriber.</p>
           

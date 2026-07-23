@@ -146,7 +146,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'mailchimp-signature',
     category: 'alternatives',
     meta: {
-      title: 'Mailchimp Signature Alternative - Better Email Signatures | Siggly',
+      title: 'Mailchimp Signature Alternative for Teams | Siggly',
       description:
         'Mailchimp treats signatures as an afterthought. Siggly puts them front and center with dedicated management tools, analytics, and enterprise deployment.',
       keywords: [
@@ -287,7 +287,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Yesware Alternative for Email Signatures | Siggly',
       description:
-        'Yesware focuses on sales engagement, not signatures. Siggly provides dedicated signature management with templates, deployment, and analytics your sales team needs.',
+        'Yesware focuses on sales engagement, not signatures. Siggly delivers dedicated signature management with templates, deployment, and analytics for sales teams.',
       keywords: [
         'Yesware alternative',
         'Yesware email signature',
@@ -403,7 +403,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'sigstr',
     category: 'alternatives',
     meta: {
-      title: 'Sigstr Alternative - Affordable Signature Management | Siggly',
+      title: 'Sigstr Alternative for Signature Management | Siggly',
       description:
         'Sigstr is now part of Terminus with enterprise-only pricing. Siggly delivers the same signature management power at a price that works for teams of any size.',
       keywords: [
@@ -538,7 +538,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'email-signature-rescue',
     category: 'alternatives',
     meta: {
-      title: 'Email Signature Rescue Alternative - Modern Signatures | Siggly',
+      title: 'Email Signature Rescue Alternative | Siggly',
       description:
         'Upgrade from Email Signature Rescue to Siggly for a modern signature editor, real-time deployment, click analytics, and integrations with Google and Microsoft.',
       keywords: [
@@ -815,7 +815,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     meta: {
       title: 'MySignature Alternative for Teams | Siggly',
       description:
-        'MySignature works for individuals but falls short for teams. Siggly adds centralized management, deployment automation, and analytics to level up your signatures.',
+        'MySignature works for individuals but falls short for teams. Siggly adds centralized management, deployment automation, and analytics for your signatures.',
       keywords: [
         'MySignature alternative',
         'MySignature replacement',
@@ -933,9 +933,9 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'signature-maker',
     category: 'alternatives',
     meta: {
-      title: 'Signature Maker Alternative With Deployment & Analytics | Siggly',
+      title: 'Signature Maker Alternative With Analytics | Siggly',
       description:
-        'Signature Maker generates signatures but cannot deploy or manage them. Siggly handles the full lifecycle from design through deployment and performance tracking.',
+        'Signature Maker generates signatures but cannot deploy or manage them. Siggly handles the full lifecycle from design to deployment and tracking.',
       keywords: [
         'Signature Maker alternative',
         'email signature generator alternative',

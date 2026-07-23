@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { generateMetadata as genMeta, generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo';
+import { generateMetadata as genMeta, generateFAQSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/json-ld';
 import { SEOLandingPage } from '@/lib/seo-pages/renderer';
 import { integrationsPages } from '@/lib/seo-pages/data/integrations';
@@ -30,6 +30,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: overrides?.description || page.meta.description,
     keywords: overrides?.keywords || page.meta.keywords,
     canonical: page.meta.canonical,
+    // "Coming soon" integrations are thin roadmap placeholders — keep them out of
+    // the index (and the sitemap) until the integration actually ships, to avoid
+    // index bloat that dilutes crawl budget.
+    noIndex: page.status === 'coming-soon',
   });
 }
 
@@ -43,7 +47,7 @@ export default async function IntegrationPage({ params }: PageProps) {
 
   const merged = await getPageWithOverrides(page);
 
-  const schemas: Record<string, unknown>[] = [generateBreadcrumbSchema(merged.breadcrumbs)];
+  const schemas: Record<string, unknown>[] = [];
   if (merged.faqs && merged.faqs.length > 0) {
     schemas.push(generateFAQSchema(merged.faqs));
   }

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Disclaimers: 7 Essential Templates',
     description: 'Discover which email signature disclaimers you actually need in 2026. Copy-paste legal, confidentiality, and industry templates. Complete compliance checklist.',
     url: '/blog/email-signature-disclaimer-guide',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1589829545856-d10d557cf95f.jpg',
     datePublished: '2025-12-16',
     dateModified: '2026-03-29',
     author: 'Sarah Chen',
@@ -72,7 +72,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2 text-emerald-600 font-medium"><RefreshCw className="h-3.5 w-3.5" /> Updated Mar 2026</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop" alt="Legal documents" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1589829545856-d10d557cf95f.jpg" alt="Legal documents" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signature disclaimers should include a confidentiality notice, a statement that the email is intended only for the named recipient, and any industry-specific regulatory language required by law (such as HIPAA, FINRA, or EU business registration disclosures). According to a 2025 Osterman Research survey, 89% of organizations with 500+ employees include some form of disclaimer in their email signatures.</p>
 

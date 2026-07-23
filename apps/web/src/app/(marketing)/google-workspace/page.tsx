@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Mail, Check, ArrowRight, Shield, Zap, Users, RefreshCw, HelpCircle, Calendar, Palmtree, FileText, GitBranch, Palette, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { generateMetadata as genMeta, generateFAQSchema, generateBreadcrumbSchema } from '@/lib/seo/metadata';
+import { generateMetadata as genMeta, generateFAQSchema } from '@/lib/seo/metadata';
 
 export const metadata = genMeta({
   title: 'Google Workspace Email Signatures | Deploy to All Gmail Users',
@@ -90,10 +90,7 @@ const comparisonData = [
 
 export default function GoogleWorkspacePage() {
   const faqSchema = generateFAQSchema(faqs);
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: '/' },
-    { name: 'Google Workspace', url: '/google-workspace' },
-  ]);
+  // Breadcrumb JSON-LD is emitted globally by the marketing layout (BreadcrumbJsonLd).
 
   return (
     <>
@@ -101,10 +98,6 @@ export default function GoogleWorkspacePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       {/* Hero */}

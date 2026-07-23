@@ -108,7 +108,7 @@ export default function AgenciesPage() {
             </div>
             <div className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1600880292203-757bb62b4baf.jpg"
                 alt="Agency team managing multiple clients"
                 width={800}
                 height={600}

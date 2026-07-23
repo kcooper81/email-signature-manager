@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Education Email Signatures: Teachers & Administrators',
     description: 'Create professional email signatures for educators, teachers, and school administrators. Include credentials and contact info appropriately.',
     url: '/blog/education-email-signature',
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1509062522246-3755977927d7.jpg',
     datePublished: '2025-12-28',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=600&fit=crop" alt="Education" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1509062522246-3755977927d7.jpg" alt="Education" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Educators communicate with students, parents, and colleagues daily. Professional signatures help maintain appropriate boundaries while sharing necessary contact information.</p>
           

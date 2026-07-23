@@ -1328,7 +1328,7 @@ export const guidesPages: SEOLandingPageData[] = [
     slug: 'brand-guidelines-implementation',
     category: 'guides',
     meta: {
-      title: 'Brand Guidelines Implementation for Email Signatures | Siggly',
+      title: 'Brand Guidelines for Email Signatures | Siggly',
       description:
         'Translate your brand guidelines into consistent email signatures across your organization. Learn color systems, typography, and logo usage rules.',
       keywords: [

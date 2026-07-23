@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { generateMetadata as genMeta, generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo';
+import { generateMetadata as genMeta, generateFAQSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/json-ld';
 import { SEOLandingPage } from '@/lib/seo-pages/renderer';
 import { compliancePages } from '@/lib/seo-pages/data/compliance';
@@ -43,7 +43,7 @@ export default async function CompliancePage({ params }: PageProps) {
 
   const merged = await getPageWithOverrides(page);
 
-  const schemas: Record<string, unknown>[] = [generateBreadcrumbSchema(merged.breadcrumbs)];
+  const schemas: Record<string, unknown>[] = [];
   if (merged.faqs && merged.faqs.length > 0) {
     schemas.push(generateFAQSchema(merged.faqs));
   }

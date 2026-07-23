@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Security: Protect Your Brand',
     description: 'Secure your email signatures against spoofing and brand abuse. Learn best practices for signature security and authentication.',
     url: '/blog/email-signature-security',
-    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1555949963-ff9fe0c870eb.jpg',
     datePublished: '2025-12-24',
     author: 'Sarah Chen',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop" alt="Security concept" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1555949963-ff9fe0c870eb.jpg" alt="Security concept" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures can be vectors for phishing and brand impersonation. Here's how to protect your organization and employees.</p>
           

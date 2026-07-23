@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: '25 Professional Email Signature Examples for 2026',
     description: 'Get inspired by these 25 professional email signature examples. See what works for different industries, roles, and company sizes.',
     url: '/blog/email-signature-examples',
-    image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1542744094-3a31f272c490.jpg',
     datePublished: '2026-02-03',
     author: 'Kade Crawford',
     readTime: '12 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="kade-crawford" />
 
         <Image
-          src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop"
+          src="/blog-images/photo-1542744094-3a31f272c490.jpg"
           alt="Professional email signature designs"
           width={1200}
           height={600}
@@ -105,7 +105,7 @@ export default function BlogPost() {
           </p>
 
           <Image
-            src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1460925895917-afdab827c52f.jpg"
             alt="Modern workspace design"
             width={800}
             height={400}
@@ -199,7 +199,7 @@ export default function BlogPost() {
           </p>
 
           <Image
-            src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1552664730-d307ca884978.jpg"
             alt="Team collaboration meeting"
             width={800}
             height={400}

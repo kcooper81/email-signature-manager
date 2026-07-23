@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'How to Update Email Signatures: Complete Guide',
     description: 'Update email signatures across Gmail, Outlook, and Apple Mail. Step-by-step instructions for changing your signature on any platform.',
     url: '/blog/email-signature-update-guide',
-    image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1517430816045-df4b7de11d1d.jpg',
     datePublished: '2025-12-21',
     author: 'Kade Crawford',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop" alt="Computer setup" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1517430816045-df4b7de11d1d.jpg" alt="Computer setup" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Need to update your email signature? Here's how to do it in every major email client.</p>
           

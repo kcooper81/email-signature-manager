@@ -13,7 +13,7 @@ const postData = {
   date: '2026-02-07',
   readTime: '9 min',
   category: 'Comparisons',
-  image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
+  image: '/blog-images/photo-1573164713988-8665fc963095.jpg',
 };
 
 export const metadata = genMeta({

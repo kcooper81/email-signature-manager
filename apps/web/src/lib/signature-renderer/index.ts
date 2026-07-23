@@ -49,7 +49,32 @@ interface RenderContext {
 }
 
 /**
- * Wraps a URL through the click tracking endpoint when tracking is enabled
+ * Makes a user-supplied URL safe to interpolate into an href attribute.
+ * Rejects dangerous schemes (javascript:, data:, vbscript:) that could execute
+ * if the signature HTML is ever rendered in a permissive context, and
+ * attribute-escapes the value so it cannot break out of the href="...".
+ * Returns '#' for anything that isn't a plain http(s)/mailto/tel URL.
+ */
+function sanitizeUrl(url: string | undefined): string {
+  const raw = (url || '').trim();
+  if (!raw) return '';
+  // Anchor-relative and protocol-relative links are safe to keep.
+  if (raw.startsWith('#') || raw.startsWith('/')) return escapeHtml(raw);
+  const schemeMatch = raw.match(/^([a-z][a-z0-9+.-]*):/i);
+  if (schemeMatch) {
+    const scheme = schemeMatch[1].toLowerCase();
+    const allowed = ['http', 'https', 'mailto', 'tel'];
+    if (!allowed.includes(scheme)) return '#';
+    return escapeHtml(raw);
+  }
+  // No scheme → treat as an https website (matches existing contact-info behavior).
+  return escapeHtml(`https://${raw}`);
+}
+
+/**
+ * Wraps a URL through the click tracking endpoint when tracking is enabled.
+ * The result is always run through sanitizeUrl so it is safe to place directly
+ * inside an href attribute.
  */
 function wrapTrackingUrl(
   url: string,
@@ -57,17 +82,18 @@ function wrapTrackingUrl(
   linkType: 'calendly' | 'linkedin' | 'twitter' | 'github' | 'banner' | 'button' | 'custom',
   campaign?: string
 ): string {
-  if (!url || !context.tracking?.enabled) return url;
+  if (!url) return '';
+  if (!context.tracking?.enabled) return sanitizeUrl(url);
   try {
-    return buildTrackableUrl(url, {
+    return sanitizeUrl(buildTrackableUrl(url, {
       userId: context.tracking.userId,
       templateId: context.tracking.templateId,
       linkType,
       campaign,
-    });
+    }));
   } catch {
-    // If URL is invalid, return original
-    return url;
+    // If URL is invalid, return the sanitized original
+    return sanitizeUrl(url);
   }
 }
 
@@ -190,21 +216,22 @@ function replacePlaceholders(text: string, context: RenderContext): string {
     .replace(/\{\{department\}\}/gi, esc(user.department))
     .replace(/\{\{company\}\}/gi, esc(organization.name));
 
-  // Personal link replacements (per-user URLs)
-  // URLs are NOT HTML-escaped — they pass through tracking URL builders before
-  // being placed in href attributes, where the browser handles encoding.
+  // Personal link replacements (per-user URLs).
+  // These are user-controlled and frequently placed straight into href="..."
+  // attributes by template authors, so they are scheme-checked and
+  // attribute-escaped via sanitizeUrl to prevent HTML/attribute injection.
   result = result
-    .replace(/\{\{calendly_url\}\}/gi, user.calendlyUrl || '')
-    .replace(/\{\{calendly_link\}\}/gi, user.calendlyUrl || '') // Alias for backwards compatibility
-    .replace(/\{\{linkedin_url\}\}/gi, user.linkedinUrl || '')
-    .replace(/\{\{twitter_url\}\}/gi, user.twitterUrl || '')
-    .replace(/\{\{github_url\}\}/gi, user.githubUrl || '')
-    .replace(/\{\{personal_website\}\}/gi, user.personalWebsite || '')
-    .replace(/\{\{instagram_url\}\}/gi, user.instagramUrl || '')
-    .replace(/\{\{facebook_url\}\}/gi, user.facebookUrl || '')
-    .replace(/\{\{youtube_url\}\}/gi, user.youtubeUrl || '')
-    .replace(/\{\{google_booking_url\}\}/gi, user.googleBookingUrl || '')
-    .replace(/\{\{booking_url\}\}/gi, user.googleBookingUrl || '');
+    .replace(/\{\{calendly_url\}\}/gi, sanitizeUrl(user.calendlyUrl))
+    .replace(/\{\{calendly_link\}\}/gi, sanitizeUrl(user.calendlyUrl)) // Alias for backwards compatibility
+    .replace(/\{\{linkedin_url\}\}/gi, sanitizeUrl(user.linkedinUrl))
+    .replace(/\{\{twitter_url\}\}/gi, sanitizeUrl(user.twitterUrl))
+    .replace(/\{\{github_url\}\}/gi, sanitizeUrl(user.githubUrl))
+    .replace(/\{\{personal_website\}\}/gi, sanitizeUrl(user.personalWebsite))
+    .replace(/\{\{instagram_url\}\}/gi, sanitizeUrl(user.instagramUrl))
+    .replace(/\{\{facebook_url\}\}/gi, sanitizeUrl(user.facebookUrl))
+    .replace(/\{\{youtube_url\}\}/gi, sanitizeUrl(user.youtubeUrl))
+    .replace(/\{\{google_booking_url\}\}/gi, sanitizeUrl(user.googleBookingUrl))
+    .replace(/\{\{booking_url\}\}/gi, sanitizeUrl(user.googleBookingUrl));
   
   // Remove any remaining unresolved placeholders
   result = result.replace(/\{\{[^}]+\}\}/gi, '');
@@ -241,12 +268,12 @@ function renderImageBlock(content: any): string {
   const src = content.src || '';
   const alt = content.alt || '';
   const width = content.width ? `width="${content.width}"` : '';
-  const link = content.link;
+  const link = sanitizeUrl(content.link);
 
   if (!src) return '';
 
   const img = `<img src="${src}" alt="${alt}" ${width} style="display: block; max-width: 100%;" />`;
-  
+
   return `
     <tr>
       <td style="padding: 4px 0;">
@@ -451,7 +478,7 @@ function renderBannerBlock(content: any, context: RenderContext): string {
   // Wrap link through click tracking when trackClicks is not explicitly false
   const link = rawLink && content.trackClicks !== false
     ? wrapTrackingUrl(rawLink, context, 'banner', content.campaignName)
-    : rawLink;
+    : sanitizeUrl(rawLink);
 
   const img = `<img src="${src}" alt="${alt}" ${width} style="display: block; max-width: 100%;" />`;
 

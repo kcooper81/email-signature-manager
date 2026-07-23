@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'How to Set Up Gmail Signature: Complete 2026 Guide',
     description: 'Learn how to create and set up a professional Gmail signature step-by-step. Includes tips for images, formatting, and mobile optimization.',
     url: '/blog/gmail-signature-setup-guide',
-    image: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1611532736597-de2d4265fba3.jpg',
     datePublished: '2026-02-05',
     author: 'Emily Nakamura',
     readTime: '8 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="emily-nakamura" />
 
         <Image
-          src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=1200&h=600&fit=crop"
+          src="/blog-images/photo-1611532736597-de2d4265fba3.jpg"
           alt="Gmail interface on laptop screen"
           width={1200}
           height={600}
@@ -77,7 +77,7 @@ export default function BlogPost() {
           </p>
 
           <Image
-            src="https://images.unsplash.com/photo-1557200134-90327ee9fafa?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1557200134-90327ee9fafa.jpg"
             alt="Email settings configuration"
             width={800}
             height={400}
@@ -119,7 +119,7 @@ export default function BlogPost() {
           </p>
 
           <Image
-            src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1586281380349-632531db7ed4.jpg"
             alt="Professional email composition"
             width={800}
             height={400}

@@ -9,7 +9,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'GDPR Email Signature Compliance | Siggly',
       description:
-        'Comprehensive guide to GDPR compliance for email signatures. Understand how the General Data Protection Regulation affects personal data in employee email signatures and how to achieve compliance.',
+        'A guide to GDPR compliance for email signatures. Understand how the regulation affects personal data in employee signatures and how to stay compliant.',
       keywords: ['gdpr email signature', 'gdpr compliance', 'email signature data protection', 'gdpr personal data email', 'eu data protection email'],
       canonical: '/compliance/gdpr',
     },
@@ -194,7 +194,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'SOX Email Signature Compliance | Siggly',
       description:
-        'Understand how the Sarbanes-Oxley Act affects email signatures for publicly traded companies. Learn about internal controls, record retention, and audit requirements for email communications.',
+        'Understand how the Sarbanes-Oxley Act affects email signatures for public companies, covering internal controls, record retention, and audit requirements.',
       keywords: ['sox email signature', 'sarbanes oxley email compliance', 'sox internal controls email', 'sox audit email', 'public company email compliance'],
       canonical: '/compliance/sox',
     },
@@ -283,7 +283,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'CAN-SPAM Act Email Signature Requirements | Siggly',
       description:
-        'Learn how the CAN-SPAM Act of 2003 affects email signatures for commercial messages. Understand sender identification, opt-out mechanisms, and physical address requirements.',
+        'Learn how the CAN-SPAM Act affects email signatures for commercial messages, covering sender identification, opt-out mechanisms, and address requirements.',
       keywords: ['can-spam email signature', 'can-spam act compliance', 'commercial email requirements', 'email opt-out requirements', 'ftc email regulations'],
       canonical: '/compliance/can-spam',
     },
@@ -374,7 +374,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'CCPA Email Signature Compliance | Siggly',
       description:
-        'Understand how the California Consumer Privacy Act and CPRA affect email signatures. Learn about consumer rights, data collection disclosures, and compliance requirements for businesses.',
+        'Understand how the CCPA and CPRA affect email signatures, covering consumer rights, data collection disclosures, and compliance requirements for businesses.',
       keywords: ['ccpa email signature', 'ccpa compliance', 'california privacy email', 'cpra email requirements', 'ccpa consumer rights email'],
       canonical: '/compliance/ccpa',
     },
@@ -464,7 +464,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'FERPA Email Signature Requirements for Education | Siggly',
       description:
-        'Learn how FERPA regulations affect email signatures in educational institutions. Understand student record protections, directory information policies, and compliance requirements.',
+        'Learn how FERPA affects email signatures at educational institutions, covering student record protections, directory information policies, and compliance.',
       keywords: ['ferpa email signature', 'ferpa compliance email', 'education email signature', 'student privacy email', 'ferpa directory information'],
       canonical: '/compliance/ferpa',
     },
@@ -553,7 +553,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'PCI-DSS Email Signature Security Requirements | Siggly',
       description:
-        'Learn how PCI-DSS v4.0 affects email signatures in organizations handling payment card data. Understand cardholder data protection, access controls, and email security requirements.',
+        'Learn how PCI-DSS v4.0 affects email signatures where payment card data is handled, covering cardholder data protection, access controls, and email security.',
       keywords: ['pci-dss email signature', 'pci compliance email', 'payment card email security', 'pci dss v4 email', 'cardholder data email protection'],
       canonical: '/compliance/pci-dss',
     },
@@ -644,7 +644,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'CASL Email Signature Compliance (Canada) | Siggly',
       description:
-        'Comprehensive guide to Canada\'s Anti-Spam Legislation (CASL) compliance for email signatures. Understand consent requirements, sender identification, and unsubscribe mechanism obligations.',
+        'A guide to Canada\'s Anti-Spam Legislation (CASL) for email signatures, covering consent, sender identification, and unsubscribe obligations.',
       keywords: ['casl email signature', 'canada anti spam email', 'casl compliance', 'canadian email requirements', 'casl consent email'],
       canonical: '/compliance/casl',
     },
@@ -737,7 +737,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'PECR Email Signature Requirements (UK) | Siggly',
       description:
-        'Learn how the UK Privacy and Electronic Communications Regulations affect email signatures. Understand direct marketing rules, cookie requirements, and ICO enforcement for electronic communications.',
+        'Learn how the UK Privacy and Electronic Communications Regulations affect email signatures, covering direct marketing rules, cookies, and ICO enforcement.',
       keywords: ['pecr email signature', 'uk email regulations', 'pecr compliance', 'ico email requirements', 'uk electronic communications email'],
       canonical: '/compliance/pecr',
     },
@@ -826,7 +826,7 @@ export const compliancePages: SEOLandingPageData[] = [
     meta: {
       title: 'ISO 27001 Email Signature Security Standards | Siggly',
       description:
-        'Learn how ISO 27001:2022 information security management standards apply to email signatures. Understand Annex A controls, risk assessment, and certification requirements for email communications.',
+        'Learn how ISO 27001:2022 information security standards apply to email signatures, covering Annex A controls, risk assessment, and certification requirements.',
       keywords: ['iso 27001 email signature', 'iso 27001 compliance email', 'information security email signature', 'isms email requirements', 'iso 27001 annex a email'],
       canonical: '/compliance/iso-27001',
     },

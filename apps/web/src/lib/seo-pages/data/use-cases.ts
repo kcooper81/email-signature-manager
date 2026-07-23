@@ -1964,9 +1964,9 @@ export const useCasesPages: SEOLandingPageData[] = [
     slug: 'mergers-acquisitions',
     category: 'use-cases',
     meta: {
-      title: 'Centralized Email Signature Management for Mergers & Acquisitions',
+      title: 'Email Signature Management for Mergers & Acquisitions',
       description:
-        'Unify email signatures across both companies from day one. Centrally manage dual-brand transitions, legal entity changes, and deploy consistent signatures to every employee post-merger.',
+        'Unify email signatures across both companies from day one. Manage dual-brand transitions, legal entity changes, and deploy consistent signatures post-merger.',
       keywords: [
         'merger email signatures',
         'centralized email signature management mergers acquisitions',
@@ -2237,7 +2237,7 @@ export const useCasesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signatures for Talent Acquisition | Siggly',
       description:
-        'Strengthen your employer brand with recruiting-focused email signatures. Add job posting links, career page CTAs, and employer brand messaging to every recruiter email.',
+        'Strengthen your employer brand with recruiting-focused email signatures. Add job links, career page CTAs, and brand messaging to every recruiter email.',
       keywords: [
         'recruiting email signatures',
         'employer branding email',
@@ -2798,7 +2798,7 @@ export const useCasesPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signatures for Crisis Communication | Siggly',
       description:
-        'Update email signatures instantly during a crisis. Deploy emergency contacts, status page links, and temporary messaging across your entire organization in minutes.',
+        'Update email signatures instantly during a crisis. Deploy emergency contacts, status page links, and temporary messaging across your organization in minutes.',
       keywords: [
         'crisis communication email',
         'emergency email signatures',

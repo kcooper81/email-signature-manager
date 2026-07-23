@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Freelancer Email Signatures: Stand Out Professionally',
     description: 'Create professional email signatures as a freelancer. Build credibility with clients and showcase your services effectively.',
     url: '/blog/email-signature-for-freelancers',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1522202176988-66273c2fd55f.jpg',
     datePublished: '2025-12-20',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop" alt="Freelancer working" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1522202176988-66273c2fd55f.jpg" alt="Freelancer working" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">As a freelancer, your email signature is your digital business card. Make it work hard to build credibility and win clients.</p>
           

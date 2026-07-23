@@ -17,7 +17,7 @@ export default function BlogPost() {
     title: 'Legal Requirements for Business Email Signatures',
     description: 'What your business email signatures legally need to include, by country and industry.',
     url: '/blog/legal-requirements-email-signatures',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1589829545856-d10d557cf95f.jpg',
     datePublished: '2025-12-21',
     author: 'Sarah Chen',
     readTime: '6 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="sarah-chen" />
 
           <Image
-            src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop"
+            src="/blog-images/photo-1589829545856-d10d557cf95f.jpg"
             alt="Legal documents and compliance"
             width={1200}
             height={600}
@@ -90,7 +90,7 @@ export default function BlogPost() {
             </ul>
 
             <Image
-              src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1519389950473-47ba0277781c.jpg"
               alt="Business professionals reviewing documents"
               width={800}
               height={400}
@@ -172,7 +172,7 @@ export default function BlogPost() {
             </div>
 
             <Image
-              src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1450101499163-c8848c66ca85.jpg"
               alt="Business contract signing"
               width={800}
               height={400}

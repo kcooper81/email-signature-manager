@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'A/B Testing Email Signatures: Optimize Performance',
     description: 'Learn to A/B test email signatures for better results. Test CTAs, designs, and content to find what converts best.',
     url: '/blog/email-signature-ab-testing',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1460925895917-afdab827c52f.jpg',
     datePublished: '2025-12-14',
     author: 'Emily Nakamura',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Testing analytics" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1460925895917-afdab827c52f.jpg" alt="Testing analytics" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A/B testing your email signatures can reveal what resonates with recipients. Small changes can significantly impact click rates.</p>
           

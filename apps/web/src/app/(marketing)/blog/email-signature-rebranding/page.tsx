@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Rebrand: 6-Step Rollout Plan',
     description: 'Rebrand your company email signatures without the chaos. Our 6-step rollout plan covers logos, colors, and messaging for every employee. Free timeline template.',
     url: '/blog/email-signature-rebranding',
-    image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1542744094-3a31f272c490.jpg',
     datePublished: '2025-12-13',
     author: 'Emily Nakamura',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop" alt="Brand design" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1542744094-3a31f272c490.jpg" alt="Brand design" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A rebrand means updating everything — including email signatures. Here's how to execute a smooth signature rollout.</p>
           

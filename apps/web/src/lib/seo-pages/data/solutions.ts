@@ -1417,7 +1417,7 @@ export const solutionsPages: SEOLandingPageData[] = [
     meta: {
       title: 'Email Signatures for Executive Leadership | Siggly',
       description:
-        'Craft polished email signatures for C-suite executives and board members. Reinforce authority, link investor relations, and maintain executive brand consistency.',
+        'Craft polished email signatures for C-suite executives and board members. Reinforce authority, link investor relations, and keep brand consistency.',
       keywords: [
         'executive email signature',
         'C-suite branding',
@@ -1881,9 +1881,9 @@ export const solutionsPages: SEOLandingPageData[] = [
     slug: 'franchisors',
     category: 'solutions',
     meta: {
-      title: 'Email Signatures for Franchisors & Multi-Location Brands | Siggly',
+      title: 'Email Signatures for Franchises & Multi-Site Brands | Siggly',
       description:
-        'Centralize email signature management across franchise locations. Enforce corporate branding, allow territory-specific details, and maintain franchise compliance.',
+        'Centralize email signature management across franchise locations. Enforce corporate branding, allow territory details, and maintain compliance.',
       keywords: [
         'franchise email signatures',
         'multi-location signature management',

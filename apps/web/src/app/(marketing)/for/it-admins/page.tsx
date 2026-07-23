@@ -7,8 +7,7 @@ import {
   MarketingTestimonial,
   MarketingCTA,
 } from '@/components/marketing';
-import { generateMetadata as genMeta, generateBreadcrumbSchema } from '@/lib/seo';
-import { JsonLd } from '@/components/seo/json-ld';
+import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
   title: 'Email Signature Management for IT Admins',
@@ -16,12 +15,6 @@ export const metadata = genMeta({
   keywords: ['IT admin', 'centralized management', 'domain-wide deployment', 'directory sync', 'compliance'],
   canonical: '/for/it-admins',
 });
-
-const breadcrumbs = [
-  { name: 'Home', url: '/' },
-  { name: 'Solutions', url: '/for' },
-  { name: 'IT Admins', url: '/for/it-admins' },
-];
 
 const painPoints = [
   {
@@ -99,7 +92,6 @@ const stats = [
 export default function ITAdminsPage() {
   return (
     <>
-      <JsonLd data={generateBreadcrumbSchema(breadcrumbs)} />
       <MarketingHero
         variant="slate"
         badge={{ icon: Shield, text: 'Built for IT Teams' }}
@@ -108,7 +100,7 @@ export default function ITAdminsPage() {
         primaryButtonText="Get Started Free"
         primaryButtonHref="/signup"
         image={{
-          src: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop',
+          src: '/blog-images/photo-1551434678-e076c223a692.jpg',
           alt: 'IT team managing email signatures',
         }}
         imageOverlay={
@@ -176,7 +168,7 @@ export default function ITAdminsPage() {
             </div>
             <div>
               <Image
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1460925895917-afdab827c52f.jpg"
                 alt="Siggly dashboard for IT admins"
                 width={800}
                 height={600}
@@ -200,7 +192,7 @@ export default function ITAdminsPage() {
         author={{
           name: 'Michael Chen',
           title: 'IT Director, TechCorp (500+ employees)',
-          image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+          image: '/blog-images/photo-1472099645785-5658abf4ff4e.jpg',
         }}
         variant="slate"
       />

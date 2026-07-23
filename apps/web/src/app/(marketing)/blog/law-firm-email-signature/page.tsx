@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Law Firm Email Signatures: Attorney Requirements Guide',
     description: 'Create compliant email signatures for law firms. Includes bar number requirements, confidentiality disclaimers, and professional design tips.',
     url: '/blog/law-firm-email-signature',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1589829545856-d10d557cf95f.jpg',
     datePublished: '2026-01-29',
     author: 'Sarah Chen',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop" alt="Law office" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1589829545856-d10d557cf95f.jpg" alt="Law office" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Attorney email signatures must balance professionalism with compliance requirements. This guide covers what law firms need to include and common mistakes to avoid.</p>
           

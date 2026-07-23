@@ -1418,7 +1418,7 @@ export const examplesPages: SEOLandingPageData[] = [
     category: 'examples',
     meta: {
       title: 'Enterprise Email Signature Examples | Siggly',
-      description: 'Explore enterprise email signature examples built for scale. See how large organizations manage thousands of signatures with governance, compliance, and brand control.',
+      description: 'Explore enterprise email signature examples built for scale. See how large organizations manage thousands of signatures with governance and brand control.',
       keywords: ['enterprise email signature', 'large company signature', 'enterprise signature management', 'global signature deployment'],
       canonical: '/examples/enterprise',
     },

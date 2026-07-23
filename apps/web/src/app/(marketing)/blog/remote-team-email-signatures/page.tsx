@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signatures for Remote Teams: Best Practices',
     description: 'Manage email signatures for distributed and remote teams. Learn deployment strategies, consistency tips, and tools for remote workforce.',
     url: '/blog/remote-team-email-signatures',
-    image: 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1588196749597-9ff075ee6b5b.jpg',
     datePublished: '2026-01-12',
     author: 'Kade Crawford',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=1200&h=600&fit=crop" alt="Remote work" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1588196749597-9ff075ee6b5b.jpg" alt="Remote work" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Remote teams face unique challenges with email signatures. You can't walk over to someone's desk to help them set things up. Here's how to maintain consistency across distributed teams.</p>
           

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Mobile Email Signature Guide: iOS & Android Setup',
     description: 'Set up professional email signatures on iPhone and Android. Learn mobile-specific best practices for Gmail, Outlook, and Apple Mail apps.',
     url: '/blog/mobile-email-signature-guide',
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1512941937669-90a1b58e7e9c.jpg',
     datePublished: '2026-01-21',
     author: 'Marcus Rodriguez',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1200&h=600&fit=crop" alt="Mobile devices" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1512941937669-90a1b58e7e9c.jpg" alt="Mobile devices" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Over 60% of emails are read on mobile devices. Your signature needs to look professional on small screens too. Here's how to set up mobile signatures across popular apps.</p>
           

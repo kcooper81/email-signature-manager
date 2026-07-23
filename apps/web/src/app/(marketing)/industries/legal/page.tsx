@@ -104,7 +104,7 @@ export default function LegalIndustryPage() {
             </div>
             <div className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1589829545856-d10d557cf95f.jpg"
                 alt="Law firm office"
                 width={800}
                 height={600}

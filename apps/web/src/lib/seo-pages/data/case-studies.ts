@@ -7,9 +7,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'law-firm-200-attorneys',
     category: 'case-studies',
     meta: {
-      title: 'How a 200-Attorney Law Firm Standardized Signatures in 1 Day | Siggly',
+      title: '200-Attorney Law Firm Signature Rollout in 1 Day | Siggly',
       description:
-        'Learn how Hargrove & Associates LLP deployed brand-compliant email signatures to 200 attorneys in a single day using Siggly, achieving 100% adoption with zero IT tickets.',
+        'Hargrove & Associates LLP deployed brand-compliant email signatures to 200 attorneys in a single day with Siggly, hitting 100% adoption and zero IT tickets.',
       keywords: ['law firm email signatures', 'attorney email branding', 'legal email compliance', 'law firm case study'],
       canonical: '/case-studies/law-firm-200-attorneys',
     },
@@ -88,9 +88,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'healthcare-network-compliance',
     category: 'case-studies',
     meta: {
-      title: 'How a Healthcare Network Achieved HIPAA-Compliant Signatures Across 500 Providers | Siggly',
+      title: 'HIPAA-Compliant Signatures for 500 Providers | Siggly',
       description:
-        'Pacific Coast Health Network deployed HIPAA-compliant email signatures to 500 providers across 23 clinics using Siggly, eliminating compliance gaps and passing their next audit with zero findings.',
+        'Pacific Coast Health Network deployed HIPAA-compliant email signatures to 500 providers across 23 clinics with Siggly, passing its audit with zero findings.',
       keywords: ['healthcare email signatures', 'HIPAA email compliance', 'medical provider signatures', 'healthcare case study'],
       canonical: '/case-studies/healthcare-network-compliance',
     },
@@ -169,9 +169,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'saas-startup-scaling',
     category: 'case-studies',
     meta: {
-      title: 'How a SaaS Startup Scaled Brand-Consistent Signatures from 10 to 300 Employees | Siggly',
+      title: 'SaaS Startup Scales Signatures 10 to 300 Staff | Siggly',
       description:
-        'Discover how Vantage Analytics scaled from 10 to 300 employees while maintaining perfectly consistent email signatures using Siggly, saving their design team 8 hours per week.',
+        'Vantage Analytics scaled from 10 to 300 employees while keeping perfectly consistent email signatures with Siggly, saving its design team 8 hours per week.',
       keywords: ['startup email signatures', 'scaling email branding', 'SaaS company signatures', 'startup case study'],
       canonical: '/case-studies/saas-startup-scaling',
     },
@@ -250,9 +250,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'financial-services-compliance',
     category: 'case-studies',
     meta: {
-      title: 'How a Financial Advisory Firm Met SEC Compliance with Centralized Signatures | Siggly',
+      title: 'Financial Advisory Firm SEC-Compliant Signatures | Siggly',
       description:
-        'Meridian Wealth Partners used Siggly to ensure all 85 financial advisors include SEC-required disclosures in every email, passing FINRA examination with zero deficiencies.',
+        'Meridian Wealth Partners used Siggly so all 85 advisors include SEC-required disclosures in every email, passing FINRA exams with zero deficiencies.',
       keywords: ['financial advisor email signatures', 'SEC email compliance', 'FINRA compliant signatures', 'financial services case study'],
       canonical: '/case-studies/financial-services-compliance',
     },
@@ -330,9 +330,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'real-estate-brokerage',
     category: 'case-studies',
     meta: {
-      title: 'How a Real Estate Brokerage Increased Listing Inquiries 40% with Signature Banners | Siggly',
+      title: 'Real Estate Signature Banners Lift Inquiries 40% | Siggly',
       description:
-        'Summit Realty Group used Siggly signature banners to promote featured listings in every agent email, driving a 40% increase in listing inquiries and 12 additional closings per quarter.',
+        'Summit Realty Group used Siggly signature banners to promote listings in every agent email, driving a 40% rise in inquiries and 12 more closings per quarter.',
       keywords: ['real estate email signatures', 'realtor signature banners', 'listing promotion email', 'real estate case study'],
       canonical: '/case-studies/real-estate-brokerage',
     },
@@ -412,9 +412,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'marketing-agency-clients',
     category: 'case-studies',
     meta: {
-      title: 'How a Marketing Agency Manages Signatures Across 50 Client Brands | Siggly',
+      title: 'Marketing Agency Signatures for 50 Client Brands | Siggly',
       description:
-        'Ember & Oak Creative uses Siggly to manage email signatures for 50 client brands and 120 employees, switching brand contexts instantly and maintaining perfect brand consistency.',
+        'Ember & Oak Creative uses Siggly to manage email signatures for 50 client brands and 120 employees, switching brand contexts instantly with perfect consistency.',
       keywords: ['marketing agency email signatures', 'multi-brand signatures', 'agency client branding', 'marketing agency case study'],
       canonical: '/case-studies/marketing-agency-clients',
     },
@@ -492,9 +492,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'university-faculty',
     category: 'case-studies',
     meta: {
-      title: 'How a University Standardized 2,000 Faculty Signatures with Directory Sync | Siggly',
+      title: 'University Signatures for 2,000 Faculty via Sync | Siggly',
       description:
-        'Lakeshore State University deployed standardized email signatures to 2,000 faculty and staff using Siggly\'s directory sync, achieving 99.8% adoption and saving IT 20 hours per week.',
+        'Lakeshore State University deployed standardized email signatures to 2,000 faculty and staff via Siggly directory sync, hitting 99.8% adoption.',
       keywords: ['university email signatures', 'faculty email branding', 'education email signatures', 'university case study'],
       canonical: '/case-studies/university-faculty',
     },
@@ -573,9 +573,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'manufacturing-multi-site',
     category: 'case-studies',
     meta: {
-      title: 'How a Multi-Site Manufacturer Deployed Signatures Across 12 Locations | Siggly',
+      title: 'Manufacturer Deploys Signatures Across 12 Sites | Siggly',
       description:
-        'Ridgeline Manufacturing Corp used Siggly to standardize email signatures across 12 plants and 850 employees, unifying branding after acquiring three regional manufacturers.',
+        'Ridgeline Manufacturing standardized email signatures across 12 plants and 850 employees with Siggly, unifying branding after three acquisitions.',
       keywords: ['manufacturing email signatures', 'multi-site email branding', 'industrial company signatures', 'manufacturing case study'],
       canonical: '/case-studies/manufacturing-multi-site',
     },
@@ -653,9 +653,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'insurance-network',
     category: 'case-studies',
     meta: {
-      title: 'How an Insurance Network Maintains Compliance Across 300 Independent Agents | Siggly',
+      title: 'Insurance Network Compliance for 300 Agents | Siggly',
       description:
-        'Pinnacle Insurance Group uses Siggly to enforce state-mandated disclosure requirements across 300 independent agents in 14 states, achieving 100% compliance and reducing E&O risk.',
+        'Pinnacle Insurance Group uses Siggly to enforce state-mandated disclosures across 300 agents in 14 states, hitting 100% compliance and cutting E&O risk.',
       keywords: ['insurance email signatures', 'agent compliance signatures', 'insurance disclaimer email', 'insurance case study'],
       canonical: '/case-studies/insurance-network',
     },
@@ -735,9 +735,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'nonprofit-donor-engagement',
     category: 'case-studies',
     meta: {
-      title: 'How a Nonprofit Boosted Donor Engagement 25% with Signature Campaigns | Siggly',
+      title: 'Nonprofit Lifts Donor Engagement 25% via Signatures | Siggly',
       description:
-        'Horizons Youth Alliance used Siggly signature banners to promote fundraising campaigns across all staff emails, increasing donor engagement by 25% and raising $340,000 in attributable donations.',
+        'Horizons Youth Alliance used Siggly signature banners in all staff emails to promote fundraising, lifting donor engagement 25% and raising $340,000.',
       keywords: ['nonprofit email signatures', 'donor engagement email', 'fundraising email signatures', 'nonprofit case study'],
       canonical: '/case-studies/nonprofit-donor-engagement',
     },
@@ -815,9 +815,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'consulting-firm-rebrand',
     category: 'case-studies',
     meta: {
-      title: 'How a Consulting Firm Rebranded 400 Signatures Overnight | Siggly',
+      title: 'Consulting Firm Rebrands 400 Signatures Overnight | Siggly',
       description:
-        'Whitmore & Associates rebranded to Alder Consulting Group and used Siggly to update 400 employee signatures overnight, achieving 100% adoption by the Monday morning announcement.',
+        'Whitmore & Associates rebranded to Alder Consulting Group and used Siggly to update 400 signatures overnight, hitting 100% adoption by Monday morning.',
       keywords: ['rebrand email signatures', 'company rebrand signatures', 'consulting firm signatures', 'rebrand case study'],
       canonical: '/case-studies/consulting-firm-rebrand',
     },
@@ -895,9 +895,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'retail-chain-campaigns',
     category: 'case-studies',
     meta: {
-      title: 'How a Retail Chain Drives Seasonal Promotions Through Email Signatures | Siggly',
+      title: 'Retail Chain Drives Promotions via Signatures | Siggly',
       description:
-        'Crestwood Home & Garden uses Siggly to rotate seasonal promotional banners across 180 employees\' signatures, driving 28% of in-store coupon redemptions and $520,000 in attributable revenue.',
+        'Crestwood Home & Garden uses Siggly to rotate seasonal banners across 180 employee signatures, driving 28% of coupon redemptions and $520,000 in revenue.',
       keywords: ['retail email signatures', 'seasonal campaign signatures', 'retail promotion email', 'retail case study'],
       canonical: '/case-studies/retail-chain-campaigns',
     },
@@ -976,9 +976,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'tech-company-remote',
     category: 'case-studies',
     meta: {
-      title: 'How a Fully Remote Tech Company Maintains Brand Consistency Across 5 Countries | Siggly',
+      title: 'Remote Tech Firm Brand Consistency in 5 Countries | Siggly',
       description:
-        'Nomad Systems, a 220-person fully remote company spanning 5 countries, uses Siggly to maintain perfect brand consistency and handle multi-timezone, multi-language email signatures.',
+        'Nomad Systems, a 220-person remote company in 5 countries, uses Siggly to keep brand consistency and handle multi-language email signatures.',
       keywords: ['remote company email signatures', 'distributed team branding', 'international email signatures', 'remote work case study'],
       canonical: '/case-studies/tech-company-remote',
     },
@@ -1057,9 +1057,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'government-agency',
     category: 'case-studies',
     meta: {
-      title: 'How a Government Agency Achieved Section 508 Compliance for Email Signatures | Siggly',
+      title: 'Government Agency Section 508 Signature Compliance | Siggly',
       description:
-        'The Metro County Department of Public Services used Siggly to deploy Section 508-compliant email signatures to 1,200 employees, passing a federal accessibility audit with full marks.',
+        'Metro County Public Services used Siggly to deploy Section 508-compliant email signatures to 1,200 employees, passing a federal accessibility audit.',
       keywords: ['government email signatures', 'Section 508 email compliance', 'accessible email signatures', 'government case study'],
       canonical: '/case-studies/government-agency',
     },
@@ -1139,9 +1139,9 @@ export const caseStudiesPages: SEOLandingPageData[] = [
     slug: 'franchise-consistency',
     category: 'case-studies',
     meta: {
-      title: 'How a 150-Location Franchise Ensures Brand Consistency with Centralized Signatures | Siggly',
+      title: '150-Location Franchise Brand-Consistent Signatures | Siggly',
       description:
-        'TrueClean Pro, a 150-location cleaning franchise, uses Siggly to enforce brand-consistent email signatures across independently owned franchises, achieving 98% compliance and reducing brand violations by 85%.',
+        'TrueClean Pro, a 150-location cleaning franchise, uses Siggly to enforce brand-consistent signatures, hitting 98% compliance and cutting brand violations 85%.',
       keywords: ['franchise email signatures', 'franchise brand consistency', 'multi-location signatures', 'franchise case study'],
       canonical: '/case-studies/franchise-consistency',
     },

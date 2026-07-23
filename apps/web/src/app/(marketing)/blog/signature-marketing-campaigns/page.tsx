@@ -17,7 +17,7 @@ export default function BlogPost() {
     title: 'Using Email Signatures for Marketing Campaigns',
     description: 'How to leverage your team\'s email signatures as a powerful, free marketing channel.',
     url: '/blog/signature-marketing-campaigns',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1551288049-bebda4e38f71.jpg',
     datePublished: '2025-12-28',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -49,7 +49,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="emily-nakamura" />
 
           <Image
-            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop"
+            src="/blog-images/photo-1551288049-bebda4e38f71.jpg"
             alt="Marketing analytics and campaigns"
             width={1200}
             height={600}
@@ -96,7 +96,7 @@ export default function BlogPost() {
             </p>
 
             <Image
-              src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1552664730-d307ca884978.jpg"
               alt="Product launch team meeting"
               width={800}
               height={400}
@@ -154,7 +154,7 @@ export default function BlogPost() {
             </ul>
 
             <Image
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1460925895917-afdab827c52f.jpg"
               alt="Analytics dashboard showing campaign performance"
               width={800}
               height={400}

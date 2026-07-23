@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
 
     // Try to get user's organization from users table first
     let organizationId: string | null = null;
-    
+
     const { data: userData } = await supabase
       .from('users')
-      .select('organization_id')
+      .select('organization_id, role')
       .eq('auth_id', user.id)
       .single();
 
@@ -64,6 +64,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Organization not found' },
         { status: 404 }
+      );
+    }
+
+    // Authorization: members may only deploy to their own mailbox (target 'me').
+    // Deploying to other users or the whole org is Owner/Admin only — otherwise
+    // any org member could overwrite every mailbox's signature (incl. executives).
+    if (target !== 'me' && !['owner', 'admin'].includes(userData?.role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: only owners and admins can deploy to other users' },
+        { status: 403 }
       );
     }
 
