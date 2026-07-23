@@ -2,6 +2,7 @@
  * URL Builder for Analytics Tracking
  * Wraps URLs with tracking parameters and redirect endpoint
  */
+import { signTrackingTarget } from './sign';
 
 interface TrackingParams {
   userId?: string;
@@ -31,13 +32,18 @@ export function buildTrackableUrl(
   if (params.utmContent) url.searchParams.set('utm_content', params.utmContent);
 
   // Build tracking redirect URL
+  const target = url.toString();
   const trackingUrl = new URL('/api/track/click', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
-  trackingUrl.searchParams.set('url', url.toString());
-  
+  trackingUrl.searchParams.set('url', target);
+
   if (params.userId) trackingUrl.searchParams.set('u', params.userId);
   if (params.templateId) trackingUrl.searchParams.set('t', params.templateId);
   if (params.linkType) trackingUrl.searchParams.set('type', params.linkType);
   if (params.campaign) trackingUrl.searchParams.set('campaign', params.campaign);
+
+  // Sign the redirect target so the tracker can reject tampered/forged links.
+  const sig = signTrackingTarget(target);
+  if (sig) trackingUrl.searchParams.set('s', sig);
 
   return trackingUrl.toString();
 }

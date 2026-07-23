@@ -29,6 +29,7 @@ export function MarketingFooter() {
               <li><Link href="/pricing" className="hover:text-gray-900 transition-colors">Pricing</Link></li>
               <li><Link href="/demo" className="hover:text-gray-900 transition-colors">Demo</Link></li>
               <li><Link href="/google-workspace" className="hover:text-gray-900 transition-colors">Google Workspace</Link></li>
+              <li><Link href="/integrations/directory" className="hover:text-gray-900 transition-colors">Integrations</Link></li>
             </ul>
           </div>
           
