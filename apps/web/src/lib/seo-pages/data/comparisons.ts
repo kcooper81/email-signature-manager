@@ -1323,4 +1323,547 @@ export const comparisonsPages: SEOLandingPageData[] = [
         'Siggly delivers more signature features than Templafy at a fraction of the price. Start free and upgrade as you grow.',
     },
   },
+
+  // ---------------------------------------------------------------------------
+  // 10. Sigsync — Microsoft 365 / Exchange server-side signature service
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'sigsync',
+    category: 'comparisons',
+    meta: {
+      title: 'Siggly vs Sigsync - Email Signature Comparison | Siggly',
+      description:
+        'Compare Siggly and Sigsync for email signature management. Siggly adds native Google Workspace support, a free plan, and a modern editor.',
+      keywords: [
+        'Siggly vs Sigsync',
+        'Sigsync alternative',
+        'Microsoft 365 email signatures',
+        'email signature comparison',
+      ],
+      canonical: '/compare/sigsync',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Compare', url: '/compare' },
+      { name: 'Siggly vs Sigsync', url: '/compare/sigsync' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Comparison' },
+      title: 'Siggly vs Sigsync',
+      description:
+        'Sigsync is a capable server-side signature service built specifically for Microsoft 365, Office 365, and Exchange. But if your organization runs Google Workspace — or you want a free plan and a modern drag-and-drop editor — Siggly delivers server-side power across both platforms in one interface.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '3x', label: 'Faster deployment' },
+      { value: 'Free', label: 'Plan available' },
+      { value: '24/7', label: 'Priority support' },
+    ],
+    featuresTitle: 'Why Teams Choose Siggly over Sigsync',
+    features: [
+      {
+        icon: 'globe',
+        title: 'Google Workspace + Microsoft 365',
+        description:
+          'Sigsync is Microsoft-only. Siggly deploys server-side signatures natively across both Google Workspace and Microsoft 365 from a single dashboard.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'Modern Drag-and-Drop Editor',
+        description:
+          'Design polished signatures visually with dynamic fields, banners, and social icons — no raw HTML or template wrangling required.',
+      },
+      {
+        icon: 'check',
+        title: 'Genuinely Free Plan',
+        description:
+          'Siggly includes a free plan for up to 5 users with full features. Sigsync offers only a time-limited trial before you must subscribe.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Built-In Click Analytics',
+        description:
+          'Track signature impressions, banner clicks, and campaign performance in real time from every plan — no add-ons needed.',
+      },
+      {
+        icon: 'settings',
+        title: 'Visual Targeting Rules',
+        description:
+          'Apply different signatures by department, role, or location with a visual rule builder instead of manual configuration.',
+      },
+      {
+        icon: 'clock',
+        title: 'Fast, Guided Setup',
+        description:
+          'Connect your tenant through a guided OAuth flow and deploy in minutes — no PowerShell scripting required.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Signature Management Comparison',
+        competitor: 'Sigsync',
+        rows: [
+          { feature: 'Microsoft 365 server-side signatures', siggly: true, competitor: true },
+          { feature: 'Google Workspace support', siggly: true, competitor: false },
+          { feature: 'Native support for both Google & Microsoft', siggly: true, competitor: false },
+          { feature: 'Free plan (not just a trial)', siggly: true, competitor: false },
+          { feature: 'Modern drag-and-drop editor', siggly: true, competitor: 'Limited' },
+          { feature: 'Built-in click & impression analytics', siggly: true, competitor: 'Limited' },
+          { feature: 'Signature campaign banners', siggly: true, competitor: true },
+          { feature: 'Azure AD / Entra ID directory sync', siggly: true, competitor: true },
+          { feature: 'HR field auto-population', siggly: true, competitor: true },
+          { feature: 'Setup without PowerShell scripting', siggly: true, competitor: true },
+          { feature: 'Pricing model', siggly: 'Free + $1.50/user', competitor: 'Paid plans only' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Get When You Switch to Siggly',
+        items: [
+          'Native deployment for both Google Workspace and Microsoft 365',
+          'Free plan for up to 5 users with full features',
+          'Modern drag-and-drop editor with live preview',
+          'Real-time click and impression analytics on every plan',
+          'Guided OAuth setup with no PowerShell required',
+          'Free migration assistance and full HTML template import',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Sigsync vs Siggly: which is better for Google Workspace?',
+        answer:
+          'Siggly. Sigsync is built specifically for Microsoft 365, Office 365, and Exchange and does not support Google Workspace. Siggly deploys server-side signatures natively across both Google Workspace and Microsoft 365.',
+      },
+      {
+        question: 'Does Siggly offer a free plan like Sigsync?',
+        answer:
+          'Sigsync offers a 14-day free trial but no ongoing free plan. Siggly includes a genuinely free plan for up to 5 users with full features and no credit card required.',
+      },
+      {
+        question: 'Does Siggly support server-side signatures like Sigsync?',
+        answer:
+          'Yes. Siggly applies signatures server-side so they appear on every email, including those sent from mobile devices — the same reliable approach Sigsync uses for Microsoft 365, but available for Google Workspace too.',
+      },
+      {
+        question: 'Can I migrate my Sigsync signatures to Siggly?',
+        answer:
+          'Yes. Export your signature templates as HTML and import them directly into Siggly. Our team can assist with migration for larger organizations at no extra cost.',
+      },
+    ],
+    cta: {
+      title: 'Ready to Move Beyond Microsoft-Only Signatures?',
+      description:
+        'Get server-side signature management for both Google Workspace and Microsoft 365. Start free and deploy in minutes.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // 11. BulkSignature — Google Workspace-focused signature tool
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'bulksignature',
+    category: 'comparisons',
+    meta: {
+      title: 'Siggly vs BulkSignature Comparison | Siggly',
+      description:
+        'Compare Siggly and BulkSignature for email signature management. See how Siggly compares on free plans, native deployment, and analytics.',
+      keywords: [
+        'Siggly vs BulkSignature',
+        'BulkSignature alternative',
+        'Google Workspace email signatures',
+        'email signature comparison',
+      ],
+      canonical: '/compare/bulksignature',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Compare', url: '/compare' },
+      { name: 'Siggly vs BulkSignature', url: '/compare/bulksignature' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Comparison' },
+      title: 'Siggly vs BulkSignature',
+      description:
+        'BulkSignature is a popular Google Workspace signature tool that also supports Microsoft 365. Siggly is built natively for both platforms from the ground up, adds a free plan for small teams, and includes click analytics on every plan — a strong choice for organizations that want equal power across Google and Microsoft.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '3x', label: 'Faster deployment' },
+      { value: 'Free', label: 'Plan available' },
+      { value: '24/7', label: 'Priority support' },
+    ],
+    featuresTitle: 'Why Teams Choose Siggly over BulkSignature',
+    features: [
+      {
+        icon: 'globe',
+        title: 'Native on Both Platforms',
+        description:
+          'Siggly is engineered natively for Google Workspace and Microsoft 365, so you get the same server-side deployment and features whichever platform your teams use.',
+      },
+      {
+        icon: 'check',
+        title: 'Free Plan for Small Teams',
+        description:
+          'Start with a free plan for up to 5 users with full features — no trial clock. Ideal for small teams before they scale up.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Analytics on Every Plan',
+        description:
+          'Track signature impressions, banner clicks, and campaign performance in real time from the moment you connect.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'Modern Signature Editor',
+        description:
+          'Build pixel-perfect signatures with a drag-and-drop editor supporting dynamic fields, banners, and social icons.',
+      },
+      {
+        icon: 'settings',
+        title: 'Visual Targeting Rules',
+        description:
+          'Assign signatures by department, role, or location with a visual rule builder — no spreadsheets or manual grouping.',
+      },
+      {
+        icon: 'shield',
+        title: 'Brand & Compliance Control',
+        description:
+          'Lock templates and add legal disclaimers so every email your company sends stays on-brand and compliant.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Signature Management Comparison',
+        competitor: 'BulkSignature',
+        rows: [
+          { feature: 'Google Workspace signature deployment', siggly: true, competitor: true },
+          { feature: 'Microsoft 365 signature deployment', siggly: true, competitor: true },
+          { feature: 'Native server-side injection on both platforms', siggly: true, competitor: 'Google-focused' },
+          { feature: 'Free plan (up to 5 users)', siggly: true, competitor: '14-day trial' },
+          { feature: 'Built-in click & impression analytics', siggly: true, competitor: true },
+          { feature: 'Signature campaign banners', siggly: true, competitor: true },
+          { feature: 'Directory / HR field sync', siggly: true, competitor: true },
+          { feature: 'Drag-and-drop signature editor', siggly: true, competitor: true },
+          { feature: 'Compliance disclaimers', siggly: true, competitor: true },
+          { feature: 'Pricing model', siggly: 'Free + $1.50/user', competitor: 'Paid plans only' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Get When You Switch to Siggly',
+        items: [
+          'Equal, native deployment across Google Workspace and Microsoft 365',
+          'Free plan for up to 5 users with full features',
+          'Real-time click and impression analytics on every plan',
+          'Modern drag-and-drop editor with dynamic fields and banners',
+          'Visual targeting rules for department-level signatures',
+          'Free migration assistance and full HTML template import',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'BulkSignature vs Siggly: which is better for Google Workspace?',
+        answer:
+          'Both deploy signatures for Google Workspace. BulkSignature began as a Google-first tool, while Siggly was built natively for both Google Workspace and Microsoft 365 — so if you run a mixed environment, Siggly gives you the same power and interface on either platform.',
+      },
+      {
+        question: 'Does Siggly offer a free plan like BulkSignature?',
+        answer:
+          'BulkSignature offers a 14-day free trial. Siggly includes an ongoing free plan for up to 5 users with full features and no credit card required, so small teams can run indefinitely at no cost.',
+      },
+      {
+        question: 'Does Siggly include analytics?',
+        answer:
+          'Yes. Every Siggly plan includes built-in click and impression analytics for signatures and campaign banners, with no third-party integrations required.',
+      },
+      {
+        question: 'Can I migrate my BulkSignature signatures to Siggly?',
+        answer:
+          'Yes. Export your signature templates as HTML and import them directly into Siggly. Our support team can assist with larger migrations at no extra cost.',
+      },
+    ],
+    cta: {
+      title: 'Ready for Signatures That Work Everywhere?',
+      description:
+        'Get native signature management for both Google Workspace and Microsoft 365, with analytics on every plan. Start free today.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // 12. Signitic — EU / French email signature management
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'signitic',
+    category: 'comparisons',
+    meta: {
+      title: 'Siggly vs Signitic - Email Signature Comparison | Siggly',
+      description:
+        'Compare Siggly and Signitic for email signature management. See how the free plans, pricing minimums, and platform support stack up.',
+      keywords: [
+        'Siggly vs Signitic',
+        'Signitic alternative',
+        'email signature management',
+        'email signature comparison',
+      ],
+      canonical: '/compare/signitic',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Compare', url: '/compare' },
+      { name: 'Siggly vs Signitic', url: '/compare/signitic' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Comparison' },
+      title: 'Siggly vs Signitic',
+      description:
+        'Signitic is a well-designed, EU-based signature platform supporting both Google Workspace and Microsoft 365. Siggly matches its core capabilities while offering a free plan with no vendor branding and a lower minimum for paid plans — making it a better fit for small and mid-sized teams.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '3x', label: 'Faster deployment' },
+      { value: 'Free', label: 'Plan available' },
+      { value: '24/7', label: 'Priority support' },
+    ],
+    featuresTitle: 'Why Teams Choose Siggly over Signitic',
+    features: [
+      {
+        icon: 'check',
+        title: 'Free Plan, No Branding',
+        description:
+          'Siggly\'s free plan for up to 5 users comes with full features and no vendor logo added to your signatures — your brand stays front and center.',
+      },
+      {
+        icon: 'users',
+        title: 'Lower Minimum to Go Paid',
+        description:
+          'Siggly\'s paid plan starts at a 10-user minimum, so small teams can upgrade without waiting to reach a larger license threshold.',
+      },
+      {
+        icon: 'globe',
+        title: 'Google Workspace + Microsoft 365',
+        description:
+          'Deploy signatures natively across both Google Workspace and Microsoft 365 from a single, unified dashboard.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Built-In Click Analytics',
+        description:
+          'Track signature impressions, banner clicks, and campaign performance in real time on every paid plan.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'Modern Drag-and-Drop Editor',
+        description:
+          'Design polished signatures visually with dynamic fields, banners, and social icons — accessible to non-technical marketers.',
+      },
+      {
+        icon: 'shield',
+        title: 'Brand & Compliance Control',
+        description:
+          'Lock templates and add legal disclaimers so every email stays consistent, professional, and compliant.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Signature Management Comparison',
+        competitor: 'Signitic',
+        rows: [
+          { feature: 'Google Workspace signatures', siggly: true, competitor: true },
+          { feature: 'Microsoft 365 signatures', siggly: true, competitor: true },
+          { feature: 'Free plan without vendor branding', siggly: true, competitor: false },
+          { feature: 'Templates on free plan', siggly: 'Full features', competitor: '1 template' },
+          { feature: 'Paid plan minimum users', siggly: '10 users', competitor: '20 users' },
+          { feature: 'Built-in click analytics', siggly: true, competitor: true },
+          { feature: 'Signature campaign banners', siggly: true, competitor: true },
+          { feature: 'HR / HRIS directory sync', siggly: true, competitor: true },
+          { feature: 'Drag-and-drop editor', siggly: true, competitor: true },
+          { feature: 'Compliance disclaimers', siggly: true, competitor: true },
+          { feature: 'Paid pricing', siggly: '$1.50/user/mo', competitor: '€1/user (min 20)' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Get When You Switch to Siggly',
+        items: [
+          'Free plan for up to 5 users with full features and no vendor branding',
+          'Paid plans starting at a 10-user minimum',
+          'Native deployment for Google Workspace and Microsoft 365',
+          'Real-time click and impression analytics on paid plans',
+          'Modern drag-and-drop editor with dynamic fields and banners',
+          'Free migration assistance and full HTML template import',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Signitic vs Siggly: which is better for small teams?',
+        answer:
+          'Siggly is often a better fit for small teams. Its free plan for up to 5 users adds no vendor branding to your signatures, and its paid plan starts at a 10-user minimum, whereas Signitic\'s paid Standard plan requires a minimum of 20 licenses.',
+      },
+      {
+        question: 'Does Siggly support both Google Workspace and Microsoft 365 like Signitic?',
+        answer:
+          'Yes. Like Signitic, Siggly deploys signatures natively across both Google Workspace and Microsoft 365 from a single dashboard, with automatic field population from your directory.',
+      },
+      {
+        question: 'Does Siggly add its logo to my signatures on the free plan?',
+        answer:
+          'No. Siggly\'s free plan includes full features with no vendor branding added to your signatures. Signitic\'s free tier displays a Signitic logo in your signatures.',
+      },
+      {
+        question: 'Can I migrate my Signitic signatures to Siggly?',
+        answer:
+          'Yes. Export your signature templates as HTML and import them directly into Siggly. Our team can assist with migration for larger organizations at no extra cost.',
+      },
+    ],
+    cta: {
+      title: 'Ready for a Free Plan Without the Branding?',
+      description:
+        'Get native signature management for Google Workspace and Microsoft 365, with a free plan that keeps your brand front and center. Start today.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // 13. Signature 365 (Symprex) — Microsoft 365 signature service
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'signature365',
+    category: 'comparisons',
+    meta: {
+      title: 'Siggly vs Signature 365 Comparison | Siggly',
+      description:
+        'Compare Siggly and Signature 365 for email signature management. Siggly adds native Google Workspace support, a free plan, and public pricing.',
+      keywords: [
+        'Siggly vs Signature 365',
+        'Signature 365 alternative',
+        'Microsoft 365 email signatures',
+        'email signature comparison',
+      ],
+      canonical: '/compare/signature365',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Compare', url: '/compare' },
+      { name: 'Siggly vs Signature 365', url: '/compare/signature365' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Comparison' },
+      title: 'Siggly vs Signature 365',
+      description:
+        'Signature 365 by Symprex is a mature signature service focused on Microsoft 365, Office 365, and Exchange. If your organization uses Google Workspace, wants a free plan, or prefers transparent published pricing, Siggly delivers server-side signature management across both platforms with a modern interface.',
+      variant: 'slate',
+    },
+    stats: [
+      { value: '3x', label: 'Faster deployment' },
+      { value: 'Free', label: 'Plan available' },
+      { value: '24/7', label: 'Priority support' },
+    ],
+    featuresTitle: 'Why Teams Choose Siggly over Signature 365',
+    features: [
+      {
+        icon: 'globe',
+        title: 'Google Workspace + Microsoft 365',
+        description:
+          'Signature 365 is Microsoft-focused. Siggly deploys server-side signatures natively across both Google Workspace and Microsoft 365 from one dashboard.',
+      },
+      {
+        icon: 'check',
+        title: 'Genuinely Free Plan',
+        description:
+          'Siggly includes a free plan for up to 5 users with full features. Signature 365 offers only a 14-day trial before a paid subscription is required.',
+      },
+      {
+        icon: 'zap',
+        title: 'Transparent Public Pricing',
+        description:
+          'Siggly publishes clear per-user pricing at $1.50/user/mo. Signature 365 does not list per-user prices publicly, requiring a quote.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Built-In Click Analytics',
+        description:
+          'Track signature impressions, banner clicks, and campaign performance in real time from every plan.',
+      },
+      {
+        icon: 'sparkles',
+        title: 'Modern Drag-and-Drop Editor',
+        description:
+          'Design polished signatures visually with dynamic fields, banners, and social icons — no admin-heavy configuration.',
+      },
+      {
+        icon: 'clock',
+        title: 'Fast, Self-Serve Setup',
+        description:
+          'Connect your tenant through a guided OAuth flow and deploy in minutes, without needing a dedicated IT specialist.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Signature Management Comparison',
+        competitor: 'Signature 365',
+        rows: [
+          { feature: 'Microsoft 365 server-side signatures', siggly: true, competitor: true },
+          { feature: 'Google Workspace support', siggly: true, competitor: false },
+          { feature: 'Native support for both Google & Microsoft', siggly: true, competitor: false },
+          { feature: 'Free plan (not just a trial)', siggly: true, competitor: false },
+          { feature: 'Transparent public per-user pricing', siggly: true, competitor: false },
+          { feature: 'Built-in click & impression analytics', siggly: true, competitor: true },
+          { feature: 'Signature campaign banners', siggly: true, competitor: true },
+          { feature: 'Legal disclaimers / compliance', siggly: true, competitor: true },
+          { feature: 'Azure AD / Entra ID directory sync', siggly: true, competitor: true },
+          { feature: 'Modern drag-and-drop editor', siggly: true, competitor: 'Limited' },
+          { feature: 'Self-serve setup (no IT specialist)', siggly: true, competitor: 'Admin-led' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Get When You Switch to Siggly',
+        items: [
+          'Native deployment for both Google Workspace and Microsoft 365',
+          'Free plan for up to 5 users with full features',
+          'Transparent public pricing at $1.50/user/mo',
+          'Real-time click and impression analytics on every plan',
+          'Modern drag-and-drop editor with live preview',
+          'Free migration assistance and full HTML template import',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Signature 365 vs Siggly: which is better for Google Workspace?',
+        answer:
+          'Siggly. Signature 365 by Symprex is designed for Microsoft 365, Office 365, and Exchange and does not support Google Workspace. Siggly deploys server-side signatures natively across both Google Workspace and Microsoft 365.',
+      },
+      {
+        question: 'Does Siggly offer a free plan like Signature 365?',
+        answer:
+          'Signature 365 offers a 14-day free trial but no ongoing free plan. Siggly includes a genuinely free plan for up to 5 users with full features and no credit card required.',
+      },
+      {
+        question: 'Does Siggly publish its pricing?',
+        answer:
+          'Yes. Siggly lists transparent per-user pricing publicly at $1.50/user/mo on the Professional plan (10-user minimum), plus a free plan and custom Enterprise pricing. Signature 365 does not publish per-user prices publicly.',
+      },
+      {
+        question: 'Can I migrate my Signature 365 signatures to Siggly?',
+        answer:
+          'Yes. Export your signature templates as HTML and import them directly into Siggly. Our team can assist with migration for larger organizations at no extra cost.',
+      },
+    ],
+    cta: {
+      title: 'Ready to Cover Google and Microsoft in One Tool?',
+      description:
+        'Get server-side signature management for both platforms with transparent pricing and a free plan. Start free and deploy in minutes.',
+      variant: 'default',
+    },
+  },
 ];
