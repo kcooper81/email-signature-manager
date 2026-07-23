@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: '15 Seasonal Email Signature Ideas That Convert',
     description: 'Boost engagement with seasonal email signature updates. 15 proven ideas for holidays, events, and promotions your team can deploy in minutes. Free banner designs.',
     url: '/blog/email-signature-seasonal-updates',
-    image: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1512389142860-9c449e58a543.jpg',
     datePublished: '2025-12-06',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200&h=600&fit=crop" alt="Seasonal celebration" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1512389142860-9c449e58a543.jpg" alt="Seasonal celebration" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Seasonal signature updates keep your communications fresh and timely. Here are ideas for holidays, events, and seasonal promotions.</p>
           

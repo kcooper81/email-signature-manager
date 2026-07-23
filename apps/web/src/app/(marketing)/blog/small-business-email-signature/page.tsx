@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Small Business Email Signatures: Complete Guide 2026',
     description: 'Create professional email signatures for your small business. Learn what to include, design tips, and free tools to get started.',
     url: '/blog/small-business-email-signature',
-    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1556761175-b413da4baf72.jpg',
     datePublished: '2026-01-15',
     author: 'Kade Crawford',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=600&fit=crop" alt="Small business team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1556761175-b413da4baf72.jpg" alt="Small business team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">For small businesses, every email is an opportunity to build your brand. A professional signature helps you compete with larger companies and leaves a lasting impression.</p>
           

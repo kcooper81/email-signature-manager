@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Promoting Ebooks & Content Through Email Signatures',
     description: 'Use email signatures to distribute content. Promote ebooks, whitepapers, guides, and other lead magnets effectively.',
     url: '/blog/email-signature-ebook-promotion',
-    image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1544716278-ca5e3f4abd8c.jpg',
     datePublished: '2025-11-24',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=1200&h=600&fit=crop" alt="Ebook content" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1544716278-ca5e3f4abd8c.jpg" alt="Ebook content" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures are a powerful distribution channel for content marketing. Every outgoing email can promote your latest resources.</p>
           

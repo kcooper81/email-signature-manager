@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'How to Deploy Email Signatures in Google Workspace',
     description: 'Deploy consistent email signatures across your Google Workspace organization. Step-by-step guide for IT admins using Admin Console or third-party tools.',
     url: '/blog/deploy-signatures-google-workspace',
-    image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1573164713988-8665fc963095.jpg',
     datePublished: '2026-01-22',
     author: 'Kade Crawford',
     readTime: '10 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 10 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop" alt="Google Workspace" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1573164713988-8665fc963095.jpg" alt="Google Workspace" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Deploying consistent email signatures across a Google Workspace organization can be done through the Admin Console or specialized tools. Here's how each approach works.</p>
           
@@ -82,7 +82,7 @@ export default function BlogPost() {
             <li><strong>Analytics</strong> — Track signature performance</li>
           </ul>
 
-          <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop" alt="Dashboard" width={800} height={400} className="rounded-xl my-8" />
+          <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Dashboard" width={800} height={400} className="rounded-xl my-8" />
 
           <h2 className="text-2xl font-bold mt-12 mb-4">Setting Up Dynamic Variables</h2>
           <p className="text-gray-600 mb-6">Google Workspace stores user information that can populate signatures automatically:</p>

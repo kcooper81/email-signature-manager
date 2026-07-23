@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'HTML Email Signature: Complete Coding Guide',
     description: 'Learn to code HTML email signatures that work across all clients. Includes templates, best practices, and Outlook compatibility tips.',
     url: '/blog/html-email-signature-guide',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1461749280684-dccba630e2f6.jpg',
     datePublished: '2026-02-01',
     author: 'Marcus Rodriguez',
     readTime: '12 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 12 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop" alt="Code on screen" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1461749280684-dccba630e2f6.jpg" alt="Code on screen" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Creating HTML email signatures that render consistently across Gmail, Outlook, and Apple Mail requires specific techniques. This guide covers everything you need to know.</p>
           

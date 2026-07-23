@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Hospitality Email Signatures: Hotels & Restaurants',
     description: 'Create welcoming email signatures for hospitality businesses. Hotels, restaurants, and event venues can build guest relationships.',
     url: '/blog/hospitality-email-signature',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1566073771259-6a8506099945.jpg',
     datePublished: '2025-12-26',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=600&fit=crop" alt="Hotel lobby" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1566073771259-6a8506099945.jpg" alt="Hotel lobby" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Hospitality is about creating experiences. Your email signature should reflect the warmth and professionalism guests expect from your property.</p>
           

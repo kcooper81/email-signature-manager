@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Best CodeTwo Alternatives 2026: Compare Features & Pricing',
     description: 'Looking for a CodeTwo alternative? Compare email signature tools with Google Workspace support, easier pricing, and modern features.',
     url: '/blog/codetwo-alternative',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1551288049-bebda4e38f71.jpg',
     datePublished: '2026-01-17',
     author: 'Marcus Rodriguez',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">CodeTwo is a popular Microsoft-focused signature tool. If you need Google Workspace support or simpler pricing, here are the best alternatives to consider.</p>
           

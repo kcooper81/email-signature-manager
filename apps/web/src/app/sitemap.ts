@@ -239,6 +239,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/case-studies`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/checklists`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/compliance`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.85 },
+    // Category hub/index pages
+    { url: `${baseUrl}/for`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/industries`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/platforms`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/alternatives`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/guides`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/email-signatures`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/email-signature-templates`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/integrations`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    // Additional integration pages
+    { url: `${baseUrl}/integrations/calendly`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/integrations/hubspot`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
+    // Company / trust pages
+    { url: `${baseUrl}/reviews`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/careers`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${baseUrl}/security`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/privacy`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.3 },
   ];
@@ -249,7 +265,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { pages: comparisonsPages, priority: 0.85, changeFrequency: 'weekly' },
     { pages: industriesPages, priority: 0.8, changeFrequency: 'monthly' },
     { pages: featuresPages, priority: 0.8, changeFrequency: 'monthly' },
-    { pages: integrationsPages, priority: 0.8, changeFrequency: 'monthly' },
+    // Exclude "coming soon" integrations — they are noindex roadmap placeholders.
+    { pages: integrationsPages.filter((p) => p.status !== 'coming-soon'), priority: 0.8, changeFrequency: 'monthly' },
     { pages: useCasesPages, priority: 0.75, changeFrequency: 'monthly' },
     { pages: templatesPages, priority: 0.75, changeFrequency: 'monthly' },
     { pages: guidesPages, priority: 0.7, changeFrequency: 'monthly' },
@@ -301,6 +318,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Silently skip if DB not available (build time)
   }
 
+  // Published Help Center articles (server-rendered, indexable)
+  let helpPages: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = createServiceClient();
+    const { data: articles } = await supabase
+      .from('help_articles')
+      .select('slug, updated_at')
+      .eq('is_published', true);
+
+    if (articles) {
+      helpPages = articles.map((a) => ({
+        url: `${baseUrl}/help/${a.slug}`,
+        lastModified: a.updated_at ? new Date(a.updated_at) : new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.5,
+      }));
+    }
+  } catch {
+    // Silently skip if DB not available (build time)
+  }
+
   // Combine all entries and deduplicate by URL
   const allPages = [
     ...corePages,
@@ -312,6 +350,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...otherPages,
     ...seoLandingPages,
     ...generatedPages,
+    ...helpPages,
   ];
 
   // Deduplicate: keep the first occurrence of each URL

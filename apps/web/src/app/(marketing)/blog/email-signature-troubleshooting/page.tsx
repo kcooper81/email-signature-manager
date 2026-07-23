@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Troubleshooting: Fix Common Problems',
     description: 'Fix common email signature problems. Solutions for broken images, formatting issues, missing signatures, and display problems across email clients.',
     url: '/blog/email-signature-troubleshooting',
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1454165804606-c3d57bc86b40.jpg',
     datePublished: '2026-01-06',
     author: 'Marcus Rodriguez',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop" alt="Troubleshooting" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1454165804606-c3d57bc86b40.jpg" alt="Troubleshooting" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signatures can break in frustrating ways. Here's how to diagnose and fix the most common issues.</p>
           

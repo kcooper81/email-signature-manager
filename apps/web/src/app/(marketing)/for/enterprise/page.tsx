@@ -126,7 +126,7 @@ export default function EnterprisePage() {
             </div>
             <div className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1486406146926-c627a92ad1ab.jpg"
                 alt="Enterprise office building"
                 width={800}
                 height={600}

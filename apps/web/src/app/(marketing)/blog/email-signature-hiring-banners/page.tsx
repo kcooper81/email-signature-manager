@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Using Email Signatures for Recruiting & Hiring',
     description: 'Turn employee emails into a recruiting channel. Add job posting banners to signatures and attract candidates organically.',
     url: '/blog/email-signature-hiring-banners',
-    image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1521737711867-e3b97375f902.jpg',
     datePublished: '2025-12-09',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop" alt="Hiring team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1521737711867-e3b97375f902.jpg" alt="Hiring team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Every employee email reaches people who might be great candidates or know someone who is. Signature banners can turn everyday communication into a recruiting channel.</p>
           

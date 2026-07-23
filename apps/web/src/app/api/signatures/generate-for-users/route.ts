@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Get organization info FIRST for security
     const { data: currentUser } = await supabase
       .from('users')
-      .select('organization_id, organizations(name)')
+      .select('organization_id, role, organizations(name)')
       .eq('auth_id', user.id)
       .single();
 
@@ -33,6 +33,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Organization not found' },
         { status: 404 }
+      );
+    }
+    if (!['owner', 'admin'].includes(currentUser.role)) {
+      return NextResponse.json(
+        { error: 'Forbidden: only owners and admins can generate signatures for other users' },
+        { status: 403 }
       );
     }
 

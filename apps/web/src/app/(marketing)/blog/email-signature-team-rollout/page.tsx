@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Rolling Out Email Signatures to Your Team',
     description: 'Step-by-step guide to rolling out new email signatures across your organization. Communication, timing, and change management.',
     url: '/blog/email-signature-team-rollout',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1522071820081-009f0129c71c.jpg',
     datePublished: '2025-11-10',
     author: 'Kade Crawford',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop" alt="Team rollout" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1522071820081-009f0129c71c.jpg" alt="Team rollout" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A successful signature rollout requires planning, communication, and proper execution. Here's how to do it right.</p>
           

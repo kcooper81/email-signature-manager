@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'How to Set Up Outlook Signature: Step-by-Step Guide 2026',
     description: 'Create a professional Outlook email signature with this complete guide. Covers Outlook desktop, web, and mobile signature setup.',
     url: '/blog/outlook-signature-setup-guide',
-    image: 'https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1633409361618-c73427e4e206.jpg',
     datePublished: '2026-02-04',
     author: 'Marcus Rodriguez',
     readTime: '9 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="marcus-rodriguez" />
 
         <Image
-          src="https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=1200&h=600&fit=crop"
+          src="/blog-images/photo-1633409361618-c73427e4e206.jpg"
           alt="Microsoft Outlook on computer screen"
           width={1200}
           height={600}
@@ -80,7 +80,7 @@ export default function BlogPost() {
           </p>
 
           <Image
-            src="https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1587614382346-4ec70e388b28.jpg"
             alt="Office workspace with computer"
             width={800}
             height={400}
@@ -132,7 +132,7 @@ export default function BlogPost() {
           </ol>
 
           <Image
-            src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1499750310107-5fef28a66643.jpg"
             alt="Working on laptop with coffee"
             width={800}
             height={400}

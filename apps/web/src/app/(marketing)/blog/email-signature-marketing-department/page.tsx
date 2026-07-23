@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Marketing Department Email Signatures',
     description: 'Email signature best practices for marketing teams. Brand consistency, campaign promotion, and creative signature design.',
     url: '/blog/email-signature-marketing-department',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1460925895917-afdab827c52f.jpg',
     datePublished: '2025-11-21',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Marketing team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1460925895917-afdab827c52f.jpg" alt="Marketing team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Marketing teams should lead by example with on-brand, creative signatures that support ongoing campaigns and company messaging.</p>
           

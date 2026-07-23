@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Banner Campaigns: Design & Strategy Guide',
     description: 'Create effective email signature banner campaigns. Learn design best practices, campaign ideas, and how to measure banner performance.',
     url: '/blog/email-signature-banner-campaigns',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1551288049-bebda4e38f71.jpg',
     datePublished: '2026-01-13',
     author: 'Emily Nakamura',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop" alt="Marketing campaign" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Marketing campaign" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Signature banners turn every email into a marketing opportunity. Add promotional content below your standard signature to drive traffic, registrations, and conversions.</p>
           

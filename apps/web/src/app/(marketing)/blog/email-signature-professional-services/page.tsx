@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Professional Services Email Signatures',
     description: 'Email signature best practices for professional services firms. Consultants, advisors, and service providers.',
     url: '/blog/email-signature-professional-services',
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1454165804606-c3d57bc86b40.jpg',
     datePublished: '2025-11-30',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=600&fit=crop" alt="Professional services" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1454165804606-c3d57bc86b40.jpg" alt="Professional services" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Professional services firms build trust through expertise and credibility. Your email signature should reinforce both.</p>
           

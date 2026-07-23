@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Customer Support Email Signatures: Build Trust',
     description: 'Create effective email signatures for customer support teams. Include helpful links, build rapport, and improve customer experience.',
     url: '/blog/email-signature-customer-support',
-    image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1553877522-43269d4ea984.jpg',
     datePublished: '2025-12-08',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" alt="Customer support" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1553877522-43269d4ea984.jpg" alt="Customer support" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Support signatures should build trust and make it easy for customers to find help. A well-designed signature can improve satisfaction.</p>
           

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Onboarding: New Employee Setup Guide',
     description: 'Streamline email signature setup for new hires. Create an efficient onboarding process that gets signatures right from day one.',
     url: '/blog/email-signature-onboarding',
-    image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1521737711867-e3b97375f902.jpg',
     datePublished: '2026-01-03',
     author: 'Kade Crawford',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&h=600&fit=crop" alt="Employee onboarding" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1521737711867-e3b97375f902.jpg" alt="Employee onboarding" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Getting email signatures right during onboarding sets the tone for brand consistency. Here's how to make signature setup seamless for new hires.</p>
           

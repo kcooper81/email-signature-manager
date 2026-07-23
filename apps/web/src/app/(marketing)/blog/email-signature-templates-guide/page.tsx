@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Templates: Free Designs for Every Industry',
     description: 'Download free email signature templates for professionals. Includes designs for corporate, creative, legal, healthcare, and real estate industries.',
     url: '/blog/email-signature-templates-guide',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1561070791-2526d30994b5.jpg',
     datePublished: '2026-01-20',
     author: 'Marcus Rodriguez',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop" alt="Design templates" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1561070791-2526d30994b5.jpg" alt="Design templates" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Starting with a template makes creating professional email signatures faster and easier. Here are template styles suited to different industries and roles.</p>
           

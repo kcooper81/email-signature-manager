@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Best Practices: The Complete Guide',
     description: 'Master email signature best practices with this comprehensive guide. Learn what to include, what to avoid, and how to make signatures that convert.',
     url: '/blog/email-signature-best-practices',
-    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1517245386807-bb43f82c33c4.jpg',
     datePublished: '2026-02-02',
     author: 'Kade Crawford',
     readTime: '10 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="kade-crawford" />
 
         <Image
-          src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=600&fit=crop"
+          src="/blog-images/photo-1517245386807-bb43f82c33c4.jpg"
           alt="Professional working on email"
           width={1200}
           height={600}
@@ -111,7 +111,7 @@ export default function BlogPost() {
           </div>
 
           <Image
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1522071820081-009f0129c71c.jpg"
             alt="Team reviewing email designs"
             width={800}
             height={400}
@@ -194,7 +194,7 @@ export default function BlogPost() {
           </p>
 
           <Image
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop"
+            src="/blog-images/photo-1507003211169-0a1dd7228f2d.jpg"
             alt="Professional branding elements"
             width={800}
             height={400}

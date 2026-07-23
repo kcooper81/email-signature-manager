@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Government Email Signatures: Compliance Guide',
     description: 'Email signature requirements for government agencies. Official formatting, compliance, and accessibility considerations.',
     url: '/blog/email-signature-government',
-    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1555949963-ff9fe0c870eb.jpg',
     datePublished: '2025-12-01',
     author: 'Sarah Chen',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop" alt="Government building" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1555949963-ff9fe0c870eb.jpg" alt="Government building" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Government agencies have specific requirements for email communications. Signatures must be official, accessible, and compliant with regulations.</p>
           

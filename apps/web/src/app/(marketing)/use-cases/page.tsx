@@ -2,11 +2,14 @@ import Link from 'next/link';
 import { Mail, ArrowRight, Building2, Users, Briefcase, GraduationCap, Heart, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MarketingCTA } from '@/components/marketing/cta';
+import { generateMetadata as genMeta } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Use Cases - Email Signature Management',
-  description: 'See how different industries and teams use Siggly for email signature management. From startups to enterprises.',
-};
+export const metadata = genMeta({
+  title: 'Email Signature Use Cases',
+  description: 'See how different industries and teams use Siggly for email signature management — from startups to enterprises, sales to HR.',
+  keywords: ['email signature use cases', 'email signature management examples', 'signature software use cases'],
+  canonical: '/use-cases',
+});
 
 const colorClasses: Record<string, { bg100: string; text600: string; bg500: string }> = {
   violet: { bg100: 'bg-violet-100', text600: 'text-violet-600', bg500: 'bg-violet-500' },

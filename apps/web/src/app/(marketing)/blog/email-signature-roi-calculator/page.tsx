@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature ROI: Calculate Your Return',
     description: 'Calculate the ROI of email signature management. Understand the value of consistent branding, banner clicks, and time savings.',
     url: '/blog/email-signature-roi-calculator',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1554224155-6726b3ff858f.jpg',
     datePublished: '2025-11-17',
     author: 'Emily Nakamura',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop" alt="ROI calculation" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1554224155-6726b3ff858f.jpg" alt="ROI calculation" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Email signature management delivers measurable ROI through marketing value, time savings, and brand consistency. Here's how to calculate it.</p>
           
