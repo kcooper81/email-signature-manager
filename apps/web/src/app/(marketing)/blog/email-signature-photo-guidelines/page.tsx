@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Photo Guidelines: Look Professional',
     description: 'Guidelines for email signature headshots. Size, format, style tips for professional profile photos in your signature.',
     url: '/blog/email-signature-photo-guidelines',
-    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1573497019940-1c28c88b4f3e.jpg',
     datePublished: '2025-12-05',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop" alt="Professional headshot" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1573497019940-1c28c88b4f3e.jpg" alt="Professional headshot" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A headshot in your signature adds a personal touch and builds recognition. Here's how to do it right.</p>
           

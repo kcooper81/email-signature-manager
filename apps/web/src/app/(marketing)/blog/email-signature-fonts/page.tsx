@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Fonts: Web-Safe Typography Guide',
     description: 'Choose the right fonts for email signatures. Learn which fonts work across all email clients and how to use them effectively.',
     url: '/blog/email-signature-fonts',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1561070791-2526d30994b5.jpg',
     datePublished: '2025-12-23',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop" alt="Typography" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1561070791-2526d30994b5.jpg" alt="Typography" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Custom fonts won't load in email clients. Use web-safe fonts to ensure your signature looks consistent for every recipient.</p>
           

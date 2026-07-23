@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signatures in Dark Mode: Design Tips',
     description: 'Design email signatures that work in dark mode. Tips for logos, colors, and images that look good on both light and dark backgrounds.',
     url: '/blog/email-signature-dark-mode',
-    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1555949963-ff9fe0c870eb.jpg',
     datePublished: '2025-12-11',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=1200&h=600&fit=crop" alt="Dark mode" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1555949963-ff9fe0c870eb.jpg" alt="Dark mode" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Many users now view emails in dark mode. Your signature needs to look good on both light and dark backgrounds.</p>
           

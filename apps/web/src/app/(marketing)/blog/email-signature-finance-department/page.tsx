@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Finance Department Email Signatures',
     description: 'Email signature best practices for finance teams. Compliance, security, and professional signatures for accounting and finance.',
     url: '/blog/email-signature-finance-department',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1554224155-6726b3ff858f.jpg',
     datePublished: '2025-11-20',
     author: 'Sarah Chen',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop" alt="Finance team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1554224155-6726b3ff858f.jpg" alt="Finance team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Finance department signatures should convey trust and professionalism while including necessary security and compliance elements.</p>
           

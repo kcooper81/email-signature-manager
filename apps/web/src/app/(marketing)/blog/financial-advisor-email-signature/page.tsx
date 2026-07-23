@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Financial Advisor Email Signatures: Compliance Guide',
     description: 'Create compliant email signatures for financial advisors. Covers FINRA requirements, CRD numbers, disclosures, and regulatory disclaimers.',
     url: '/blog/financial-advisor-email-signature',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1554224155-6726b3ff858f.jpg',
     datePublished: '2026-01-26',
     author: 'Sarah Chen',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=600&fit=crop" alt="Financial planning" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1554224155-6726b3ff858f.jpg" alt="Financial planning" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Financial advisor email signatures must balance professionalism with strict regulatory requirements. This guide covers FINRA and SEC compliance essentials.</p>
           

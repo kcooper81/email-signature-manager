@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Software Comparison 2026',
     description: 'Compare the top email signature management tools. Features, pricing, and pros/cons of leading signature software solutions.',
     url: '/blog/email-signature-software-comparison',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1460925895917-afdab827c52f.jpg',
     datePublished: '2025-12-10',
     author: 'Marcus Rodriguez',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1460925895917-afdab827c52f.jpg" alt="Software comparison" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Choosing the right email signature software depends on your organization's size, platform, and needs. Here's how the leading tools compare.</p>
           

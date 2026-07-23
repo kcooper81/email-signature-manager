@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Crisis Communication Email Signatures: Fast Guide',
     description: 'Update 1,000+ email signatures in minutes during a crisis. Proven playbook for emergency messaging, status banners, and rapid company-wide deployment.',
     url: '/blog/email-signature-crisis-communication',
-    image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1504711434969-e33886168f5c.jpg',
     datePublished: '2025-11-05',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop" alt="Crisis communication" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1504711434969-e33886168f5c.jpg" alt="Crisis communication" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">During a crisis, email signatures can quickly communicate important updates to everyone your company emails.</p>
           

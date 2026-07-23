@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Building an Email Signature Template Library',
     description: 'Create a library of email signature templates for your organization. Templates for different roles, departments, and use cases.',
     url: '/blog/email-signature-template-library',
-    image: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1507925921958-8a62f3d1a50d.jpg',
     datePublished: '2025-11-13',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=1200&h=600&fit=crop" alt="Template library" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1507925921958-8a62f3d1a50d.jpg" alt="Template library" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A well-organized template library makes signature management easier. Here's how to build one that serves your entire organization.</p>
           

@@ -17,7 +17,7 @@ export default function BlogPost() {
     title: 'Why Email Signatures Matter More Than You Think',
     description: 'Your email signature is seen hundreds of times a day. Learn why it\'s one of the most underutilized marketing tools for businesses.',
     url: '/blog/why-email-signatures-matter',
-    image: 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1596526131083-e8c633c948d2.jpg',
     datePublished: '2026-01-28',
     author: 'Kade Crawford',
     readTime: '5 min',
@@ -49,7 +49,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="kade-crawford" />
 
           <Image
-            src="https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=1200&h=600&fit=crop"
+            src="/blog-images/photo-1596526131083-e8c633c948d2.jpg"
             alt="Professional email communication"
             width={1200}
             height={600}
@@ -72,7 +72,7 @@ export default function BlogPost() {
             </p>
 
             <Image
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1460925895917-afdab827c52f.jpg"
               alt="Email analytics dashboard"
               width={800}
               height={400}
@@ -104,7 +104,7 @@ export default function BlogPost() {
             </ul>
 
             <Image
-              src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1552664730-d307ca884978.jpg"
               alt="Team collaboration on branding"
               width={800}
               height={400}

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Marketing: Measure ROI & Drive Results',
     description: 'Turn email signatures into a marketing channel. Learn to measure ROI, add campaign banners, and track clicks from employee signatures.',
     url: '/blog/email-signature-marketing-roi',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1460925895917-afdab827c52f.jpg',
     datePublished: '2026-01-25',
     author: 'Emily Nakamura',
     readTime: '9 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 9 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Marketing analytics" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1460925895917-afdab827c52f.jpg" alt="Marketing analytics" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Your employees send thousands of emails every week. Each one is an opportunity to promote your brand, drive traffic, and generate leads. Here's how to measure and maximize email signature marketing ROI.</p>
           
@@ -91,7 +91,7 @@ export default function BlogPost() {
             <li><strong>Revenue attribution:</strong> Deals influenced by signature campaigns</li>
           </ul>
 
-          <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop" alt="Dashboard metrics" width={800} height={400} className="rounded-xl my-8" />
+          <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Dashboard metrics" width={800} height={400} className="rounded-xl my-8" />
 
           <h2 className="text-2xl font-bold mt-12 mb-4">ROI Calculation</h2>
           <p className="text-gray-600 mb-6">Calculate your email signature marketing ROI:</p>

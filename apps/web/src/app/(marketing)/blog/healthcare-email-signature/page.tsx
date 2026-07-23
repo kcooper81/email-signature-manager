@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Healthcare Email Signatures: 2026 HIPAA Guide',
     description: 'Build HIPAA-compliant healthcare email signatures with our proven guide. Covers confidentiality notices, NPI numbers, and credentials. Free templates included.',
     url: '/blog/healthcare-email-signature',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1576091160399-112ba8d25d1d.jpg',
     datePublished: '2026-01-28',
     dateModified: '2026-03-29',
     author: 'Sarah Chen',
@@ -76,7 +76,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2 text-emerald-600 font-medium"><RefreshCw className="h-3.5 w-3.5" /> Updated Mar 2026</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop" alt="Healthcare professional" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1576091160399-112ba8d25d1d.jpg" alt="Healthcare professional" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A healthcare email signature should include the provider's full name with credentials, medical specialty, practice name, NPI number, contact information, and a HIPAA confidentiality disclaimer. Getting these elements right is critical because, according to the U.S. Department of Health and Human Services (HHS), email-related incidents account for approximately 18% of all reported HIPAA breaches.</p>
 

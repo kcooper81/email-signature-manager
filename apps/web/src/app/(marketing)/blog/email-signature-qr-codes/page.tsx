@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'QR Codes in Email Signatures: Do They Work?',
     description: 'Should you add QR codes to email signatures? Pros, cons, and use cases for QR codes in professional email signatures.',
     url: '/blog/email-signature-qr-codes',
-    image: 'https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1595079676339-1534801ad6cf.jpg',
     datePublished: '2025-10-31',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=1200&h=600&fit=crop" alt="QR code" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1595079676339-1534801ad6cf.jpg" alt="QR code" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">QR codes in email signatures are trendy, but are they actually useful? Let's examine the pros, cons, and best use cases.</p>
           

@@ -17,7 +17,7 @@ export default function BlogPost() {
     title: 'Managing Email Signatures in Google Workspace',
     description: 'A step-by-step guide to deploying consistent signatures across your entire Google Workspace organization.',
     url: '/blog/google-workspace-signature-management',
-    image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1573164713988-8665fc963095.jpg',
     datePublished: '2026-01-14',
     author: 'Kade Crawford',
     readTime: '6 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="kade-crawford" />
 
           <Image
-            src="https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=600&fit=crop"
+            src="/blog-images/photo-1573164713988-8665fc963095.jpg"
             alt="Google Workspace email management"
             width={1200}
             height={600}
@@ -75,7 +75,7 @@ export default function BlogPost() {
             </ul>
 
             <Image
-              src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1551434678-e076c223a692.jpg"
               alt="Team working on computers"
               width={800}
               height={400}
@@ -124,7 +124,7 @@ export default function BlogPost() {
             </ol>
 
             <Image
-              src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1460925895917-afdab827c52f.jpg"
               alt="Dashboard analytics"
               width={800}
               height={400}

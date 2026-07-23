@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'GDPR Email Signature Requirements: EU Compliance Guide',
     description: 'Ensure your email signatures comply with GDPR. Learn about privacy notices, data processing disclosures, and EU business requirements.',
     url: '/blog/gdpr-email-signature-requirements',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1451187580459-43490279c0fa.jpg',
     datePublished: '2026-01-24',
     author: 'Sarah Chen',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=600&fit=crop" alt="Europe data protection" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1451187580459-43490279c0fa.jpg" alt="Europe data protection" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">If your business operates in the EU or communicates with EU residents, your email signatures may need to address GDPR requirements. Here's what you need to know.</p>
           

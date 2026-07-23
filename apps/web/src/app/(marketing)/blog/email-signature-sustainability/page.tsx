@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Sustainability Messaging in Email Signatures',
     description: 'Include sustainability and environmental messaging in email signatures. Green initiatives, certifications, and eco-friendly messaging.',
     url: '/blog/email-signature-sustainability',
-    image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1532996122724-e3c354a0b15b.jpg',
     datePublished: '2025-11-04',
     author: 'Kade Crawford',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1200&h=600&fit=crop" alt="Sustainability" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1532996122724-e3c354a0b15b.jpg" alt="Sustainability" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Companies increasingly communicate sustainability commitments through email signatures. Here's how to do it authentically.</p>
           

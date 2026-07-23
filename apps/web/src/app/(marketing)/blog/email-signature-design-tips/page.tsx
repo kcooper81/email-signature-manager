@@ -17,7 +17,7 @@ export default function BlogPost() {
     title: '10 Email Signature Design Tips for 2026',
     description: 'Modern design principles to make your email signatures stand out while remaining professional.',
     url: '/blog/email-signature-design-tips',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1561070791-2526d30994b5.jpg',
     datePublished: '2026-01-07',
     author: 'Emily Nakamura',
     readTime: '7 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="emily-nakamura" />
 
           <Image
-            src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop"
+            src="/blog-images/photo-1561070791-2526d30994b5.jpg"
             alt="Modern email signature design"
             width={1200}
             height={600}
@@ -70,7 +70,7 @@ export default function BlogPost() {
             </p>
 
             <Image
-              src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1586281380349-632531db7ed4.jpg"
               alt="Clean minimal design"
               width={800}
               height={400}
@@ -114,7 +114,7 @@ export default function BlogPost() {
             </ul>
 
             <Image
-              src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1512941937669-90a1b58e7e9c.jpg"
               alt="Mobile email on smartphone"
               width={800}
               height={400}
@@ -167,7 +167,7 @@ export default function BlogPost() {
             </p>
 
             <Image
-              src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1542744094-3a31f272c490.jpg"
               alt="Professional email design"
               width={800}
               height={400}

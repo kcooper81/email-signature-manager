@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Insurance Email Signatures: Complete 2026 Guide',
     description: 'Create compliant insurance email signatures that win client trust. Covers license numbers, carrier info, and state requirements. Free templates for agents.',
     url: '/blog/insurance-email-signature',
-    image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1450101499163-c8848c66ca85.jpg',
     datePublished: '2026-01-01',
     author: 'Sarah Chen',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=600&fit=crop" alt="Insurance documents" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1450101499163-c8848c66ca85.jpg" alt="Insurance documents" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Insurance professionals need signatures that display credentials and meet state licensing requirements while building trust with clients.</p>
           

@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: '15 Common Email Signature Mistakes to Avoid',
     description: 'Avoid these common email signature mistakes. Design errors, technical issues, and content problems that hurt your professional image.',
     url: '/blog/email-signature-common-mistakes',
-    image: 'https://images.unsplash.com/photo-1525785967371-87ba44b3e6cf?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1525785967371-87ba44b3e6cf.jpg',
     datePublished: '2025-11-11',
     author: 'Kade Crawford',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1525785967371-87ba44b3e6cf?w=1200&h=600&fit=crop" alt="Mistakes" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1525785967371-87ba44b3e6cf.jpg" alt="Mistakes" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">These common mistakes can undermine your professional image. Here's what to avoid and how to fix it.</p>
           

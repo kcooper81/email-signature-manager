@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Size Guide: Dimensions & File Sizes',
     description: 'The complete guide to email signature dimensions. Learn optimal image sizes, logo dimensions, and file size limits for all email clients.',
     url: '/blog/email-signature-size-guide',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1561070791-2526d30994b5.jpg',
     datePublished: '2026-01-30',
     author: 'Marcus Rodriguez',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=1200&h=600&fit=crop" alt="Design dimensions" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1561070791-2526d30994b5.jpg" alt="Design dimensions" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Getting email signature dimensions right ensures your signature looks professional across all devices and email clients. Here are the recommended sizes.</p>
           

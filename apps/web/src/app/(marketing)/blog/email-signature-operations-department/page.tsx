@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Operations Department Email Signatures',
     description: 'Email signature best practices for operations teams. Practical signatures for logistics, facilities, and operational roles.',
     url: '/blog/email-signature-operations-department',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1586528116311-ad8dd3c8310d.jpg',
     datePublished: '2025-11-19',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop" alt="Operations" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1586528116311-ad8dd3c8310d.jpg" alt="Operations" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Operations teams need practical, efficient signatures that facilitate quick communication with vendors, partners, and internal teams.</p>
           

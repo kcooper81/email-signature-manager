@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signatures for Employee Advocacy Programs',
     description: 'Leverage email signatures for employee advocacy. Amplify company content and brand through every employee email.',
     url: '/blog/email-signature-employee-advocacy',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1522071820081-009f0129c71c.jpg',
     datePublished: '2025-11-06',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=600&fit=crop" alt="Employee advocacy" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1522071820081-009f0129c71c.jpg" alt="Employee advocacy" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Employee advocacy extends beyond social media. Email signatures turn every employee into a brand ambassador.</p>
           

@@ -62,19 +62,19 @@ const testimonials = [
     quote: "Finally, our team looks professional without spending hours on setup.",
     name: "David Park",
     role: "Owner, Park Consulting",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+    image: "/blog-images/photo-1507003211169-0a1dd7228f2d.jpg",
   },
   {
     quote: "The free plan is perfect for our 4-person startup. We'll upgrade when we grow.",
     name: "Emily Rodriguez",
     role: "Co-founder, Bloom Studio",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+    image: "/blog-images/photo-1438761681033-6461ffad8d80.jpg",
   },
   {
     quote: "I set up signatures for my whole team in 10 minutes. Incredible.",
     name: "James Wilson",
     role: "CEO, Wilson & Co",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+    image: "/blog-images/photo-1500648767791-00dcc994a43e.jpg",
   },
 ];
 
@@ -116,7 +116,7 @@ export default function SmallBusinessPage() {
             </div>
             <div className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1556761175-4b46a572b786.jpg"
                 alt="Small business team"
                 width={800}
                 height={600}

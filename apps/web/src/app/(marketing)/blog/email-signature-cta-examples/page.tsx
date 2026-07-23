@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature CTA Examples: Drive Action',
     description: 'Effective call-to-action examples for email signatures. Book meetings, drive downloads, and generate leads from your signature.',
     url: '/blog/email-signature-cta-examples',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1551288049-bebda4e38f71.jpg',
     datePublished: '2025-12-15',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop" alt="Marketing metrics" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1551288049-bebda4e38f71.jpg" alt="Marketing metrics" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">A strategic CTA in your email signature can drive significant action. Here are examples that convert.</p>
           

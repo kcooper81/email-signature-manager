@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Adding Social Proof to Email Signatures',
     description: 'Include social proof in your email signatures. Awards, ratings, certifications, and trust signals that build credibility.',
     url: '/blog/email-signature-social-proof',
-    image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1553877522-43269d4ea984.jpg',
     datePublished: '2025-11-27',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" alt="Awards and recognition" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1553877522-43269d4ea984.jpg" alt="Awards and recognition" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Social proof builds trust quickly. Strategically placed awards, ratings, and certifications in your signature reinforce credibility.</p>
           

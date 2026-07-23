@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Law Firm Email Signature Policies: Best Practices',
     description: 'Develop email signature policies for law firms. Standardize attorney signatures while meeting compliance requirements.',
     url: '/blog/email-signature-legal-firm',
-    image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1589829545856-d10d557cf95f.jpg',
     datePublished: '2025-12-04',
     author: 'Sarah Chen',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="sarah-chen" />
-        <Image src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&h=600&fit=crop" alt="Law firm" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1589829545856-d10d557cf95f.jpg" alt="Law firm" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Law firms need signature policies that ensure compliance while maintaining professional consistency across all attorneys and staff.</p>
           

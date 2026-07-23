@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Adding Pronouns to Email Signatures: Best Practices',
     description: 'How to add pronouns to your email signature professionally. Formatting tips and considerations for inclusive signatures.',
     url: '/blog/email-signature-pronouns',
-    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1573497019940-1c28c88b4f3e.jpg',
     datePublished: '2025-12-17',
     author: 'Emily Nakamura',
     readTime: '4 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 4 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1200&h=600&fit=crop" alt="Professional portrait" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1573497019940-1c28c88b4f3e.jpg" alt="Professional portrait" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Adding pronouns to your email signature is becoming increasingly common in professional settings. Here's how to do it effectively.</p>
           

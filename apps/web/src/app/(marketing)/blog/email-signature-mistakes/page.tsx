@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: '15 Email Signature Mistakes That Hurt Your Brand',
     description: 'Avoid these common email signature mistakes that make you look unprofessional. From broken images to quote overload, learn what to fix.',
     url: '/blog/email-signature-mistakes',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1504868584819-f8e8b4b6d7e3.jpg',
     datePublished: '2026-01-23',
     author: 'Kade Crawford',
     readTime: '8 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 8 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&h=600&fit=crop" alt="Professional working" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1504868584819-f8e8b4b6d7e3.jpg" alt="Professional working" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Your email signature appears on every message you send. These common mistakes can undermine your professionalism and damage your brand.</p>
           
@@ -77,7 +77,7 @@ export default function BlogPost() {
           <h3 className="text-xl font-semibold mt-8 mb-3 flex items-center gap-2"><X className="h-5 w-5 text-red-500" /> 8. Outdated Information</h3>
           <p className="text-gray-600 mb-6">Old job titles, defunct phone numbers, or expired certifications destroy credibility. Review your signature quarterly.</p>
 
-          <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=400&fit=crop" alt="Clean workspace" width={800} height={400} className="rounded-xl my-8" />
+          <Image src="/blog-images/photo-1553877522-43269d4ea984.jpg" alt="Clean workspace" width={800} height={400} className="rounded-xl my-8" />
 
           <h2 className="text-2xl font-bold mt-12 mb-4">Technical Mistakes</h2>
 

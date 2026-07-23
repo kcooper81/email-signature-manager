@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Choosing an Email Signature Vendor: Buyer Guide',
     description: 'How to evaluate and select an email signature management vendor. RFP questions, feature comparison, and decision criteria.',
     url: '/blog/email-signature-vendor-selection',
-    image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1553877522-43269d4ea984.jpg',
     datePublished: '2025-11-09',
     author: 'Kade Crawford',
     readTime: '7 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 7 min read</span>
         </div>
         <AuthorCard authorSlug="kade-crawford" />
-        <Image src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=600&fit=crop" alt="Vendor selection" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1553877522-43269d4ea984.jpg" alt="Vendor selection" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Selecting the right email signature vendor is crucial. Here's a framework for making the best choice for your organization.</p>
           

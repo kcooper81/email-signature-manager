@@ -17,7 +17,7 @@ export default function BlogPost() {
     title: 'The Complete Guide to Brand Consistency in Email',
     description: 'How to ensure every email your team sends reinforces your brand identity and professionalism.',
     url: '/blog/brand-consistency-guide',
-    image: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1542744094-3a31f272c490.jpg',
     datePublished: '2026-01-21',
     author: 'Emily Nakamura',
     readTime: '8 min',
@@ -50,7 +50,7 @@ export default function BlogPost() {
         <AuthorCard authorSlug="emily-nakamura" />
 
           <Image
-            src="https://images.unsplash.com/photo-1542744094-3a31f272c490?w=1200&h=600&fit=crop"
+            src="/blog-images/photo-1542744094-3a31f272c490.jpg"
             alt="Brand consistency in business communications"
             width={1200}
             height={600}
@@ -71,7 +71,7 @@ export default function BlogPost() {
             </p>
 
             <Image
-              src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1557804506-669a67965ba0.jpg"
               alt="Professional team meeting"
               width={800}
               height={400}
@@ -104,7 +104,7 @@ export default function BlogPost() {
             </ul>
 
             <Image
-              src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=400&fit=crop"
+              src="/blog-images/photo-1586281380349-632531db7ed4.jpg"
               alt="Email signature design examples"
               width={800}
               height={400}

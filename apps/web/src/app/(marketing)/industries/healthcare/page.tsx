@@ -93,7 +93,7 @@ export default function HealthcareIndustryPage() {
             </div>
             <div className="relative">
               <Image
-                src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800&h=600&fit=crop"
+                src="/blog-images/photo-1538108149393-fbbd81895907.jpg"
                 alt="Healthcare professionals"
                 width={800}
                 height={600}

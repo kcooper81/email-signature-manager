@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Nonprofit Email Signatures: Boost Donations & Awareness',
     description: 'Create impactful email signatures for nonprofits. Include donation links, mission statements, and build supporter engagement.',
     url: '/blog/nonprofit-email-signature',
-    image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1559027615-cd4628902d4a.jpg',
     datePublished: '2025-12-31',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&h=600&fit=crop" alt="Nonprofit team" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1559027615-cd4628902d4a.jpg" alt="Nonprofit team" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Every email your nonprofit sends is a chance to spread your mission. Strategic signatures can drive donations, volunteer signups, and awareness.</p>
           

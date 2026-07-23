@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Apple Mail Signature Setup: Mac & iPhone Guide',
     description: 'Set up email signatures in Apple Mail on Mac and iPhone. Step-by-step instructions for creating and managing signatures.',
     url: '/blog/apple-mail-signature-setup',
-    image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1517430816045-df4b7de11d1d.jpg',
     datePublished: '2025-12-18',
     author: 'Marcus Rodriguez',
     readTime: '6 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 6 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?w=1200&h=600&fit=crop" alt="Apple devices" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1517430816045-df4b7de11d1d.jpg" alt="Apple devices" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Apple Mail handles signatures differently than other email clients. Here's how to set them up on Mac and iOS devices.</p>
           

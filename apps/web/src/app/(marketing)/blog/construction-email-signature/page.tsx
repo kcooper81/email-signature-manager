@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Construction Company Email Signatures: Contractor Guide',
     description: 'Create professional email signatures for construction companies and contractors. Include license info and build client trust.',
     url: '/blog/construction-email-signature',
-    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1504307651254-35680f356dfd.jpg',
     datePublished: '2025-12-27',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&h=600&fit=crop" alt="Construction site" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1504307651254-35680f356dfd.jpg" alt="Construction site" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Construction professionals need signatures that convey reliability and include required licensing information while making it easy for clients and subcontractors to connect.</p>
           

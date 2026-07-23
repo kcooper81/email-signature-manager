@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signature Generator: Create Professional Signatures Free',
     description: 'Use our free email signature generator to create professional signatures in minutes. No design skills needed. Works with Gmail, Outlook, and more.',
     url: '/blog/email-signature-generator-guide',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1460925895917-afdab827c52f.jpg',
     datePublished: '2026-01-16',
     author: 'Marcus Rodriguez',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="marcus-rodriguez" />
-        <Image src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop" alt="Signature generator" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1460925895917-afdab827c52f.jpg" alt="Signature generator" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">An email signature generator lets you create professional signatures without coding or design skills. Here's how to use one effectively and what features to look for.</p>
           

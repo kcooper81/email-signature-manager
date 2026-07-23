@@ -18,7 +18,7 @@ export default function BlogPost() {
     title: 'Email Signatures for Product Launch Campaigns',
     description: 'Use email signatures to amplify product launches. Create excitement, drive signups, and coordinate team messaging.',
     url: '/blog/email-signature-product-launch',
-    image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&h=600&fit=crop',
+    image: '/blog-images/photo-1531403009284-440f080d1e12.jpg',
     datePublished: '2025-11-23',
     author: 'Emily Nakamura',
     readTime: '5 min',
@@ -45,7 +45,7 @@ export default function BlogPost() {
           <span className="flex items-center gap-2"><Clock className="h-4 w-4" /> 5 min read</span>
         </div>
         <AuthorCard authorSlug="emily-nakamura" />
-        <Image src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&h=600&fit=crop" alt="Product launch" width={1200} height={600} className="rounded-2xl mb-12" />
+        <Image src="/blog-images/photo-1531403009284-440f080d1e12.jpg" alt="Product launch" width={1200} height={600} className="rounded-2xl mb-12" />
         <div className="prose prose-lg max-w-none">
           <p className="text-xl text-gray-600 mb-8">Product launches benefit from multi-channel promotion. Email signatures ensure every team member amplifies your announcement.</p>
           
