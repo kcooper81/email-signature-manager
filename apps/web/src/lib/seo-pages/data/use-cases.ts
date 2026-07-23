@@ -2467,6 +2467,28 @@ export const useCasesPages: SEOLandingPageData[] = [
       description:
         'Turn every internal email into a communication channel. Promote announcements, resources, and team identity through employee signatures.',
     },
+    faqs: [
+      {
+        question: 'How can email signatures improve internal communications?',
+        answer:
+          'Internal emails are a high-traffic channel most companies overlook. Siggly turns employee signatures into a place to reinforce branding, surface announcements, and link to the resources staff use every day.',
+      },
+      {
+        question: 'Can I push company-wide announcements through signature banners?',
+        answer:
+          'Yes. Siggly lets you add banners to internal signatures so every message reinforces timely announcements like open enrollment, policy changes, or all-hands reminders.',
+      },
+      {
+        question: 'Can employee signatures link to our intranet and HR portal?',
+        answer:
+          'Yes. Siggly signatures can include quick links to your intranet, HR portal, IT helpdesk, or knowledge base, making it easy for employees to reach the resources they need.',
+      },
+      {
+        question: 'How do department labels in signatures help internal email?',
+        answer:
+          'Clear department labels and team identifiers in Siggly signatures help employees quickly recognize who they are emailing, reducing confusion across large or distributed teams.',
+      },
+    ],
   },
 
   // 15. Customer Retention
@@ -2789,6 +2811,28 @@ export const useCasesPages: SEOLandingPageData[] = [
       description:
         'Embed sustainability credentials, ESG links, and green messaging in every employee email signature to demonstrate your environmental commitment.',
     },
+    faqs: [
+      {
+        question: 'How can email signatures communicate our sustainability commitments?',
+        answer:
+          'Siggly lets you embed ESG credentials, carbon footprint metrics, green certification badges, and links to your sustainability initiatives in every employee signature, so each email reinforces your environmental story.',
+      },
+      {
+        question: 'Can I link to our ESG report from employee signatures?',
+        answer:
+          'Yes. Siggly can link directly to your ESG report, sustainability page, or carbon neutrality certification from every employee email signature.',
+      },
+      {
+        question: 'Can I display green certifications like B Corp in signatures?',
+        answer:
+          'Yes. Siggly supports certification badges such as B Corp, ISO 14001, or carbon neutral, so recognized sustainability credentials appear consistently across your team\'s signatures.',
+      },
+      {
+        question: 'Should I add a "think before you print" message to signatures?',
+        answer:
+          'Many organizations do. Siggly makes it easy to add a gentle paperless reminder to signatures, reinforcing your commitment to reducing waste on every message you send.',
+      },
+    ],
   },
 
   // 18. Crisis Communication

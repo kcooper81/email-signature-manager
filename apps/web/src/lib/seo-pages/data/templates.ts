@@ -2638,6 +2638,28 @@ export const templatesPages: SEOLandingPageData[] = [
       description:
         'Give every government email the official, accessible, and compliant signature it requires.',
     },
+    faqs: [
+      {
+        question: 'What should a government employee email signature include?',
+        answer:
+          'A government signature should carry the agency seal and branding, your official title, standardized contact details, and mandatory disclosure notices. Siggly\'s template keeps these elements clean and accessible.',
+      },
+      {
+        question: 'Is the Siggly government template Section 508 accessible?',
+        answer:
+          'Yes. The government employee template is built to be Section 508 compliant with accessible layouts, so signatures meet federal accessibility standards for public sector communication.',
+      },
+      {
+        question: 'Can I add FOIA or public records disclaimers to the signature?',
+        answer:
+          'Yes. Siggly can include FOIA notices, public records disclaimers, and retention policy statements that satisfy federal and state record-keeping requirements automatically across the department.',
+      },
+      {
+        question: 'Can I roll out signatures across an entire agency?',
+        answer:
+          'Yes. Siggly deploys signatures across departments through admin-level Google Workspace and Microsoft 365 integrations, so a full agency rollout takes minutes instead of manual per-employee setup.',
+      },
+    ],
   },
 
   // ─── Engineering ───────────────────────────────────────────────────
@@ -3159,6 +3181,28 @@ export const templatesPages: SEOLandingPageData[] = [
       description:
         'Meet FINRA, SEC, and state regulatory requirements with email signatures that protect your firm and impress your clients.',
     },
+    faqs: [
+      {
+        question: 'What disclosures does a financial services email signature need?',
+        answer:
+          'Financial signatures typically require broker-dealer disclosures, SEC registration numbers, SIPC membership notices, and applicable license numbers. Siggly\'s template builds these mandatory elements into every signature.',
+      },
+      {
+        question: 'Can I display FINRA and SEC registration details in my signature?',
+        answer:
+          'Yes. The Siggly financial services template includes mandatory FINRA broker-dealer disclosures and SEC registration numbers formatted to satisfy regulatory examination requirements.',
+      },
+      {
+        question: 'How does the template handle Series 7 and state license numbers?',
+        answer:
+          'Siggly shows Series 7, Series 66, state insurance license numbers, and CRD numbers in a clean, scannable format beneath your name, so required credentials are always present and easy to read.',
+      },
+      {
+        question: 'Does Siggly help keep financial signatures compliant across the firm?',
+        answer:
+          'Yes. Siggly manages signatures centrally so compliance-approved disclosures and disclaimers are enforced firm-wide, reducing manual compliance edits and the risk of a non-compliant signature going out.',
+      },
+    ],
   },
 
   // ─── Event Planner ────────────────────────────────────────────────
@@ -3282,6 +3326,28 @@ export const templatesPages: SEOLandingPageData[] = [
       description:
         'Showcase your events and make booking effortless with a signature designed for planners who set the standard.',
     },
+    faqs: [
+      {
+        question: 'What should an event planner\'s email signature include?',
+        answer:
+          'An event planner signature works best with a booking calendar link, an upcoming events or showcase banner, and vendor certifications. Siggly\'s template presents these in a polished, on-brand layout.',
+      },
+      {
+        question: 'Can I add a booking calendar link to my event planner signature?',
+        answer:
+          'Yes. Siggly lets you include a direct link to your Calendly, Acuity, or custom booking page so prospects can schedule consultations with no back-and-forth.',
+      },
+      {
+        question: 'Can I promote upcoming events in my email signature?',
+        answer:
+          'Yes. Siggly supports a signature banner where you can showcase upcoming events, so every email you send doubles as a promotion for what you have coming up.',
+      },
+      {
+        question: 'How long does it take to set up the event planner template?',
+        answer:
+          'Most planners can complete their profile in about five minutes in Siggly, adding their booking link, event banner, and branding before their next round of client emails goes out.',
+      },
+    ],
   },
 
   // ─── Photographer ─────────────────────────────────────────────────
@@ -3649,5 +3715,27 @@ export const templatesPages: SEOLandingPageData[] = [
       description:
         'Turn your email signature into a listener acquisition channel. Build your podcast host signature with Siggly.',
     },
+    faqs: [
+      {
+        question: 'What should a podcast host include in an email signature?',
+        answer:
+          'A podcast host signature works best with a latest-episode banner, listening platform links, and a subscribe CTA. Siggly\'s template turns your email footer into a growth channel for your show.',
+      },
+      {
+        question: 'Can I link to Apple Podcasts and Spotify from my signature?',
+        answer:
+          'Yes. Siggly displays Apple Podcasts, Spotify, YouTube, and other platform icons so recipients can subscribe on their preferred app with a single click.',
+      },
+      {
+        question: 'Can my signature automatically feature my latest episode?',
+        answer:
+          'Yes. The podcast host template can feature your most recent episode with cover art, title, and a direct play link, and it updates as you publish new episodes.',
+      },
+      {
+        question: 'How can an email signature help grow my podcast audience?',
+        answer:
+          'Every email you send becomes a chance to gain a listener. With episode banners and subscribe CTAs from Siggly, your signature consistently promotes your show to everyone you email.',
+      },
+    ],
   },
 ];
