@@ -63,6 +63,7 @@ export function MarketingFooter() {
               <li><Link href="/tools/disclaimer-generator" className="hover:text-gray-900 transition-colors">Disclaimer Generator</Link></li>
               <li><Link href="/tools/email-preview" className="hover:text-gray-900 transition-colors">Email Preview</Link></li>
               <li><Link href="/tools/html-signature-converter" className="hover:text-gray-900 transition-colors">HTML Converter</Link></li>
+              <li><Link href="/tools/qr-code-generator" className="hover:text-gray-900 transition-colors">QR Code Generator</Link></li>
             </ul>
           </div>
           

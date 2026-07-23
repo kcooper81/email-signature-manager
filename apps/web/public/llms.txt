@@ -37,6 +37,7 @@ Siggly helps teams create, manage, and deploy consistent email signatures at sca
 
 ## Free Tools
 - https://siggly.io/tools/signature-generator - Create a signature in seconds
+- https://siggly.io/tools/qr-code-generator - Generate a QR code (URL, email, vCard) for a signature
 - https://siggly.io/tools/signature-audit - Grade your current signature
 - https://siggly.io/tools/roi-calculator - Calculate email-signature marketing ROI
 - https://siggly.io/tools/disclaimer-generator - Generate compliant disclaimers
