@@ -2248,6 +2248,28 @@ export const integrationsPages: SEOLandingPageData[] = [
       description:
         'Let your HR platform handle the heavy lifting. Connect Rippling to Siggly and eliminate manual signature management forever.',
     },
+    faqs: [
+      {
+        question: 'How does the Siggly and Rippling integration work?',
+        answer:
+          'Siggly syncs employee data from Rippling so that when someone is hired, promoted, or offboarded, their email signature is created, updated, or removed automatically, with no manual work and no stale data.',
+      },
+      {
+        question: 'What happens to an employee\'s signature when they\'re offboarded in Rippling?',
+        answer:
+          'When an employee is terminated in Rippling, Siggly automatically revokes their signature and removes them from active templates, closing the gap that manual offboarding often leaves open.',
+      },
+      {
+        question: 'Does Siggly update signatures when someone is promoted in Rippling?',
+        answer:
+          'Yes. Promotions, transfers, and title changes in Rippling trigger real-time signature field updates across all connected email platforms, so titles and departments always stay accurate.',
+      },
+      {
+        question: 'Do new hires get a signature before their first day with Rippling and Siggly?',
+        answer:
+          'They can. New hires added in Rippling receive a branded, compliant email signature deployed to their mailbox before their start date, so there is no gap between hire date and signature.',
+      },
+    ],
   },
 
   // ─── Deel ───────────────────────────────────────────────────────────

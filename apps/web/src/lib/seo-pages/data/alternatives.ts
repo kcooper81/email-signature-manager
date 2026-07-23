@@ -1021,6 +1021,28 @@ export const alternativesPages: SEOLandingPageData[] = [
         'Siggly turns signature creation into signature management. Try it free and deploy to your team in minutes.',
       variant: 'dark',
     },
+    faqs: [
+      {
+        question: 'What is the difference between Signature Maker and Siggly?',
+        answer:
+          'Signature Maker only generates HTML that you paste in yourself. Siggly handles the entire lifecycle, pushing signatures directly into Gmail and Outlook, managing templates centrally, and tracking clicks and banner impressions.',
+      },
+      {
+        question: 'Can Siggly deploy signatures automatically to Gmail and Outlook?',
+        answer:
+          'Yes. Unlike Signature Maker, Siggly connects through admin-level Google Workspace and Microsoft 365 integrations to install signatures across your whole team without anyone touching HTML.',
+      },
+      {
+        question: 'Do I still have to copy and paste HTML with Siggly?',
+        answer:
+          'No. Once a template is set, Siggly deploys and updates every employee signature automatically. Change the template once and every mailbox updates, so there are no manual paste operations to manage.',
+      },
+      {
+        question: 'Can I measure how my email signatures perform in Siggly?',
+        answer:
+          'Yes. Siggly tracks clicks on signature links and impressions on promotional banners across your organization, giving you engagement visibility that a standalone generator like Signature Maker cannot provide.',
+      },
+    ],
   },
 
   // ---------------------------------------------------------------------------
@@ -1231,5 +1253,27 @@ export const alternativesPages: SEOLandingPageData[] = [
         'Move from a basic generator to a full management platform. Start your free Siggly trial today.',
       variant: 'indigo',
     },
+    faqs: [
+      {
+        question: 'Is Siggly a good alternative to Designhill\'s signature generator?',
+        answer:
+          'Yes. Designhill added a basic signature generator to its design marketplace, while Siggly is a dedicated signature platform built for management. You get a richer template editor, automated deployment, team controls, and analytics.',
+      },
+      {
+        question: 'Does Siggly deploy signatures to Gmail and Outlook, unlike Designhill?',
+        answer:
+          'Yes. Designhill only hands you HTML to paste into each client manually. Siggly deploys signatures natively to Gmail and Outlook through admin-level Google Workspace and Microsoft 365 integrations.',
+      },
+      {
+        question: 'Can I manage signatures for my whole team with Siggly?',
+        answer:
+          'Absolutely. Siggly gives you a central dashboard to manage templates, user data, and permissions across your organization, plus directory sync. Designhill offers no team management or deployment layer.',
+      },
+      {
+        question: 'Does Siggly provide analytics that Designhill lacks?',
+        answer:
+          'Yes. Siggly tracks clicks on every link and banner across your organization so you can measure engagement. Designhill provides no post-creation analytics of any kind.',
+      },
+    ],
   },
 ];
