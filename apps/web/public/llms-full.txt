@@ -137,6 +137,7 @@ White-label multi-tenant management for agencies managing email signatures acros
 ## Free Tools (No Signup Required)
 
 1. **Email Signature Generator** - Create a professional email signature in seconds: https://siggly.io/tools/signature-generator
+8. **QR Code Generator** - Create a QR code (website, email, phone, or vCard) for your signature: https://siggly.io/tools/qr-code-generator
 2. **Signature Templates** - Browse and customize professional signature designs: https://siggly.io/tools/signature-templates
 3. **ROI Calculator** - Calculate the marketing ROI of email signatures: https://siggly.io/tools/roi-calculator
 4. **Signature Audit & Grader** - Get an instant grade on your current signature: https://siggly.io/tools/signature-audit

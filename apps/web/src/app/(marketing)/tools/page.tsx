@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Paintbrush, Layout, Calculator, ShieldCheck, Shield, Eye, Code } from 'lucide-react';
+import { ArrowRight, Paintbrush, Layout, Calculator, ShieldCheck, Shield, Eye, Code, QrCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const tools = [
@@ -51,6 +51,13 @@ const tools = [
     name: 'HTML Signature Converter',
     description: 'Convert your email signature HTML for maximum compatibility. Inline CSS, clean up code, and optimize for all email clients.',
     color: 'bg-rose-100 text-rose-600',
+  },
+  {
+    href: '/tools/qr-code-generator',
+    icon: QrCode,
+    name: 'QR Code Generator',
+    description: 'Create a free QR code for your website, email, phone, or vCard contact card. Customize the color and download as PNG or SVG.',
+    color: 'bg-fuchsia-100 text-fuchsia-600',
   },
 ];
 

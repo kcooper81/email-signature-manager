@@ -1276,4 +1276,566 @@ export const alternativesPages: SEOLandingPageData[] = [
       },
     ],
   },
+
+  // ---------------------------------------------------------------------------
+  // SignatureSatori
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'signaturesatori',
+    category: 'alternatives',
+    meta: {
+      title: 'Best SignatureSatori Alternative | Siggly',
+      description:
+        'SignatureSatori is built for Google Workspace only. Siggly manages signatures natively across both Google Workspace and Microsoft 365 from one dashboard.',
+      keywords: [
+        'SignatureSatori alternative',
+        'SignatureSatori replacement',
+        'Google Workspace signature manager',
+        'email signature management',
+      ],
+      canonical: '/alternatives/signaturesatori',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Alternatives', url: '/alternatives' },
+      { name: 'Siggly vs SignatureSatori', url: '/alternatives/signaturesatori' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Alternative' },
+      title: 'A Cross-Platform Alternative to SignatureSatori',
+      description:
+        'SignatureSatori is a well-established signature tool built specifically for Google Workspace. If your organization runs on Microsoft 365 too — or expects to one day — Siggly manages signatures natively across both platforms from a single dashboard, with banner campaigns and click analytics built in.',
+      variant: 'dark',
+    },
+    stats: [
+      { value: '2', label: 'Native platforms: Google + Microsoft' },
+      { value: '$1.50', label: 'Per user / month on Professional' },
+      { value: '5', label: 'Free users to get started' },
+    ],
+    featuresTitle: 'Why Teams Choose Siggly Over SignatureSatori',
+    features: [
+      {
+        icon: 'globe',
+        title: 'Native Google AND Microsoft Support',
+        description:
+          'SignatureSatori focuses on Google Workspace. Siggly deploys natively to both Google Workspace and Microsoft 365, so mixed or migrating environments are covered from day one.',
+      },
+      {
+        icon: 'layout',
+        title: 'Purpose-Built Signature Editor',
+        description:
+          'Design signatures with a modern drag-and-drop editor, conditional fields, banner slots, and consistent rendering across every major email client.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Click and Impression Analytics',
+        description:
+          'Track engagement on every link and banner across your organization so email becomes a measurable channel, not just a formality.',
+      },
+      {
+        icon: 'database',
+        title: 'Directory Sync for Live Fields',
+        description:
+          'Pull names, titles, and phone numbers directly from your directory so signatures update automatically when people change roles.',
+      },
+      {
+        icon: 'image',
+        title: 'Banner Campaign Manager',
+        description:
+          'Schedule and rotate promotional banners inside employee signatures to run time-bound marketing campaigns.',
+      },
+      {
+        icon: 'dollar-sign',
+        title: 'Predictable Per-User Pricing',
+        description:
+          'Siggly Professional is a simple $1.50/user/month with a free plan for up to 5 users — no credit bundles to track or top up.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Siggly vs SignatureSatori',
+        competitor: 'SignatureSatori',
+        rows: [
+          { feature: 'Native Google Workspace deployment', siggly: true, competitor: true },
+          { feature: 'Native Microsoft 365 deployment', siggly: true, competitor: false },
+          { feature: 'Purpose-built signature management', siggly: true, competitor: true },
+          { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
+          { feature: 'Directory sync for live fields', siggly: true, competitor: true },
+          { feature: 'Banner campaign scheduling', siggly: true, competitor: 'Limited' },
+          { feature: 'Click and impression analytics', siggly: true, competitor: 'Limited' },
+          { feature: 'Free plan available', siggly: true, competitor: true },
+          { feature: 'Simple per-user subscription', siggly: true, competitor: 'Credit-based' },
+          { feature: 'Compliance disclaimers', siggly: true, competitor: 'Limited' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Gain by Switching to Siggly',
+        items: [
+          'One dashboard for both Google Workspace and Microsoft 365 signatures',
+          'Straightforward $1.50/user/month pricing with no credit top-ups',
+          'A free plan for teams of up to 5 users',
+          'Banner campaigns and click analytics built into every plan',
+          'Automatic field updates from directory sync when roles change',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How is Siggly different from SignatureSatori?',
+        answer:
+          'Both are dedicated signature tools with directory sync and template editors. The biggest difference is platform coverage: SignatureSatori is built for Google Workspace, while Siggly deploys natively to both Google Workspace and Microsoft 365 from the same dashboard.',
+      },
+      {
+        question: 'Does Siggly work if we use both Google and Microsoft?',
+        answer:
+          'Yes. Siggly is designed for mixed environments. You can manage Gmail and Outlook signatures side by side, which is useful for companies mid-migration or running both platforms across departments.',
+      },
+      {
+        question: 'How does Siggly pricing compare?',
+        answer:
+          'Siggly uses simple per-user subscription pricing at $1.50/user/month on Professional, with a free plan for up to 5 users. There are no credit bundles to purchase or replenish.',
+      },
+      {
+        question: 'Can I move my existing signatures to Siggly?',
+        answer:
+          'Yes. Paste your existing HTML signature into the Siggly editor to keep your current design, or start from one of our professional templates and deploy to your team in minutes.',
+      },
+    ],
+    cta: {
+      title: 'Manage Signatures Across Google and Microsoft',
+      description:
+        'Start free with Siggly and deploy on-brand signatures to every inbox, whichever platform your team runs on.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // Florbs
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'florbs',
+    category: 'alternatives',
+    meta: {
+      title: 'Florbs Alternative for Teams | Siggly',
+      description:
+        'Florbs bundles signatures into a Google Workspace admin suite. Siggly is a purpose-built signature platform for both Google Workspace and Microsoft 365.',
+      keywords: [
+        'Florbs alternative',
+        'Florbs signature management',
+        'Google Workspace email signatures',
+        'email signature platform',
+      ],
+      canonical: '/alternatives/florbs',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Alternatives', url: '/alternatives' },
+      { name: 'Siggly vs Florbs', url: '/alternatives/florbs' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Alternative' },
+      title: 'A Signature-First Alternative to Florbs',
+      description:
+        'Florbs is a Google Workspace admin suite where signature management is one module alongside admin automation and security tooling. Siggly is built from the ground up for email signatures — and supports both Google Workspace and Microsoft 365, so you are not limited to a single ecosystem.',
+      variant: 'violet',
+    },
+    stats: [
+      { value: '2', label: 'Native platforms supported' },
+      { value: '100%', label: 'Focused on signatures' },
+      { value: '5', label: 'Free users to start' },
+    ],
+    featuresTitle: 'Why Teams Pick Siggly Over Florbs',
+    features: [
+      {
+        icon: 'target',
+        title: 'Purpose-Built for Signatures',
+        description:
+          'Florbs treats signatures as one module in a broader admin suite. Siggly puts signature design, deployment, and analytics at the center of the product.',
+      },
+      {
+        icon: 'globe',
+        title: 'Google and Microsoft, Not Just Google',
+        description:
+          'Florbs is a Google Workspace tool. Siggly deploys natively to both Google Workspace and Microsoft 365, covering mixed and migrating environments.',
+      },
+      {
+        icon: 'palette',
+        title: 'Rich Template Editor',
+        description:
+          'Build pixel-perfect signatures with a drag-and-drop editor, conditional fields, and banner slots that render consistently across email clients.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Click and Impression Analytics',
+        description:
+          'Measure engagement on every link and banner so your signatures become a trackable marketing channel.',
+      },
+      {
+        icon: 'database',
+        title: 'Directory and HR Sync',
+        description:
+          'Keep names, titles, and contact details accurate automatically by syncing from your directory or HR system.',
+      },
+      {
+        icon: 'image',
+        title: 'Banner Campaign Manager',
+        description:
+          'Schedule promotional banners across employee signatures to amplify launches, events, and marketing pushes.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Siggly vs Florbs',
+        competitor: 'Florbs',
+        rows: [
+          { feature: 'Native Google Workspace deployment', siggly: true, competitor: true },
+          { feature: 'Native Microsoft 365 deployment', siggly: true, competitor: false },
+          { feature: 'Purpose-built signature platform', siggly: true, competitor: 'One module' },
+          { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
+          { feature: 'Directory sync for live fields', siggly: true, competitor: true },
+          { feature: 'Banner campaign scheduling', siggly: true, competitor: true },
+          { feature: 'Click and impression analytics', siggly: true, competitor: 'Limited' },
+          { feature: 'Compliance disclaimers', siggly: true, competitor: 'Limited' },
+          { feature: 'Free plan available', siggly: true, competitor: true },
+          { feature: 'Broader Google admin automation suite', siggly: false, competitor: true },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Why a Signature-First Platform Matters',
+        items: [
+          {
+            icon: 'shield-check',
+            title: 'Depth, Not Just Breadth',
+            description:
+              'A dedicated signature platform invests in the editor, rendering, analytics, and campaign tools that a general admin suite treats as a side feature.',
+          },
+          {
+            icon: 'globe',
+            title: 'No Ecosystem Lock-In',
+            description:
+              'Because Siggly supports both Google Workspace and Microsoft 365, you keep your signature platform even if your organization changes email providers.',
+          },
+          {
+            icon: 'trending-up',
+            title: 'Marketing-Ready Signatures',
+            description:
+              'Banner campaigns and click analytics turn everyday employee email into a measurable channel you can actually report on.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Is Florbs only for Google Workspace?',
+        answer:
+          'Florbs is an admin and signature suite built for Google Workspace. Siggly supports both Google Workspace and Microsoft 365, which matters if you run a mixed environment or expect to migrate.',
+      },
+      {
+        question: 'Do I lose admin features by choosing Siggly?',
+        answer:
+          'Siggly focuses specifically on email signatures rather than general Google Workspace administration. If you need broad admin automation and security auditing, those are Florbs strengths; for signature management specifically, Siggly goes deeper.',
+      },
+      {
+        question: 'Can Siggly keep signature fields up to date automatically?',
+        answer:
+          'Yes. Siggly syncs from your directory or HR system so job titles, phone numbers, and other fields update automatically when employee records change.',
+      },
+      {
+        question: 'Is Siggly free to try?',
+        answer:
+          'Siggly offers a free plan for up to 5 users with full signature features. Professional plans start at $1.50/user/month for larger teams that need analytics and Microsoft 365 deployment.',
+      },
+    ],
+    cta: {
+      title: 'Get a Signature Platform Built for Signatures',
+      description:
+        'Start free with Siggly and manage on-brand signatures across Google Workspace and Microsoft 365.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // BrandMail (BrandQuantum)
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'brandmail',
+    category: 'alternatives',
+    meta: {
+      title: 'Best BrandMail Alternative | Siggly',
+      description:
+        'BrandMail deploys signatures through a client-side Outlook add-in. Siggly deploys server-side across Google Workspace and Microsoft 365 with nothing to install.',
+      keywords: [
+        'BrandMail alternative',
+        'BrandQuantum alternative',
+        'Outlook signature management',
+        'email signature software',
+      ],
+      canonical: '/alternatives/brandmail',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Alternatives', url: '/alternatives' },
+      { name: 'Siggly vs BrandMail', url: '/alternatives/brandmail' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Alternative' },
+      title: 'A Cloud-Native Alternative to BrandMail',
+      description:
+        'BrandMail by BrandQuantum brings branding, signatures, and banners to Outlook through a client-side toolbar add-in installed on each user\'s machine. Siggly takes a cloud-native approach — deploying signatures server-side across Google Workspace and Microsoft 365 with no software for employees to install.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '0', label: 'Add-ins to install on devices' },
+      { value: '2', label: 'Native platforms supported' },
+      { value: '$1.50', label: 'Per user / month on Professional' },
+    ],
+    featuresTitle: 'Why Teams Choose Siggly Over BrandMail',
+    features: [
+      {
+        icon: 'cloud',
+        title: 'Server-Side Deployment',
+        description:
+          'Siggly applies signatures centrally through Google Workspace and Microsoft 365 APIs. There is no per-machine Outlook add-in for IT to roll out and maintain.',
+      },
+      {
+        icon: 'globe',
+        title: 'Google and Microsoft Coverage',
+        description:
+          'BrandMail is centered on Outlook and Microsoft 365. Siggly supports both Google Workspace and Microsoft 365 natively from one dashboard.',
+      },
+      {
+        icon: 'send',
+        title: 'Nothing for Employees to Install',
+        description:
+          'Signatures are managed and applied centrally, so employees never install a toolbar or run setup steps on their own devices.',
+      },
+      {
+        icon: 'image',
+        title: 'Banner Campaign Manager',
+        description:
+          'Schedule and rotate promotional banners across employee signatures for launches, events, and marketing campaigns.',
+      },
+      {
+        icon: 'shield-check',
+        title: 'Compliance Disclaimers',
+        description:
+          'Append legal disclaimers and compliance text consistently across the organization without relying on each user to add them.',
+      },
+      {
+        icon: 'dollar-sign',
+        title: 'Transparent Pricing and Free Plan',
+        description:
+          'Siggly publishes simple pricing — $1.50/user/month on Professional, plus a free plan for up to 5 users.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Siggly vs BrandMail',
+        competitor: 'BrandMail',
+        rows: [
+          { feature: 'Native Microsoft 365 / Outlook deployment', siggly: true, competitor: true },
+          { feature: 'Native Google Workspace deployment', siggly: true, competitor: true },
+          { feature: 'Server-side deployment (no per-device add-in)', siggly: true, competitor: false },
+          { feature: 'No software for employees to install', siggly: true, competitor: false },
+          { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
+          { feature: 'Banner campaign scheduling', siggly: true, competitor: true },
+          { feature: 'Click and view analytics', siggly: true, competitor: true },
+          { feature: 'Compliance disclaimers', siggly: true, competitor: true },
+          { feature: 'Free plan available', siggly: true, competitor: 'Trial only' },
+          { feature: 'Published per-user pricing', siggly: true, competitor: 'Quote-based' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Gain by Switching to Siggly',
+        items: [
+          'Central, server-side deployment with no Outlook add-in to install',
+          'One dashboard for both Google Workspace and Microsoft 365',
+          'Transparent $1.50/user/month pricing and a free plan for up to 5 users',
+          'Banner campaigns, click analytics, and compliance disclaimers built in',
+          'Signatures that stay consistent even when employees switch devices',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'How does Siggly deployment differ from BrandMail?',
+        answer:
+          'BrandMail uses a client-side toolbar add-in installed in Outlook on each user\'s machine. Siggly deploys signatures server-side through Google Workspace and Microsoft 365 APIs, so there is nothing for individual employees to install or update.',
+      },
+      {
+        question: 'Does Siggly support Google Workspace as well as Outlook?',
+        answer:
+          'Yes. While BrandMail centers on Outlook and Microsoft 365, Siggly natively supports both Google Workspace and Microsoft 365 from a single dashboard.',
+      },
+      {
+        question: 'Can Siggly handle branding and compliance disclaimers?',
+        answer:
+          'Yes. Siggly enforces consistent branding, locks templates to keep signatures on-brand, and appends compliance disclaimers across the whole organization automatically.',
+      },
+      {
+        question: 'Is there a free way to try Siggly?',
+        answer:
+          'Siggly offers a free plan for up to 5 users with full signature features, so you can evaluate it before moving your team over. Professional plans start at $1.50/user/month.',
+      },
+    ],
+    cta: {
+      title: 'Deploy Signatures Without an Add-In',
+      description:
+        'Start free with Siggly and manage branded signatures centrally across Google Workspace and Microsoft 365 — no software to install.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // SyncSignature
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'syncsignature',
+    category: 'alternatives',
+    meta: {
+      title: 'SyncSignature Alternative for Teams | Siggly',
+      description:
+        'Comparing SyncSignature and Siggly? Both deploy natively to Google Workspace and Microsoft 365. Siggly starts at $1.50/user with a free plan for up to 5 users.',
+      keywords: [
+        'SyncSignature alternative',
+        'SyncSignature replacement',
+        'email signature management software',
+        'team email signatures',
+      ],
+      canonical: '/alternatives/syncsignature',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Alternatives', url: '/alternatives' },
+      { name: 'Siggly vs SyncSignature', url: '/alternatives/syncsignature' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Alternative' },
+      title: 'A Modern Alternative to SyncSignature',
+      description:
+        'SyncSignature is a capable, modern signature platform that deploys natively to Google Workspace and Microsoft 365 — and so does Siggly. Where Siggly stands out is value: Professional pricing at $1.50/user/month and a genuinely useful free plan for teams of up to 5 users, alongside banner campaigns, analytics, and compliance disclaimers.',
+      variant: 'emerald',
+    },
+    stats: [
+      { value: '$1.50', label: 'Per user / month on Professional' },
+      { value: '5', label: 'Free users on the free plan' },
+      { value: '2', label: 'Native platforms supported' },
+    ],
+    featuresTitle: 'Why Teams Compare Siggly to SyncSignature',
+    features: [
+      {
+        icon: 'dollar-sign',
+        title: 'Lower Per-User Pricing',
+        description:
+          'Siggly Professional is $1.50/user/month, a lower per-seat price point for teams standardizing signatures across the organization.',
+      },
+      {
+        icon: 'users',
+        title: 'A Free Plan Built for Teams',
+        description:
+          'Siggly\'s free plan covers up to 5 users with full signature features — not just a single personal signature.',
+      },
+      {
+        icon: 'globe',
+        title: 'Native Google and Microsoft Deployment',
+        description:
+          'Like SyncSignature, Siggly writes signatures directly into Gmail and Outlook through Google Workspace and Microsoft 365 integrations.',
+      },
+      {
+        icon: 'shield-check',
+        title: 'Compliance Disclaimers',
+        description:
+          'Append legal disclaimers and compliance text consistently across every employee signature, centrally managed.',
+      },
+      {
+        icon: 'bar-chart-3',
+        title: 'Click and Impression Analytics',
+        description:
+          'Measure clicks and impressions on links and banners so signatures become a measurable marketing channel.',
+      },
+      {
+        icon: 'image',
+        title: 'Banner Campaign Manager',
+        description:
+          'Schedule and rotate promotional banners inside signatures to run time-bound campaigns across your team.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Siggly vs SyncSignature',
+        competitor: 'SyncSignature',
+        rows: [
+          { feature: 'Native Google Workspace deployment', siggly: true, competitor: true },
+          { feature: 'Native Microsoft 365 deployment', siggly: true, competitor: true },
+          { feature: 'Purpose-built signature management', siggly: true, competitor: true },
+          { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
+          { feature: 'Directory sync for live fields', siggly: true, competitor: true },
+          { feature: 'Banner campaign scheduling', siggly: true, competitor: true },
+          { feature: 'Click and impression analytics', siggly: true, competitor: true },
+          { feature: 'Compliance disclaimers', siggly: true, competitor: true },
+          { feature: 'Free plan for up to 5 team users', siggly: true, competitor: 'Single signature' },
+          { feature: 'Professional price per user', siggly: '$1.50/mo', competitor: '$2/mo' },
+        ],
+      },
+      {
+        type: 'benefits',
+        title: 'Where Siggly Delivers More Value',
+        items: [
+          {
+            icon: 'dollar-sign',
+            title: 'Better Team Economics',
+            description:
+              'At $1.50/user/month, Siggly Professional undercuts SyncSignature\'s $2/user team pricing while covering the same core signature workflows.',
+          },
+          {
+            icon: 'users',
+            title: 'A Free Plan Teams Can Actually Use',
+            description:
+              'Siggly\'s free plan supports up to 5 users with real signature features, versus a single personal signature on free tiers elsewhere.',
+          },
+          {
+            icon: 'shield-check',
+            title: 'Compliance Built In',
+            description:
+              'Enforce disclaimers, lock templates, and keep every signature on-brand and compliant without extra add-ons.',
+          },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Is Siggly better than SyncSignature?',
+        answer:
+          'Both are modern platforms that deploy natively to Google Workspace and Microsoft 365 with similar core features. Siggly\'s advantages are value-focused: $1.50/user/month Professional pricing and a free plan that covers up to 5 users rather than a single signature.',
+      },
+      {
+        question: 'Do both tools support Google Workspace and Microsoft 365?',
+        answer:
+          'Yes. Siggly and SyncSignature both write signatures directly into Gmail and Outlook through native Google Workspace and Microsoft 365 integrations.',
+      },
+      {
+        question: 'How does the free plan compare?',
+        answer:
+          'Siggly\'s free plan supports up to 5 users with full signature functionality, which suits small teams. Free tiers on comparable tools are often limited to a single personal signature.',
+      },
+      {
+        question: 'Can I migrate my signatures to Siggly easily?',
+        answer:
+          'Yes. Paste your existing HTML signature into the Siggly editor or start from a template, connect Google Workspace or Microsoft 365, and deploy to your team in minutes.',
+      },
+    ],
+    cta: {
+      title: 'Get More Signature Value With Siggly',
+      description:
+        'Start free with up to 5 users, then scale to Professional at $1.50/user/month across Google Workspace and Microsoft 365.',
+      variant: 'default',
+    },
+  },
 ];
