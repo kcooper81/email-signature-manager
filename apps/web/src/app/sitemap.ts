@@ -247,7 +247,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/guides`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/email-signatures`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/email-signature-templates`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${baseUrl}/integrations`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
+    // Note: /integrations (index) is the authenticated dashboard page, not a marketing hub — intentionally omitted.
     // Additional integration pages
     { url: `${baseUrl}/integrations/calendly`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/integrations/hubspot`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
