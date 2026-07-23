@@ -2651,6 +2651,28 @@ export const guidesPages: SEOLandingPageData[] = [
       description:
         'Connect Siggly to your identity provider and never manually provision a signature again. Every new hire gets the right signature on day one.',
     },
+    faqs: [
+      {
+        question: 'How do I make sure new hires have a signature before their first email?',
+        answer:
+          'Pre-stage the signature before the employee start date. Siggly lets you provision a new hire\'s branded, on-brand signature ahead of time so it is active the moment they log in and send their first message.',
+      },
+      {
+        question: 'Can Siggly automatically enroll new employees from our identity provider?',
+        answer:
+          'Yes. When an account is created in your identity provider, Siggly can automatically add the employee and deploy their signature, removing manual steps for IT.',
+      },
+      {
+        question: 'Who owns signature onboarding, HR or IT?',
+        answer:
+          'A clean handoff works best: HR supplies the name, title, and department, while IT handles technical provisioning. Siggly connects both so the data flows into the signature automatically.',
+      },
+      {
+        question: 'How do I ensure every new hire gets a signature?',
+        answer:
+          'By connecting Siggly to your identity provider and pre-staging templates, every new account is enrolled automatically, giving you full new-hire coverage without relying on manual reminders.',
+      },
+    ],
   },
 
   // 16. email-signature-rebranding-playbook
@@ -3026,6 +3048,28 @@ export const guidesPages: SEOLandingPageData[] = [
       description:
         'Replace fragile transport rules and PowerShell scripts with Siggly one-click deployment for Microsoft 365.',
     },
+    faqs: [
+      {
+        question: 'What are the native ways to deploy email signatures in Microsoft 365?',
+        answer:
+          'Microsoft 365 offers three native methods: Exchange transport rules that append signatures at the server, Exchange Online PowerShell to set Outlook roaming signatures, and Intune configuration profiles for managed devices.',
+      },
+      {
+        question: 'Why do Exchange transport rules fall short for signatures?',
+        answer:
+          'Transport rules append the signature server-side, so users cannot see it while composing and replies can stack duplicate signatures. They also struggle with inline images and per-user data, which is why many admins move to Siggly.',
+      },
+      {
+        question: 'Can I set Outlook signatures with PowerShell?',
+        answer:
+          'Yes. Exchange Online PowerShell can programmatically set Outlook roaming signatures for individual users or groups, but it requires scripting and maintenance. Siggly delivers the same outcome without custom scripts.',
+      },
+      {
+        question: 'How does Siggly simplify Microsoft 365 signature management?',
+        answer:
+          'Siggly replaces fragile transport rules and PowerShell with one-click deployment across Microsoft 365, unifying the three native methods into a single dashboard with templates, HR sync, and analytics.',
+      },
+    ],
   },
 
   // 19. email-signature-hipaa-compliance

@@ -3424,6 +3424,28 @@ export const industriesPages: SEOLandingPageData[] = [
       description:
         'Give your mining operation branded, compliant signatures that reflect your safety commitment. Start free.',
     },
+    faqs: [
+      {
+        question: 'How can mining companies display MSHA safety credentials in email signatures?',
+        answer:
+          'Siggly lets you show MSHA training certifications, Part 46/48 compliance status, and safety performance details directly in signatures, so regulators and partners see your safety credentials on every email.',
+      },
+      {
+        question: 'Can Siggly manage different signatures for each mine site?',
+        answer:
+          'Yes. Siggly supports multi-site management, so each mine, processing facility, and corporate office can have its own signature with location-specific contact details and permit references.',
+      },
+      {
+        question: 'How do email signatures help mining companies show environmental compliance?',
+        answer:
+          'You can include EPA permits, NEPA compliance notices, and environmental impact references in Siggly signatures to demonstrate responsible mining practices to stakeholders and regulators.',
+      },
+      {
+        question: 'How fast can Siggly roll out signatures across a mining operation?',
+        answer:
+          'Siggly deploys signatures across corporate offices and field sites through admin-level Google Workspace and Microsoft 365 integrations, enabling site-wide rollout in minutes rather than manual per-user setup.',
+      },
+    ],
   },
 
   // ─── Pharmaceuticals ──────────────────────────────────────────────

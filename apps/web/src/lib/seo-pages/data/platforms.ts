@@ -679,6 +679,28 @@ export const platformsPages: SEOLandingPageData[] = [
       description:
         'Avoid Yahoo\'s formatting pitfalls. Design in Siggly and paste a perfectly formatted signature in seconds.',
     },
+    faqs: [
+      {
+        question: 'How do I add a professional signature in Yahoo Mail?',
+        answer:
+          'Design your signature in Siggly, copy it from the preview, then paste it into the signature area under Yahoo Mail settings. Siggly formats it specifically for Yahoo\'s rich text editor so it pastes cleanly.',
+      },
+      {
+        question: 'Does Yahoo Mail support HTML email signatures?',
+        answer:
+          'Yahoo Mail supports rich text signatures but strips certain HTML tags and styles. Siggly pre-processes your signature to avoid stripped elements, so it renders consistently in Yahoo Mail.',
+      },
+      {
+        question: 'Why does my Yahoo Mail signature look different on the mobile app?',
+        answer:
+          'The Yahoo Mail mobile app handles signatures differently from the web version. Siggly provides separate setup instructions for each so your signature looks right on both desktop and mobile.',
+      },
+      {
+        question: 'How do I add images to a Yahoo Mail signature?',
+        answer:
+          'Yahoo Mail requires externally hosted images in signatures. Siggly hosts your logo and social icons on its CDN, so your images load reliably instead of appearing as broken links.',
+      },
+    ],
   },
 
   // ---------------------------------------------------------------------------
@@ -908,6 +930,28 @@ export const platformsPages: SEOLandingPageData[] = [
       description:
         'Design once in Siggly, deploy to every Galaxy device in your fleet. Start free today.',
     },
+    faqs: [
+      {
+        question: 'How do I set up an email signature in the Samsung Email app?',
+        answer:
+          'Design your signature in Siggly and select the Samsung Email output format, which accounts for the app\'s rendering differences, then add it in the Samsung Email account settings following the guided steps.',
+      },
+      {
+        question: 'Does the Samsung Email app support HTML signatures?',
+        answer:
+          'Yes, the default Galaxy mail client supports HTML signatures, but its rendering engine has quirks. Every Siggly template is tested on Samsung Email so your signature displays correctly.',
+      },
+      {
+        question: 'Can I deploy signatures to a fleet of Samsung Galaxy devices?',
+        answer:
+          'Yes. For organizations managing Galaxy fleets through Samsung Knox, Siggly provides configuration profiles that set email signatures on managed devices, so you do not have to configure each phone by hand.',
+      },
+      {
+        question: 'Can I use different signatures for each account in Samsung Email?',
+        answer:
+          'Yes. Samsung Email supports a different signature per email account, and Siggly can generate separate signature HTML for each account you connect on the device.',
+      },
+    ],
   },
 
   // ---------------------------------------------------------------------------

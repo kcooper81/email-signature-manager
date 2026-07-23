@@ -2531,5 +2531,27 @@ export const emailSignaturesPages: SEOLandingPageData[] = [
       description:
         'Create a virtual assistant email signature that wins clients and looks professional. Free to set up.',
     },
+    faqs: [
+      {
+        question: 'What should a virtual assistant include in an email signature?',
+        answer:
+          'A strong VA signature lists your core services, working timezone and hours, a discovery-call booking link, and links to your portfolio or rate card. Adding a short client testimonial builds trust with prospective retainer clients.',
+      },
+      {
+        question: 'Can I add a booking link for discovery calls to my VA signature?',
+        answer:
+          'Yes. Siggly lets you embed a scheduling link so prospective clients can book a free discovery call directly from your email, removing the back-and-forth of finding a time.',
+      },
+      {
+        question: 'How do I show my timezone and availability in a VA email signature?',
+        answer:
+          'Siggly includes a field for your working timezone and hours, so clients across different regions immediately know when to expect a response from you.',
+      },
+      {
+        question: 'Can I create a professional VA signature with Siggly for free?',
+        answer:
+          'Yes. Siggly is free to set up, so you can design a polished, branded virtual assistant signature with your services, booking link, and testimonials before you send your next client email.',
+      },
+    ],
   },
 ];

@@ -1764,6 +1764,28 @@ export const solutionsPages: SEOLandingPageData[] = [
       description:
         'Give every support email a professional, helpful signature that drives satisfaction and reduces repeat tickets.',
     },
+    faqs: [
+      {
+        question: 'What should a customer support team\'s email signature include?',
+        answer:
+          'An effective support signature includes a one-click CSAT survey link, quick links to your help center or FAQ, and escalation contact details. Siggly lets you standardize all of these across every agent.',
+      },
+      {
+        question: 'Can I add a CSAT survey link to support agent signatures?',
+        answer:
+          'Yes. Siggly can embed a one-click satisfaction survey link in every support email so customers rate their experience instantly, which typically lifts survey response rates.',
+      },
+      {
+        question: 'How do knowledge base links in signatures reduce ticket volume?',
+        answer:
+          'By including quick links to your help center and documentation in every reply, Siggly signatures help customers self-serve common issues, cutting down on repeat and follow-up tickets.',
+      },
+      {
+        question: 'Can Siggly keep all support agents\' signatures consistent?',
+        answer:
+          'Yes. Siggly manages templates centrally and deploys them across Gmail and Outlook, so every agent sends a consistent, on-brand signature without manual configuration.',
+      },
+    ],
   },
 
   // ─── Creative Agencies ─────────────────────────────────────────────

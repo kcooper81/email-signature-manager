@@ -22,6 +22,7 @@ import { platformsPages } from '@/lib/seo-pages/data/platforms';
 import { solutionsPages } from '@/lib/seo-pages/data/solutions';
 import { templatesPages } from '@/lib/seo-pages/data/templates';
 import { emailSignaturesPages } from '@/lib/seo-pages/data/email-signatures';
+import { blogPosts } from '@/app/(marketing)/blog/blog-data';
 
 export interface InternalLinkSuggestion {
   url: string;
@@ -63,6 +64,32 @@ for (const page of ALL_PAGES) {
     keywordIndex.get(kwLower)!.add(canonical);
   }
 }
+
+// Generic terms shared by nearly every page — poor relatedness signal, so they
+// are ignored when scoring blog-to-blog / path-based relevance.
+const STOPWORDS = new Set([
+  'email', 'emails', 'signature', 'signatures', 'guide', 'guides', 'best', 'your',
+  'with', 'from', 'that', 'this', 'using', 'complete', 'professional', 'business',
+  'team', 'teams', 'management', 'tips', 'what', 'need', 'know', 'work', 'works',
+  'blog', 'siggly', 'the', 'and', 'for', 'how', 'why',
+]);
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 3 && !STOPWORDS.has(w));
+}
+
+// Blog posts as internal-link candidates (they are not in ALL_PAGES). Indexed by
+// the distinctive words in their slug + title so blog pages can surface genuinely
+// related articles instead of only landing pages.
+const BLOG_CANDIDATES = blogPosts.map((post) => ({
+  url: `/blog/${post.slug}`,
+  title: post.title,
+  category: post.category,
+  tokens: new Set([...tokenize(post.slug), ...tokenize(post.title)]),
+}));
 
 // Category affinity — related categories that are good cross-link targets
 const CATEGORY_AFFINITY: Record<string, string[]> = {
@@ -225,9 +252,9 @@ function findRelatedByPath(
     }
   }
 
-  return [...pageScores.entries()]
+  // Landing-page candidates from the keyword index.
+  const landing: InternalLinkSuggestion[] = [...pageScores.entries()]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, count)
     .map(([url, score]) => {
       const page = ALL_PAGES.find((p) => p.meta.canonical === url);
       return {
@@ -238,4 +265,48 @@ function findRelatedByPath(
         reason: 'URL path keyword match',
       };
     });
+
+  // Blog-post candidates scored by distinctive-word overlap with the source path,
+  // plus a small bonus for sharing the source post's blog category (so even
+  // topically-unique posts surface category-mates).
+  const sourceTokens = new Set(tokenize(pathname.replace(/^\/blog\//, '')));
+  const sourceCategory = BLOG_CANDIDATES.find((c) => c.url === pathname)?.category;
+  const blog: InternalLinkSuggestion[] = BLOG_CANDIDATES
+    .filter((c) => c.url !== pathname)
+    .map((c) => {
+      let overlap = 0;
+      for (const t of c.tokens) if (sourceTokens.has(t)) overlap++;
+      const sameCategory = sourceCategory && c.category === sourceCategory ? 1 : 0;
+      return { c, score: overlap * 2 + sameCategory };
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(({ c, score }) => ({
+      url: `${baseUrl}${c.url}`,
+      title: c.title,
+      category: c.category,
+      relevanceScore: score,
+      reason: 'Related article',
+    }));
+
+  // Blend: for a blog source, lead with related articles but reserve at least one
+  // slot for a landing/money page (so posts keep linking into conversion pages);
+  // otherwise lead with landing pages. Dedupe by URL.
+  const isBlogSource = pathname.startsWith('/blog/');
+  let ordered: InternalLinkSuggestion[];
+  if (isBlogSource) {
+    const maxBlog = Math.max(1, count - 1);
+    ordered = [...blog.slice(0, maxBlog), ...landing, ...blog.slice(maxBlog)];
+  } else {
+    ordered = [...landing, ...blog];
+  }
+  const seen = new Set<string>();
+  const merged: InternalLinkSuggestion[] = [];
+  for (const s of ordered) {
+    if (seen.has(s.url)) continue;
+    seen.add(s.url);
+    merged.push(s);
+    if (merged.length >= count) break;
+  }
+  return merged;
 }

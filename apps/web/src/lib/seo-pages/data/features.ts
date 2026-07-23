@@ -1816,6 +1816,28 @@ export const featuresPages: SEOLandingPageData[] = [
       description:
         'Grow your social presence with every email your team sends. Choose from curated icon sets or upload your own.',
     },
+    faqs: [
+      {
+        question: 'How many social platforms does Siggly support for signature icons?',
+        answer:
+          'Siggly supports 30+ social platforms including LinkedIn, Twitter/X, Instagram, and YouTube, with five professionally designed icon sets: filled, outline, rounded, square, and minimal.',
+      },
+      {
+        question: 'Can I track clicks on the social icons in my email signature?',
+        answer:
+          'Yes. Siggly automatically appends UTM parameters to your social links so you can see which signatures and employees drive the most social traffic in your analytics.',
+      },
+      {
+        question: 'Can I upload custom social media icons to match my brand?',
+        answer:
+          'Yes. Alongside the curated library, Siggly lets you upload your own icons for niche platforms, internal social networks, or branded icon styles that match your design system.',
+      },
+      {
+        question: 'What happens if a social link in my signature is broken?',
+        answer:
+          'Siggly validates every social link before deployment and flags any that are broken or redirected, so your signatures never ship with a URL that fails to resolve.',
+      },
+    ],
   },
 
   // ─── Legal Disclaimer Management ───────────────────────────────────
@@ -2049,5 +2071,27 @@ export const featuresPages: SEOLandingPageData[] = [
       description:
         'Stop using separate tools for each brand. Siggly gives you unified control with strict brand separation built in.',
     },
+    faqs: [
+      {
+        question: 'Can I manage email signatures for multiple brands in one Siggly account?',
+        answer:
+          'Yes. Siggly supports unlimited brands per account, so you can run subsidiaries, acquisitions, and distinct product brands from a single login without separate tools.',
+      },
+      {
+        question: 'How does Siggly keep signatures separate between brands or subsidiaries?',
+        answer:
+          'Each brand gets its own isolated workspace with dedicated templates, user assignments, and branding assets. There is no cross-contamination between brands, and admins can switch workspaces instantly.',
+      },
+      {
+        question: 'Can Siggly enforce each brand\'s guidelines automatically?',
+        answer:
+          'Yes. You upload brand guidelines including approved logos, colors, fonts, and legal text, and Siggly templates enforce those rules so off-brand signatures cannot be created.',
+      },
+      {
+        question: 'How quickly can I add a new brand after an acquisition?',
+        answer:
+          'You can spin up a new brand workspace in under five minutes, making Siggly well suited to integrating newly acquired companies and their signatures without disrupting existing brands.',
+      },
+    ],
   },
 ];
