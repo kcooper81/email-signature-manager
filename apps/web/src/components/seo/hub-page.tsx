@@ -30,6 +30,7 @@ const SIBLING_HUBS: { href: string; label: string }[] = [
   { href: '/guides', label: 'Guides' },
   { href: '/alternatives', label: 'Alternatives' },
   { href: '/integrations/directory', label: 'Integrations' },
+  { href: '/answers', label: 'Answers' },
 ];
 
 /**

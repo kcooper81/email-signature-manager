@@ -22,6 +22,7 @@ import { platformsPages } from '@/lib/seo-pages/data/platforms';
 import { solutionsPages } from '@/lib/seo-pages/data/solutions';
 import { templatesPages } from '@/lib/seo-pages/data/templates';
 import { emailSignaturesPages } from '@/lib/seo-pages/data/email-signatures';
+import { answersPages } from '@/lib/seo-pages/data/answers';
 import { blogPosts } from '@/app/(marketing)/blog/blog-data';
 
 export interface InternalLinkSuggestion {
@@ -50,6 +51,7 @@ const ALL_PAGES: SEOLandingPageData[] = [
   ...solutionsPages,
   ...templatesPages,
   ...emailSignaturesPages,
+  ...answersPages,
 ];
 
 // Pre-compute keyword index for fast lookups
@@ -110,6 +112,7 @@ const CATEGORY_AFFINITY: Record<string, string[]> = {
   platforms: ['integrations', 'features'],
   templates: ['examples', 'features', 'guides'],
   'email-signatures': ['templates', 'features', 'examples'],
+  answers: ['guides', 'features', 'use-cases'],
 };
 
 /**

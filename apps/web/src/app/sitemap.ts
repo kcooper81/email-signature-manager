@@ -17,6 +17,7 @@ import { examplesPages } from '@/lib/seo-pages/data/examples';
 import { caseStudiesPages } from '@/lib/seo-pages/data/case-studies';
 import { checklistsPages } from '@/lib/seo-pages/data/checklists';
 import { compliancePages } from '@/lib/seo-pages/data/compliance';
+import { answersPages } from '@/lib/seo-pages/data/answers';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
@@ -219,6 +220,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/tools/disclaimer-generator`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tools/email-preview`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tools/qr-code-generator`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/banner-maker`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
   ];
 
   // Industry pages (high-value for niche SEO)
@@ -240,6 +242,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/case-studies`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/checklists`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/compliance`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/answers`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.75 },
+    { url: `${baseUrl}/email-signature-software-pricing`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.8 },
     // Category hub/index pages
     { url: `${baseUrl}/for`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/industries`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
@@ -284,6 +288,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { pages: caseStudiesPages, priority: 0.8, changeFrequency: 'monthly' },
     { pages: checklistsPages, priority: 0.75, changeFrequency: 'monthly' },
     { pages: compliancePages, priority: 0.85, changeFrequency: 'monthly' },
+    { pages: answersPages, priority: 0.75, changeFrequency: 'monthly' },
   ];
 
   const seoLandingPages: MetadataRoute.Sitemap = seoRouteMap.flatMap(
