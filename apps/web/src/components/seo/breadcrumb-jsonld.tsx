@@ -30,6 +30,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   help: 'Help',
   demo: 'Demo',
   tools: 'Tools',
+  answers: 'Answers',
 };
 
 function formatSegment(segment: string): string {
