@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Paintbrush, Layout, Calculator, ShieldCheck, Shield, Eye, Code, QrCode } from 'lucide-react';
+import { ArrowRight, Paintbrush, Layout, Calculator, ShieldCheck, Shield, Eye, Code, QrCode, ImagePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const tools = [
@@ -58,6 +58,13 @@ const tools = [
     name: 'QR Code Generator',
     description: 'Create a free QR code for your website, email, phone, or vCard contact card. Customize the color and download as PNG or SVG.',
     color: 'bg-fuchsia-100 text-fuchsia-600',
+  },
+  {
+    href: '/tools/banner-maker',
+    icon: ImagePlus,
+    name: 'Banner Maker',
+    description: 'Design a professional email signature banner — headline, CTA, colors, and logo — and download a ready-to-use PNG.',
+    color: 'bg-teal-100 text-teal-600',
   },
 ];
 
