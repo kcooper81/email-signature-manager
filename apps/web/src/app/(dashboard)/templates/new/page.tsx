@@ -4,53 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { TemplateEditor } from '@/components/templates/editor';
-import type { SignatureBlock } from '@/components/templates/types';
+import { TemplateGallery } from '@/components/templates/gallery';
+import type { SignatureBlock, IndustryType } from '@/components/templates/types';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
 import { AlertCircle, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-
-const defaultBlocks: SignatureBlock[] = [
-  {
-    id: '1',
-    type: 'text',
-    content: {
-      text: '{{first_name}} {{last_name}}',
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#1a1a1a',
-    },
-  },
-  {
-    id: '2',
-    type: 'text',
-    content: {
-      text: '{{job_title}}',
-      fontSize: 14,
-      fontWeight: 'normal',
-      color: '#666666',
-    },
-  },
-  {
-    id: '3',
-    type: 'divider',
-    content: {
-      color: '#e5e5e5',
-      width: 100,
-      thickness: 1,
-      style: 'solid',
-    },
-  },
-  {
-    id: '4',
-    type: 'contact-info',
-    content: {
-      email: '{{email}}',
-      phone: '{{phone}}',
-      website: '{{website}}',
-    },
-  },
-];
 
 export default function NewTemplatePage() {
   const router = useRouter();
@@ -59,6 +18,8 @@ export default function NewTemplatePage() {
   const [loading, setLoading] = useState(true);
   const { limits } = useSubscription();
   const devBypass = usePayGatesBypass();
+  // Starter chosen from the gallery (null = still choosing).
+  const [choice, setChoice] = useState<{ blocks: SignatureBlock[]; industry: IndustryType; name: string } | null>(null);
 
   // Check current template count on mount
   useEffect(() => {
@@ -150,6 +111,16 @@ export default function NewTemplatePage() {
     );
   }
 
+  // Step 1: choose a starter from the gallery.
+  if (!choice) {
+    return (
+      <TemplateGallery
+        onSelect={(blocks, industry, name) => setChoice({ blocks, industry, name })}
+      />
+    );
+  }
+
+  // Step 2: edit the chosen starter.
   return (
     <>
       {brandError && (
@@ -166,7 +137,9 @@ export default function NewTemplatePage() {
         </div>
       )}
       <TemplateEditor
-        initialBlocks={defaultBlocks}
+        initialBlocks={choice.blocks}
+        initialName={choice.name}
+        initialIndustry={choice.industry}
         onSave={handleSave}
         saving={saving}
       />
