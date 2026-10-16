@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { formatSlugLabel } from '@/lib/seo-pages/slug-label';
 
 const SITE_URL = 'https://siggly.io';
 
@@ -35,10 +36,7 @@ const SEGMENT_LABELS: Record<string, string> = {
 
 function formatSegment(segment: string): string {
   if (SEGMENT_LABELS[segment]) return SEGMENT_LABELS[segment];
-  return segment
-    .split('-')
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
+  return formatSlugLabel(segment);
 }
 
 export function BreadcrumbJsonLd() {
