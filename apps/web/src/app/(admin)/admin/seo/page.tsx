@@ -371,6 +371,9 @@ export default function SEODashboardPage() {
 
   async function bulkAction(action: 'approve' | 'dismiss' | 'delete') {
     if (selectedRecs.size === 0) return;
+    if (action === 'delete' && !window.confirm(`Permanently delete ${selectedRecs.size} recommendation${selectedRecs.size !== 1 ? 's' : ''}? This cannot be undone.`)) {
+      return;
+    }
     setBulkLoading(true);
     try {
       const res = await fetch('/api/admin/seo/recommendations/bulk', {
@@ -445,6 +448,9 @@ export default function SEODashboardPage() {
   }
 
   async function rollbackRecommendation(id: string) {
+    if (!window.confirm('Roll back this applied SEO change? The live page metadata will revert to its previous value.')) {
+      return;
+    }
     setActionLoading(id);
     try {
       const res = await fetch(`/api/admin/seo/recommendations/${id}/rollback`, { method: 'POST' });
@@ -471,6 +477,9 @@ export default function SEODashboardPage() {
   }
 
   async function deleteRecommendation(id: string) {
+    if (!window.confirm('Permanently delete this recommendation? This cannot be undone.')) {
+      return;
+    }
     setActionLoading(id);
     try {
       const res = await fetch(`/api/admin/seo/recommendations/${id}/delete`, { method: 'DELETE' });
@@ -1771,6 +1780,9 @@ export default function SEODashboardPage() {
                     setSavingAlgoConfig(false);
                   }}
                   onResetAll={async () => {
+                    if (!window.confirm('Reset ALL algorithm settings to their defaults? This discards every tuning value you have configured.')) {
+                      return;
+                    }
                     setSavingAlgoConfig(true);
                     await updateSettings({ algorithm_config: {} } as any);
                     await loadSettings();

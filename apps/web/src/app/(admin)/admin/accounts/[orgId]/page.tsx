@@ -8,6 +8,7 @@ import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFo
 import { Select } from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/components/ui/toast';
 import {
   ArrowLeft,
   Building2,
@@ -110,11 +111,13 @@ interface AuditLog {
 const PLAN_OPTIONS = [
   { value: 'free', label: 'Free' },
   { value: 'professional', label: 'Professional' },
+  { value: 'enterprise', label: 'Enterprise' },
 ];
 
 export default function OrgDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const orgId = params.orgId as string;
 
   const [loading, setLoading] = useState(true);
@@ -327,13 +330,15 @@ export default function OrgDetailPage() {
   };
 
   const startImpersonation = () => {
-    if (org) {
-      localStorage.setItem('admin_impersonate_org', JSON.stringify({
-        id: org.id,
-        name: org.name,
-      }));
-      window.location.href = '/dashboard';
+    if (!org) return;
+    if (!confirm(`View the dashboard as "${org.name}"? You'll see their account exactly as they do until you exit impersonation.`)) {
+      return;
     }
+    localStorage.setItem('admin_impersonate_org', JSON.stringify({
+      id: org.id,
+      name: org.name,
+    }));
+    window.location.href = '/dashboard';
   };
 
   const handleChangePlan = async () => {
@@ -355,6 +360,7 @@ export default function OrgDetailPage() {
 
       setSubscription(prev => prev ? { ...prev, plan: selectedPlan } : prev);
       setShowPlanModal(false);
+      toast.success('Plan updated', `Now on ${selectedPlan}`);
     } catch (err: any) {
       setPlanError(err.message);
     } finally {
@@ -379,10 +385,13 @@ export default function OrgDetailPage() {
         throw new Error(data.error || 'Failed to update status');
       }
 
-      setOrg(prev => prev ? { ...prev, isSuspended: !prev.isSuspended } : prev);
+      const nowSuspended = !org.isSuspended;
+      setOrg(prev => prev ? { ...prev, isSuspended: nowSuspended } : prev);
       setShowSuspendDialog(false);
+      toast.success(nowSuspended ? 'Account suspended' : 'Account reactivated', org.name);
     } catch (err: any) {
       console.error('Failed to toggle suspension:', err);
+      toast.error('Could not update account status', err.message);
     } finally {
       setSuspendLoading(false);
     }

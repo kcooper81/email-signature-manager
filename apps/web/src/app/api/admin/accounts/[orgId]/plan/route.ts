@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { cancelSubscription } from '@/lib/billing/stripe';
 
-const VALID_PLANS = ['free', 'professional'];
+const VALID_PLANS = ['free', 'professional', 'enterprise'];
 
 export async function PATCH(
   request: NextRequest,

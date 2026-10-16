@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
+import { useToast } from '@/components/ui/toast';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -56,7 +57,10 @@ const ERROR_TYPE_COLORS: Record<string, string> = {
 const ERRORS_PER_PAGE = 25;
 
 export default function AdminErrorLogsPage() {
+  const toast = useToast();
   const [errors, setErrors] = useState<ErrorLog[]>([]);
+  const [loadError, setLoadError] = useState(false);
+  const [stats, setStats] = useState({ last24h: 0, unresolved: 0, resolved: 0 });
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unresolved' | 'resolved'>('unresolved');
@@ -92,6 +96,26 @@ export default function AdminErrorLogsPage() {
     loadErrors();
   }, [filter, typeFilter]);
 
+  // Headline stats use real count queries (not the capped/filtered 100-row window)
+  // so the cards reflect the whole dataset, not just what's currently loaded.
+  useEffect(() => {
+    const loadStats = async () => {
+      const supabase = createClient();
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const [last24h, unresolved, resolved] = await Promise.all([
+        supabase.from('error_logs').select('id', { count: 'exact', head: true }).gte('created_at', since),
+        supabase.from('error_logs').select('id', { count: 'exact', head: true }).eq('resolved', false),
+        supabase.from('error_logs').select('id', { count: 'exact', head: true }).eq('resolved', true),
+      ]);
+      setStats({
+        last24h: last24h.count || 0,
+        unresolved: unresolved.count || 0,
+        resolved: resolved.count || 0,
+      });
+    };
+    loadStats();
+  }, [errors]);
+
   const loadErrors = async () => {
     setLoading(true);
     const supabase = createClient();
@@ -116,7 +140,9 @@ export default function AdminErrorLogsPage() {
 
     if (error) {
       console.error('Failed to load error logs:', error);
+      setLoadError(true);
     } else {
+      setLoadError(false);
       setErrors(data || []);
     }
 
@@ -138,13 +164,16 @@ export default function AdminErrorLogsPage() {
       .eq('id', id);
 
     if (!error) {
-      setErrors(errors.map(e => 
-        e.id === id 
+      setErrors(errors.map(e =>
+        e.id === id
           ? { ...e, resolved: true, resolved_at: new Date().toISOString(), resolution_notes: resolutionNotes }
           : e
       ));
       setResolvingId(null);
       setResolutionNotes('');
+      toast.success('Error marked resolved');
+    } else {
+      toast.error('Could not resolve error', error.message);
     }
   };
 
@@ -189,6 +218,9 @@ export default function AdminErrorLogsPage() {
     if (!error) {
       setErrors(prev => prev.map(e => ids.includes(e.id) ? { ...e, resolved: true, resolved_at: new Date().toISOString() } : e));
       bulk.clearSelection();
+      toast.success(`${ids.length} error${ids.length !== 1 ? 's' : ''} marked resolved`);
+    } else {
+      toast.error('Could not resolve errors', error.message);
     }
   };
 
@@ -202,6 +234,9 @@ export default function AdminErrorLogsPage() {
     if (!error) {
       setErrors(prev => prev.filter(e => !ids.includes(e.id)));
       bulk.clearSelection();
+      toast.success(`${ids.length} error${ids.length !== 1 ? 's' : ''} deleted`);
+    } else {
+      toast.error('Could not delete errors', error.message);
     }
   };
 
@@ -248,9 +283,7 @@ export default function AdminErrorLogsPage() {
           <CardHeader className="pb-2">
             <CardDescription>Total Errors (24h)</CardDescription>
             <CardTitle className="text-2xl">
-              {errors.filter(e => 
-                new Date(e.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-              ).length}
+              {stats.last24h}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -258,7 +291,7 @@ export default function AdminErrorLogsPage() {
           <CardHeader className="pb-2">
             <CardDescription>Unresolved</CardDescription>
             <CardTitle className="text-2xl text-red-600">
-              {errors.filter(e => !e.resolved).length}
+              {stats.unresolved}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -266,7 +299,7 @@ export default function AdminErrorLogsPage() {
           <CardHeader className="pb-2">
             <CardDescription>Resolved</CardDescription>
             <CardTitle className="text-2xl text-green-600">
-              {errors.filter(e => e.resolved).length}
+              {stats.resolved}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -320,6 +353,15 @@ export default function AdminErrorLogsPage() {
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
+      ) : loadError ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium">Couldn&apos;t load error logs</h3>
+            <p className="text-muted-foreground mt-1">Something went wrong fetching the logs.</p>
+            <Button variant="outline" className="mt-4" onClick={loadErrors}>Retry</Button>
+          </CardContent>
+        </Card>
       ) : filteredErrors.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">

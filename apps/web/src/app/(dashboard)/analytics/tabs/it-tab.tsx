@@ -83,8 +83,8 @@ export function ITTab({ data, timeRange }: ITTabProps) {
                 <Zap className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-primary">{data.avgDeploymentTime}s</p>
-                <p className="text-sm text-muted-foreground">Avg Deploy Time</p>
+                <p className="text-2xl font-bold text-primary">{data.avgUsersPerDeployment}</p>
+                <p className="text-sm text-muted-foreground">Avg Users / Deploy</p>
               </div>
             </div>
           </CardContent>

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
 import { Select } from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/components/ui/toast';
 import {
   Shield,
   ShieldCheck,
@@ -45,7 +46,10 @@ const ROLE_OPTIONS = [
 
 
 export default function PlatformAdminsPage() {
+  const toast = useToast();
   const [admins, setAdmins] = useState<PlatformAdmin[]>([]);
+  const [roleChange, setRoleChange] = useState<{ admin: PlatformAdmin; newRole: string } | null>(null);
+  const [roleChanging, setRoleChanging] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [addRole, setAddRole] = useState('support');
@@ -187,46 +191,86 @@ export default function PlatformAdminsPage() {
     setAddError(null);
   };
 
-  const handleChangeRole = async (admin: PlatformAdmin, newRole: string) => {
-    await fetch('/api/admin/platform-admins', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: admin.id,
-        role: newRole,
-        allowedViews: newRole === 'support'
-          ? (admin.allowedViews.length > 0 ? admin.allowedViews : DEFAULT_SUPPORT_VIEWS)
-          : undefined,
-      }),
-    });
-    loadAdmins();
+  // Role changes are confirmed first (they can demote the last super admin and
+  // lock the whole team out of /admin), and the response is checked so a
+  // server-side guard rejection surfaces instead of silently reverting.
+  const confirmChangeRole = async () => {
+    if (!roleChange) return;
+    const { admin, newRole } = roleChange;
+    setRoleChanging(true);
+    try {
+      const res = await fetch('/api/admin/platform-admins', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: admin.id,
+          role: newRole,
+          allowedViews: newRole === 'support'
+            ? (admin.allowedViews.length > 0 ? admin.allowedViews : DEFAULT_SUPPORT_VIEWS)
+            : undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error('Could not change role', data.error || 'The change was rejected.');
+        return;
+      }
+      toast.success('Role updated', `${admin.email} is now ${newRole === 'support' ? 'Support' : 'Super Admin'}.`);
+      setRoleChange(null);
+      loadAdmins();
+    } catch {
+      toast.error('Could not change role', 'Please try again.');
+    } finally {
+      setRoleChanging(false);
+    }
   };
 
   const handleSaveViews = async (adminId: string) => {
     setSavingViews(true);
-    await fetch('/api/admin/platform-admins', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: adminId, allowedViews: editViewsState }),
-    });
-    setEditingViews(null);
-    setSavingViews(false);
-    loadAdmins();
+    try {
+      const res = await fetch('/api/admin/platform-admins', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: adminId, allowedViews: editViewsState }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error('Could not save views', data.error || 'The change was rejected.');
+        return;
+      }
+      toast.success('Views updated');
+      setEditingViews(null);
+      loadAdmins();
+    } catch {
+      toast.error('Could not save views', 'Please try again.');
+    } finally {
+      setSavingViews(false);
+    }
   };
 
   const handleRemove = async () => {
     if (!removeTarget) return;
     setRemoveLoading(true);
 
-    await fetch('/api/admin/platform-admins', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: removeTarget.id }),
-    });
-
-    setRemoveTarget(null);
-    setRemoveLoading(false);
-    loadAdmins();
+    try {
+      const res = await fetch('/api/admin/platform-admins', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: removeTarget.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error('Could not remove admin', data.error || 'The change was rejected.');
+        return;
+      }
+      toast.success('Admin removed', removeTarget.email);
+      setRemoveTarget(null);
+      loadAdmins();
+    } catch {
+      toast.error('Could not remove admin', 'Please try again.');
+    } finally {
+      setRemoveLoading(false);
+    }
   };
 
   const toggleView = (views: string[], key: string): string[] => {
@@ -318,7 +362,11 @@ export default function PlatformAdminsPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <select
                       value={admin.superAdminRole}
-                      onChange={(e) => handleChangeRole(admin, e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value !== admin.superAdminRole) {
+                          setRoleChange({ admin, newRole: e.target.value });
+                        }
+                      }}
                       className="text-sm rounded-lg border border-slate-200 bg-white px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                     >
                       <option value="super_admin">Super Admin</option>
@@ -613,6 +661,22 @@ export default function PlatformAdminsPage() {
         confirmText="Remove Access"
         variant="destructive"
         loading={removeLoading}
+      />
+
+      {/* Role Change Confirmation */}
+      <ConfirmDialog
+        open={!!roleChange}
+        onClose={() => setRoleChange(null)}
+        onConfirm={confirmChangeRole}
+        title="Change admin role"
+        description={
+          roleChange
+            ? `Change ${roleChange.admin.email} from ${roleChange.admin.superAdminRole === 'support' ? 'Support' : 'Super Admin'} to ${roleChange.newRole === 'support' ? 'Support (restricted views)' : 'Super Admin (full access)'}? Demoting the last Super Admin can lock your team out of /admin.`
+            : ''
+        }
+        confirmText="Change role"
+        variant={roleChange?.newRole === 'support' ? 'destructive' : 'default'}
+        loading={roleChanging}
       />
     </div>
   );
