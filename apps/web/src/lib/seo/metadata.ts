@@ -549,34 +549,17 @@ export function generateReviewSchema({
     datePublished?: string;
   }[];
 }) {
+  // IMPORTANT: Review / AggregateRating structured data must reflect REAL,
+  // first-party, verifiable reviews. The current on-page quotes are illustrative,
+  // so we deliberately do NOT emit aggregateRating or Review markup here (fake
+  // rating schema is a Google structured-data policy violation and FTC risk).
+  // When real reviews exist, rebuild this to aggregate their actual values.
+  void reviews;
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: SITE_NAME,
     url: SITE_URL,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: String(Math.max(reviews.length, 127)),
-      bestRating: '5',
-      worstRating: '1',
-    },
-    review: reviews.map((review) => ({
-      '@type': 'Review',
-      author: {
-        '@type': 'Person',
-        name: review.author,
-        ...(review.authorTitle && { jobTitle: review.authorTitle }),
-      },
-      reviewRating: {
-        '@type': 'Rating',
-        ratingValue: String(review.rating),
-        bestRating: '5',
-        worstRating: '1',
-      },
-      reviewBody: review.body,
-      ...(review.datePublished && { datePublished: review.datePublished }),
-    })),
   };
 }
 
