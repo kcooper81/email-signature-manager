@@ -150,6 +150,7 @@ export default function TicketsPage() {
   const [tickets, setTickets] = useState<FeedbackEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('open');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -162,6 +163,7 @@ export default function TicketsPage() {
   const editorRef = useRef<RichTextEditorRef>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
   const [showCannedPicker, setShowCannedPicker] = useState(false);
@@ -213,18 +215,13 @@ export default function TicketsPage() {
   ticketsRef.current = tickets;
 
   const filteredTicketIds = useMemo(() => {
-    const searchLower = search.toLowerCase();
     return tickets
       .filter(ticket => {
         if (hideSnoozed && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date()) return false;
-        if (search === '') return true;
-        return (
-          ticket.message.toLowerCase().includes(searchLower) ||
-          (ticket.userEmail?.toLowerCase().includes(searchLower) ?? false)
-        );
+        return true;
       })
       .map(t => t.id);
-  }, [tickets, search, hideSnoozed]);
+  }, [tickets, hideSnoozed]);
 
   const bulk = useBulkSelection({ itemIds: filteredTicketIds });
 
@@ -243,9 +240,18 @@ export default function TicketsPage() {
     };
   }, []);
 
+  // Debounce the search box and reset to the first page when the term changes.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   useEffect(() => {
     loadTickets();
-  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter, currentUserId]);
+  }, [page, typeFilter, statusFilter, priorityFilter, partnerFilter, currentUserId, debouncedSearch]);
 
   // Real-time subscription for new tickets
   useEffect(() => {
@@ -405,6 +411,7 @@ export default function TicketsPage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setCurrentUserEmail(user.email || null);
       const { data: userData } = await supabase
         .from('users')
         .select('id')
@@ -465,6 +472,14 @@ export default function TicketsPage() {
       query = query.eq('priority', priorityFilter);
     }
 
+    // Server-side search across message body and sender email so searching finds
+    // tickets on every page, not just the 20 currently loaded. Strip PostgREST
+    // filter metacharacters to avoid breaking the .or() expression / injection.
+    const term = debouncedSearch.trim().replace(/[,()*\\]/g, ' ').trim();
+    if (term) {
+      query = query.or(`message.ilike.%${term}%,user_email.ilike.%${term}%`);
+    }
+
     if (partnerFilter === 'escalations') {
       query = query.eq('is_partner_escalation', true);
     } else if (partnerFilter === 'partner') {
@@ -507,10 +522,11 @@ export default function TicketsPage() {
     setTickets(mapped);
     setLoading(false);
 
-    // Auto-select first ticket on initial load (desktop only)
+    // Auto-select first ticket on initial load (desktop only). Preview only —
+    // do NOT mark it read, since the admin hasn't actually chosen to open it.
     if (!initialLoadDone.current && mapped.length > 0 && window.innerWidth >= 1024) {
       initialLoadDone.current = true;
-      openTicketDetail(mapped[0]);
+      openTicketDetail(mapped[0], { markRead: false });
     } else if (!initialLoadDone.current) {
       initialLoadDone.current = true;
     }
@@ -546,7 +562,8 @@ export default function TicketsPage() {
     }));
   };
 
-  const openTicketDetail = async (ticket: FeedbackEntry) => {
+  const openTicketDetail = async (ticket: FeedbackEntry, options: { markRead?: boolean } = {}) => {
+    const { markRead = true } = options;
     navigatingRef.current = true;
     setComposerMode(null);
     setExpandedNotes(new Set());
@@ -557,8 +574,8 @@ export default function TicketsPage() {
     setSelectedTicket({ ...(latest || ticket), notes });
     navigatingRef.current = false;
 
-    // Auto-mark as read: transition "new" → "reviewed" on open
-    if (ticket.status === 'new') {
+    // Auto-mark as read: transition "new" → "reviewed" on open (unless previewing)
+    if (markRead && ticket.status === 'new') {
       const supabase = createClient();
       const { error: markError } = await supabase
         .from('feedback')
@@ -638,12 +655,35 @@ export default function TicketsPage() {
     if (!selectedTicket || !textContent || addNoteRef.current) return;
 
     const isNote = composerMode === 'note';
+    const targetTicketId = selectedTicket.id;
 
     addNoteRef.current = true;
     setAddingNote(true);
 
+    // Optimistically append the note so the reply appears instantly instead of
+    // waiting on the realtime echo (which can be slow or drop). The realtime
+    // INSERT handler reloads notes from the DB and reconciles this temp entry.
+    const tempId = `temp-${Date.now()}`;
+    const optimisticNote: TicketNote = {
+      id: tempId,
+      content: textContent,
+      htmlBody: htmlContent,
+      authorEmail: currentUserEmail || 'You',
+      isInternal: isNote,
+      createdAt: new Date().toISOString(),
+    };
+    setSelectedTicket(prev =>
+      prev && prev.id === targetTicketId ? { ...prev, notes: [optimisticNote, ...prev.notes] } : prev
+    );
+    setNewNote('');
+    editorRef.current?.clear();
+    setReplyCc('');
+    setReplyBcc('');
+    setShowReplyCcBcc(false);
+    setComposerMode(null);
+
     try {
-      const response = await fetch(`/api/admin/tickets/${selectedTicket.id}/notes`, {
+      const response = await fetch(`/api/admin/tickets/${targetTicketId}/notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -662,29 +702,31 @@ export default function TicketsPage() {
 
       const result = await response.json();
 
-      if (result.success) {
-        // Clear the form — the realtime subscription will add the note to the UI
-        setNewNote('');
-        editorRef.current?.clear();
-        setReplyCc('');
-        setReplyBcc('');
-        setShowReplyCcBcc(false);
-        setComposerMode(null);
-
-        if (result.warning) {
-          showToast(result.warning, 'error');
-        } else {
-          showToast(isNote ? 'Internal note added' : 'Reply sent');
-        }
+      if (result.warning) {
+        showToast(result.warning, 'error');
+      } else {
+        showToast(isNote ? 'Internal note added' : 'Reply sent');
       }
     } catch (error) {
       console.error('Error adding note:', error);
+      // Roll back the optimistic note and restore the draft so nothing is lost.
+      setSelectedTicket(prev =>
+        prev && prev.id === targetTicketId
+          ? { ...prev, notes: prev.notes.filter(n => n.id !== tempId) }
+          : prev
+      );
+      editorRef.current?.setContent?.(htmlContent);
+      setComposerMode(isNote ? 'note' : 'reply');
       showToast('Failed to send reply', 'error');
     }
 
     setAddingNote(false);
     addNoteRef.current = false;
   };
+  // Keep a stable ref to the latest addNote so the global keydown handler
+  // (which intentionally ignores most keys inside the editor) can still send.
+  const sendReplyRef = useRef<() => void>(() => {});
+  sendReplyRef.current = addNote;
 
   const loadCannedResponses = async () => {
     try {
@@ -993,12 +1035,7 @@ export default function TicketsPage() {
   const filteredTickets = useMemo(() => {
     const filtered = tickets.filter(ticket => {
       if (hideSnoozed && ticket.snoozedUntil && new Date(ticket.snoozedUntil) > new Date()) return false;
-      if (search === '') return true;
-      const searchLower = search.toLowerCase();
-      return (
-        ticket.message.toLowerCase().includes(searchLower) ||
-        (ticket.userEmail?.toLowerCase().includes(searchLower) ?? false)
-      );
+      return true;
     });
     const sorted = sort.sortData(filtered);
     // Pin unread (new) tickets to top only when sorting by createdAt (default)
@@ -1012,7 +1049,7 @@ export default function TicketsPage() {
       return [...unread, ...read];
     }
     return sorted;
-  }, [tickets, hideSnoozed, search, sort.sortField, sort.sortDir]);
+  }, [tickets, hideSnoozed, sort.sortField, sort.sortDir]);
 
   // Close popovers on outside click
   useEffect(() => {
@@ -1031,6 +1068,14 @@ export default function TicketsPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
+
+      // Cmd/Ctrl+Enter sends the reply from inside the editor (the ⌘↵ hint).
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && composerMode) {
+        e.preventDefault();
+        sendReplyRef.current();
+        return;
+      }
+
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' ||
           target.isContentEditable || target.closest('.tiptap')) return;
 
@@ -1071,7 +1116,7 @@ export default function TicketsPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedTicket, filteredTickets]);
+  }, [selectedTicket, filteredTickets, composerMode]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 

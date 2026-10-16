@@ -373,8 +373,11 @@ export default function SubscriptionsPage() {
                 <DollarSign className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">${metrics?.totalMrr.toFixed(0)}</p>
-                <p className="text-xs text-slate-500">MRR</p>
+                <p className="text-2xl font-bold">
+                  ${metrics?.totalMrr.toFixed(0)}
+                  <span className="text-xs font-normal text-slate-400 ml-1">est.</span>
+                </p>
+                <p className="text-xs text-slate-500" title="Estimated from seat counts — may differ from Stripe's actual invoiced amounts.">MRR (estimated)</p>
                 <p className="text-[10px] text-slate-400">${((metrics?.totalMrr || 0) * 12).toLocaleString()} ARR</p>
               </div>
             </div>

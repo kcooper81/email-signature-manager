@@ -73,12 +73,12 @@ export function OperationsTab({ data, timeRange }: OperationsTabProps) {
               )}
             </div>
 
-            {/* Avg Deployment Time */}
+            {/* Avg Users per Deployment */}
             <div className="text-center p-4 bg-muted rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
-                {data.avgDeploymentTime}s
+                {data.avgUsersPerDeployment}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Avg Deploy Time</p>
+              <p className="text-xs text-muted-foreground mt-1">Avg Users / Deploy</p>
             </div>
 
             {/* Failed Reasons */}
