@@ -10,6 +10,9 @@ interface MarketingTestimonialProps {
   };
   variant?: 'light' | 'dark' | 'violet' | 'slate';
   className?: string;
+  /** When true, renders an "illustrative example" caption so the quote is not
+   *  presented as a verified customer testimonial. */
+  illustrative?: boolean;
 }
 
 const variantStyles = {
@@ -44,6 +47,7 @@ export function MarketingTestimonial({
   author,
   variant = 'dark',
   className,
+  illustrative = false,
 }: MarketingTestimonialProps) {
   const styles = variantStyles[variant];
 
@@ -68,6 +72,11 @@ export function MarketingTestimonial({
           <p className={cn('font-semibold', styles.name)}>{author.name}</p>
           <p className={styles.title}>{author.title}</p>
         </div>
+        {illustrative && (
+          <p className={cn('mt-4 text-xs opacity-70', styles.title)}>
+            Illustrative example — not a specific customer.
+          </p>
+        )}
       </div>
     </section>
   );

@@ -57,6 +57,12 @@ export default async function CaseStudyPage({ params }: PageProps) {
   return (
     <>
       <JsonLd data={schemas} />
+      <div className="bg-amber-50 border-b border-amber-200">
+        <div className="max-w-5xl mx-auto px-6 py-3 text-center text-sm text-amber-800">
+          Illustrative scenario. Company names, people, and figures are examples of
+          typical outcomes, not a specific customer engagement.
+        </div>
+      </div>
       <SEOLandingPage data={merged} />
     </>
   );

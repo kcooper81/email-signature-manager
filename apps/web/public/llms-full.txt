@@ -43,7 +43,7 @@ Most organizations struggle with inconsistent email signatures across their work
 - **HR Systems**: Gusto and BambooHR integrations for automatic employee data sync
 
 ### Compliance & Security
-- HIPAA-compliant email signature management for healthcare organizations
+- HIPAA-aligned email signature management for healthcare organizations (disclaimers, audit logging, centralized control; BAA may be required)
 - GDPR-compliant disclaimer management
 - SOX and FINRA compliance support for financial services
 - Audit logging for all signature changes
@@ -120,7 +120,7 @@ Most organizations struggle with inconsistent email signatures across their work
 ## Industry-Specific Solutions
 
 ### Healthcare (HIPAA Compliance)
-Siggly helps healthcare organizations maintain HIPAA-compliant email signatures with required disclaimers, audit logging, and centralized control over PHI-related disclosures in signatures.
+Siggly helps healthcare organizations maintain HIPAA-aligned email signatures with required disclaimers, audit logging, and centralized control over PHI-related disclosures in signatures. Customers remain responsible for their own HIPAA compliance; a BAA may be required.
 
 ### Legal Firms
 Centralized signature management for law firms ensures attorney bar numbers, required disclaimers, and confidentiality notices are consistently applied across all attorneys.
@@ -154,7 +154,7 @@ Q: Can I manage email signatures for both Google Workspace and Microsoft 365?
 A: Yes, Siggly supports both platforms simultaneously. You can manage a mixed environment from a single dashboard, with automatic deployment to both Google Workspace (Gmail) and Microsoft 365 (Outlook) users.
 
 Q: Is Siggly HIPAA compliant for healthcare email signatures?
-A: Yes, Siggly provides HIPAA-compliant email signature management with features including required disclaimer enforcement, audit logging of all signature changes, centralized control preventing employees from modifying compliance-required elements, and secure data handling practices.
+A: Siggly provides features that help healthcare organizations maintain HIPAA-aligned email signatures: required disclaimer enforcement, audit logging of signature changes, centralized control that prevents employees from modifying compliance-required elements, and secure data handling. Customers remain responsible for their own HIPAA compliance, and a Business Associate Agreement (BAA) may be required for covered uses.
 
 Q: What's the best free email signature manager for small teams?
 A: Siggly offers a free plan supporting up to 5 users with a visual signature editor and basic management features. For small teams needing automatic deployment to Google Workspace or Microsoft 365, the Professional plan starts at $1.50/user/month.
