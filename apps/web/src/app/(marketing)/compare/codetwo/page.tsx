@@ -153,6 +153,88 @@ export default function CodeTwoComparisonPage() {
         </div>
       </section>
 
+      {/* Detailed breakdown */}
+      <section className="py-20">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl font-bold mb-8 text-center">Siggly vs CodeTwo: the detailed breakdown</h2>
+
+          <h3 className="text-xl font-semibold mb-2">Architecture: cloud-native vs server-based</h3>
+          <p className="text-gray-600 mb-6">
+            This is the core difference. Siggly is 100% cloud-native — you connect your Google
+            Workspace or Microsoft 365 tenant over OAuth and deploy, with nothing to install.
+            CodeTwo&apos;s signature products are built around Exchange/Microsoft 365 and, for some
+            configurations, server-side or on-premise components. If you run a Microsoft-centric
+            environment and specifically want on-premise Exchange support, CodeTwo offers that and
+            Siggly does not — we&apos;ll be upfront about it.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-2">Platform support</h3>
+          <p className="text-gray-600 mb-6">
+            CodeTwo is Microsoft-focused (Microsoft 365 and Exchange, including on-premise). Siggly
+            supports both Google Workspace and Microsoft 365. If your organization is on Google
+            Workspace, CodeTwo isn&apos;t really aimed at you — Siggly is. If you&apos;re a large
+            Microsoft 365 shop that wants deep transport-level stamping or on-premise Exchange, CodeTwo
+            is purpose-built for that.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-2">Setup and who manages it</h3>
+          <p className="text-gray-600 mb-6">
+            Siggly is designed so marketing or HR can manage signatures without IT, and most teams are
+            live in minutes. CodeTwo deployments are typically IT-led and take longer to configure.
+            Pricing-wise, Siggly is $1.50/user/month with a free tier and no contract; CodeTwo&apos;s
+            publicly listed rate is around $2.00/user/month with no free plan (as of October 2026).
+          </p>
+        </div>
+      </section>
+
+      {/* Who should choose CodeTwo — honest balance */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold mb-3">Who should choose CodeTwo?</h2>
+            <p className="text-gray-600">
+              CodeTwo is a solid choice if you&apos;re a Microsoft 365 or on-premise Exchange
+              organization, you need server-side transport-level stamping, and you have IT to manage
+              the deployment. Its on-premise Exchange support in particular is something Siggly does
+              not offer.
+            </p>
+            <h2 className="text-2xl font-bold mt-6 mb-3">When Siggly is the better fit</h2>
+            <p className="text-gray-600">
+              Choose Siggly if you&apos;re on Google Workspace, you want a cloud-native tool with no
+              servers to manage, you&apos;d like marketing/HR to run signatures without IT, or you want
+              a free tier and month-to-month billing. For most small and mid-sized teams, that&apos;s
+              the better match.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-center mb-8">Siggly vs CodeTwo — common questions</h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold mb-1">Is Siggly a good CodeTwo alternative?</h3>
+              <p className="text-sm text-gray-600">For Google Workspace teams and organizations that want a cloud-native tool without servers or IT overhead, yes. If you specifically need on-premise Exchange stamping, CodeTwo remains the more specialized option.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">Does Siggly support on-premise Exchange like CodeTwo?</h3>
+              <p className="text-sm text-gray-600">No — Siggly is cloud-native and supports Microsoft 365 and Google Workspace, not on-premise Exchange. If on-premise is a hard requirement, CodeTwo is the better fit.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">How much does Siggly cost compared to CodeTwo?</h3>
+              <p className="text-sm text-gray-600">Siggly is $1.50/user/month with a free plan for up to 5 users. CodeTwo&apos;s publicly listed rate is about $2.00/user/month with no free tier (as of October 2026) — roughly 25% less with Siggly, before the free tier.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">How long does Siggly take to set up versus CodeTwo?</h3>
+              <p className="text-sm text-gray-600">Most Siggly teams are live in minutes via an OAuth connection. CodeTwo deployments are typically IT-led and take longer to configure, especially for server-side or on-premise setups.</p>
+            </div>
+          </div>
+          <p className="text-center text-xs text-gray-400 mt-8">Competitor pricing and capabilities reflect publicly available information as of October 2026 and may change.</p>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 bg-blue-600 text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">

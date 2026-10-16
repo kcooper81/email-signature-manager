@@ -218,6 +218,86 @@ export default function WiseStampComparisonPage() {
           <p className="text-center text-sm text-gray-500 mt-6">
             For a 50-person team: Siggly = $75/mo vs WiseStamp = $300/mo. Save $2,700/year.
           </p>
+          <p className="text-center text-xs text-gray-400 mt-3">
+            Pricing reflects publicly listed rates as of October 2026 and may change — check each vendor&apos;s site for current pricing.
+          </p>
+        </div>
+      </section>
+
+      {/* Detailed breakdown */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl font-bold mb-8 text-center">Siggly vs WiseStamp: the detailed breakdown</h2>
+
+          <h3 className="text-xl font-semibold mb-2">Individual signatures vs team deployment</h3>
+          <p className="text-gray-600 mb-6">
+            WiseStamp is excellent at what it was built for: beautiful individual signatures that one
+            person sets up for themselves. It&apos;s a popular choice for freelancers, solopreneurs, and
+            individuals who want a polished signature quickly. Siggly is built for the other problem —
+            deploying and centrally managing consistent signatures across a whole team or company, with
+            admin control, department rules, and bulk rollout.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-2">Centralized deployment</h3>
+          <p className="text-gray-600 mb-6">
+            The biggest practical difference for organizations: Siggly pushes signatures directly to
+            your team&apos;s Google Workspace or Microsoft 365 accounts, so you&apos;re not relying on
+            each employee to copy-paste their own. WiseStamp is primarily a per-user generator, so
+            at team scale you typically end up managing signatures one person at a time.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-2">Pricing at team scale</h3>
+          <p className="text-gray-600 mb-6">
+            WiseStamp&apos;s publicly listed team pricing is around $6/user/month (as of October 2026),
+            versus Siggly at $1.50/user/month with a free tier. For a 50-person team that&apos;s roughly
+            $75/month with Siggly versus about $300/month with WiseStamp — the gap widens as you grow.
+          </p>
+        </div>
+      </section>
+
+      {/* Who should choose WiseStamp — honest balance */}
+      <section className="py-16">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold mb-3">Who should choose WiseStamp?</h2>
+            <p className="text-gray-600">
+              WiseStamp is a great pick if you&apos;re an individual, freelancer, or very small team who
+              mainly needs a polished personal signature and doesn&apos;t need centralized deployment or
+              admin control. Its editor is well-regarded for quick, good-looking individual signatures.
+            </p>
+            <h2 className="text-2xl font-bold mt-6 mb-3">When Siggly is the better fit</h2>
+            <p className="text-gray-600">
+              Choose Siggly if you need to roll signatures out to a whole team, enforce brand
+              consistency, apply department-specific rules, deploy directly to Google Workspace or
+              Microsoft 365, or manage everything from one admin dashboard — typically at a lower
+              per-user cost than WiseStamp&apos;s team plans.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-center mb-8">Siggly vs WiseStamp — common questions</h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold mb-1">Is Siggly a good WiseStamp alternative?</h3>
+              <p className="text-sm text-gray-600">For teams and companies, yes — Siggly adds centralized deployment, admin control, and department rules that WiseStamp isn&apos;t really built for. For a single individual who just wants a personal signature, WiseStamp is still a fine choice.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">Can Siggly deploy signatures to my whole team automatically?</h3>
+              <p className="text-sm text-gray-600">Yes. Siggly connects to Google Workspace or Microsoft 365 and pushes signatures to every user, so you don&apos;t have to rely on employees setting up their own — which is the main limitation of a per-user tool.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">Is Siggly cheaper than WiseStamp?</h3>
+              <p className="text-sm text-gray-600">For teams, usually — Siggly is $1.50/user/month with a free tier, versus WiseStamp&apos;s publicly listed team pricing around $6/user/month (as of October 2026). The savings grow with team size.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">Does Siggly have a visual editor like WiseStamp?</h3>
+              <p className="text-sm text-gray-600">Yes — Siggly includes a visual signature editor with templates, social links, and campaign banners, plus the team-management and deployment features on top.</p>
+            </div>
+          </div>
         </div>
       </section>
 
