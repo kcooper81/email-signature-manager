@@ -1,6 +1,3 @@
-import { generateFAQSchema } from '@/lib/seo';
-import { JsonLd } from './json-ld';
-
 interface FAQ {
   question: string;
   answer: string;
@@ -20,8 +17,10 @@ export function FAQSection({
   className = '',
 }: FAQSectionProps) {
   return (
+    // NOTE: FAQPage JSON-LD is emitted by the page (every SEOLandingPage consumer
+    // pushes generateFAQSchema into its own <JsonLd>). Emitting it here too caused
+    // duplicate FAQPage schema on all programmatic pages, so it's intentionally omitted.
     <section className={`py-16 md:py-20 ${className}`}>
-      <JsonLd data={generateFAQSchema(faqs)} />
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>

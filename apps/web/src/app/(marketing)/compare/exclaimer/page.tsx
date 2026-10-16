@@ -35,8 +35,8 @@ const switchReasons = [
 
 const comparisonFeatures = comparisonData.map(item => ({
   name: item.feature,
-  siggly: item.siggly === true || typeof item.siggly === 'string',
-  competitor: item.exclaimer === true || typeof item.exclaimer === 'string',
+  siggly: item.siggly,
+  competitor: item.exclaimer,
 }));
 
 export default function ExclaimerComparisonPage() {
