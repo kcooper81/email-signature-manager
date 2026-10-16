@@ -20,7 +20,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Salesforce', url: '/integrations/salesforce' },
     ],
     hero: {
@@ -159,7 +159,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Slack', url: '/integrations/slack' },
     ],
     hero: {
@@ -282,7 +282,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Okta', url: '/integrations/okta' },
     ],
     hero: {
@@ -417,7 +417,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Azure AD', url: '/integrations/azure-ad' },
     ],
     hero: {
@@ -556,7 +556,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Google Workspace', url: '/google-workspace' },
     ],
     hero: {
@@ -691,7 +691,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Active Directory', url: '/integrations/active-directory' },
     ],
     hero: {
@@ -819,7 +819,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Pipedrive', url: '/integrations/pipedrive' },
     ],
     hero: {
@@ -947,7 +947,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Freshdesk', url: '/integrations/freshdesk' },
     ],
     hero: {
@@ -1070,7 +1070,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Zendesk', url: '/integrations/zendesk' },
     ],
     hero: {
@@ -1203,7 +1203,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'BambooHR', url: '/integrations/bamboohr' },
     ],
     hero: {
@@ -1331,7 +1331,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Gusto', url: '/integrations/gusto' },
     ],
     hero: {
@@ -1484,7 +1484,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Workday', url: '/integrations/workday' },
     ],
     hero: {
@@ -1618,7 +1618,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Jira', url: '/integrations/jira' },
     ],
     hero: {
@@ -1751,7 +1751,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Monday.com', url: '/integrations/monday' },
     ],
     hero: {
@@ -1899,7 +1899,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Notion', url: '/integrations/notion' },
     ],
     hero: {
@@ -2030,7 +2030,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'ServiceNow', url: '/integrations/servicenow' },
     ],
     hero: {
@@ -2150,7 +2150,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Rippling', url: '/integrations/rippling' },
     ],
     hero: {
@@ -2292,7 +2292,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Deel', url: '/integrations/deel' },
     ],
     hero: {
@@ -2411,7 +2411,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'Personio', url: '/integrations/personio' },
     ],
     hero: {
@@ -2529,7 +2529,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'JumpCloud', url: '/integrations/jumpcloud' },
     ],
     hero: {
@@ -2652,7 +2652,7 @@ export const integrationsPages: SEOLandingPageData[] = [
     },
     breadcrumbs: [
       { name: 'Home', url: '/' },
-      { name: 'Integrations', url: '/integrations' },
+      { name: 'Integrations', url: '/integrations/directory' },
       { name: 'OneLogin', url: '/integrations/onelogin' },
     ],
     hero: {

@@ -15,8 +15,12 @@ export default function robots(): MetadataRoute.Robots {
           '/login',
           '/signup',
           '/auth/',
-          '/_next/',
-          '/guide',
+          // NOTE: do NOT block '/_next/' — that stops Googlebot fetching the
+          // JS/CSS it needs to render. Static assets under /_next/static are
+          // immutable-cached and safe to crawl.
+          // Anchor '/guide$' so this only blocks the onboarding page and NOT
+          // the /guides/* content hub (robots rules are prefix matches).
+          '/guide$',
         ],
       },
       {
