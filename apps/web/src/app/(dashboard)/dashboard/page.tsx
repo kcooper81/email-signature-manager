@@ -131,6 +131,15 @@ export default async function DashboardPage() {
     ? Math.round((totalSuccessful / totalProcessed) * 100)
     : 0;
 
+  // Latest deployments for the "Recent Activity" list — NOT month-filtered, so the
+  // list isn't empty on the 1st of the month when there's recent prior activity.
+  const { data: recentDeployments } = await supabase
+    .from('signature_deployments')
+    .select('id, status, successful_count, failed_count, total_users, created_at, template:signature_templates(name)')
+    .eq('organization_id', organizationId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
   // Get users with signatures - use user_deployment_history for accuracy, fallback to target_emails
   // Check for both 'completed' and 'success' status for backwards compatibility
   const { data: userDeploymentHistory } = await supabase
@@ -285,9 +294,9 @@ export default async function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {deployments && deployments.length > 0 ? (
+          {recentDeployments && recentDeployments.length > 0 ? (
             <div className="space-y-4">
-              {deployments.map((deployment: any) => (
+              {recentDeployments.map((deployment: any) => (
                 <div key={deployment.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {deployment.status === 'completed' ? (

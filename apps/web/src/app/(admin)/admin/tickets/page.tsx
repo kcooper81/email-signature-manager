@@ -163,6 +163,7 @@ export default function TicketsPage() {
   const editorRef = useRef<RichTextEditorRef>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
   const [showCannedPicker, setShowCannedPicker] = useState(false);
@@ -410,6 +411,7 @@ export default function TicketsPage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+      setCurrentUserEmail(user.email || null);
       const { data: userData } = await supabase
         .from('users')
         .select('id')
@@ -653,12 +655,35 @@ export default function TicketsPage() {
     if (!selectedTicket || !textContent || addNoteRef.current) return;
 
     const isNote = composerMode === 'note';
+    const targetTicketId = selectedTicket.id;
 
     addNoteRef.current = true;
     setAddingNote(true);
 
+    // Optimistically append the note so the reply appears instantly instead of
+    // waiting on the realtime echo (which can be slow or drop). The realtime
+    // INSERT handler reloads notes from the DB and reconciles this temp entry.
+    const tempId = `temp-${Date.now()}`;
+    const optimisticNote: TicketNote = {
+      id: tempId,
+      content: textContent,
+      htmlBody: htmlContent,
+      authorEmail: currentUserEmail || 'You',
+      isInternal: isNote,
+      createdAt: new Date().toISOString(),
+    };
+    setSelectedTicket(prev =>
+      prev && prev.id === targetTicketId ? { ...prev, notes: [optimisticNote, ...prev.notes] } : prev
+    );
+    setNewNote('');
+    editorRef.current?.clear();
+    setReplyCc('');
+    setReplyBcc('');
+    setShowReplyCcBcc(false);
+    setComposerMode(null);
+
     try {
-      const response = await fetch(`/api/admin/tickets/${selectedTicket.id}/notes`, {
+      const response = await fetch(`/api/admin/tickets/${targetTicketId}/notes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -677,23 +702,21 @@ export default function TicketsPage() {
 
       const result = await response.json();
 
-      if (result.success) {
-        // Clear the form — the realtime subscription will add the note to the UI
-        setNewNote('');
-        editorRef.current?.clear();
-        setReplyCc('');
-        setReplyBcc('');
-        setShowReplyCcBcc(false);
-        setComposerMode(null);
-
-        if (result.warning) {
-          showToast(result.warning, 'error');
-        } else {
-          showToast(isNote ? 'Internal note added' : 'Reply sent');
-        }
+      if (result.warning) {
+        showToast(result.warning, 'error');
+      } else {
+        showToast(isNote ? 'Internal note added' : 'Reply sent');
       }
     } catch (error) {
       console.error('Error adding note:', error);
+      // Roll back the optimistic note and restore the draft so nothing is lost.
+      setSelectedTicket(prev =>
+        prev && prev.id === targetTicketId
+          ? { ...prev, notes: prev.notes.filter(n => n.id !== tempId) }
+          : prev
+      );
+      editorRef.current?.setContent?.(htmlContent);
+      setComposerMode(isNote ? 'note' : 'reply');
       showToast('Failed to send reply', 'error');
     }
 

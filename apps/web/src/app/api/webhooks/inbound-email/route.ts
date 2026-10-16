@@ -74,16 +74,22 @@ export async function POST(request: NextRequest) {
     contentType: request.headers.get('content-type'),
   });
 
-  if (process.env.RESEND_WEBHOOK_SECRET) {
-    if (!verifyResendWebhook(request, rawBody)) {
-      console.error('[inbound-email] Webhook signature verification failed', {
-        hasSvixId: !!request.headers.get('svix-id'),
-        hasSvixTimestamp: !!request.headers.get('svix-timestamp'),
-        hasSvixSignature: !!request.headers.get('svix-signature'),
-        hasResendSignature: !!request.headers.get('resend-signature'),
-      });
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-    }
+  // Fail CLOSED: if the signing secret is not configured we cannot verify the
+  // sender, so we reject rather than processing an unauthenticated payload
+  // (which would let anyone create tickets and trigger outbound auto-responses).
+  if (!process.env.RESEND_WEBHOOK_SECRET) {
+    console.error('[inbound-email] RESEND_WEBHOOK_SECRET not configured — rejecting webhook');
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
+  }
+
+  if (!verifyResendWebhook(request, rawBody)) {
+    console.error('[inbound-email] Webhook signature verification failed', {
+      hasSvixId: !!request.headers.get('svix-id'),
+      hasSvixTimestamp: !!request.headers.get('svix-timestamp'),
+      hasSvixSignature: !!request.headers.get('svix-signature'),
+      hasResendSignature: !!request.headers.get('resend-signature'),
+    });
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   let payload: any;

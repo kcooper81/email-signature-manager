@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -198,16 +198,18 @@ export default function PartnerApplicationsPage() {
     }
   };
 
+  const subdomainTimer = useRef<ReturnType<typeof setTimeout>>();
   const handleSubdomainChange = (value: string) => {
     const sanitized = value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     setSubdomain(sanitized);
     setSubdomainAvailable(null);
 
-    const timeoutId = setTimeout(() => {
+    // Clear the previous pending check so rapid typing doesn't fire overlapping,
+    // out-of-order availability lookups (the returned cleanup was being discarded).
+    if (subdomainTimer.current) clearTimeout(subdomainTimer.current);
+    subdomainTimer.current = setTimeout(() => {
       checkSubdomainAvailability(sanitized);
     }, 500);
-
-    return () => clearTimeout(timeoutId);
   };
 
   const openApproveModal = (app: PartnerApplication) => {
