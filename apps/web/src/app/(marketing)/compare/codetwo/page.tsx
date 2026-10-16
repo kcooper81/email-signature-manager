@@ -35,8 +35,8 @@ const switchReasons = [
 
 const comparisonFeatures = comparisonData.map(item => ({
   name: item.feature,
-  siggly: item.siggly === true || typeof item.siggly === 'string',
-  competitor: item.codetwo === true || typeof item.codetwo === 'string',
+  siggly: item.siggly,
+  competitor: item.codetwo,
 }));
 
 export default function CodeTwoComparisonPage() {
