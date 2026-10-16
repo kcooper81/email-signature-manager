@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     // Check if user already has an auth_id from a previous invite
     const { data: existingUserRecord } = await supabaseAdmin
       .from('users')
-      .select('auth_id')
+      .select('auth_id, email')
       .eq('id', userId)
       .maybeSingle();
 
@@ -83,6 +83,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'User record not found' },
         { status: 404 }
+      );
+    }
+
+    // Bind the submitted email to the invited user's email. Without this a valid
+    // invite could be accepted under a different email, creating a mismatch
+    // between the auth account and the users row.
+    if (
+      !existingUserRecord.email ||
+      existingUserRecord.email.toLowerCase() !== String(email).toLowerCase()
+    ) {
+      return NextResponse.json(
+        { error: 'Email does not match this invitation' },
+        { status: 400 }
       );
     }
 
@@ -124,10 +137,20 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // If not found via users table, try listing with a single page (covers orphaned auth users)
+      // If not found via users table, page through auth users (covers orphaned
+      // auth users). Previously only page 1 (50 users) was scanned, so on larger
+      // instances an existing auth account would be missed and createUser would
+      // then fail with "email exists", surfacing a 500 during setup.
       if (!existingAuthUser) {
-        const { data: listData } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 50 });
-        existingAuthUser = listData?.users?.find(u => u.email === email) || null;
+        const PER_PAGE = 200;
+        const MAX_PAGES = 50; // up to 10k users
+        for (let page = 1; page <= MAX_PAGES; page++) {
+          const { data: listData } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: PER_PAGE });
+          const users = listData?.users || [];
+          const match = users.find(u => u.email?.toLowerCase() === String(email).toLowerCase());
+          if (match) { existingAuthUser = match; break; }
+          if (users.length < PER_PAGE) break; // last page reached
+        }
       }
 
       if (existingAuthUser) {

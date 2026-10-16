@@ -46,12 +46,22 @@ export async function getContentOverrides(
     return overrideCache.get(normalizedUrl) || null;
   }
 
-  // Cache miss or expired — refetch all active overrides
-  const supabase = createServiceClient();
-  const { data: overrides } = await supabase
-    .from('seo_content_overrides')
-    .select('page_url, meta_title, meta_description, meta_keywords, additional_faqs, additional_sections, internal_links, override_hero, override_features')
-    .eq('is_active', true);
+  // Cache miss or expired — refetch all active overrides.
+  // Wrapped defensively: a transient Supabase failure (outage, bad key, missing
+  // env at build time) must NOT throw, or it would fail-prerender every marketing
+  // [slug] page. On failure we degrade to no overrides (base content).
+  let overrides: any[] | null = null;
+  try {
+    const supabase = createServiceClient();
+    const result = await supabase
+      .from('seo_content_overrides')
+      .select('page_url, meta_title, meta_description, meta_keywords, additional_faqs, additional_sections, internal_links, override_hero, override_features')
+      .eq('is_active', true);
+    overrides = result.data;
+  } catch (err) {
+    console.error('[seo/overrides] getContentOverrides failed, using base content:', err);
+    return null;
+  }
 
   // Rebuild cache
   overrideCache = new Map();
@@ -160,15 +170,22 @@ export async function getGeneratedPage(
   category: string,
   slug: string
 ): Promise<SEOLandingPageData | null> {
-  const supabase = createServiceClient();
-  const { data } = await supabase
-    .from('seo_generated_pages')
-    .select('page_data')
-    .eq('category', category)
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .single();
+  // Defensive: never throw at build/request time — degrade to "no generated page"
+  // so a Supabase hiccup can't fail-prerender the marketing routes.
+  try {
+    const supabase = createServiceClient();
+    const { data } = await supabase
+      .from('seo_generated_pages')
+      .select('page_data')
+      .eq('category', category)
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .single();
 
-  if (!data) return null;
-  return data.page_data as SEOLandingPageData;
+    if (!data) return null;
+    return data.page_data as SEOLandingPageData;
+  } catch (err) {
+    console.error('[seo/overrides] getGeneratedPage failed:', err);
+    return null;
+  }
 }

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Checkbox } from '@/components/ui';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
+import { useToast } from '@/components/ui/toast';
 import {
   Search,
   Building2,
@@ -54,6 +55,7 @@ type OrgTypeFilter = 'all' | 'standard' | 'msp' | 'msp_client';
 const PAGE_SIZE = 25;
 
 export default function AccountsPage() {
+  const toast = useToast();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -280,6 +282,9 @@ export default function AccountsPage() {
     if (!error) {
       setOrganizations(prev => prev.map(o => ids.includes(o.id) ? { ...o, isSuspended: true } : o));
       bulk.clearSelection();
+      toast.success(`${ids.length} account${ids.length !== 1 ? 's' : ''} suspended`);
+    } else {
+      toast.error('Could not suspend accounts', error.message);
     }
   };
 
@@ -293,6 +298,9 @@ export default function AccountsPage() {
     if (!error) {
       setOrganizations(prev => prev.map(o => ids.includes(o.id) ? { ...o, isSuspended: false } : o));
       bulk.clearSelection();
+      toast.success(`${ids.length} account${ids.length !== 1 ? 's' : ''} reactivated`);
+    } else {
+      toast.error('Could not reactivate accounts', error.message);
     }
   };
 

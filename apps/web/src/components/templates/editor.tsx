@@ -47,6 +47,7 @@ import {
 import type { SignatureBlock, SignatureBlockType, IndustryType } from './types';
 import { BlockEditor } from './block-editor';
 import { EmailClientPreview } from './email-client-preview';
+import { IndustrySelector } from './industry-selector';
 
 interface TemplateEditorProps {
   initialBlocks: SignatureBlock[];
@@ -82,6 +83,7 @@ export function TemplateEditor({
   const router = useRouter();
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
+  const [industry, setIndustry] = useState<IndustryType>(initialIndustry);
   const [blocks, setBlocks] = useState<SignatureBlock[]>(initialBlocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -122,7 +124,7 @@ export function TemplateEditor({
     const newBlock: SignatureBlock = {
       id: crypto.randomUUID(),
       type,
-      content: getDefaultContent(type, 'general'),
+      content: getDefaultContent(type, industry),
     };
     setBlocks([...blocks, newBlock]);
     setSelectedBlockId(newBlock.id);
@@ -148,7 +150,7 @@ export function TemplateEditor({
       return;
     }
     setValidationError(null);
-    await onSave(name, description, blocks);
+    await onSave(name, description, blocks, industry);
     setIsDirty(false);
   };
 
@@ -173,6 +175,11 @@ export function TemplateEditor({
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <IndustrySelector
+            compact
+            value={industry}
+            onChange={(v) => { setIndustry(v); setIsDirty(true); }}
+          />
           {validationError && (
             <div className="flex items-center gap-2 text-destructive text-sm">
               <AlertCircle className="h-4 w-4" />

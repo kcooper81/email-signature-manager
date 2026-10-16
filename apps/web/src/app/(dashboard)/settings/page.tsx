@@ -112,16 +112,7 @@ export default function SettingsPage() {
   useUnsavedChanges(isDirty);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  interface Session {
-    id: string;
-    device: string;
-    location: string;
-    lastActive: string;
-    current: boolean;
-  }
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [showSessions, setShowSessions] = useState(false);
-  
+
   // Appearance
   const { theme, setTheme: applyAndSaveTheme } = useTheme();
 
@@ -494,38 +485,15 @@ export default function SettingsPage() {
     setSaving(false);
   };
 
-  const loadSessions = async () => {
-    const supabase = createClient();
-    
-    // Get current session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (session) {
-      // In a real implementation, you'd fetch all sessions from your database
-      // For now, we'll show the current session
-      setSessions([
-        {
-          id: session.user.id,
-          device: 'Current Device',
-          location: 'Unknown',
-          lastActive: new Date().toISOString(),
-          current: true,
-        }
-      ]);
-    }
-    
-    setShowSessions(true);
-  };
-
-  const revokeSession = async (sessionId: string) => {
-    // Supabase client SDK only supports signing out the current session.
-    // Warn the user before proceeding.
-    if (!confirm('This will sign you out of your current session. Continue?')) return;
+  // Revokes every refresh token for this user across all devices/browsers
+  // (Supabase global sign-out). This is a real, honest security action — unlike
+  // the previous placeholder "sessions" list, which only ever showed one fake row.
+  const signOutEverywhere = async () => {
+    if (!confirm('Sign out of Siggly on all devices, including this one? You will need to log in again.')) return;
 
     setSaving(true);
     const supabase = createClient();
-
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: 'global' });
     window.location.href = '/login';
   };
 
@@ -1215,54 +1183,19 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="font-medium">Active Sessions</p>
+                      <p className="font-medium">Sign out everywhere</p>
                       <p className="text-sm text-muted-foreground">
-                        Manage your active login sessions
+                        Sign out of Siggly on all devices and browsers. Use this if you&apos;ve
+                        lost a device or suspect someone else has access to your account.
                       </p>
                     </div>
-                    <Button variant="outline" onClick={loadSessions}>
+                    <Button variant="outline" onClick={signOutEverywhere} disabled={saving} className="shrink-0">
                       <Monitor className="h-4 w-4 mr-2" />
-                      {showSessions ? 'Refresh' : 'View Sessions'}
+                      Sign out all devices
                     </Button>
                   </div>
-
-                  {showSessions && (
-                    <div className="mt-4 space-y-3 pt-4 border-t">
-                      {sessions.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No active sessions found.</p>
-                      ) : (
-                        sessions.map((session) => (
-                          <div key={session.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <Monitor className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <p className="text-sm font-medium">
-                                  {session.device}
-                                  {session.current && (
-                                    <span className="ml-2 text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded">Current</span>
-                                  )}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Last active: {new Date(session.lastActive).toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                            {!session.current && (
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => revokeSession(session.id)}
-                              >
-                                Revoke
-                              </Button>
-                            )}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 <div className="pt-6 border-t">

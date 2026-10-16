@@ -329,10 +329,9 @@ export default function AnalyticsPage() {
 
     // Calculate average deployment time from actual data
     // For now, estimate based on user count (larger deployments take longer)
-    const avgUsersPerDeployment = deployments?.length 
+    const avgUsersPerDeployment = deployments?.length
       ? Math.round(deployments.reduce((sum, d) => sum + (d.total_users || 0), 0) / deployments.length)
       : 0;
-    const avgDeploymentTime = avgUsersPerDeployment > 0 ? Math.min(avgUsersPerDeployment * 2 + 10, 120) : 0;
 
     // Categorize failed deployment reasons based on actual failure patterns
     const failedDeploymentReasons: { reason: string; count: number }[] = [];
@@ -438,7 +437,7 @@ export default function AnalyticsPage() {
       pendingDeployments,
       syncStatus,
       errorRate,
-      avgDeploymentTime,
+      avgUsersPerDeployment,
       failedDeploymentReasons,
       newUsersThisPeriod,
       usersWithoutSignatures,

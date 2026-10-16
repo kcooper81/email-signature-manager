@@ -36,16 +36,25 @@ export async function POST(request: NextRequest) {
 
     let stripeCustomerId = subscription?.stripe_customer_id;
 
-    // If no stripe_customer_id, try to find customer by email in Stripe
+    // If no stripe_customer_id, try to find the customer by email in Stripe.
+    // Customers are created with metadata.organizationId, so prefer the one that
+    // belongs to THIS org — never bind a customer that was created for a different
+    // organization (e.g. when one person owns multiple orgs under the same email).
     if (!stripeCustomerId && user.email) {
       const customers = await stripe.customers.list({
         email: user.email,
-        limit: 1,
+        limit: 10,
       });
 
-      if (customers.data.length > 0) {
-        stripeCustomerId = customers.data[0].id;
-        
+      const match =
+        customers.data.find(c => c.metadata?.organizationId === userData.organization_id) ||
+        // Fall back to a customer with no org metadata (legacy), but never one
+        // whose metadata points at a different organization.
+        customers.data.find(c => !c.metadata?.organizationId);
+
+      if (match) {
+        stripeCustomerId = match.id;
+
         // Update the subscription record with the found customer ID
         if (subscription) {
           await supabase

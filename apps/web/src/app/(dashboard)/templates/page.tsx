@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, EmptyState, useToast } from '@/components/ui';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, EmptyState, useToast, Input } from '@/components/ui';
 import { PageHeader } from '@/components/dashboard';
-import { Plus, FileSignature, Pencil, Trash2, Users, Lock, Grid3X3, List, Calendar, LayoutTemplate } from 'lucide-react';
+import { Plus, FileSignature, Pencil, Trash2, Users, Lock, Grid3X3, List, Calendar, LayoutTemplate, Copy, Loader2 } from 'lucide-react';
 import { SignaturePreview } from '@/components/templates/preview';
 import type { SignatureBlock } from '@/components/templates/types';
 import { useSubscription, usePayGatesBypass } from '@/hooks/use-subscription';
@@ -17,6 +17,7 @@ interface Template {
   name: string;
   description: string | null;
   blocks: SignatureBlock[];
+  industry?: string | null;
   is_default: boolean;
   created_at: string;
   updated_at: string;
@@ -31,8 +32,10 @@ export default function TemplatesPage() {
   const devBypass = usePayGatesBypass();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const toast = useToast();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [search, setSearch] = useState('');
   const { currentClientOrg } = useMspContext();
 
   useEffect(() => {
@@ -76,6 +79,41 @@ export default function TemplatesPage() {
     }
     setLoading(false);
   };
+
+  const duplicateTemplate = async (template: Template) => {
+    setDuplicatingId(template.id);
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${template.name} (Copy)`,
+          description: template.description || '',
+          blocks: template.blocks,
+          industry: template.industry || 'general',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Could not duplicate template');
+        return;
+      }
+      toast.success('Template duplicated');
+      await loadTemplates();
+      refresh();
+    } catch {
+      toast.error('Could not duplicate template');
+    } finally {
+      setDuplicatingId(null);
+    }
+  };
+
+  const visibleTemplates = search.trim()
+    ? templates.filter(t => {
+        const q = search.toLowerCase();
+        return t.name.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q);
+      })
+    : templates;
 
   const handleDeleteClick = (id: string) => {
     setDeleteConfirmId(id);
@@ -176,6 +214,14 @@ export default function TemplatesPage() {
         ) : (
           <div />
         )}
+        {templates.length > 0 && (
+          <Input
+            placeholder="Search templates..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-9 w-full sm:w-56"
+          />
+        )}
         <div className="flex border rounded-md">
           <Button
             variant={viewMode === 'grid' ? 'default' : 'ghost'}
@@ -244,9 +290,19 @@ export default function TemplatesPage() {
             />
           </CardContent>
         </Card>
+      ) : visibleTemplates.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="py-10 text-center text-muted-foreground">
+            <FileSignature className="h-8 w-8 mx-auto mb-3 opacity-40" />
+            <p className="text-sm font-medium">No templates match &ldquo;{search}&rdquo;</p>
+            <button onClick={() => setSearch('')} className="text-xs text-primary hover:underline mt-1">
+              Clear search
+            </button>
+          </CardContent>
+        </Card>
       ) : viewMode === 'grid' ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {templates.map((template) => (
+          {visibleTemplates.map((template) => (
             <Card key={template.id} className="group relative">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -267,6 +323,16 @@ export default function TemplatesPage() {
                         <Pencil className="h-4 w-4" />
                       </Button>
                     </Link>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      title="Duplicate template"
+                      disabled={duplicatingId === template.id}
+                      onClick={() => duplicateTemplate(template)}
+                    >
+                      {duplicatingId === template.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -314,7 +380,7 @@ export default function TemplatesPage() {
                 </tr>
               </thead>
               <tbody>
-                {templates.map((template) => (
+                {visibleTemplates.map((template) => (
                   <tr key={template.id} className="border-b last:border-0 group hover:bg-muted/50">
                     <td className="p-4">
                       <Link href={`/templates/${template.id}`}>
@@ -359,6 +425,16 @@ export default function TemplatesPage() {
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </Link>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          title="Duplicate template"
+                          disabled={duplicatingId === template.id}
+                          onClick={() => duplicateTemplate(template)}
+                        >
+                          {duplicatingId === template.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Copy className="h-4 w-4" />}
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"

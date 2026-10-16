@@ -116,12 +116,29 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  // Calculate success rate from actual deployment data
-  const successfulDeployments = deployments?.filter(d => d.status === 'completed').length || 0;
-  const totalDeployments = deployments?.length || 0;
-  const successRate = totalDeployments > 0 
-    ? Math.round((successfulDeployments / totalDeployments) * 100) 
+  // Calculate success rate from ALL of this month's deployments (not just the 5
+  // shown above). Uses per-user successful/failed counts for an accurate rate.
+  const { data: deploymentStats } = await supabase
+    .from('signature_deployments')
+    .select('successful_count, failed_count')
+    .eq('organization_id', organizationId)
+    .gte('created_at', startOfMonth.toISOString());
+
+  const totalSuccessful = deploymentStats?.reduce((sum, d) => sum + (d.successful_count || 0), 0) || 0;
+  const totalFailed = deploymentStats?.reduce((sum, d) => sum + (d.failed_count || 0), 0) || 0;
+  const totalProcessed = totalSuccessful + totalFailed;
+  const successRate = totalProcessed > 0
+    ? Math.round((totalSuccessful / totalProcessed) * 100)
     : 0;
+
+  // Latest deployments for the "Recent Activity" list — NOT month-filtered, so the
+  // list isn't empty on the 1st of the month when there's recent prior activity.
+  const { data: recentDeployments } = await supabase
+    .from('signature_deployments')
+    .select('id, status, successful_count, failed_count, total_users, created_at, template:signature_templates(name)')
+    .eq('organization_id', organizationId)
+    .order('created_at', { ascending: false })
+    .limit(5);
 
   // Get users with signatures - use user_deployment_history for accuracy, fallback to target_emails
   // Check for both 'completed' and 'success' status for backwards compatibility
@@ -277,9 +294,9 @@ export default async function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {deployments && deployments.length > 0 ? (
+          {recentDeployments && recentDeployments.length > 0 ? (
             <div className="space-y-4">
-              {deployments.map((deployment: any) => (
+              {recentDeployments.map((deployment: any) => (
                 <div key={deployment.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {deployment.status === 'completed' ? (

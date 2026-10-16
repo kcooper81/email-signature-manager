@@ -8,6 +8,7 @@ import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFo
 import { Select } from '@/components/ui/select';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/components/ui/toast';
 import {
   ArrowLeft,
   Building2,
@@ -110,11 +111,13 @@ interface AuditLog {
 const PLAN_OPTIONS = [
   { value: 'free', label: 'Free' },
   { value: 'professional', label: 'Professional' },
+  { value: 'enterprise', label: 'Enterprise' },
 ];
 
 export default function OrgDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const toast = useToast();
   const orgId = params.orgId as string;
 
   const [loading, setLoading] = useState(true);
@@ -123,6 +126,7 @@ export default function OrgDetailPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [deployments, setDeployments] = useState<Deployment[]>([]);
+  const [deploymentCount, setDeploymentCount] = useState(0);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
 
@@ -251,13 +255,14 @@ export default function OrgDetailPage() {
       })) || []
     );
 
-    // Get recent deployments
-    const { data: deploymentData } = await supabase
+    // Get recent deployments (list capped) plus the true total count for the stat.
+    const { data: deploymentData, count: deploymentTotal } = await supabase
       .from('signature_deployments')
-      .select('id, status, total_users, successful_count, failed_count, created_at, template:signature_templates(name)')
+      .select('id, status, total_users, successful_count, failed_count, created_at, template:signature_templates(name)', { count: 'exact' })
       .eq('organization_id', orgId)
       .order('created_at', { ascending: false })
       .limit(10);
+    setDeploymentCount(deploymentTotal || 0);
 
     setDeployments(
       deploymentData?.map((d: any) => ({
@@ -327,13 +332,15 @@ export default function OrgDetailPage() {
   };
 
   const startImpersonation = () => {
-    if (org) {
-      localStorage.setItem('admin_impersonate_org', JSON.stringify({
-        id: org.id,
-        name: org.name,
-      }));
-      window.location.href = '/dashboard';
+    if (!org) return;
+    if (!confirm(`View the dashboard as "${org.name}"? You'll see their account exactly as they do until you exit impersonation.`)) {
+      return;
     }
+    localStorage.setItem('admin_impersonate_org', JSON.stringify({
+      id: org.id,
+      name: org.name,
+    }));
+    window.location.href = '/dashboard';
   };
 
   const handleChangePlan = async () => {
@@ -355,6 +362,7 @@ export default function OrgDetailPage() {
 
       setSubscription(prev => prev ? { ...prev, plan: selectedPlan } : prev);
       setShowPlanModal(false);
+      toast.success('Plan updated', `Now on ${selectedPlan}`);
     } catch (err: any) {
       setPlanError(err.message);
     } finally {
@@ -379,10 +387,13 @@ export default function OrgDetailPage() {
         throw new Error(data.error || 'Failed to update status');
       }
 
-      setOrg(prev => prev ? { ...prev, isSuspended: !prev.isSuspended } : prev);
+      const nowSuspended = !org.isSuspended;
+      setOrg(prev => prev ? { ...prev, isSuspended: nowSuspended } : prev);
       setShowSuspendDialog(false);
+      toast.success(nowSuspended ? 'Account suspended' : 'Account reactivated', org.name);
     } catch (err: any) {
       console.error('Failed to toggle suspension:', err);
+      toast.error('Could not update account status', err.message);
     } finally {
       setSuspendLoading(false);
     }
@@ -508,7 +519,7 @@ export default function OrgDetailPage() {
                 <Rocket className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-lg font-bold">{deployments.length}</p>
+                <p className="text-lg font-bold">{deploymentCount}</p>
                 <p className="text-xs text-slate-500">Deployments</p>
               </div>
             </div>

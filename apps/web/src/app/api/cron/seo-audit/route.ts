@@ -5,19 +5,18 @@ import { analyzeIssues } from '@/lib/seo/analyzer';
 import { generateRecommendations } from '@/lib/seo/optimizer';
 import { enhanceRecommendation, isClaudeConfigured } from '@/lib/seo/ai-enhancer';
 import { mergeConfig } from '@/lib/seo/config';
+import { isValidCronAuth } from '@/lib/auth/cron';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5 minutes max (Vercel Pro)
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify cron secret
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-    if (!cronSecret) {
+    // Verify cron secret (constant-time)
+    if (!process.env.CRON_SECRET) {
       return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 500 });
     }
-    if (authHeader !== `Bearer ${cronSecret}`) {
+    if (!isValidCronAuth(request.headers.get('authorization'))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
