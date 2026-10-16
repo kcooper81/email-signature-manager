@@ -221,6 +221,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/tools/email-preview`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tools/qr-code-generator`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
     { url: `${baseUrl}/tools/banner-maker`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/image-size-checker`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.75 },
   ];
 
   // Industry pages (high-value for niche SEO)
