@@ -249,6 +249,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/industries`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/platforms`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/alternatives`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${baseUrl}/compare`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/guides`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/email-signatures`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/email-signature-templates`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.8 },
@@ -259,7 +260,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/integrations/calendly`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/integrations/hubspot`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.7 },
     // Company / trust pages
-    { url: `${baseUrl}/reviews`, lastModified: staticPageDate, changeFrequency: 'weekly', priority: 0.7 },
+    // NOTE: /reviews is auth-gated (redirects to /login) — excluded from the
+    // sitemap until it's a public, server-rendered page. Re-add when live.
     { url: `${baseUrl}/careers`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/security`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/privacy`, lastModified: staticPageDate, changeFrequency: 'monthly', priority: 0.3 },

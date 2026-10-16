@@ -35,8 +35,8 @@ const switchReasons = [
 
 const comparisonFeatures = comparisonData.map(item => ({
   name: item.feature,
-  siggly: item.siggly === true || typeof item.siggly === 'string',
-  competitor: item.wisestamp === true || typeof item.wisestamp === 'string',
+  siggly: item.siggly,
+  competitor: item.wisestamp,
 }));
 
 export default function WiseStampComparisonPage() {
