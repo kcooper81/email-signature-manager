@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
+import { formatSlugLabel } from '@/lib/seo-pages/slug-label';
 
 const SEGMENT_LABELS: Record<string, string> = {
   blog: 'Blog',
@@ -32,10 +33,7 @@ const SEGMENT_LABELS: Record<string, string> = {
 
 function formatSegment(segment: string): string {
   if (SEGMENT_LABELS[segment]) return SEGMENT_LABELS[segment];
-  return segment
-    .split('-')
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
+  return formatSlugLabel(segment);
 }
 
 export function VisualBreadcrumbs() {
