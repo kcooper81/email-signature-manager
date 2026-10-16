@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { exchangeGustoCode, createGustoWebhook } from '@/lib/oauth/gusto';
 import { encryptToken } from '@/lib/oauth/encryption';
+import { verifyState } from '@/lib/oauth/state';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,11 +43,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Parse state to get config ID and sandbox flag, verify userId ownership
-    const stateData = JSON.parse(Buffer.from(state, 'base64').toString());
+    // Verify the HMAC-signed state (rejects forged/tampered state) and confirm it
+    // was issued to this same user.
+    const stateData = verifyState(state);
+    if (!stateData) {
+      return NextResponse.redirect(
+        new URL('/settings/hr-sync?error=invalid_state', request.url)
+      );
+    }
     const { configId, useSandbox } = stateData;
 
-    if (stateData.userId && stateData.userId !== user.id) {
+    if (stateData.userId !== userData.id) {
       return NextResponse.redirect(
         new URL('/settings/hr-sync?error=state_mismatch', request.url)
       );

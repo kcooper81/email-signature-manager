@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, checkLimit, planDenied, limitDenied } from '@/lib/billing/plan-guard';
+import { ALLOWED_TARGET_FIELDS } from '@/lib/hr-sync/field-mapper';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,12 +57,12 @@ export async function POST(request: NextRequest) {
         let writeError = false;
         if (change.change_type === 'create') {
           const data: Record<string, any> = { organization_id: userData.organization_id, email: change.user_email, source: 'hr_sync' };
-          for (const fc of (change.field_changes || [])) { data[fc.field] = fc.newValue; }
+          for (const fc of (change.field_changes || [])) { if (ALLOWED_TARGET_FIELDS.has(fc.field)) data[fc.field] = fc.newValue; }
           const { error } = await serviceClient.from('users').insert(data);
           if (error) { console.error('Bulk approve user insert failed:', error); writeError = true; }
         } else if (change.change_type === 'update' && change.user_id) {
           const updates: Record<string, any> = {};
-          for (const fc of (change.field_changes || [])) { updates[fc.field] = fc.newValue; }
+          for (const fc of (change.field_changes || [])) { if (ALLOWED_TARGET_FIELDS.has(fc.field)) updates[fc.field] = fc.newValue; }
           const { error } = await serviceClient.from('users').update(updates).eq('id', change.user_id).eq('organization_id', userData.organization_id);
           if (error) { console.error('Bulk approve user update failed:', error); writeError = true; }
         } else if (change.change_type === 'deactivate' && change.user_id) {

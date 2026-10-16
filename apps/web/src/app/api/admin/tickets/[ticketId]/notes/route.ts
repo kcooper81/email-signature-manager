@@ -9,6 +9,9 @@ export async function POST(
 ) {
   try {
     const { content, isInternal, isHtml, replyAs, cc, bcc } = await request.json();
+    // Single source of truth for internal-vs-reply. Defaults to internal when the
+    // flag is omitted, so an ambiguous request never accidentally emails the customer.
+    const internal = isInternal !== false;
 
     if (!content?.trim()) {
       return NextResponse.json(
@@ -60,7 +63,7 @@ export async function POST(
         author_id: userData.id,
         content: content.trim(),
         html_body: isHtml ? content.trim() : null,
-        is_internal: isInternal !== false,
+        is_internal: internal,
         email_sent: false,
       })
       .select('id, content, html_body, is_internal, created_at')
@@ -74,7 +77,7 @@ export async function POST(
       );
     }
 
-    if (!isInternal && ticket.user_email) {
+    if (!internal && ticket.user_email) {
       try {
         // Use the mailbox the user originally emailed, or fall back to support
         const replyFromMailbox = replyAs || ticket.inbox_email || null;
