@@ -162,6 +162,88 @@ export default function ExclaimerComparisonPage() {
           <p className="text-center text-sm text-gray-500 mt-6">
             For a 50-person team: Siggly = $75/mo vs Exclaimer = $100+/mo. At 100 users: $150/mo vs $200+/mo.
           </p>
+          <p className="text-center text-xs text-gray-400 mt-3">
+            Pricing reflects each vendor&apos;s publicly listed rates as of October 2026 and may change — check the vendor&apos;s website for current pricing.
+          </p>
+        </div>
+      </section>
+
+      {/* Detailed breakdown */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6 prose prose-gray">
+          <h2 className="text-3xl font-bold mb-8 text-center">Siggly vs Exclaimer: the detailed breakdown</h2>
+
+          <h3 className="text-xl font-semibold mb-2">Deployment and setup</h3>
+          <p className="text-gray-600 mb-6">
+            Siggly connects to Google Workspace or Microsoft 365 over OAuth and deploys signatures
+            to your whole team in minutes — no mail-flow rules or transport agents to configure.
+            Exclaimer is built around a mail-flow connector that stamps signatures server-side as
+            mail passes through Exchange. That transport-level approach is powerful, but it typically
+            involves more up-front configuration and is usually IT-led.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-2">Platform support</h3>
+          <p className="text-gray-600 mb-6">
+            Both tools support Google Workspace and Microsoft 365. If you&apos;re a large Microsoft 365
+            or on-premise Exchange organization that needs server-side, transport-level stamping on
+            every device including native mobile mail apps, Exclaimer is the more mature option and
+            we&apos;ll say so plainly. If your team is on Google Workspace — or you want fast, modern
+            deployment without managing Exchange transport rules — Siggly is designed for exactly that.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-2">Pricing model</h3>
+          <p className="text-gray-600 mb-6">
+            Siggly is a flat $1.50 per user per month with a genuinely free tier for up to 5 users and
+            no annual contract. Exclaimer uses tiered annual plans with no free tier, so you commit
+            up front. For small and mid-sized teams that want to try before they buy, the free tier and
+            month-to-month billing are the clearest differences.
+          </p>
+        </div>
+      </section>
+
+      {/* Who should choose Exclaimer — honest balance */}
+      <section className="py-16">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-8">
+            <h2 className="text-2xl font-bold mb-3">Who should choose Exclaimer?</h2>
+            <p className="text-gray-600">
+              Exclaimer is a strong, established choice if you&apos;re a large Microsoft 365 or Exchange
+              organization that needs server-side transport-level stamping across every client (including
+              native mobile apps), you have dedicated IT to manage mail-flow configuration, and you
+              prefer a long-tenured enterprise vendor. If that describes you, it&apos;s a capable product.
+            </p>
+            <h2 className="text-2xl font-bold mt-6 mb-3">When Siggly is the better fit</h2>
+            <p className="text-gray-600">
+              Choose Siggly if you&apos;re on Google Workspace, want a free tier and month-to-month
+              billing, need to be live in minutes without IT managing Exchange rules, or simply want a
+              modern interface your team will actually use. Most small and mid-sized teams fit here.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-center mb-8">Siggly vs Exclaimer — common questions</h2>
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold mb-1">Is Siggly a good Exclaimer alternative?</h3>
+              <p className="text-sm text-gray-600">Yes — especially for Google Workspace teams and small-to-mid-sized organizations. Siggly covers the core signature-management needs (centralized templates, deployment, click tracking, campaign banners) with a free tier, no annual contract, and faster setup. Large Exchange-centric enterprises that need transport-level stamping may still prefer Exclaimer.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">How much cheaper is Siggly than Exclaimer?</h3>
+              <p className="text-sm text-gray-600">Siggly is $1.50/user/month versus Exclaimer&apos;s publicly listed $2-3/user/month (as of October 2026) — roughly 25-50% less — plus Siggly has a free plan for up to 5 users. For a 100-person team that&apos;s about $150/mo versus $200+/mo.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">Can I migrate my Exclaimer signatures to Siggly?</h3>
+              <p className="text-sm text-gray-600">Yes. You can recreate signatures in Siggly&apos;s editor or import existing HTML, then deploy to your whole team. Most teams are up and running the same day.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-1">Does Siggly work with Microsoft 365 like Exclaimer?</h3>
+              <p className="text-sm text-gray-600">Siggly supports Microsoft 365 (Outlook on the web and client deployment). For pure server-side transport stamping at enterprise Exchange scale, Exclaimer is more specialized — Siggly focuses on fast, modern deployment for Google Workspace and M365 teams.</p>
+            </div>
+          </div>
         </div>
       </section>
 
