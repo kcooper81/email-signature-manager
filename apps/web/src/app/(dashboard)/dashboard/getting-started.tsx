@@ -160,7 +160,7 @@ export function GettingStartedCard({
           </div>
           
           <p className="text-xs text-muted-foreground mt-4 text-center">
-            You can dismiss this card anytime. Access setup from Settings if needed.
+            You can dismiss this card anytime once you&apos;re set up.
           </p>
         </CardContent>
       )}

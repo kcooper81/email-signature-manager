@@ -124,6 +124,22 @@ export async function PATCH(request: NextRequest) {
       if (!['super_admin', 'support'].includes(role)) {
         return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
       }
+      // Guard: don't let the last Super Admin be demoted to Support — that would
+      // leave nobody able to manage platform admins and could lock out /admin.
+      if (role === 'support') {
+        const { count } = await supabaseAdmin
+          .from('users')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_super_admin', true)
+          .eq('super_admin_role', 'super_admin')
+          .neq('id', userId);
+        if (!count || count < 1) {
+          return NextResponse.json(
+            { error: 'Cannot demote the last Super Admin. Promote another admin first.' },
+            { status: 400 }
+          );
+        }
+      }
       updateData.super_admin_role = role;
       if (role === 'super_admin') {
         updateData.super_admin_allowed_views = null;
@@ -168,6 +184,27 @@ export async function DELETE(request: NextRequest) {
     // Prevent removing yourself
     if (userId === admin.id) {
       return NextResponse.json({ error: 'Cannot remove your own admin access' }, { status: 400 });
+    }
+
+    // Guard: don't let the last Super Admin be removed.
+    const { data: target } = await supabaseAdmin
+      .from('users')
+      .select('super_admin_role')
+      .eq('id', userId)
+      .single();
+    if (target?.super_admin_role === 'super_admin') {
+      const { count } = await supabaseAdmin
+        .from('users')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_super_admin', true)
+        .eq('super_admin_role', 'super_admin')
+        .neq('id', userId);
+      if (!count || count < 1) {
+        return NextResponse.json(
+          { error: 'Cannot remove the last Super Admin. Promote another admin first.' },
+          { status: 400 }
+        );
+      }
     }
 
     const { error: updateErr } = await supabaseAdmin

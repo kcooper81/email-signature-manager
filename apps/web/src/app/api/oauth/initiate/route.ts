@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getGustoAuthUrl } from '@/lib/oauth/gusto';
 import { getBambooHRAuthUrl } from '@/lib/oauth/bamboohr';
+import { signState } from '@/lib/oauth/state';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,13 +47,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create configuration' }, { status: 500 });
     }
 
-    // Generate state parameter with config ID
-    const stateData = {
+    // Generate a tamper-proof (HMAC-signed) state parameter bound to this user.
+    const state = signState({
       configId: config.id,
+      userId: userData.id,
       subdomain: subdomain,
       useSandbox: useSandbox || false,
-    };
-    const state = Buffer.from(JSON.stringify(stateData)).toString('base64');
+    });
 
     // Generate OAuth URL based on provider
     let authUrl: string;

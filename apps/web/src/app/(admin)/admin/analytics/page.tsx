@@ -386,7 +386,7 @@ export default function SignatureAnalyticsPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{metrics?.uniqueOrgs.toLocaleString()}</p>
-                <p className="text-xs text-slate-500">Active Organizations</p>
+                <p className="text-xs text-slate-500" title="Based on a sample of recent click/impression events.">Active Organizations (sampled)</p>
               </div>
             </div>
           </CardContent>
@@ -428,7 +428,7 @@ export default function SignatureAnalyticsPage() {
               Top Performing Organizations
             </CardTitle>
             <CardDescription>
-              Top 10 organizations by click count
+              Top 10 organizations by click count (based on a sample of recent events)
             </CardDescription>
           </CardHeader>
           <CardContent>

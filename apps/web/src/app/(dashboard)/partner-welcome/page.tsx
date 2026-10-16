@@ -35,9 +35,19 @@ export default function PartnerWelcomePage() {
     companyName: null,
   });
 
+  const [billingExplored, setBillingExplored] = useState(false);
+
   useEffect(() => {
     loadSetupStatus();
+    try {
+      setBillingExplored(localStorage.getItem('partner_billing_explored') === 'true');
+    } catch { /* ignore */ }
   }, []);
+
+  const markBillingExplored = () => {
+    setBillingExplored(true);
+    try { localStorage.setItem('partner_billing_explored', 'true'); } catch { /* ignore */ }
+  };
 
   const loadSetupStatus = async () => {
     try {
@@ -86,7 +96,7 @@ export default function PartnerWelcomePage() {
     ? status.partnerTier.charAt(0).toUpperCase() + status.partnerTier.slice(1)
     : 'Registered';
 
-  const completedCount = [status.hasBranding, status.hasClients].filter(Boolean).length;
+  const completedCount = [status.hasBranding, status.hasClients, billingExplored].filter(Boolean).length;
 
   const steps = [
     {
@@ -112,7 +122,7 @@ export default function PartnerWelcomePage() {
       description: 'Review your partner margins, client subscriptions, and revenue overview.',
       href: '/clients?tab=billing',
       icon: CreditCard,
-      completed: false,
+      completed: billingExplored,
       iconBg: 'bg-green-100 dark:bg-green-900/30',
       iconColor: 'text-green-600',
     },
@@ -156,7 +166,11 @@ export default function PartnerWelcomePage() {
       {/* Setup Steps */}
       <div className="grid gap-4">
         {steps.map((step) => (
-          <Link key={step.href} href={step.href}>
+          <Link
+            key={step.href}
+            href={step.href}
+            onClick={() => { if (step.href.includes('tab=billing')) markBillingExplored(); }}
+          >
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="py-5">
                 <div className="flex items-center gap-4">

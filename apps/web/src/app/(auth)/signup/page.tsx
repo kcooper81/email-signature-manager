@@ -33,6 +33,8 @@ export default function SignupPage() {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     email?: string;
     password?: string;
@@ -223,6 +225,29 @@ export default function SignupPage() {
     }
   };
 
+  const resendVerification = async () => {
+    setResending(true);
+    setResendMessage(null);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: formData.email,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (error) {
+        setResendMessage(null);
+        setError(error.message);
+      } else {
+        setResendMessage('Verification email sent — check your inbox.');
+      }
+    } catch {
+      setError('Could not resend the email. Please try again.');
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (checkingSession) {
     return (
       <Card className="w-full max-w-md shadow-2xl">
@@ -248,21 +273,36 @@ export default function SignupPage() {
             <span className="font-medium text-foreground">{formData.email}</span>
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center text-sm text-muted-foreground">
+        <CardContent className="text-center text-sm text-muted-foreground space-y-4">
           <p>Click the link in the email to verify your account and get started.</p>
-          <p className="mt-4">
-            Didn&apos;t receive the email? Check your spam folder or{' '}
-            <button
-              onClick={() => setStep('form')}
-              className="text-primary hover:underline"
+          <p>Didn&apos;t receive it? Check your spam folder, then resend.</p>
+          {resendMessage && (
+            <p className="text-green-600 font-medium">{resendMessage}</p>
+          )}
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={resendVerification}
+              disabled={resending}
             >
-              try again
+              {resending ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Resending…</>
+              ) : (
+                'Resend verification email'
+              )}
+            </Button>
+            <button
+              onClick={() => { setResendMessage(null); setStep('form'); }}
+              className="text-sm text-primary hover:underline"
+            >
+              Entered the wrong email? Change it
             </button>
-          </p>
+          </div>
         </CardContent>
         <CardFooter>
           <Link href="/login" className="w-full">
-            <Button variant="outline" className="w-full">
+            <Button variant="ghost" className="w-full">
               Back to login
             </Button>
           </Link>

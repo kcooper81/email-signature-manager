@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { getOrgPlan, checkFeature, checkLimit, planDenied, limitDenied } from '@/lib/billing/plan-guard';
 import { processEvent, type WorkflowRunContext } from '@/lib/lifecycle/workflow-runner';
+import { ALLOWED_TARGET_FIELDS } from '@/lib/hr-sync/field-mapper';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,7 +53,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (change.change_type === 'create') {
       const data: Record<string, any> = { organization_id: userData.organization_id, email: change.user_email, source: 'hr_sync' };
       for (const fc of (change.field_changes || [])) {
-        data[fc.field] = fc.newValue;
+        // Only allow safe, mappable profile columns — never role/org/admin flags.
+        if (ALLOWED_TARGET_FIELDS.has(fc.field)) data[fc.field] = fc.newValue;
       }
       const { error: insertErr } = await serviceClient.from('users').insert(data);
       if (insertErr) {
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     } else if (change.change_type === 'update' && change.user_id) {
       const updates: Record<string, any> = {};
       for (const fc of (change.field_changes || [])) {
-        updates[fc.field] = fc.newValue;
+        if (ALLOWED_TARGET_FIELDS.has(fc.field)) updates[fc.field] = fc.newValue;
       }
       const { error: updateErr } = await serviceClient.from('users').update(updates).eq('id', change.user_id).eq('organization_id', userData.organization_id);
       if (updateErr) {

@@ -121,6 +121,30 @@ export default function InboxSettingsPage() {
     }
   };
 
+  // Persist the Enabled toggle immediately — previously it only changed local
+  // state, so it looked live but silently reverted unless you also Edit→Saved.
+  const toggleMailboxEnabled = async (mb: MailboxSignature, enabled: boolean) => {
+    setMailboxes(prev => prev.map(m => m.id === mb.id ? { ...m, is_enabled: enabled } : m));
+    try {
+      const res = await fetch('/api/admin/inbox-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'mailbox',
+          id: mb.id,
+          signature_html: mb.signature_html,
+          is_enabled: enabled,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+      toast.success(enabled ? 'Mailbox enabled' : 'Mailbox disabled');
+    } catch {
+      // Revert on failure
+      setMailboxes(prev => prev.map(m => m.id === mb.id ? { ...m, is_enabled: !enabled } : m));
+      toast.error('Could not update mailbox');
+    }
+  };
+
   const saveAutoResponder = async () => {
     setSaving('autoresponder');
     try {
@@ -254,7 +278,7 @@ export default function InboxSettingsPage() {
                       <input
                         type="checkbox"
                         checked={mb.is_enabled}
-                        onChange={(e) => setMailboxes(prev => prev.map(m => m.id === mb.id ? { ...m, is_enabled: e.target.checked } : m))}
+                        onChange={(e) => toggleMailboxEnabled(mb, e.target.checked)}
                         className="w-3.5 h-3.5 rounded"
                       />
                       Enabled

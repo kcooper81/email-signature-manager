@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, ArrowLeft, Send, MapPin, Phone, MessageSquare } from 'lucide-react';
+import { Mail, ArrowLeft, Send, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
