@@ -116,11 +116,19 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  // Calculate success rate from actual deployment data
-  const successfulDeployments = deployments?.filter(d => d.status === 'completed').length || 0;
-  const totalDeployments = deployments?.length || 0;
-  const successRate = totalDeployments > 0 
-    ? Math.round((successfulDeployments / totalDeployments) * 100) 
+  // Calculate success rate from ALL of this month's deployments (not just the 5
+  // shown above). Uses per-user successful/failed counts for an accurate rate.
+  const { data: deploymentStats } = await supabase
+    .from('signature_deployments')
+    .select('successful_count, failed_count')
+    .eq('organization_id', organizationId)
+    .gte('created_at', startOfMonth.toISOString());
+
+  const totalSuccessful = deploymentStats?.reduce((sum, d) => sum + (d.successful_count || 0), 0) || 0;
+  const totalFailed = deploymentStats?.reduce((sum, d) => sum + (d.failed_count || 0), 0) || 0;
+  const totalProcessed = totalSuccessful + totalFailed;
+  const successRate = totalProcessed > 0
+    ? Math.round((totalSuccessful / totalProcessed) * 100)
     : 0;
 
   // Get users with signatures - use user_deployment_history for accuracy, fallback to target_emails

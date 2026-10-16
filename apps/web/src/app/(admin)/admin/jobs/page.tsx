@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button, Checkbox } from '@/components/ui';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
+import { useToast } from '@/components/ui/toast';
 import {
   Search,
   Loader2,
@@ -60,12 +61,14 @@ const STATUS_ICONS: Record<string, typeof Clock> = {
 };
 
 export default function AdminJobsPage() {
+  const toast = useToast();
   const [jobs, setJobs] = useState<JobLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [statusCounts, setStatusCounts] = useState({ processing: 0, failed: 0, completed: 0 });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const sort = useSortableTable<JobLog>('created_at', 'desc');
@@ -93,6 +96,25 @@ export default function AdminJobsPage() {
   useEffect(() => {
     loadJobs();
   }, [page, statusFilter]);
+
+  // Status tiles use real count queries so "Running / Failed / Completed" reflect
+  // the whole table, not just the current page of jobs.
+  useEffect(() => {
+    const loadStatusCounts = async () => {
+      const supabase = createClient();
+      const [processing, failed, completed] = await Promise.all([
+        supabase.from('job_logs').select('id', { count: 'exact', head: true }).eq('status', 'processing'),
+        supabase.from('job_logs').select('id', { count: 'exact', head: true }).eq('status', 'failed'),
+        supabase.from('job_logs').select('id', { count: 'exact', head: true }).eq('status', 'completed'),
+      ]);
+      setStatusCounts({
+        processing: processing.count || 0,
+        failed: failed.count || 0,
+        completed: completed.count || 0,
+      });
+    };
+    loadStatusCounts();
+  }, [page, statusFilter, totalCount]);
 
   const loadJobs = async () => {
     setLoading(true);
@@ -175,6 +197,9 @@ export default function AdminJobsPage() {
             : j
         )
       );
+      toast.success('Job queued for retry');
+    } else {
+      toast.error('Could not retry job', error.message);
     }
 
     setRetryingId(null);
@@ -194,9 +219,9 @@ export default function AdminJobsPage() {
 
   const stats = {
     total: totalCount,
-    processing: jobs.filter(j => j.status === 'processing').length,
-    failed: jobs.filter(j => j.status === 'failed').length,
-    completed: jobs.filter(j => j.status === 'completed').length,
+    processing: statusCounts.processing,
+    failed: statusCounts.failed,
+    completed: statusCounts.completed,
   };
 
   const bulkRetryFailed = async () => {
@@ -204,11 +229,13 @@ export default function AdminJobsPage() {
     const failedJobs = jobs.filter(j => ids.includes(j.id) && j.status === 'failed');
     if (failedJobs.length === 0) return;
     const supabase = createClient();
+    let failures = 0;
     for (const job of failedJobs) {
-      await supabase
+      const { error } = await supabase
         .from('job_logs')
         .update({ status: 'pending', retry_count: job.retry_count + 1, error_message: null, started_at: null, completed_at: null })
         .eq('id', job.id);
+      if (error) failures++;
     }
     setJobs(prev =>
       prev.map(j =>
@@ -218,6 +245,11 @@ export default function AdminJobsPage() {
       )
     );
     bulk.clearSelection();
+    if (failures > 0) {
+      toast.error(`${failures} of ${failedJobs.length} jobs could not be retried`);
+    } else {
+      toast.success(`${failedJobs.length} job${failedJobs.length !== 1 ? 's' : ''} queued for retry`);
+    }
   };
 
   const bulkCancelPending = async () => {

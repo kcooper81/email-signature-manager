@@ -105,9 +105,23 @@ export default function ActivityPage() {
       query = query.gte('created_at', rangeStart);
     }
 
-    // Server-side search by action
+    // Server-side search across action name, organization name, and user email.
+    // audit_logs only stores org/user IDs, so resolve matching IDs first, then
+    // filter logs by action OR those IDs. Strip PostgREST metacharacters.
     if (debouncedSearch) {
-      query = query.ilike('action', `%${debouncedSearch}%`);
+      const term = debouncedSearch.trim().replace(/[,()*\\]/g, ' ').trim();
+      if (term) {
+        const [{ data: matchOrgs }, { data: matchUsers }] = await Promise.all([
+          supabase.from('organizations').select('id').ilike('name', `%${term}%`).limit(100),
+          supabase.from('users').select('id').ilike('email', `%${term}%`).limit(100),
+        ]);
+        const orParts = [`action.ilike.%${term}%`];
+        const orgIdList = (matchOrgs || []).map(o => o.id);
+        const userIdList = (matchUsers || []).map(u => u.id);
+        if (orgIdList.length > 0) orParts.push(`organization_id.in.(${orgIdList.join(',')})`);
+        if (userIdList.length > 0) orParts.push(`user_id.in.(${userIdList.join(',')})`);
+        query = query.or(orParts.join(','));
+      }
     }
 
     const { data: logsData, count } = await query;
@@ -215,7 +229,7 @@ export default function ActivityPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Search by action name..."
+                placeholder="Search by action, organization, or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
