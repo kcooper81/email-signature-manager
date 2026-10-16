@@ -103,6 +103,15 @@ export const alternativesPages: SEOLandingPageData[] = [
           },
         ],
       },
+      {
+        type: 'prose',
+        title: 'HubSpot Email Signature vs Siggly: which should you use?',
+        paragraphs: [
+          'HubSpot\'s Email Signature Generator is a free, one-off tool: you fill in your details, pick a layout, and copy the HTML into your own email client. It\'s genuinely useful if you\'re an individual who wants a tidy personal signature quickly — and if you already live in HubSpot CRM, it\'s right there. For a single person making one signature, it does the job at no cost.',
+          'Where it stops is team management. HubSpot\'s generator doesn\'t deploy signatures to your colleagues\' mailboxes, enforce brand consistency across a company, schedule banner campaigns, or report on clicks — each person still has to paste their own signature in by hand. That\'s the gap Siggly is built for: centralized templates, automated deployment to Google Workspace and Microsoft 365, department-level rules, and signature analytics, without needing paid CRM seats just to control signatures.',
+          'In short: for one person\'s personal signature, HubSpot\'s free generator is fine. For rolling consistent, on-brand signatures out to a whole team and keeping them updated, Siggly is the purpose-built choice. Feature and pricing details reflect publicly available information as of October 2026 and may change.',
+        ],
+      },
     ],
     testimonial: {
       quote:
@@ -1378,6 +1387,15 @@ export const alternativesPages: SEOLandingPageData[] = [
           'A free plan for teams of up to 5 users',
           'Banner campaigns and click analytics built into every plan',
           'Automatic field updates from directory sync when roles change',
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'SignatureSatori vs Siggly: which is right for you?',
+        paragraphs: [
+          'SignatureSatori is a well-established, Google Workspace-native signature manager. Admins install it from the Google Workspace Marketplace, and it applies signatures across the domain using directory data. If your organization is entirely on Google Workspace and happy with a Google-only tool, it\'s a capable, proven option.',
+          'The main difference is platform coverage and the pricing model. SignatureSatori is built specifically for Google Workspace, so if any part of your company uses Microsoft 365 or Outlook, it won\'t cover them. Siggly manages signatures natively across both Google Workspace and Microsoft 365 from one dashboard — useful for mixed environments and companies mid-migration. On pricing, Siggly uses simple per-user subscriptions ($1.50/user/month, free up to 5 users) rather than credit bundles you purchase and replenish.',
+          'If you\'re Google-only and prefer a long-standing Google-focused add-on, SignatureSatori is a reasonable choice. If you run both Google and Microsoft — or want straightforward per-user pricing and a modern editor with banners and analytics included — Siggly is the better fit. Details reflect publicly available information as of October 2026 and may change.',
         ],
       },
     ],
