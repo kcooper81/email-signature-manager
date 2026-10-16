@@ -115,6 +115,7 @@ export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${SITE_URL}/#org`,
     name: SITE_NAME,
     url: SITE_URL,
     logo: `${SITE_URL}/siggly-logo.png`,
@@ -134,8 +135,10 @@ export function generateSoftwareApplicationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
+    '@id': `${SITE_URL}/#software`,
     name: SITE_NAME,
     url: SITE_URL,
+    publisher: { '@id': `${SITE_URL}/#org` },
     applicationCategory: 'BusinessApplication',
     browserRequirements: 'Requires JavaScript. Requires HTML5.',
     operatingSystem: 'Any',
@@ -303,8 +306,12 @@ export function generateComparisonSchema({
   features,
 }: {
   competitor: string;
-  features: { name: string; siggly: boolean; competitor: boolean }[];
+  features: { name: string; siggly: string | boolean; competitor: string | boolean }[];
 }) {
+  // Render the real cell value: booleans → Yes/No, strings (prices, durations,
+  // "Paid add-on", "Coming Soon") verbatim. Previously everything was coerced to
+  // a boolean, so rows like "Starting Price" and "Setup Time" became "Yes/Yes".
+  const fmt = (v: string | boolean) => (v === true ? 'Yes' : v === false ? 'No' : String(v));
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -317,7 +324,7 @@ export function generateComparisonSchema({
         '@type': 'ListItem',
         position: index + 1,
         name: feature.name,
-        description: `${SITE_NAME}: ${feature.siggly ? 'Yes' : 'No'}, ${competitor}: ${feature.competitor ? 'Yes' : 'No'}`,
+        description: `${SITE_NAME}: ${fmt(feature.siggly)}, ${competitor}: ${fmt(feature.competitor)}`,
       })),
     },
   };
@@ -476,8 +483,10 @@ export function generateWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
     name: SITE_NAME,
     url: SITE_URL,
+    publisher: { '@id': `${SITE_URL}/#org` },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
