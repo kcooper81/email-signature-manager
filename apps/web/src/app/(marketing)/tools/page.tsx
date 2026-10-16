@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Paintbrush, Layout, Calculator, ShieldCheck, Shield, Eye, Code, QrCode, ImagePlus } from 'lucide-react';
+import { ArrowRight, Paintbrush, Layout, Calculator, ShieldCheck, Shield, Eye, Code, QrCode, ImagePlus, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const tools = [
@@ -65,6 +65,13 @@ const tools = [
     name: 'Banner Maker',
     description: 'Design a professional email signature banner — headline, CTA, colors, and logo — and download a ready-to-use PNG.',
     color: 'bg-teal-100 text-teal-600',
+  },
+  {
+    href: '/tools/image-size-checker',
+    icon: Ruler,
+    name: 'Image Size Checker',
+    description: 'Check if your logo, headshot, or banner is the right size for an email signature — then resize it to the recommended dimensions in one click.',
+    color: 'bg-amber-100 text-amber-600',
   },
 ];
 
