@@ -39,7 +39,7 @@ const DEFAULT_MAPPINGS: Record<string, Record<string, string>> = {
 };
 
 // Only these user table columns are allowed as mapping targets
-const ALLOWED_TARGET_FIELDS = new Set([
+export const ALLOWED_TARGET_FIELDS = new Set([
   'first_name', 'last_name', 'email', 'title', 'department',
   'phone', 'mobile', 'avatar_url', 'office_location',
   'manager_email', 'start_date',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Button } from '@/components/ui';
 import {
@@ -216,9 +216,9 @@ export default function ActivityPage() {
           <h1 className="text-2xl font-bold text-slate-900">Activity Logs</h1>
           <p className="text-slate-500">Platform-wide audit trail of all actions</p>
         </div>
-        <Button variant="outline" onClick={handleExport} disabled={logs.length === 0}>
+        <Button variant="outline" onClick={handleExport} disabled={logs.length === 0} title="Exports the entries currently loaded on this page">
           <Download className="h-4 w-4 mr-2" />
-          Export CSV
+          Export this page
         </Button>
       </div>
 
@@ -305,9 +305,8 @@ export default function ActivityPage() {
                   </thead>
                   <tbody className="divide-y">
                     {sort.sortData(logs).map((log) => (
-                      <>
+                      <Fragment key={log.id}>
                         <tr
-                          key={log.id}
                           className={`hover:bg-slate-50 ${hasExpandableContent(log) ? 'cursor-pointer' : ''}`}
                           onClick={() => hasExpandableContent(log) && setExpandedId(expandedId === log.id ? null : log.id)}
                         >
@@ -379,7 +378,7 @@ export default function ActivityPage() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>

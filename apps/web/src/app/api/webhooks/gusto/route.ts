@@ -51,13 +51,36 @@ export async function POST(request: NextRequest) {
     // OAuth-connected orgs store the Gusto company id in oauth_company_id (api_url
     // is null); API-key orgs store it in api_url. Match either so real-time events
     // are not silently dropped for OAuth integrations.
-    const { data: config } = await supabase
-      .from('sync_configurations')
-      .select('*')
-      .eq('provider', 'gusto')
-      .or(`oauth_company_id.eq.${event.company_id},api_url.eq.${event.company_id}`)
-      .eq('is_active', true)
-      .maybeSingle();
+    //
+    // event.company_id is attacker-controlled (parsed before signature verification),
+    // so we must NOT interpolate it into a PostgREST .or() filter string (filter
+    // injection). Validate it as a plain id, then run two scoped .eq() queries.
+    const companyId = typeof event.company_id === 'string' ? event.company_id : '';
+    if (!companyId || !/^[\w.@:-]{1,128}$/.test(companyId)) {
+      return NextResponse.json({ message: 'Invalid company id' }, { status: 200 });
+    }
+
+    let config: any = null;
+    {
+      const { data: byOauth } = await supabase
+        .from('sync_configurations')
+        .select('*')
+        .eq('provider', 'gusto')
+        .eq('is_active', true)
+        .eq('oauth_company_id', companyId)
+        .maybeSingle();
+      config = byOauth;
+      if (!config) {
+        const { data: byApiUrl } = await supabase
+          .from('sync_configurations')
+          .select('*')
+          .eq('provider', 'gusto')
+          .eq('is_active', true)
+          .eq('api_url', companyId)
+          .maybeSingle();
+        config = byApiUrl;
+      }
+    }
 
     if (!config) {
       // No active Gusto configuration for this company - return 200 to avoid retries
