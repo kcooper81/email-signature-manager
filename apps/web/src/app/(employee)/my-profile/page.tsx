@@ -86,7 +86,6 @@ interface CalendarData {
 }
 
 interface SignatureData {
-  id: string;
   html: string;
   template_name: string;
 }
@@ -96,6 +95,7 @@ export default function MyProfilePage() {
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [signature, setSignature] = useState<SignatureData | null>(null);
+  const [signatureLoading, setSignatureLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -240,25 +240,27 @@ export default function MyProfilePage() {
       loadCalendarData();
     }
 
-    // Get user's deployed signature if any
-    const { data: deployment } = await supabase
-      .from('signature_deployments')
-      .select('id, rendered_html, signature_templates!signature_deployments_template_id_fkey(name)')
-      .eq('user_id', userData.id)
-      .eq('status', 'success')
-      .order('deployed_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (deployment) {
-      setSignature({
-        id: deployment.id,
-        html: deployment.rendered_html,
-        template_name: (deployment.signature_templates as any)?.name || 'Email Signature',
-      });
-    }
-
     setLoading(false);
+
+    // Load the deployed signature (rendered on demand by the API).
+    loadSignature();
+  };
+
+  const loadSignature = async () => {
+    setSignatureLoading(true);
+    try {
+      const res = await fetch('/api/profile/signature');
+      if (res.ok) {
+        const data = await res.json();
+        setSignature(data.signature || null);
+      } else {
+        setSignature(null);
+      }
+    } catch {
+      setSignature(null);
+    } finally {
+      setSignatureLoading(false);
+    }
   };
 
   const loadCalendarData = async () => {
@@ -276,30 +278,8 @@ export default function MyProfilePage() {
     }
   };
 
-  const saveCalendarSettings = async () => {
-    try {
-      const response = await fetch('/api/integrations/google/calendar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          calendarEnabled: calendarSettings.calendarEnabled,
-          oooEnabled: calendarSettings.oooEnabled,
-          bookingUrl: calendarSettings.bookingUrl,
-          oooCustomMessage: calendarSettings.oooCustomMessage,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save calendar settings');
-      }
-
-      setSuccessMessage('Calendar settings updated!');
-      setTimeout(() => setSuccessMessage(null), 3000);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to save calendar settings');
-    }
-  };
-
+  // Single save path: persists profile fields AND calendar settings together so
+  // neither button can silently discard the other's unsaved edits.
   const saveProfile = async () => {
     if (!profile) return;
 
@@ -309,7 +289,7 @@ export default function MyProfilePage() {
 
     try {
       const supabase = createClient();
-      
+
       const { error } = await supabase
         .from('users')
         .update({
@@ -331,10 +311,28 @@ export default function MyProfilePage() {
 
       if (error) throw error;
 
-      setSuccessMessage('Profile updated successfully!');
+      // If the calendar card is available, persist its settings in the same save.
+      if (orgSettings.allow_employee_calendar_integration && orgSettings.google_calendar_enabled) {
+        const response = await fetch('/api/integrations/google/calendar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            calendarEnabled: calendarSettings.calendarEnabled,
+            oooEnabled: calendarSettings.oooEnabled,
+            bookingUrl: calendarSettings.bookingUrl,
+            oooCustomMessage: calendarSettings.oooCustomMessage,
+          }),
+        });
+        if (!response.ok) throw new Error('Failed to save calendar settings');
+      }
+
+      setSuccessMessage('Changes saved!');
       setTimeout(() => setSuccessMessage(null), 3000);
+
+      // Re-render the signature preview so it reflects the just-saved details.
+      loadSignature();
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to save profile');
+      setErrorMessage(err.message || 'Failed to save changes');
     } finally {
       setSaving(false);
     }
@@ -413,37 +411,52 @@ export default function MyProfilePage() {
       )}
 
       {/* Email Signature Card */}
-      {signature && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileSignature className="h-5 w-5" />
-              Your Email Signature
-            </CardTitle>
-            <CardDescription>
-              Copy this signature to your email client
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="border rounded-lg p-4 bg-white">
-              <SafeHtmlViewer html={signature.html} />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileSignature className="h-5 w-5" />
+            Your Email Signature
+          </CardTitle>
+          <CardDescription>
+            Copy this signature to your email client
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {signatureLoading ? (
+            <div className="flex items-center justify-center py-10 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
             </div>
-            <Button onClick={copySignature} className="w-full sm:w-auto">
-              {copied ? (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy Signature
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+          ) : signature ? (
+            <>
+              <div className="border rounded-lg p-4 bg-white">
+                <SafeHtmlViewer html={signature.html} />
+              </div>
+              <Button onClick={copySignature} className="w-full sm:w-auto">
+                {copied ? (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copy Signature
+                  </>
+                )}
+              </Button>
+            </>
+          ) : (
+            <div className="text-center py-8 px-4 border border-dashed rounded-lg">
+              <FileSignature className="h-8 w-8 mx-auto mb-3 text-muted-foreground opacity-50" />
+              <p className="text-sm font-medium">No signature yet</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                Your organization hasn&apos;t deployed a signature to you yet. Keep your
+                details below up to date so it&apos;s ready when they do.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Basic Info (Read-only) */}
       <Card>
@@ -794,9 +807,10 @@ export default function MyProfilePage() {
                 </Button>
                 <Button
                   size="sm"
-                  onClick={saveCalendarSettings}
+                  onClick={saveProfile}
+                  disabled={saving}
                 >
-                  Save Calendar Settings
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save Changes'}
                 </Button>
               </div>
             </>

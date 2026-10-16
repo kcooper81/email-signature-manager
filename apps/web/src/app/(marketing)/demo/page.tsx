@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, Check, Users, Palette, Rocket, Shield, Mail, Loader2 } from 'lucide-react';
+import { ArrowLeft, Play, Check, Users, Palette, Rocket, Shield, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { trackEvent, trackDemoRequest } from '@/components/analytics';
 import { MarketingCTA } from '@/components/marketing/cta';
@@ -186,12 +186,24 @@ export default function DemoPage() {
                 </>
               )}
             </div>
-            <div className="bg-gray-100 rounded-2xl aspect-video flex items-center justify-center">
-              <div className="text-center text-gray-400">
-                <Mail className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <p>Interactive demo preview</p>
+            <button
+              onClick={handlePlayDemo}
+              disabled={isLoading}
+              className="group relative w-full bg-gradient-to-br from-violet-600 to-indigo-700 rounded-2xl aspect-video flex items-center justify-center overflow-hidden transition-shadow hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-violet-300"
+              aria-label="Play interactive product demo"
+            >
+              <div className="text-center text-white px-6">
+                <div className="h-20 w-20 mx-auto mb-4 rounded-full bg-white/15 backdrop-blur flex items-center justify-center group-hover:bg-white/25 transition-colors">
+                  {isLoading ? (
+                    <Loader2 className="h-9 w-9 animate-spin" />
+                  ) : (
+                    <Play className="h-9 w-9 ml-1 fill-current" />
+                  )}
+                </div>
+                <p className="text-lg font-semibold">{isLoading ? 'Loading demo…' : 'Play interactive demo'}</p>
+                <p className="text-sm text-white/70 mt-1">2-minute guided walkthrough — no sign-up needed</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </section>

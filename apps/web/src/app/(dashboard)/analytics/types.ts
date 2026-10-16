@@ -71,7 +71,7 @@ export interface AnalyticsData {
     microsoft: { connected: boolean; connectedAt: string | null; userCount: number };
   };
   errorRate: number;
-  avgDeploymentTime: number;
+  avgUsersPerDeployment: number;
   failedDeploymentReasons: { reason: string; count: number }[];
   
   // HR-focused metrics

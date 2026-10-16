@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useBulkSelection } from '@/hooks/use-bulk-selection';
+import { useToast } from '@/components/ui/toast';
 import { BulkActionBar, type BulkAction } from '@/components/admin/bulk-action-bar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Modal, ModalHeader, ModalTitle, ModalDescription, ModalContent, ModalFooter } from '@/components/ui/modal';
@@ -40,6 +41,7 @@ const STATUS_OPTIONS = [
   { value: 'under_review', label: 'Under Review' },
   { value: 'approved', label: 'Approved' },
   { value: 'rejected', label: 'Rejected' },
+  { value: 'withdrawn', label: 'Withdrawn' },
 ];
 
 const TIER_OPTIONS = [
@@ -88,6 +90,7 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 export default function PartnerApplicationsPage() {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState<PartnerApplication[]>([]);
   const [selectedApp, setSelectedApp] = useState<PartnerApplication | null>(null);
@@ -358,20 +361,34 @@ export default function PartnerApplicationsPage() {
     if (!error) {
       await fetchApplications();
       bulk.clearSelection();
+      toast.success(`${ids.length} application${ids.length !== 1 ? 's' : ''} marked under review`);
+    } else {
+      toast.error('Could not update applications', error.message);
     }
   };
 
   const bulkReject = async () => {
     const ids = [...bulk.selectedIds];
+    let failures = 0;
     for (const id of ids) {
-      await fetch(`/api/admin/partner-applications/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'reject', reviewNotes: 'Bulk rejected', sendNotification: false }),
-      });
+      try {
+        const res = await fetch(`/api/admin/partner-applications/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'reject', reviewNotes: 'Bulk rejected', sendNotification: false }),
+        });
+        if (!res.ok) failures++;
+      } catch {
+        failures++;
+      }
     }
     await fetchApplications();
     bulk.clearSelection();
+    if (failures > 0) {
+      toast.error(`${failures} of ${ids.length} applications could not be rejected`);
+    } else {
+      toast.success(`${ids.length} application${ids.length !== 1 ? 's' : ''} rejected`);
+    }
   };
 
   const bulkActions: BulkAction[] = [

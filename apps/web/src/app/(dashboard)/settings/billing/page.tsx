@@ -583,8 +583,14 @@ function BillingPage() {
                       <a href="mailto:sales@siggly.io">Contact Sales</a>
                     </Button>
                   ) : plan.id === 'free' ? (
-                    <Button variant="outline" className="w-full" disabled>
-                      Downgrade
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={handleManageBilling}
+                      disabled={loadingPlanId === 'billing-portal'}
+                      title="Cancel or downgrade your subscription in the billing portal"
+                    >
+                      {loadingPlanId === 'billing-portal' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Downgrade in portal'}
                     </Button>
                   ) : (
                     <Button 
