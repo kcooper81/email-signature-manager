@@ -73,6 +73,7 @@ export function SEOLandingPage({ data }: { data: SEOLandingPageData }) {
             title: data.testimonial.authorTitle,
           }}
           variant="violet"
+          illustrative
         />
       )}
 
