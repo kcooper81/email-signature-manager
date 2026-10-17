@@ -161,7 +161,7 @@ export default function PartnerApplyPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/siggly-logo-dark.png"
+              src="/siggly-logo.png"
               alt="Siggly Logo"
               width={32}
               height={32}
@@ -203,24 +203,32 @@ export default function PartnerApplyPage() {
               10-user minimum ($15/mo)
             </span>
           </div>
+          <div className="mt-8">
+            <Button asChild size="lg" className="gap-2">
+              <a href="#apply-form">
+                Apply Now
+                <ChevronDown className="h-4 w-4" />
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Pain Points Section */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold text-center mb-8">Sound Familiar?</h2>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-red-50 border border-red-100 rounded-lg p-6">
-              <h3 className="font-semibold text-red-800 mb-3">The Manual Nightmare</h3>
-              <ul className="space-y-2 text-sm text-red-700">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-3">The Manual Nightmare</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Manually updating signatures when employees join or leave</li>
                 <li>• Chasing down users who "forgot" to update their signature</li>
                 <li>• Inconsistent branding across the organization</li>
                 <li>• Hours spent on something that should take minutes</li>
               </ul>
             </div>
-            <div className="bg-red-50 border border-red-100 rounded-lg p-6">
-              <h3 className="font-semibold text-red-800 mb-3">The Tool Problem</h3>
-              <ul className="space-y-2 text-sm text-red-700">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-3">The Tool Problem</h3>
+              <ul className="space-y-2 text-sm text-gray-600">
                 <li>• Competitors charge $2-4/user with annual contracts</li>
                 <li>• Complex setup that requires IT involvement</li>
                 <li>• No white-label option — your clients see their branding</li>
@@ -891,7 +899,7 @@ export default function PartnerApplyPage() {
         </div>
 
         {/* Application Form */}
-        <Card>
+        <Card id="apply-form" className="scroll-mt-24">
           <CardHeader>
             <CardTitle>Partner Application</CardTitle>
             <CardDescription>

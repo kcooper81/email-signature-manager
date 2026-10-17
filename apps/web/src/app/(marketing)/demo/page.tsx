@@ -97,7 +97,7 @@ export default function DemoPage() {
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
           
-          <div className="flex justify-center gap-2 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-12">
             {[
               { id: 'design', label: 'Design', icon: Palette },
               { id: 'manage', label: 'Manage Users', icon: Users },
@@ -107,7 +107,7 @@ export default function DemoPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm sm:text-base sm:px-6 sm:py-3 rounded-lg font-medium transition-all ${
                   activeTab === tab.id
                     ? 'bg-violet-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

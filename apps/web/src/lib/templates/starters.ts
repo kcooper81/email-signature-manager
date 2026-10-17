@@ -115,9 +115,6 @@ export const starterTemplates: StarterTemplate[] = [
   },
 ];
 
-export const BLANK_STARTER_BLOCKS: SignatureBlock[] = [
-  { id: '1', type: 'text', content: { text: '{{first_name}} {{last_name}}', fontSize: 16, fontWeight: 'bold', color: INK } },
-  { id: '2', type: 'text', content: { text: '{{job_title}}', fontSize: 14, fontWeight: 'normal', color: MUTED } },
-  { id: '3', type: 'divider', content: { color: LINE, width: 100, thickness: 1, style: 'solid' } },
-  { id: '4', type: 'contact-info', content: { email: '{{email}}', phone: '{{phone}}', website: '{{website}}' } },
-];
+// Truly empty — "Start from blank" opens the editor with no blocks so the user
+// builds from scratch. (The 6 starters above cover guided starting points.)
+export const BLANK_STARTER_BLOCKS: SignatureBlock[] = [];

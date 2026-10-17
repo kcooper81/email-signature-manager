@@ -142,6 +142,7 @@ export default function NewTemplatePage() {
         initialIndustry={choice.industry}
         onSave={handleSave}
         saving={saving}
+        onBack={() => setChoice(null)}
       />
     </>
   );

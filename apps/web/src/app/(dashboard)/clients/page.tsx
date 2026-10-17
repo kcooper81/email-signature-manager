@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,8 +96,12 @@ const CLIENTS_PER_PAGE = 20;
 
 export default function ClientsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { switchToClient, refreshClients } = useMspContext();
-  const [activeTab, setActiveTab] = useState<TabType>('clients');
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState<TabType>(
+    tabParam === 'billing' || tabParam === 'overview' ? tabParam : 'clients'
+  );
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState<Client[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
