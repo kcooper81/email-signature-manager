@@ -104,8 +104,13 @@ export default function InviteAcceptPage({ params }: { params: { token: string }
       // Wait for session to propagate
       await new Promise(resolve => setTimeout(resolve, 1500));
 
+      // Owners/admins (partners, client-org admins) belong in the dashboard;
+      // regular members go to their self-service profile.
+      const dest = ['owner', 'admin'].includes(data.role)
+        ? '/dashboard'
+        : '/my-profile?welcome=true';
       // Use window.location for a hard redirect to ensure fresh session
-      window.location.href = '/my-profile?welcome=true';
+      window.location.href = dest;
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
       setCreating(false);
