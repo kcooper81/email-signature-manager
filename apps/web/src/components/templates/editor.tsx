@@ -56,6 +56,8 @@ interface TemplateEditorProps {
   initialIndustry?: IndustryType;
   onSave: (name: string, description: string, blocks: SignatureBlock[], industry?: IndustryType) => Promise<void>;
   saving: boolean;
+  /** Optional: overrides the Back button (e.g. return to the starter gallery). */
+  onBack?: () => void;
 }
 
 const BLOCK_TYPES: { type: SignatureBlockType; label: string; icon: React.ReactNode }[] = [
@@ -79,6 +81,7 @@ export function TemplateEditor({
   initialIndustry = 'general',
   onSave,
   saving,
+  onBack,
 }: TemplateEditorProps) {
   const router = useRouter();
   const [name, setName] = useState(initialName);
@@ -161,7 +164,10 @@ export function TemplateEditor({
       {/* Header */}
       <div className="bg-card border-b px-3 sm:px-6 py-4 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-4 flex-1">
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <Button variant="ghost" size="sm" onClick={() => {
+            if (isDirty && !window.confirm('You have unsaved changes. Leave without saving?')) return;
+            onBack ? onBack() : router.back();
+          }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>

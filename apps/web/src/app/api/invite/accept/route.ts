@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     // Check if user already has an auth_id from a previous invite
     const { data: existingUserRecord } = await supabaseAdmin
       .from('users')
-      .select('auth_id, email')
+      .select('auth_id, email, role')
       .eq('id', userId)
       .maybeSingle();
 
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
     // Invite was already atomically marked as accepted above
 
     // BUG-21 fix: Don't return authId in response (information disclosure)
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, role: existingUserRecord.role });
   } catch (error: any) {
     console.error('Unexpected error in invite accept:', error);
     return NextResponse.json(

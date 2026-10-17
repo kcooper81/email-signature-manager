@@ -130,6 +130,9 @@ async function handleApprove(
   }
 
   let finalOrgId: string;
+  // Set when a brand-new applicant (no prior account) is created, so the approval
+  // email can link them to account setup (/invite/{token}) instead of /login.
+  let partnerSetupUrl: string | undefined;
 
   // Check if this is a conversion of an existing organization
   if (application.existing_organization_id) {
@@ -234,6 +237,11 @@ async function handleApprove(
               expires_at: expiresAt.toISOString(),
               invited_by: finalOrgId,
             });
+
+          // New applicant has no auth account yet — the approval email must link
+          // them to account setup, not /login (which would be a dead end).
+          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+          partnerSetupUrl = `${baseUrl}/invite/${inviteToken}`;
         }
       }
     } catch (linkError) {
@@ -360,6 +368,7 @@ async function handleApprove(
       companyName: application.company_name,
       portalUrl: `https://${sanitizedSubdomain}.siggly.io`,
       partnerTier,
+      setupUrl: partnerSetupUrl,
     });
   } catch (emailError) {
     console.error('Failed to send partner approval email:', emailError);
