@@ -1149,6 +1149,9 @@ export interface PartnerApprovalEmailData {
   companyName: string;
   portalUrl: string;
   partnerTier: string;
+  /** For brand-new applicants with no account yet: a /invite/{token} link to
+   *  set up their login. When set, the CTA points here instead of /login. */
+  setupUrl?: string;
 }
 
 export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
@@ -1157,6 +1160,8 @@ export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
   const companyName = escapeHtml(data.companyName);
   const tierLabel = escapeHtml(partnerTier.charAt(0).toUpperCase() + partnerTier.slice(1));
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://siggly.io';
+  const ctaUrl = data.setupUrl || `${appUrl}/login`;
+  const ctaLabel = data.setupUrl ? 'Set Up Your Account' : 'Log In to Get Started';
 
   try {
     const client = getResendClient();
@@ -1191,8 +1196,8 @@ export async function sendPartnerApprovalEmail(data: PartnerApprovalEmailData) {
               </div>
 
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${appUrl}/login" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                  Log In to Get Started
+                <a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                  ${ctaLabel}
                 </a>
               </div>
 

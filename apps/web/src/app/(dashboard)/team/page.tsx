@@ -420,6 +420,10 @@ export default function TeamMembersPage() {
       setErrorMessage('Email is required');
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(newMember.email.trim())) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
 
     // Check if user can add more team members
     if (!canAddTeamMember()) {
@@ -488,7 +492,11 @@ export default function TeamMembersPage() {
       // Refresh subscription usage counts
       refresh();
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to add team member');
+      // Map the Postgres unique-violation to a friendly message instead of a raw error.
+      const isDuplicate = err?.code === '23505' || /duplicate|already exists|unique/i.test(err?.message || '');
+      setErrorMessage(isDuplicate
+        ? 'That email is already a team member.'
+        : (err.message || 'Failed to add team member'));
     } finally {
       setAdding(false);
     }
@@ -1105,10 +1113,6 @@ export default function TeamMembersPage() {
               </div>
             )}
 
-            {/* Sort dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Sort:</span>
-            </div>
           </div>
         </CardHeader>
         <CardContent className="overflow-hidden relative">
