@@ -50,8 +50,8 @@ export function VisualBreadcrumbs() {
   }));
 
   return (
-    <nav aria-label="Breadcrumb" className="py-3">
-      <ol className="flex flex-wrap items-center gap-1 text-sm text-gray-500">
+    <nav aria-label="Breadcrumb" className="border-b border-gray-100 bg-gray-50/60">
+      <ol className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center gap-1.5 text-sm text-gray-500">
         <li>
           <Link
             href="/"
@@ -64,10 +64,10 @@ export function VisualBreadcrumbs() {
           const isLast = i === crumbs.length - 1;
 
           return (
-            <li key={crumb.href} className="flex items-center gap-1">
-              <ChevronRight size={14} className="text-gray-400" />
+            <li key={crumb.href} className="flex items-center gap-1.5">
+              <ChevronRight size={14} className="text-gray-300 shrink-0" />
               {isLast ? (
-                <span className="text-gray-700 font-medium" aria-current="page">
+                <span className="text-gray-800 font-medium" aria-current="page">
                   {crumb.label}
                 </span>
               ) : (
