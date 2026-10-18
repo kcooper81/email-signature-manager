@@ -13,6 +13,11 @@ function getSupabaseAdmin() {
   );
 }
 
+// NOTE: Billing/subscription events to Loops are handled by Loops' native
+// Stripe integration (Settings → Integrations → Stripe), which also emits
+// richer events like trial_will_end. We intentionally do NOT fire a custom
+// plan_changed event here to avoid duplicate signals.
+
 export async function POST(request: NextRequest) {
   // Validate required environment variables
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
