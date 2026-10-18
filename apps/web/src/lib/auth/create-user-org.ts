@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { upsertLoopsContact, trackLoopsEvent } from '@/lib/email/loops';
 
 interface CreateUserOrgParams {
   supabaseAdmin: SupabaseClient;
@@ -143,6 +144,31 @@ export async function createUserWithOrganization(
   if (subError) {
     console.error('Failed to create subscription:', subError);
     // Non-fatal: user can still use the app, billing page will handle missing subscription
+  }
+
+  // Sync the new owner to Loops + fire the signed_up lifecycle event.
+  // Best-effort and env-gated (no-op until LOOPS_API_KEY is set) — never blocks signup.
+  try {
+    await upsertLoopsContact({
+      email,
+      firstName: trimmedFirstName,
+      lastName: trimmedLastName,
+      userId: authId,
+      source: 'siggly-signup',
+      userGroup: role,
+      plan: 'free',
+      orgId: newOrg.id,
+      orgName: trimmedOrgName,
+      isActive: true,
+    });
+    await trackLoopsEvent({
+      email,
+      userId: authId,
+      eventName: 'signed_up',
+      contactProperties: { plan: 'free', userGroup: role },
+    });
+  } catch (loopsError) {
+    console.error('[loops] signup sync failed (non-fatal):', loopsError);
   }
 
   return { success: true, organizationId: newOrg.id };
