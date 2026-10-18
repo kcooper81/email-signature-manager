@@ -5,7 +5,6 @@ import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { logException } from '@/lib/error-logging';
 import { notifyAdminsOfSubscriptionEvent } from '@/lib/email/resend';
-import { upsertLoopsContact, trackLoopsEvent } from '@/lib/email/loops';
 
 function getSupabaseAdmin() {
   return createClient(
@@ -14,47 +13,10 @@ function getSupabaseAdmin() {
   );
 }
 
-/**
- * Sync an org's new plan to Loops (owner contact + plan_changed event) so
- * lifecycle automations can react (e.g. upgrade thank-you, downgrade win-back).
- * Best-effort and env-gated — never blocks webhook processing.
- */
-async function syncPlanToLoops(
-  supabase: ReturnType<typeof getSupabaseAdmin>,
-  organizationId: string,
-  plan: string,
-  fromPlan?: string
-) {
-  try {
-    const { data: owner } = await supabase
-      .from('users')
-      .select('email, first_name, last_name, auth_id, role')
-      .eq('organization_id', organizationId)
-      .eq('role', 'owner')
-      .maybeSingle();
-
-    if (!owner?.email) return;
-
-    await upsertLoopsContact({
-      email: owner.email,
-      userId: owner.auth_id ?? undefined,
-      firstName: owner.first_name ?? undefined,
-      lastName: owner.last_name ?? undefined,
-      userGroup: owner.role ?? undefined,
-      plan,
-      orgId: organizationId,
-    });
-    await trackLoopsEvent({
-      email: owner.email,
-      userId: owner.auth_id ?? undefined,
-      eventName: 'plan_changed',
-      eventProperties: { plan, ...(fromPlan ? { fromPlan } : {}) },
-      contactProperties: { plan },
-    });
-  } catch (loopsError) {
-    console.error('[loops] plan sync failed (non-fatal):', loopsError);
-  }
-}
+// NOTE: Billing/subscription events to Loops are handled by Loops' native
+// Stripe integration (Settings → Integrations → Stripe), which also emits
+// richer events like trial_will_end. We intentionally do NOT fire a custom
+// plan_changed event here to avoid duplicate signals.
 
 export async function POST(request: NextRequest) {
   // Validate required environment variables
@@ -246,9 +208,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripeE
         plan,
         oldPlan !== plan ? oldPlan : undefined
       );
-
-      // Sync new plan to Loops for lifecycle automations.
-      await syncPlanToLoops(supabase, existingSub.organization_id, plan, oldPlan !== plan ? oldPlan : undefined);
     }
   } else {
     console.error('[Webhook] No subscription record found for customer:', customerId);
@@ -313,9 +272,6 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, stri
           plan,
           existingSub.plan
         );
-
-        // Sync new plan to Loops for lifecycle automations.
-        await syncPlanToLoops(supabase, existingSub.organization_id, plan, existingSub.plan);
       }
     }
   }
@@ -365,9 +321,6 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription, stri
       'free',
       existingSub.plan
     );
-
-    // Sync downgrade-to-free to Loops for win-back automations.
-    await syncPlanToLoops(supabase, existingSub.organization_id, 'free', existingSub.plan);
   }
 }
 
