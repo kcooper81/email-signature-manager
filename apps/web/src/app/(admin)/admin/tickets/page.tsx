@@ -300,7 +300,8 @@ export default function TicketsPage() {
             || (partnerFilter === 'escalations' && item.is_partner_escalation)
             || (partnerFilter === 'partner' && item.partner_organization_id);
 
-          if (matchesType && matchesStatus && matchesPriority && matchesPartner) {
+          const matches = matchesType && matchesStatus && matchesPriority && matchesPartner;
+          if (matches) {
             if (page === 0) {
               setTickets(prev => {
                 // Deduplicate: real-time INSERT can race with loadTickets
@@ -309,21 +310,23 @@ export default function TicketsPage() {
               });
             }
             setTotalCount(prev => prev + 1);
-          }
 
-          if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            new Notification('New Support Ticket', {
-              body: `${item.type} from ${item.user_email || 'anonymous'}: ${item.message?.slice(0, 100)}`,
-              icon: '/favicon.ico',
-            });
-          }
-
-          try {
-            const audio = new Audio('/sounds/notification.wav');
-            audio.volume = 0.3;
-            audio.play().catch(() => {});
-          } catch {
-            // Audio not available
+            // Only alert for tickets that belong in the current view, and only when enabled.
+            if (notificationsEnabled) {
+              if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                new Notification('New Support Ticket', {
+                  body: `${item.type} from ${item.user_email || 'anonymous'}: ${item.message?.slice(0, 100)}`,
+                  icon: '/favicon.ico',
+                });
+              }
+              try {
+                const audio = new Audio('/sounds/notification.wav');
+                audio.volume = 0.3;
+                audio.play().catch(() => {});
+              } catch {
+                // Audio not available
+              }
+            }
           }
         }
       )
@@ -332,21 +335,36 @@ export default function TicketsPage() {
         { event: 'UPDATE', schema: 'public', table: 'feedback' },
         (payload) => {
           const item = payload.new as any;
-          setTickets(prev => prev.map(t => {
-            if (t.id !== item.id) return t;
-            const assignedEmail = item.assigned_to
-              ? (item.assigned_to === t.assignedTo ? t.assignedEmail : null)
-              : null;
-            return {
-              ...t,
-              status: item.status,
-              priority: item.priority || 'normal',
-              updatedAt: item.updated_at,
-              assignedTo: item.assigned_to || null,
-              snoozedUntil: item.snoozed_until || null,
-              assignedEmail,
-            };
-          }));
+          // Re-evaluate whether the updated ticket still belongs in the current view.
+          // Without this, a ticket resolved/assigned from another tab or device lingers
+          // on "Open" until a manual reload, and you can act on a stale row.
+          const isOpen = ['new', 'reviewed'].includes(item.status);
+          const stillMatches =
+            statusFilter === 'all' ||
+            statusFilter === 'sent' || // metadata-based; don't drop on status change
+            (statusFilter === 'open' && isOpen) ||
+            (statusFilter === 'mine' && isOpen && item.assigned_to === currentUserId) ||
+            (statusFilter === 'unassigned' && isOpen && !item.assigned_to) ||
+            (statusFilter === 'done' && ['resolved', 'archived'].includes(item.status)) ||
+            (statusFilter === 'spam' && item.status === 'spam');
+          setTickets(prev => {
+            if (!stillMatches) return prev.filter(t => t.id !== item.id);
+            return prev.map(t => {
+              if (t.id !== item.id) return t;
+              const assignedEmail = item.assigned_to
+                ? (item.assigned_to === t.assignedTo ? t.assignedEmail : null)
+                : null;
+              return {
+                ...t,
+                status: item.status,
+                priority: item.priority || 'normal',
+                updatedAt: item.updated_at,
+                assignedTo: item.assigned_to || null,
+                snoozedUntil: item.snoozed_until || null,
+                assignedEmail,
+              };
+            });
+          });
           setSelectedTicket(prev => {
             if (!prev || prev.id !== item.id) return prev;
             const assignedEmail = item.assigned_to
@@ -1076,6 +1094,10 @@ export default function TicketsPage() {
         return;
       }
 
+      // Don't let list/ticket shortcuts (j/k/r/e/Esc) fire while a modal is open —
+      // otherwise e.g. pressing "e" behind the delete dialog resolves the ticket under it.
+      if (showCompose || deleteConfirmId) return;
+
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' ||
           target.isContentEditable || target.closest('.tiptap')) return;
 
@@ -1116,7 +1138,7 @@ export default function TicketsPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedTicket, filteredTickets, composerMode]);
+  }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -1952,8 +1974,9 @@ export default function TicketsPage() {
                 </button>
               )}
 
-              {/* Middle messages (when expanded) */}
-              {(1 + selectedTicket.notes.length) > 2 && expandedNotes.has('__all') && selectedTicket.notes.slice(0, -1).map(note => {
+              {/* Middle messages (when expanded) — notes are newest-first; show all but the
+                  newest, in chronological (oldest→newest) order so the thread reads top-to-bottom. */}
+              {(1 + selectedTicket.notes.length) > 2 && expandedNotes.has('__all') && [...selectedTicket.notes.slice(1)].reverse().map(note => {
                 const isCustomer = note.authorEmail === 'External Reply';
                 const isInternal = note.isInternal;
                 return (
@@ -1972,9 +1995,9 @@ export default function TicketsPage() {
                 );
               })}
 
-              {/* Latest message — always visible */}
+              {/* Latest message — always visible (notes are newest-first, so [0] is newest). */}
               {selectedTicket.notes.length > 0 && (() => {
-                const note = selectedTicket.notes[selectedTicket.notes.length - 1];
+                const note = selectedTicket.notes[0];
                 const isCustomer = note.authorEmail === 'External Reply';
                 const isInternal = note.isInternal;
                 return (

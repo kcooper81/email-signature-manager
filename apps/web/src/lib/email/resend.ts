@@ -548,6 +548,10 @@ export async function sendTicketResponseEmail(data: TicketResponseEmailData) {
       replyTo: replyAs || 'support@siggly.io',
       headers: {
         'X-Entity-Ref-ID': ticketId,
+        // Embed the ticket ID so the inbound webhook threads the customer's reply
+        // back onto this ticket via In-Reply-To / References.
+        'References': `<ticket-${ticketId}@siggly.io>`,
+        'Message-ID': `<ticket-${ticketId}-${Date.now()}@siggly.io>`,
       },
     });
 
