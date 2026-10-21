@@ -2,15 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { notifyAdminsOfNewTicket, sendAutoResponse } from '@/lib/email/resend';
 import { logException } from '@/lib/error-logging';
-import { createHmac } from 'crypto';
+import { createHmac, timingSafeEqual } from 'crypto';
 
 /**
  * POST /api/webhooks/inbound-email
  * Receives all email sent to *@siggly.io via Resend's inbound webhook.
- * - Recognizes 7 aliases: support@, sales@, help@, contact@, info@, team@, kade@
+ * - Recognizes aliases: support@, sales@, help@, contact@, info@, team@, kade@
  * - Auto-tags type based on recipient (sales@ → "sales" + high priority)
- * - Threads replies onto existing tickets by [Ticket#UUID] or subject matching
- * - Links to existing user profiles by matching sender email
+ * - Threads replies onto existing tickets by RFC headers (In-Reply-To / References),
+ *   then [Ticket#UUID] subject tag, then subject+sender heuristic
+ * - Idempotent: the same Resend email is never turned into two tickets / two auto-replies
+ * - Reliable: if the message body can't be fetched yet, returns a retryable error so
+ *   Resend re-delivers rather than creating an empty "(No message body)" ticket
+ * - Loop-safe: bounces and auto-responders don't create tickets or trigger auto-replies
  */
 
 function getSupabaseAdmin() {
@@ -24,41 +28,70 @@ function verifyResendWebhook(request: NextRequest, body: string): boolean {
   const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
   if (!webhookSecret) return false;
 
-  // Resend uses Svix under the hood — headers are svix-id, svix-timestamp, svix-signature
   const svixId = request.headers.get('svix-id');
   const svixTimestamp = request.headers.get('svix-timestamp');
   const svixSignature = request.headers.get('svix-signature');
-
   if (!svixId || !svixTimestamp || !svixSignature) return false;
 
-  // Reject timestamps older than 5 minutes
-  const age = Math.abs(Date.now() / 1000 - Number(svixTimestamp));
-  if (age > 300) return false;
+  // Reject timestamps outside a 5-minute window in either direction (clock skew / replay).
+  const skew = Date.now() / 1000 - Number(svixTimestamp);
+  if (!Number.isFinite(skew) || Math.abs(skew) > 300) return false;
 
-  // Secret from Resend dashboard is prefixed with "whsec_" and base64-encoded
   const secretBytes = Buffer.from(
     webhookSecret.startsWith('whsec_') ? webhookSecret.slice(6) : webhookSecret,
     'base64'
   );
-
-  // Signature payload: "{svix-id}.{svix-timestamp}.{body}"
   const signaturePayload = `${svixId}.${svixTimestamp}.${body}`;
-  const expected = createHmac('sha256', secretBytes)
-    .update(signaturePayload)
-    .digest('base64');
+  const expected = createHmac('sha256', secretBytes).update(signaturePayload).digest('base64');
+  const expectedBuf = Buffer.from(expected);
 
-  // svix-signature header can contain multiple signatures: "v1,<base64> v1,<base64>"
-  const signatures = svixSignature.split(' ');
-  return signatures.some(sig => {
+  // svix-signature can carry multiple space-separated "v1,<base64>" signatures.
+  return svixSignature.split(' ').some((sig) => {
     const [version, value] = sig.split(',');
-    return version === 'v1' && value === expected;
+    if (version !== 'v1' || !value) return false;
+    const valueBuf = Buffer.from(value);
+    return valueBuf.length === expectedBuf.length && timingSafeEqual(valueBuf, expectedBuf);
   });
 }
 
-// Extract ticket ID from subject: [Ticket#abc12345] or [#abc12345]
-const TICKET_ID_RE = /\[(?:Ticket)?#([a-f0-9-]{8})\]/i;
+// Extract a ticket ID embedded in a threading header: <ticket-UUID@siggly.io> or <compose-UUID-123@siggly.io>
+const HEADER_TICKET_RE = /(?:ticket|compose)-([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}|[0-9a-f]{8,})/i;
+// Extract ticket ID from subject tag: [Ticket#abc12345] or [#abc12345]
+const SUBJECT_TICKET_RE = /\[(?:Ticket)?#([a-f0-9-]{8,})\]/i;
+// Reply-subject prefixes across common locales (Re, AW, SV, Antwort, Fwd, …)
+const REPLY_PREFIX_RE = /^\s*(re|aw|sv|antw(?:ort)?|rif|r|fw|fwd|wg|vs|res)(\[\d+\])?\s*:/i;
 
-/** Extract the local part of the recipient email (e.g. "help" from "help@siggly.io") */
+/** Normalize a from/to/cc field (string | {address} | array of either) to lowercased addresses. */
+function toAddressList(field: any): string[] {
+  const out: string[] = [];
+  const push = (v: any) => {
+    if (!v) return;
+    if (typeof v === 'string') {
+      const m = v.match(/<?([^@<\s]+@[^>\s]+)>?/);
+      if (m) out.push(m[1].toLowerCase());
+    } else if (typeof v === 'object' && v.address) {
+      out.push(String(v.address).toLowerCase());
+    }
+  };
+  if (Array.isArray(field)) field.forEach(push);
+  else push(field);
+  return out;
+}
+
+/** Build a case-insensitive header lookup from the various shapes Resend may return. */
+function makeHeaderLookup(...sources: any[]): (name: string) => string | undefined {
+  const map = new Map<string, string>();
+  const add = (name: any, value: any) => {
+    if (typeof name === 'string' && value != null) map.set(name.toLowerCase(), String(value));
+  };
+  for (const src of sources) {
+    if (!src) continue;
+    if (Array.isArray(src)) src.forEach((h) => add(h?.name ?? h?.key, h?.value));
+    else if (typeof src === 'object') Object.entries(src).forEach(([k, v]) => add(k, v));
+  }
+  return (name: string) => map.get(name.toLowerCase());
+}
+
 function getInboxAlias(toAddress: string | null): string | null {
   if (!toAddress) return null;
   const match = toAddress.match(/<?([^@<\s]+)@/);
@@ -68,27 +101,12 @@ function getInboxAlias(toAddress: string | null): string | null {
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
-  console.log('[inbound-email] Webhook received', {
-    bodyLength: rawBody.length,
-    hasWebhookSecret: !!process.env.RESEND_WEBHOOK_SECRET,
-    contentType: request.headers.get('content-type'),
-  });
-
-  // Fail CLOSED: if the signing secret is not configured we cannot verify the
-  // sender, so we reject rather than processing an unauthenticated payload
-  // (which would let anyone create tickets and trigger outbound auto-responses).
   if (!process.env.RESEND_WEBHOOK_SECRET) {
     console.error('[inbound-email] RESEND_WEBHOOK_SECRET not configured — rejecting webhook');
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
   }
-
   if (!verifyResendWebhook(request, rawBody)) {
-    console.error('[inbound-email] Webhook signature verification failed', {
-      hasSvixId: !!request.headers.get('svix-id'),
-      hasSvixTimestamp: !!request.headers.get('svix-timestamp'),
-      hasSvixSignature: !!request.headers.get('svix-signature'),
-      hasResendSignature: !!request.headers.get('resend-signature'),
-    });
+    console.error('[inbound-email] Webhook signature verification failed');
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
@@ -100,194 +118,239 @@ export async function POST(request: NextRequest) {
   }
 
   const emailData = payload.data || payload;
-  const { from, to, subject, email_id } = emailData;
+  const { from, to, cc, subject, email_id } = emailData;
 
-  // Log raw from/to for debugging payload structure
-  console.log('[inbound-email] Raw fields', {
-    fromType: typeof from,
-    fromValue: JSON.stringify(from),
-    toType: typeof to,
-    toValue: JSON.stringify(to),
-    subject: subject || '(none)',
-    email_id,
-    payloadKeys: Object.keys(emailData),
-  });
-
-  const senderEmail = typeof from === 'string' ? from : from?.address || from?.[0]?.address;
-  const receivedAt = typeof to === 'string' ? to
-    : Array.isArray(to) ? (to[0]?.address || to[0] || null)
-    : to?.address || null;
-
-  console.log('[inbound-email] Parsed', { senderEmail, receivedAt, subject: subject || '(none)', email_id });
-
+  const senderEmail = toAddressList(from)[0] || null;
   if (!senderEmail) {
     return NextResponse.json({ error: 'No sender email found' }, { status: 400 });
   }
 
-  // Prevent loop: ignore emails FROM our own @siggly.io addresses
-  const senderLower = senderEmail.toLowerCase();
-  if (senderLower.includes('@siggly.io') || senderLower.includes('@send.siggly.io')) {
-    console.log('[inbound-email] Skipping — email from our own domain', { senderEmail });
+  // Loop guard: never process mail from our own domain.
+  if (senderEmail.includes('@siggly.io') || senderEmail.includes('@send.siggly.io')) {
     return NextResponse.json({ skipped: true, reason: 'Sent from own domain' });
   }
 
-  // Only process emails addressed to @siggly.io — ignore other domains
-  const recipientStr = typeof receivedAt === 'string' ? receivedAt : '';
-  if (!recipientStr.toLowerCase().includes('@siggly.io')) {
-    console.log('[inbound-email] Skipping — not a siggly.io recipient', { receivedAt, recipientStr });
-    return NextResponse.json({ skipped: true, reason: 'Not a siggly.io recipient' });
+  // Find the siggly.io recipient across BOTH to and cc (not just the first address),
+  // so a CC'd support@ address is never silently dropped.
+  const recipients = [...toAddressList(to), ...toAddressList(cc)];
+  const receivedAt = recipients.find((a) => a.includes('@siggly.io')) || null;
+  if (!receivedAt) {
+    return NextResponse.json({ skipped: true, reason: 'No siggly.io recipient' });
   }
-
-  // Resend webhook only includes metadata — fetch body via Received Emails API
-  let bodyText = '';
-  let bodyHtml = '';
-  let attachments: Array<{ filename: string; content_type: string; content: string; content_id?: string }> = [];
-  if (email_id && process.env.RESEND_API_KEY) {
-    try {
-      // Use the /emails/receiving/{id} endpoint (not /emails/{id} which is for outbound)
-      const res = await fetch(`https://api.resend.com/emails/receiving/${email_id}`, {
-        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
-        signal: AbortSignal.timeout(10000),
-      });
-      if (res.ok) {
-        const fullEmail = await res.json();
-        bodyText = fullEmail.text || '';
-        bodyHtml = fullEmail.html || '';
-        attachments = fullEmail.attachments || [];
-      } else {
-        console.error('[inbound-email] Resend API error', { status: res.status, statusText: res.statusText });
-      }
-      console.log('[inbound-email] Fetched email body', {
-        hasText: !!bodyText,
-        hasHtml: !!bodyHtml,
-        textLength: bodyText.length,
-        attachmentCount: attachments.length,
-      });
-    } catch (fetchErr) {
-      console.error('[inbound-email] Failed to fetch email body', fetchErr);
-    }
-  }
-
-  // Replace cid: references in HTML with inline base64 data URIs so images render
-  if (bodyHtml && attachments.length > 0) {
-    for (const att of attachments) {
-      if (att.content_id && att.content) {
-        const cid = att.content_id.replace(/^<|>$/g, '');
-        bodyHtml = bodyHtml.replace(
-          new RegExp(`cid:${cid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'),
-          `data:${att.content_type};base64,${att.content}`
-        );
-      }
-    }
-  }
-
-  // Build attachment metadata for non-inline attachments (no content_id = regular attachment)
-  const fileAttachments = attachments
-    .filter(att => !att.content_id && att.filename)
-    .map(att => ({ filename: att.filename, content_type: att.content_type, size: att.content?.length || 0 }));
-
-  // Convert HTML to clean plaintext: strip style/script blocks, then tags, then collapse whitespace
-  const htmlToPlainText = (html: string) =>
-    html
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n')
-      .replace(/<\/div>/gi, '\n')
-      .replace(/<[^>]+>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-
-  const messageBody = bodyText || (bodyHtml ? htmlToPlainText(bodyHtml) : '');
-  const displayBody = messageBody.trim() || '(No message body)';
-  const htmlContent = bodyHtml?.trim() || null;
 
   const supabase = getSupabaseAdmin();
   const inboxAlias = getInboxAlias(receivedAt);
 
   try {
-    // --- Try to thread onto an existing ticket ---
-    const isReply = subject && /^re:/i.test(subject.trim());
-
-    if (isReply) {
-      let existingTicketId: string | null = null;
-
-      // Strategy 1: Match [Ticket#UUID] or [#UUID] in subject
-      const ticketIdMatch = subject ? TICKET_ID_RE.exec(subject) : null;
-      if (ticketIdMatch) {
-        const { data: ticket } = await supabase
-          .from('feedback')
-          .select('id')
-          .like('id', `${ticketIdMatch[1]}%`)
-          .single();
-        if (ticket) existingTicketId = ticket.id;
+    // --- Idempotency: has this exact Resend email already become a ticket? ---
+    if (email_id) {
+      const { data: dupe } = await supabase
+        .from('feedback')
+        .select('id')
+        .filter('metadata->>resend_email_id', 'eq', email_id)
+        .limit(1)
+        .maybeSingle();
+      if (dupe) {
+        return NextResponse.json({ success: true, action: 'duplicate_ignored', ticketId: dupe.id });
       }
+    }
 
-      // Strategy 2: Fallback — match by original subject text + sender email
-      if (!existingTicketId && subject) {
-        const cleanSubject = subject.replace(/^re:\s*/i, '').replace(/\[(?:Ticket)?#[a-f0-9-]+\]\s*/i, '').trim();
-        // Escape LIKE special characters to prevent wildcard injection
-        const escapedSubject = cleanSubject.slice(0, 80).replace(/[%_\\]/g, '\\$&');
-        if (cleanSubject.length > 5) {
-          const { data: ticket } = await supabase
-            .from('feedback')
-            .select('id')
-            .eq('user_email', senderEmail)
-            .ilike('message', `%${escapedSubject}%`)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
-          if (ticket) existingTicketId = ticket.id;
+    // --- Fetch the message body + headers (Resend webhook carries metadata only) ---
+    let bodyText = '';
+    let bodyHtml = '';
+    let attachments: Array<{ filename: string; content_type: string; content: string; content_id?: string }> = [];
+    let header = makeHeaderLookup(emailData.headers);
+    let bodyFetchFailed = false;
+
+    if (email_id && process.env.RESEND_API_KEY) {
+      try {
+        const res = await fetch(`https://api.resend.com/emails/receiving/${email_id}`, {
+          headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}` },
+          signal: AbortSignal.timeout(10000),
+        });
+        if (res.ok) {
+          const fullEmail = await res.json();
+          bodyText = fullEmail.text || '';
+          bodyHtml = fullEmail.html || '';
+          attachments = fullEmail.attachments || [];
+          header = makeHeaderLookup(fullEmail.headers, emailData.headers, {
+            'in-reply-to': fullEmail.in_reply_to,
+            references: fullEmail.references,
+            'message-id': fullEmail.message_id,
+          });
+        } else {
+          bodyFetchFailed = true;
+          console.error('[inbound-email] Resend receiving API error', { status: res.status });
+        }
+      } catch (fetchErr) {
+        bodyFetchFailed = true;
+        console.error('[inbound-email] Failed to fetch email body', fetchErr);
+      }
+    }
+
+    // If we were supposed to fetch a body but couldn't, ask Resend to retry (503) rather
+    // than persisting a content-free ticket. Idempotency above prevents duplicates on retry.
+    if (bodyFetchFailed && !bodyText && !bodyHtml) {
+      return NextResponse.json(
+        { error: 'Message body not available yet — retry' },
+        { status: 503 }
+      );
+    }
+
+    // --- Loop / bounce / auto-responder guard ---
+    const autoSubmitted = (header('auto-submitted') || '').toLowerCase();
+    const precedence = (header('precedence') || '').toLowerCase();
+    const isBulkOrAuto =
+      (autoSubmitted && autoSubmitted !== 'no') ||
+      ['bulk', 'list', 'auto_reply', 'junk'].includes(precedence) ||
+      !!header('list-id') ||
+      !!header('list-unsubscribe') ||
+      !!header('x-autoreply') ||
+      !!header('x-autorespond') ||
+      /^(mailer-daemon|postmaster|no-?reply|do-?not-?reply|bounce)/i.test(senderEmail.split('@')[0]);
+
+    // Inline cid: images
+    if (bodyHtml && attachments.length > 0) {
+      for (const att of attachments) {
+        if (att.content_id && att.content) {
+          const cid = att.content_id.replace(/^<|>$/g, '');
+          bodyHtml = bodyHtml.replace(
+            new RegExp(`cid:${cid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'gi'),
+            `data:${att.content_type};base64,${att.content}`
+          );
         }
       }
+    }
+    const fileAttachments = attachments
+      .filter((att) => !att.content_id && att.filename)
+      .map((att) => ({ filename: att.filename, content_type: att.content_type, size: att.content?.length || 0 }));
 
-      if (existingTicketId) {
-        await supabase
-          .from('ticket_notes')
-          .insert({
-            ticket_id: existingTicketId,
-            author_id: null,
-            content: `Email reply from ${senderEmail}:\n\n${displayBody}`,
-            html_body: htmlContent,
-            is_internal: false,
-            email_sent: false,
-          });
+    const htmlToPlainText = (html: string) =>
+      html
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n')
+        .replace(/<\/div>/gi, '\n')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 
-        console.log('[inbound-email] Note added to existing ticket', { ticketId: existingTicketId, senderEmail });
+    const messageBody = bodyText || (bodyHtml ? htmlToPlainText(bodyHtml) : '');
+    const displayBody = messageBody.trim() || '(No message body)';
+    const htmlContent = bodyHtml?.trim() || null;
 
-        // Reopen if resolved/archived
+    // --- Resolve the ticket this email belongs to (if any) ---
+    const inReplyTo = header('in-reply-to') || '';
+    const references = header('references') || '';
+    const headerBlob = `${inReplyTo} ${references}`;
+    let existingTicketId: string | null = null;
+
+    // Strategy 1 (most reliable): ticket id embedded in In-Reply-To / References headers.
+    const headerMatch = HEADER_TICKET_RE.exec(headerBlob);
+    if (headerMatch) {
+      const id = headerMatch[1];
+      const q = supabase.from('feedback').select('id');
+      const { data } = await (id.length === 36 ? q.eq('id', id) : q.like('id', `${id}%`))
+        .limit(1)
+        .maybeSingle();
+      if (data) existingTicketId = data.id;
+    }
+
+    // Strategy 2: [Ticket#UUID] tag in the subject.
+    if (!existingTicketId && subject) {
+      const m = SUBJECT_TICKET_RE.exec(subject);
+      if (m) {
+        const id = m[1];
+        const q = supabase.from('feedback').select('id');
+        const { data } = await (id.length === 36 ? q.eq('id', id) : q.like('id', `${id}%`))
+          .limit(1)
+          .maybeSingle();
+        if (data) existingTicketId = data.id;
+      }
+    }
+
+    // Strategy 3 (heuristic, last resort): same sender + same normalized subject on a
+    // recent, still-open ticket. Only when the subject looks like a reply.
+    const looksLikeReply = !!subject && (REPLY_PREFIX_RE.test(subject) || !!inReplyTo || !!references);
+    if (!existingTicketId && looksLikeReply && subject) {
+      const cleanSubject = subject
+        .replace(REPLY_PREFIX_RE, '')
+        .replace(/\[(?:Ticket)?#[a-f0-9-]+\]\s*/i, '')
+        .trim();
+      const escaped = cleanSubject.slice(0, 80).replace(/[%_\\]/g, '\\$&');
+      if (cleanSubject.length > 5) {
+        const since = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString();
+        const { data } = await supabase
+          .from('feedback')
+          .select('id')
+          .eq('user_email', senderEmail)
+          .not('status', 'in', '("spam","archived")')
+          .gte('created_at', since)
+          .ilike('message', `%${escaped}%`)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (data) existingTicketId = data.id;
+      }
+    }
+
+    // --- Thread onto the existing ticket ---
+    if (existingTicketId) {
+      const noteContent = `Email reply from ${senderEmail}:\n\n${displayBody}`;
+
+      // Best-effort note-level dedup (retries after threading, before idempotency catches up).
+      const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const { data: existingNote } = await supabase
+        .from('ticket_notes')
+        .select('id')
+        .eq('ticket_id', existingTicketId)
+        .is('author_id', null)
+        .eq('content', noteContent)
+        .gte('created_at', tenMinAgo)
+        .limit(1)
+        .maybeSingle();
+
+      if (!existingNote) {
+        await supabase.from('ticket_notes').insert({
+          ticket_id: existingTicketId,
+          author_id: null,
+          content: noteContent,
+          html_body: htmlContent,
+          is_internal: false,
+          email_sent: false,
+        });
+        // Reopen if resolved/archived.
         await supabase
           .from('feedback')
           .update({ status: 'new', updated_at: new Date().toISOString() })
           .eq('id', existingTicketId)
           .in('status', ['resolved', 'archived']);
-
-        return NextResponse.json({ success: true, action: 'note_added', ticketId: existingTicketId });
       }
+
+      return NextResponse.json({ success: true, action: 'note_added', ticketId: existingTicketId });
     }
 
-    // --- New ticket ---
-
-    // Auto-tag type & priority based on inbox alias
+    // --- Create a new ticket ---
     const isSales = inboxAlias === 'sales';
     const ticketType = isSales ? 'sales' : 'email';
     const ticketPriority = isSales ? 'high' : 'normal';
 
-    // Try to link sender to an existing user profile
+    // Link sender to an existing user profile if we recognize them.
     let userId: string | null = null;
     const { data: existingUser } = await supabase
       .from('users')
       .select('id')
       .eq('email', senderEmail)
       .limit(1)
-      .single();
+      .maybeSingle();
     if (existingUser) userId = existingUser.id;
 
     const { data: newTicket, error: insertError } = await supabase
@@ -305,7 +368,9 @@ export async function POST(request: NextRequest) {
           source: 'inbound_email',
           original_subject: subject || null,
           submitted_at: new Date().toISOString(),
+          is_auto: isBulkOrAuto || undefined,
           ...(email_id ? { resend_email_id: email_id } : {}),
+          ...(inReplyTo || references ? { thread_headers: { in_reply_to: inReplyTo || undefined, references: references || undefined } } : {}),
           ...(fileAttachments.length > 0 ? { attachments: fileAttachments } : {}),
         },
       })
@@ -313,27 +378,27 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error('[inbound-email] DB insert failed', { error: insertError.message, code: insertError.code, details: insertError.details });
+      console.error('[inbound-email] DB insert failed', { error: insertError.message, code: insertError.code });
       throw insertError;
     }
 
-    console.log('[inbound-email] Ticket created', { ticketId: newTicket?.id, type: ticketType, senderEmail });
-
-    // Notify admins + auto-respond to sender (fire-and-forget)
     if (newTicket) {
       notifyAdminsOfNewTicket({
         ticketId: newTicket.id,
         type: newTicket.type,
-        senderEmail: senderEmail,
+        senderEmail,
         message: displayBody.slice(0, 500),
         source: 'inbound_email',
       }).catch((err) => console.error('[inbound-email] Admin notification failed:', err));
 
-      sendAutoResponse({
-        to: senderEmail,
-        ticketId: newTicket.id,
-        inboxEmail: receivedAt || null,
-      }).catch((err) => console.error('[inbound-email] Auto-response failed:', err));
+      // Loop guard: never auto-respond to bounces / vacation autoresponders / list mail.
+      if (!isBulkOrAuto) {
+        sendAutoResponse({
+          to: senderEmail,
+          ticketId: newTicket.id,
+          inboxEmail: receivedAt || null,
+        }).catch((err) => console.error('[inbound-email] Auto-response failed:', err));
+      }
     }
 
     return NextResponse.json({ success: true, action: 'ticket_created', ticketId: newTicket?.id });
