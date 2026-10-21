@@ -826,7 +826,13 @@ export default function TicketsPage() {
   const sendComposeEmail = async () => {
     const htmlContent = composeEditorRef.current?.getHTML() || '';
     const textContent = composeEditorRef.current?.getText()?.trim() || '';
-    if (!composeTo.trim() || !composeSubject.trim() || !textContent) return;
+    // Give explicit feedback instead of a silent no-op when something's missing/invalid.
+    if (!composeTo.trim()) { setComposeError('Add a recipient email address.'); return; }
+    if (!composeSubject.trim()) { setComposeError('Add a subject.'); return; }
+    if (!textContent) { setComposeError('Write a message before sending.'); return; }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const badTo = composeTo.split(',').map(s => s.trim()).filter(Boolean).filter(e => !emailRe.test(e));
+    if (badTo.length) { setComposeError(`Not a valid email address: ${badTo[0]}`); return; }
 
     setComposeSending(true);
     setComposeError(null);
@@ -1139,6 +1145,20 @@ export default function TicketsPage() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId]);
+
+  // Expand {{variables}} in a canned reply using the open ticket's context,
+  // so saved replies personalize instead of pasting literal placeholders.
+  const fillCannedTemplate = (content: string): string => {
+    const email = selectedTicket?.userEmail || '';
+    const first = email ? (email.split('@')[0].split(/[._-]/)[0] || '') : '';
+    const firstName = first ? first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() : 'there';
+    return content
+      .replace(/\{\{\s*first_?name\s*\}\}/gi, firstName)
+      .replace(/\{\{\s*(?:full_?)?name\s*\}\}/gi, firstName)
+      .replace(/\{\{\s*email\s*\}\}/gi, email)
+      .replace(/\{\{\s*ticket_?id\s*\}\}/gi, selectedTicket ? selectedTicket.id.slice(0, 8) : '')
+      .replace(/\{\{\s*(?:org|organization|company)(?:_?name)?\s*\}\}/gi, selectedTicket?.organizationName || '');
+  };
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -1881,7 +1901,7 @@ export default function TicketsPage() {
                       {showCannedPicker && (
                         <div className="absolute left-0 bottom-7 bg-popover border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
                           {cannedResponses.map(cr => (
-                            <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-muted border-b last:border-0">
+                            <button key={cr.id} onClick={() => { const filled = fillCannedTemplate(cr.content); setNewNote(filled); editorRef.current?.setContent(filled); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-muted border-b last:border-0">
                               <p className="text-sm font-medium">{cr.title}</p>
                               <p className="text-xs text-muted-foreground truncate mt-0.5">{cr.content.slice(0, 60)}</p>
                             </button>
