@@ -171,6 +171,7 @@ export default function TicketsPage() {
   const [aiDrafting, setAiDrafting] = useState<'reply' | 'summary' | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [customerContext, setCustomerContext] = useState<any | null>(null);
   const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
   const [hideSnoozed, setHideSnoozed] = useState(true);
   const [showFilterPopover, setShowFilterPopover] = useState(false);
@@ -1150,11 +1151,25 @@ export default function TicketsPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId]);
 
-  // Reset AI output when switching tickets.
+  // Reset AI output + load customer context when switching tickets.
   useEffect(() => {
     setAiSummary(null);
     setAiError(null);
+    setCustomerContext(null);
+    const id = selectedTicket?.id;
+    if (!id) return;
+    let cancelled = false;
+    fetch(`/api/admin/tickets/${id}/context`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (!cancelled) setCustomerContext(d); })
+      .catch(() => {});
+    return () => { cancelled = true; };
   }, [selectedTicket?.id]);
+
+  const planBadgeClass = (plan: string | null) =>
+    plan === 'enterprise' ? 'bg-violet-100 text-violet-700'
+    : (plan === 'professional' || plan === 'pro') ? 'bg-blue-100 text-blue-700'
+    : 'bg-gray-100 text-gray-600';
 
   // Generate an AI draft reply (fills the editor) or a thread summary (shows a banner).
   const generateAi = async (mode: 'reply' | 'summary') => {
@@ -1327,6 +1342,31 @@ export default function TicketsPage() {
     if (days < 7) return `${days}d`;
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  const contextBar = customerContext && (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-card px-3 py-2 text-xs">
+      {customerContext.plan ? (
+        <span className={`px-1.5 py-0.5 rounded font-semibold capitalize ${planBadgeClass(customerContext.plan)}`}>
+          {customerContext.plan}{customerContext.planStatus && customerContext.planStatus !== 'active' ? ` · ${customerContext.planStatus}` : ''}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">No account</span>
+      )}
+      {customerContext.orgName && (
+        <span className="text-foreground/80 font-medium">{customerContext.orgName}{customerContext.orgType === 'msp' ? ' · partner' : ''}</span>
+      )}
+      {customerContext.memberSince && (
+        <span className="text-muted-foreground">Joined {timeAgo(customerContext.memberSince)}</span>
+      )}
+      {customerContext.totalTickets > 0 && (
+        <span className="text-muted-foreground">
+          {customerContext.totalTickets} ticket{customerContext.totalTickets !== 1 ? 's' : ''}
+          {customerContext.openTickets > 1 ? ` · ${customerContext.openTickets} open` : ''}
+        </span>
+      )}
+      {customerContext.isActive === false && <span className="text-red-500 font-medium">Deactivated</span>}
+    </div>
+  );
 
   const hasActiveFilters = typeFilter !== 'all' || priorityFilter !== 'all' || partnerFilter !== 'all';
 
@@ -1777,6 +1817,7 @@ export default function TicketsPage() {
 
             {/* Scrollable conversation area — collapsible thread */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
+              {contextBar}
               {aiSummary && (
                 <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
                   <div className="flex items-center justify-between mb-1.5">
@@ -2051,6 +2092,7 @@ export default function TicketsPage() {
 
             {/* Mobile conversation — same collapsible pattern */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-muted/20">
+              {contextBar}
               {aiSummary && (
                 <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
                   <div className="flex items-center justify-between mb-1.5">
