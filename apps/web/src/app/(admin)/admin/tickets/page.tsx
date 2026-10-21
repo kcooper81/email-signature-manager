@@ -49,6 +49,7 @@ import {
   MoreHorizontal,
   ChevronUp,
   MessageCircle,
+  Sparkles,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -167,6 +168,9 @@ export default function TicketsPage() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
   const [showCannedPicker, setShowCannedPicker] = useState(false);
+  const [aiDrafting, setAiDrafting] = useState<'reply' | 'summary' | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
   const [hideSnoozed, setHideSnoozed] = useState(true);
   const [showFilterPopover, setShowFilterPopover] = useState(false);
@@ -1146,6 +1150,47 @@ export default function TicketsPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId]);
 
+  // Reset AI output when switching tickets.
+  useEffect(() => {
+    setAiSummary(null);
+    setAiError(null);
+  }, [selectedTicket?.id]);
+
+  // Generate an AI draft reply (fills the editor) or a thread summary (shows a banner).
+  const generateAi = async (mode: 'reply' | 'summary') => {
+    if (!selectedTicket || aiDrafting) return;
+    setAiDrafting(mode);
+    setAiError(null);
+    try {
+      const res = await fetch(`/api/admin/tickets/${selectedTicket.id}/ai-draft`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAiError(data.error || 'AI request failed');
+        return;
+      }
+      if (mode === 'summary') {
+        setAiSummary(data.text);
+      } else {
+        const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const html = String(data.text)
+          .split(/\n\n+/)
+          .map((p: string) => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`)
+          .join('');
+        setComposerMode('reply');
+        setNewNote(html);
+        editorRef.current?.setContent(html);
+      }
+    } catch {
+      setAiError('AI request failed');
+    } finally {
+      setAiDrafting(null);
+    }
+  };
+
   // Expand {{variables}} in a canned reply using the open ticket's context,
   // so saved replies personalize instead of pasting literal placeholders.
   const fillCannedTemplate = (content: string): string => {
@@ -1732,6 +1777,17 @@ export default function TicketsPage() {
 
             {/* Scrollable conversation area — collapsible thread */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
+              {aiSummary && (
+                <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-violet-700">
+                      <Sparkles className="h-3.5 w-3.5" /> AI summary
+                    </span>
+                    <button onClick={() => setAiSummary(null)} className="text-violet-400 hover:text-violet-600"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                  <div className="text-sm text-violet-900 whitespace-pre-wrap leading-relaxed">{aiSummary}</div>
+                </div>
+              )}
               {(() => {
                 // Notes are fetched newest-first; build thread with latest at top
                 const allMessages = [
@@ -1892,6 +1948,34 @@ export default function TicketsPage() {
                     </div>
                   )}
 
+                  {/* AI assist for reply mode */}
+                  {composerMode === 'reply' && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => generateAi('reply')}
+                        disabled={!!aiDrafting}
+                        className="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-700 px-2 py-1 rounded hover:bg-violet-50 font-medium disabled:opacity-60"
+                        title="Draft a reply with AI"
+                      >
+                        {aiDrafting === 'reply' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                        AI Draft
+                      </button>
+                      <button
+                        onClick={() => generateAi('summary')}
+                        disabled={!!aiDrafting}
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted font-medium disabled:opacity-60"
+                        title="Summarize this thread"
+                      >
+                        {aiDrafting === 'summary' ? <Loader2 className="h-3 w-3 animate-spin" /> : <MessageSquare className="h-3 w-3" />}
+                        Summarize
+                      </button>
+                    </div>
+                  )}
+
+                  {aiError && composerMode === 'reply' && (
+                    <p className="text-xs text-red-500">{aiError}</p>
+                  )}
+
                   {/* Canned responses for reply mode */}
                   {cannedResponses.length > 0 && composerMode === 'reply' && (
                     <div className="relative" data-popover="canned">
@@ -1967,6 +2051,15 @@ export default function TicketsPage() {
 
             {/* Mobile conversation — same collapsible pattern */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-muted/20">
+              {aiSummary && (
+                <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-violet-700"><Sparkles className="h-3.5 w-3.5" /> AI summary</span>
+                    <button onClick={() => setAiSummary(null)} className="text-violet-400"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                  <div className="text-sm text-violet-900 whitespace-pre-wrap leading-relaxed">{aiSummary}</div>
+                </div>
+              )}
               {/* Original message */}
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
@@ -2053,6 +2146,17 @@ export default function TicketsPage() {
               </div>
               {composerMode && (composerMode === 'reply' || composerMode === 'note') && (
                 <div className="px-3 py-2.5 space-y-2">
+                  {composerMode === 'reply' && (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => generateAi('reply')} disabled={!!aiDrafting} className="flex items-center gap-1.5 text-xs text-violet-600 font-medium px-2 py-1 rounded hover:bg-violet-50 disabled:opacity-60">
+                        {aiDrafting === 'reply' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />} AI Draft
+                      </button>
+                      <button onClick={() => generateAi('summary')} disabled={!!aiDrafting} className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium px-2 py-1 rounded hover:bg-muted disabled:opacity-60">
+                        {aiDrafting === 'summary' ? <Loader2 className="h-3 w-3 animate-spin" /> : <MessageSquare className="h-3 w-3" />} Summarize
+                      </button>
+                    </div>
+                  )}
+                  {aiError && <p className="text-xs text-red-500">{aiError}</p>}
                   <RichTextEditor ref={editorRef} placeholder={composerMode === 'note' ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
                   <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-9 text-sm font-medium ${composerMode === 'note' ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
                     {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
