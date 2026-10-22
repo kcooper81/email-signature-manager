@@ -95,6 +95,8 @@ interface FeedbackEntry {
   snoozedUntil: string | null;
   assignedTo: string | null;
   assignedEmail: string | null;
+  firstResponseAt: string | null;
+  tags: string[];
 }
 
 const PAGE_SIZE = 20;
@@ -162,6 +164,7 @@ export default function TicketsPage() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
   const editorRef = useRef<RichTextEditorRef>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
@@ -290,6 +293,8 @@ export default function TicketsPage() {
             snoozedUntil: item.snoozed_until || null,
             assignedTo: item.assigned_to || null,
             assignedEmail: null,
+            firstResponseAt: item.first_response_at || null,
+            tags: item.tags || [],
           };
 
           const matchesType = typeFilter === 'all' || item.type === typeFilter;
@@ -540,6 +545,8 @@ export default function TicketsPage() {
       snoozedUntil: item.snoozed_until || null,
       assignedTo: item.assigned_to || null,
       assignedEmail: item.assigned_user?.email || null,
+      firstResponseAt: item.first_response_at || null,
+      tags: item.tags || [],
     }));
 
     setTickets(mapped);
@@ -1206,6 +1213,22 @@ export default function TicketsPage() {
     }
   };
 
+  // Open the composer in a given mode and bring it into view + focus (used by the
+  // top action bar so you don't have to scroll to the bottom to reply).
+  const openComposer = (mode: 'reply' | 'note') => {
+    setComposerMode(mode);
+    setTimeout(() => {
+      composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      editorRef.current?.focus?.();
+    }, 60);
+  };
+
+  // Hours an open ticket has waited with no agent reply yet (null if answered/closed).
+  const awaitingHours = (t: FeedbackEntry): number | null => {
+    if (!['new', 'reviewed'].includes(t.status) || t.firstResponseAt) return null;
+    return Math.floor((Date.now() - new Date(t.createdAt).getTime()) / 3600000);
+  };
+
   // Expand {{variables}} in a canned reply using the open ticket's context,
   // so saved replies personalize instead of pasting literal placeholders.
   const fillCannedTemplate = (content: string): string => {
@@ -1651,12 +1674,17 @@ export default function TicketsPage() {
 
                         <div className="flex flex-col items-end gap-1.5 shrink-0">
                           <span className={`text-xs whitespace-nowrap ${isUnread ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>{timeAgo(ticket.createdAt)}</span>
-                          {ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
-                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                              <Reply className="h-2.5 w-2.5" />
-                              {timeAgo(ticket.updatedAt)}
-                            </span>
-                          )}
+                          {(() => {
+                            const h = awaitingHours(ticket);
+                            if (h === null) return null;
+                            const cls = h >= 24 ? 'bg-red-100 text-red-700' : h >= 4 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500';
+                            return (
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5 ${cls}`} title="Waiting for first reply">
+                                <Clock className="h-2.5 w-2.5" />
+                                {h < 1 ? '<1h' : h >= 24 ? `${Math.floor(h / 24)}d` : `${h}h`}
+                              </span>
+                            );
+                          })()}
                           {!isCompact && ticket.isPartnerEscalation && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">Partner</span>
                           )}
@@ -1815,6 +1843,22 @@ export default function TicketsPage() {
               </div>
             )}
 
+            {/* Quick actions (top) — mirror of the bottom composer so you don't scroll to reply */}
+            <div className="flex items-center gap-1.5 px-4 py-2 border-b bg-card shrink-0">
+              <button onClick={() => openComposer('reply')} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 bg-primary text-primary-foreground hover:opacity-90">
+                <Reply className="h-3.5 w-3.5" /> Reply
+              </button>
+              <button onClick={() => openComposer('note')} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-muted-foreground hover:bg-muted border">
+                <MessageCircle className="h-3.5 w-3.5" /> Note
+              </button>
+              <button onClick={() => forwardTicket(selectedTicket)} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-muted-foreground hover:bg-muted border">
+                <Forward className="h-3.5 w-3.5" /> Forward
+              </button>
+              <button onClick={() => generateAi('reply')} disabled={!!aiDrafting} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-violet-600 hover:bg-violet-50 border border-violet-200 disabled:opacity-60 ml-auto">
+                {aiDrafting === 'reply' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} AI Draft
+              </button>
+            </div>
+
             {/* Scrollable conversation area — collapsible thread */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
               {contextBar}
@@ -1930,7 +1974,7 @@ export default function TicketsPage() {
             </div>
 
             {/* Bottom action bar — Reply / Note / Forward buttons + collapsible composer */}
-            <div className="bg-card border-t shrink-0">
+            <div ref={composerRef} className="bg-card border-t shrink-0">
               {/* Mode buttons */}
               <div className="flex items-center gap-1 px-4 py-2 border-b bg-muted/30">
                 <button
