@@ -50,6 +50,7 @@ import {
   ChevronUp,
   MessageCircle,
   Sparkles,
+  GitMerge,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -175,6 +176,9 @@ export default function TicketsPage() {
   const [aiError, setAiError] = useState<string | null>(null);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [customerContext, setCustomerContext] = useState<any | null>(null);
+  const [newTag, setNewTag] = useState('');
+  const [mergeFromId, setMergeFromId] = useState<string | null>(null);
+  const [mergeSearch, setMergeSearch] = useState('');
   const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
   const [hideSnoozed, setHideSnoozed] = useState(true);
   const [showFilterPopover, setShowFilterPopover] = useState(false);
@@ -1114,7 +1118,7 @@ export default function TicketsPage() {
 
       // Don't let list/ticket shortcuts (j/k/r/e/Esc) fire while a modal is open —
       // otherwise e.g. pressing "e" behind the delete dialog resolves the ticket under it.
-      if (showCompose || deleteConfirmId) return;
+      if (showCompose || deleteConfirmId || mergeFromId) return;
 
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' ||
           target.isContentEditable || target.closest('.tiptap')) return;
@@ -1156,7 +1160,7 @@ export default function TicketsPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId]);
+  }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId, mergeFromId]);
 
   // Reset AI output + load customer context when switching tickets.
   useEffect(() => {
@@ -1221,6 +1225,40 @@ export default function TicketsPage() {
       composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       editorRef.current?.focus?.();
     }, 60);
+  };
+
+  // Merge the currently-open ticket into another (fold a forked/duplicate thread).
+  const mergeTicket = async (into: string) => {
+    const from = mergeFromId;
+    if (!from || from === into) return;
+    setMergeFromId(null);
+    setMergeSearch('');
+    try {
+      await fetch(`/api/admin/tickets/${from}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'merge', into }),
+      });
+      setTickets(prev => prev.filter(t => t.id !== from));
+      setSelectedTicket(prev => (prev?.id === from ? null : prev));
+    } catch {
+      /* best-effort */
+    }
+  };
+
+  // Update a ticket's tags (optimistic + persist).
+  const updateTags = async (ticketId: string, tags: string[]) => {
+    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, tags } : t));
+    setSelectedTicket(prev => prev && prev.id === ticketId ? { ...prev, tags } : prev);
+    try {
+      await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set_tags', tags }),
+      });
+    } catch {
+      /* best-effort */
+    }
   };
 
   // Hours an open ticket has waited with no agent reply yet (null if answered/closed).
@@ -1811,6 +1849,9 @@ export default function TicketsPage() {
                           <ShieldBan className="h-3.5 w-3.5" /> Mark as Spam
                         </button>
                       )}
+                      <button onClick={() => { setMergeFromId(selectedTicket.id); setMergeSearch(selectedTicket.userEmail || ''); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
+                        <GitMerge className="h-3.5 w-3.5" /> Merge into…
+                      </button>
                       <div className="border-t my-1" />
                       <button onClick={() => { setDeleteConfirmId(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-red-50 text-red-600 flex items-center gap-2">
                         <Trash2 className="h-3.5 w-3.5" /> Delete
@@ -1862,6 +1903,27 @@ export default function TicketsPage() {
             {/* Scrollable conversation area — collapsible thread */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
               {contextBar}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {selectedTicket.tags.map(tag => (
+                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                    {tag}
+                    <button onClick={() => updateTags(selectedTicket.id, selectedTicket.tags.filter(t => t !== tag))} className="hover:text-blue-900" title="Remove tag"><X className="h-2.5 w-2.5" /></button>
+                  </span>
+                ))}
+                <input
+                  value={newTag}
+                  onChange={e => setNewTag(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && newTag.trim()) {
+                      const t = newTag.trim().slice(0, 40);
+                      if (!selectedTicket.tags.includes(t)) updateTags(selectedTicket.id, [...selectedTicket.tags, t]);
+                      setNewTag('');
+                    }
+                  }}
+                  placeholder="+ tag"
+                  className="text-[11px] px-2 py-0.5 border rounded-full w-16 focus:w-32 bg-background transition-all outline-none focus:ring-1 focus:ring-blue-300"
+                />
+              </div>
               {aiSummary && (
                 <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
                   <div className="flex items-center justify-between mb-1.5">
@@ -2250,6 +2312,51 @@ export default function TicketsPage() {
                   </Button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Merge Dialog — pick a ticket to fold the current one into */}
+      {mergeFromId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMergeFromId(null)} />
+          <div className="relative bg-background rounded-xl shadow-2xl border w-full max-w-lg mx-4 flex flex-col max-h-[80vh]">
+            <div className="p-4 border-b">
+              <h3 className="text-base font-semibold flex items-center gap-2"><GitMerge className="h-4 w-4" /> Merge ticket into…</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">The current ticket's messages move into the one you pick, and it's archived.</p>
+              <input
+                autoFocus
+                value={mergeSearch}
+                onChange={e => setMergeSearch(e.target.value)}
+                placeholder="Search by sender or subject…"
+                className="mt-3 w-full h-9 px-3 border rounded-lg text-sm bg-background outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="overflow-y-auto p-2">
+              {(() => {
+                const term = mergeSearch.trim().toLowerCase();
+                const candidates = tickets
+                  .filter(t => t.id !== mergeFromId && t.status !== 'spam')
+                  .filter(t => !term || (t.userEmail || '').toLowerCase().includes(term) || (t.message || '').toLowerCase().includes(term))
+                  .slice(0, 30);
+                if (candidates.length === 0) {
+                  return <p className="text-sm text-muted-foreground text-center py-6">No matching tickets in the current list.</p>;
+                }
+                return candidates.map(t => (
+                  <button key={t.id} onClick={() => mergeTicket(t.id)} className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-muted flex items-center gap-3">
+                    <span className="text-[10px] font-mono text-muted-foreground shrink-0">#{t.id.slice(0, 8)}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{t.userEmail || 'Anonymous'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{t.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '').slice(0, 70)}</p>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground shrink-0">{timeAgo(t.createdAt)}</span>
+                  </button>
+                ));
+              })()}
+            </div>
+            <div className="p-3 border-t flex justify-end">
+              <Button variant="outline" onClick={() => setMergeFromId(null)}>Cancel</Button>
             </div>
           </div>
         </div>
