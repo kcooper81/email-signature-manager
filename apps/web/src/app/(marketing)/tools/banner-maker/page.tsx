@@ -14,6 +14,36 @@ const SIZES: { id: string; label: string; w: number; h: number }[] = [
   { id: 'square', label: 'Square (300×250)', w: 300, h: 250 },
 ];
 
+const SIZE_GUIDE: { label: string; dims: string; use: string }[] = [
+  { label: 'Wide', dims: '600 × 150 px', use: 'The safe default for an email signature banner — fills the signature width without overwhelming it.' },
+  { label: 'Leaderboard', dims: '728 × 90 px', use: 'A slim strip for a one-line promo or event header under your details.' },
+  { label: 'Compact', dims: '468 × 120 px', use: 'Good for mobile-first audiences where a narrower, shorter banner reads better.' },
+  { label: 'Square', dims: '300 × 250 px', use: 'A card-style header when you want the image beside your text rather than below it.' },
+];
+
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'What size should an email signature banner be?',
+    a: '600 × 150 px is the safe default — it fills a typical signature width and stays sharp on retina screens. Keep the file under ~100 KB so it loads instantly, and always export at 2× the display size to avoid blurry edges. This maker outputs crisp PNGs at every preset size.',
+  },
+  {
+    q: 'What is the difference between an email header and a signature banner?',
+    a: 'People use the terms interchangeably for the graphic strip in an email. A "signature banner" sits inside your email signature, below your name and title; an "email header" often means the same image placed at the top of a message. This tool makes either — design it once and drop the PNG wherever you need it.',
+  },
+  {
+    q: 'How do I add the banner to my email signature?',
+    a: 'Download the PNG, then insert it as an image in your email client\'s signature editor (Gmail, Outlook, Apple Mail all support this) and link it to the URL you want. To roll one banner out across a whole team automatically — and swap it on a schedule — Siggly deploys and tracks it from a single dashboard.',
+  },
+  {
+    q: 'Can I add my own logo and brand colors?',
+    a: 'Yes. Upload a logo (a transparent PNG works best) and set the gradient and text colors to match your brand. Everything renders live in the preview before you download.',
+  },
+  {
+    q: 'Is the email header maker really free?',
+    a: 'Yes — it is free with no signup, and the image is generated entirely in your browser, so nothing you type or upload is sent to a server. You only create a Siggly account if you want to deploy banners across your team automatically.',
+  },
+];
+
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -134,10 +164,10 @@ export default function BannerMakerPage() {
             <ImagePlus className="h-4 w-4" />
             Free tool — no signup
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Email Signature Banner Maker</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Email Header &amp; Signature Banner Maker</h1>
           <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Design a professional banner for your email signature — headline, CTA, colors, and logo.
-            Preview live and download a ready-to-use PNG.
+            Design a professional email header or signature banner — headline, CTA, colors, and logo.
+            Preview live and download a ready-to-use PNG. Free, no signup.
           </p>
         </div>
       </section>
@@ -210,6 +240,74 @@ export default function BannerMakerPage() {
               <p className="text-xs text-gray-400 mt-4 text-center">
                 Generated entirely in your browser. Nothing is uploaded.
               </p>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="mt-16 max-w-3xl mx-auto">
+            <h2 className="text-2xl font-bold mb-3">Make an email header or signature banner in seconds</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              An email signature banner — sometimes called an email header — is the graphic strip that turns
+              every message your team sends into a small piece of marketing. It is the easiest place to promote
+              a job opening, an upcoming webinar, a new product, or a seasonal offer, because it rides along on
+              email people are already reading. This free maker lets you design one in the browser: pick a size,
+              type your headline and call to action, set your brand colors, drop in a logo, and download a clean
+              PNG that works in Gmail, Outlook, and Apple Mail.
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              There is nothing to install and no signup. The image is drawn entirely on your device, so the text
+              and logo you add never leave your browser.
+            </p>
+
+            <h2 className="text-2xl font-bold mt-12 mb-4">What size should an email signature banner be?</h2>
+            <div className="space-y-3 not-prose">
+              {SIZE_GUIDE.map((s) => (
+                <div key={s.label} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 rounded-xl border border-gray-200 p-4">
+                  <div className="shrink-0 w-40">
+                    <span className="font-semibold text-gray-900">{s.label}</span>
+                    <span className="block text-sm text-violet-600 font-medium">{s.dims}</span>
+                  </div>
+                  <p className="text-sm text-gray-600">{s.use}</p>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-500 mt-3">
+              Whichever size you pick, keep the final PNG under roughly 100&nbsp;KB so it loads instantly, and
+              avoid putting essential text in an image some clients may block — repeat the key message as a link
+              too.
+            </p>
+
+            <h2 className="text-2xl font-bold mt-12 mb-4">How to make an email signature banner</h2>
+            <ol className="space-y-3 text-gray-600">
+              <li><span className="font-semibold text-gray-900">1. Choose a size.</span> Start with Wide (600×150) unless you have a reason not to.</li>
+              <li><span className="font-semibold text-gray-900">2. Write the message.</span> A short headline, one line of subtext, and a clear call to action work best.</li>
+              <li><span className="font-semibold text-gray-900">3. Match your brand.</span> Set the gradient and text colors, then upload your logo.</li>
+              <li><span className="font-semibold text-gray-900">4. Download the PNG</span> and add it to your email signature as a linked image.</li>
+            </ol>
+
+            <h2 className="text-2xl font-bold mt-12 mb-4">Ways teams use signature banners</h2>
+            <div className="grid sm:grid-cols-2 gap-4 not-prose">
+              {[
+                ['We’re hiring', 'Point every outbound email at your open roles.'],
+                ['Event & webinar promo', 'Drive registrations in the weeks before the date.'],
+                ['Product launch', 'Announce a release to everyone you email.'],
+                ['Seasonal offer', 'Run a time-boxed promotion, then swap it out.'],
+              ].map(([title, body]) => (
+                <div key={title} className="rounded-xl border border-gray-200 p-4">
+                  <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+                  <p className="text-sm text-gray-600">{body}</p>
+                </div>
+              ))}
+            </div>
+
+            <h2 className="text-2xl font-bold mt-12 mb-4">Frequently asked questions</h2>
+            <div className="space-y-5">
+              {FAQS.map((f) => (
+                <div key={f.q}>
+                  <h3 className="font-semibold text-gray-900 mb-1">{f.q}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{f.a}</p>
+                </div>
+              ))}
             </div>
           </div>
 
