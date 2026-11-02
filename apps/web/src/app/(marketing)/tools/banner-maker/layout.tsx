@@ -1,15 +1,18 @@
 import { generateMetadata as genMeta } from '@/lib/seo';
 
 export const metadata = genMeta({
-  title: 'Free Email Signature Banner Maker',
+  title: 'Free Email Header & Signature Banner Maker',
   description:
-    'Design a professional email signature banner in your browser — headline, CTA, colors, and logo. Free, no signup, instant PNG download for Gmail and Outlook.',
+    'Make a free email header or signature banner in your browser — set the headline, CTA, colors, and logo, then download a ready-to-use PNG for Gmail and Outlook. No signup.',
   keywords: [
+    'free email header maker',
+    'email header maker',
+    'email header generator',
     'email signature banner maker',
+    'create email signature banner',
+    'signature banner',
     'email banner generator',
-    'signature banner creator',
     'email signature banner template',
-    'free banner maker',
   ],
   canonical: '/tools/banner-maker',
 });
