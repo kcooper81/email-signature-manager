@@ -119,11 +119,12 @@ export default function HtmlSignatureConverterPage() {
             Free Tool
           </div>
           <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-            HTML Email Signature Converter
+            HTML to Email Signature Converter
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Convert any HTML signature into email-client compatible format. 
-            Removes unsupported code and optimizes for Gmail, Outlook, and more.
+            Convert any HTML into a clean, email-safe signature. Paste your HTML, strip the
+            code email clients don&apos;t support, and copy a version that renders in Gmail,
+            Outlook, Apple Mail, and more.
           </p>
         </div>
       </section>
@@ -335,6 +336,60 @@ export default function HtmlSignatureConverterPage() {
                 <span className="font-medium text-sm">{client}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Frequently asked questions</h2>
+          <div className="space-y-6">
+            {[
+              {
+                q: 'How do I convert HTML to an email signature?',
+                a: 'Paste your HTML into the box above and click convert. The tool strips the code email clients block — scripts, external and class-based CSS, and document tags — inlines what it can, wraps the result in an email-safe table, and gives you clean HTML to copy into your signature settings.',
+              },
+              {
+                q: 'Why doesn’t my HTML signature display correctly in Outlook?',
+                a: 'Outlook renders email with Microsoft Word’s engine, which ignores external stylesheets, most CSS classes, and modern layout like flexbox. Signatures that rely on those break. Converting to inline styles and table-based layout — what this tool does — is what makes a signature render consistently in Outlook.',
+              },
+              {
+                q: 'How do I add the HTML signature to Gmail?',
+                a: 'Gmail’s signature editor doesn’t accept raw HTML, so render the converted HTML in a browser first, select and copy the visible signature, then paste it into Settings → General → Signature. The formatting, images, and links carry over.',
+              },
+              {
+                q: 'How do I add the HTML signature to Outlook?',
+                a: 'In new Outlook and Outlook on the web, open Settings → Mail → Compose and reply, then paste the rendered signature into the editor. For desktop Outlook, you can also drop the exported .htm file into your Signatures folder.',
+              },
+              {
+                q: 'Is my HTML sent to a server?',
+                a: 'No. The conversion runs entirely in your browser, so nothing you paste or upload leaves your device.',
+              },
+            ].map((f) => (
+              <div key={f.q}>
+                <h3 className="font-semibold text-gray-900 mb-1">{f.q}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{f.a}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Related tools */}
+          <div className="mt-14 border-t border-gray-200 pt-8">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 text-center">
+              Related free tools
+            </h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/tools/signature-generator" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700 transition-colors">
+                Email Signature Generator
+              </Link>
+              <Link href="/tools/banner-maker" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700 transition-colors">
+                Email Header &amp; Banner Maker
+              </Link>
+              <Link href="/tools/signature-audit" className="rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:border-blue-300 hover:text-blue-700 transition-colors">
+                Signature Audit
+              </Link>
+            </div>
           </div>
         </div>
       </section>
