@@ -1293,9 +1293,9 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'signaturesatori',
     category: 'alternatives',
     meta: {
-      title: 'Best SignatureSatori Alternative | Siggly',
+      title: 'SignatureSatori Alternative: Google + Microsoft 365 | Siggly',
       description:
-        'SignatureSatori is built for Google Workspace only. Siggly manages signatures natively across both Google Workspace and Microsoft 365 from one dashboard.',
+        'Moving off SignatureSatori? Siggly deploys signatures across Google Workspace AND Microsoft 365, with banner campaigns, click analytics, and a free 5-user plan.',
       keywords: [
         'SignatureSatori alternative',
         'SignatureSatori replacement',
@@ -1436,7 +1436,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'florbs',
     category: 'alternatives',
     meta: {
-      title: 'Florbs Alternative for Teams | Siggly',
+      title: 'Florbs Alternative for Google + Microsoft 365 | Siggly',
       description:
         'Florbs bundles signatures into a Google Workspace admin suite. Siggly is a purpose-built signature platform for both Google Workspace and Microsoft 365.',
       keywords: [
@@ -1583,7 +1583,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'brandmail',
     category: 'alternatives',
     meta: {
-      title: 'Best BrandMail Alternative | Siggly',
+      title: 'BrandMail Alternative — No Outlook Add-In to Install | Siggly',
       description:
         'BrandMail deploys signatures through a client-side Outlook add-in. Siggly deploys server-side across Google Workspace and Microsoft 365 with nothing to install.',
       keywords: [
@@ -1717,7 +1717,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'syncsignature',
     category: 'alternatives',
     meta: {
-      title: 'SyncSignature Alternative for Teams | Siggly',
+      title: 'SyncSignature Alternative With a Free Plan | Siggly',
       description:
         'Comparing SyncSignature and Siggly? Both deploy natively to Google Workspace and Microsoft 365. Siggly starts at $1.50/user with a free plan for up to 5 users.',
       keywords: [
