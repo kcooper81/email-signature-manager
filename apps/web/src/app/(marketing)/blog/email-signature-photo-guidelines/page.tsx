@@ -57,6 +57,10 @@ export default function BlogPost() {
             <li><strong>Format:</strong> JPEG (smaller) or PNG</li>
             <li><strong>Shape:</strong> Square or circular crop</li>
           </ul>
+          <p className="text-gray-600 mb-6">
+            For the dimensions of every other part of your signature — logo, banner, and social icons — see the full{' '}
+            <Link href="/blog/email-signature-size-guide" className="text-violet-600 hover:underline">email signature size guide</Link>.
+          </p>
 
           <h2 className="text-2xl font-bold mt-12 mb-4">Photo Style Guidelines</h2>
           <ul className="list-disc pl-6 text-gray-600 space-y-3 mb-6">
