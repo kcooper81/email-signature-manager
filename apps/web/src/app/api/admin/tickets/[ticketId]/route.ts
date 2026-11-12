@@ -59,7 +59,7 @@ export async function PATCH(
   if (body.action === 'spam') {
     const { error } = await supabase
       .from('feedback')
-      .update({ status: 'spam', updated_at: now })
+      .update({ status: 'spam', is_spam: true, updated_at: now })
       .eq('id', params.ticketId);
     if (error) return NextResponse.json({ error: 'Failed to mark as spam' }, { status: 500 });
     return NextResponse.json({ success: true });
@@ -68,7 +68,7 @@ export async function PATCH(
   if (body.action === 'not_spam') {
     const { error } = await supabase
       .from('feedback')
-      .update({ status: 'new', updated_at: now })
+      .update({ status: 'new', is_spam: false, updated_at: now })
       .eq('id', params.ticketId);
     if (error) return NextResponse.json({ error: 'Failed to unmark spam' }, { status: 500 });
     return NextResponse.json({ success: true });
@@ -81,6 +81,54 @@ export async function PATCH(
       .eq('id', params.ticketId)
       .in('status', ['reviewed']);
     if (error) return NextResponse.json({ error: 'Failed to mark unread' }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
+  if (body.action === 'set_tags') {
+    const tags = Array.isArray(body.tags)
+      ? [...new Set(body.tags
+          .filter((t: any) => typeof t === 'string')
+          .map((t: string) => t.trim().slice(0, 40))
+          .filter(Boolean))].slice(0, 20)
+      : [];
+    const { error } = await supabase
+      .from('feedback')
+      .update({ tags, updated_at: now })
+      .eq('id', params.ticketId);
+    if (error) return NextResponse.json({ error: 'Failed to update tags' }, { status: 500 });
+    return NextResponse.json({ success: true, tags });
+  }
+
+  if (body.action === 'merge') {
+    const into: string = body.into;
+    if (!into || !UUID_RE.test(into) || into === params.ticketId) {
+      return NextResponse.json({ error: 'Invalid merge target' }, { status: 400 });
+    }
+    // Preserve the source's content as a note on the target, move its notes over,
+    // then mark the source merged + archived.
+    const { data: src } = await supabase
+      .from('feedback')
+      .select('message, html_body, user_email, created_at')
+      .eq('id', params.ticketId)
+      .single();
+    const { data: target } = await supabase.from('feedback').select('id').eq('id', into).single();
+    if (!src || !target) return NextResponse.json({ error: 'Ticket not found' }, { status: 404 });
+
+    const body0 = String(src.message || '').replace(/^From:.*?\n(Subject:.*?\n)?\n?/s, '').trim();
+    await supabase.from('ticket_notes').insert({
+      ticket_id: into,
+      author_id: null,
+      content: `— Merged from ticket #${params.ticketId.slice(0, 8)} (${src.user_email || 'unknown'}) —\n\n${body0}`,
+      html_body: src.html_body || null,
+      is_internal: false,
+      email_sent: false,
+    });
+    await supabase.from('ticket_notes').update({ ticket_id: into }).eq('ticket_id', params.ticketId);
+    const { error } = await supabase
+      .from('feedback')
+      .update({ merged_into: into, status: 'archived', updated_at: now })
+      .eq('id', params.ticketId);
+    if (error) return NextResponse.json({ error: 'Failed to merge' }, { status: 500 });
     return NextResponse.json({ success: true });
   }
 

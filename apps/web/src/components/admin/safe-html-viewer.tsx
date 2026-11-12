@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 interface SafeHtmlViewerProps {
   html: string;
@@ -8,26 +8,45 @@ interface SafeHtmlViewerProps {
   minHeight?: number;
 }
 
+const REMOTE_IMG_RE = /<img\b[^>]*\bsrc\s*=\s*["']https?:\/\//i;
+const REMOTE_BG_RE = /background(?:-image)?\s*:[^;"']*url\(\s*["']?https?:\/\//i;
+
+/** Neutralize remote images (tracking pixels / IP leaks) until the admin opts to load them. */
+function stripRemoteImages(html: string): string {
+  return html
+    // drop remote <img src> and srcset so nothing loads
+    .replace(/(<img\b[^>]*?)\s(?:src|srcset)\s*=\s*(["'])https?:\/\/[^"']*\2/gi, '$1')
+    // neutralize url(...) in inline styles
+    .replace(/url\(\s*["']?https?:\/\/[^)]*\)/gi, 'none');
+}
+
 /**
  * Renders untrusted HTML (e.g. inbound email) inside a sandboxed iframe
- * using a blob URL. This prevents XSS by isolating the content in a
- * separate origin (no allow-same-origin). Links open in a new tab via
- * an inline script, and height is communicated via postMessage.
+ * using a blob URL. XSS is prevented by isolating content in a separate
+ * origin (no allow-same-origin). Remote images are blocked by default so
+ * senders can't drop tracking pixels or confirm the admin's IP; a one-click
+ * bar loads them. Links open in a new tab; height is reported via postMessage.
  */
 export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtmlViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState(minHeight);
+  const [showImages, setShowImages] = useState(false);
   const blobUrlRef = useRef<string | null>(null);
   const instanceId = useId();
+
+  const hasRemoteImages = useMemo(
+    () => REMOTE_IMG_RE.test(html || '') || REMOTE_BG_RE.test(html || ''),
+    [html]
+  );
 
   useEffect(() => {
     if (blobUrlRef.current) {
       URL.revokeObjectURL(blobUrlRef.current);
       blobUrlRef.current = null;
     }
-
     if (!html) return;
 
+    const bodyHtml = showImages ? html : stripRemoteImages(html);
     const escapedId = instanceId.replace(/"/g, '\\"');
 
     const wrappedHtml = `<!DOCTYPE html>
@@ -59,9 +78,8 @@ export function SafeHtmlViewer({ html, className = '', minHeight = 80 }: SafeHtm
   }
 </style>
 </head>
-<body>${html}
+<body>${bodyHtml}
 <script>
-// Force all links to open in a new window
 document.addEventListener('click', function(e) {
   var a = e.target;
   while (a && a.tagName !== 'A') a = a.parentElement;
@@ -71,7 +89,6 @@ document.addEventListener('click', function(e) {
     window.open(a.href, '_blank', 'noopener,noreferrer');
   }
 });
-// Report height to parent for auto-resize (scoped to this instance)
 var viewerId = "${escapedId}";
 function reportHeight() {
   var h = document.documentElement.scrollHeight || document.body.scrollHeight;
@@ -87,10 +104,7 @@ window.addEventListener('load', reportHeight);
     const blob = new Blob([wrappedHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     blobUrlRef.current = url;
-
-    if (iframeRef.current) {
-      iframeRef.current.src = url;
-    }
+    if (iframeRef.current) iframeRef.current.src = url;
 
     return () => {
       if (blobUrlRef.current) {
@@ -98,7 +112,7 @@ window.addEventListener('load', reportHeight);
         blobUrlRef.current = null;
       }
     };
-  }, [html, instanceId]);
+  }, [html, instanceId, showImages]);
 
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
@@ -111,12 +125,26 @@ window.addEventListener('load', reportHeight);
   }, [minHeight, instanceId]);
 
   return (
-    <iframe
-      ref={iframeRef}
-      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
-      style={{ height: `${height}px`, minHeight: `${minHeight}px` }}
-      className={`w-full border-0 ${className}`}
-      title="Email content"
-    />
+    <div className="w-full">
+      {hasRemoteImages && !showImages && (
+        <div className="flex items-center justify-between gap-2 mb-1.5 px-2.5 py-1.5 rounded-md bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
+          <span>Remote images are blocked to protect your privacy.</span>
+          <button
+            type="button"
+            onClick={() => setShowImages(true)}
+            className="shrink-0 font-medium underline hover:no-underline"
+          >
+            Load images
+          </button>
+        </div>
+      )}
+      <iframe
+        ref={iframeRef}
+        sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+        style={{ height: `${height}px`, minHeight: `${minHeight}px` }}
+        className={`w-full border-0 ${className}`}
+        title="Email content"
+      />
+    </div>
   );
 }

@@ -49,6 +49,8 @@ import {
   MoreHorizontal,
   ChevronUp,
   MessageCircle,
+  Sparkles,
+  GitMerge,
 } from 'lucide-react';
 import { useSortableTable } from '@/hooks/use-sortable-table';
 import { SortButton } from '@/components/admin/sortable-header';
@@ -94,6 +96,8 @@ interface FeedbackEntry {
   snoozedUntil: string | null;
   assignedTo: string | null;
   assignedEmail: string | null;
+  firstResponseAt: string | null;
+  tags: string[];
 }
 
 const PAGE_SIZE = 20;
@@ -161,12 +165,20 @@ export default function TicketsPage() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [newNote, setNewNote] = useState('');
   const editorRef = useRef<RichTextEditorRef>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
   const [addingNote, setAddingNote] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
   const [showCannedPicker, setShowCannedPicker] = useState(false);
+  const [aiDrafting, setAiDrafting] = useState<'reply' | 'summary' | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [customerContext, setCustomerContext] = useState<any | null>(null);
+  const [newTag, setNewTag] = useState('');
+  const [mergeFromId, setMergeFromId] = useState<string | null>(null);
+  const [mergeSearch, setMergeSearch] = useState('');
   const [showSnoozeMenu, setShowSnoozeMenu] = useState(false);
   const [hideSnoozed, setHideSnoozed] = useState(true);
   const [showFilterPopover, setShowFilterPopover] = useState(false);
@@ -285,6 +297,8 @@ export default function TicketsPage() {
             snoozedUntil: item.snoozed_until || null,
             assignedTo: item.assigned_to || null,
             assignedEmail: null,
+            firstResponseAt: item.first_response_at || null,
+            tags: item.tags || [],
           };
 
           const matchesType = typeFilter === 'all' || item.type === typeFilter;
@@ -300,7 +314,8 @@ export default function TicketsPage() {
             || (partnerFilter === 'escalations' && item.is_partner_escalation)
             || (partnerFilter === 'partner' && item.partner_organization_id);
 
-          if (matchesType && matchesStatus && matchesPriority && matchesPartner) {
+          const matches = matchesType && matchesStatus && matchesPriority && matchesPartner;
+          if (matches) {
             if (page === 0) {
               setTickets(prev => {
                 // Deduplicate: real-time INSERT can race with loadTickets
@@ -309,21 +324,23 @@ export default function TicketsPage() {
               });
             }
             setTotalCount(prev => prev + 1);
-          }
 
-          if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-            new Notification('New Support Ticket', {
-              body: `${item.type} from ${item.user_email || 'anonymous'}: ${item.message?.slice(0, 100)}`,
-              icon: '/favicon.ico',
-            });
-          }
-
-          try {
-            const audio = new Audio('/sounds/notification.wav');
-            audio.volume = 0.3;
-            audio.play().catch(() => {});
-          } catch {
-            // Audio not available
+            // Only alert for tickets that belong in the current view, and only when enabled.
+            if (notificationsEnabled) {
+              if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                new Notification('New Support Ticket', {
+                  body: `${item.type} from ${item.user_email || 'anonymous'}: ${item.message?.slice(0, 100)}`,
+                  icon: '/favicon.ico',
+                });
+              }
+              try {
+                const audio = new Audio('/sounds/notification.wav');
+                audio.volume = 0.3;
+                audio.play().catch(() => {});
+              } catch {
+                // Audio not available
+              }
+            }
           }
         }
       )
@@ -332,21 +349,36 @@ export default function TicketsPage() {
         { event: 'UPDATE', schema: 'public', table: 'feedback' },
         (payload) => {
           const item = payload.new as any;
-          setTickets(prev => prev.map(t => {
-            if (t.id !== item.id) return t;
-            const assignedEmail = item.assigned_to
-              ? (item.assigned_to === t.assignedTo ? t.assignedEmail : null)
-              : null;
-            return {
-              ...t,
-              status: item.status,
-              priority: item.priority || 'normal',
-              updatedAt: item.updated_at,
-              assignedTo: item.assigned_to || null,
-              snoozedUntil: item.snoozed_until || null,
-              assignedEmail,
-            };
-          }));
+          // Re-evaluate whether the updated ticket still belongs in the current view.
+          // Without this, a ticket resolved/assigned from another tab or device lingers
+          // on "Open" until a manual reload, and you can act on a stale row.
+          const isOpen = ['new', 'reviewed'].includes(item.status);
+          const stillMatches =
+            statusFilter === 'all' ||
+            statusFilter === 'sent' || // metadata-based; don't drop on status change
+            (statusFilter === 'open' && isOpen) ||
+            (statusFilter === 'mine' && isOpen && item.assigned_to === currentUserId) ||
+            (statusFilter === 'unassigned' && isOpen && !item.assigned_to) ||
+            (statusFilter === 'done' && ['resolved', 'archived'].includes(item.status)) ||
+            (statusFilter === 'spam' && item.status === 'spam');
+          setTickets(prev => {
+            if (!stillMatches) return prev.filter(t => t.id !== item.id);
+            return prev.map(t => {
+              if (t.id !== item.id) return t;
+              const assignedEmail = item.assigned_to
+                ? (item.assigned_to === t.assignedTo ? t.assignedEmail : null)
+                : null;
+              return {
+                ...t,
+                status: item.status,
+                priority: item.priority || 'normal',
+                updatedAt: item.updated_at,
+                assignedTo: item.assigned_to || null,
+                snoozedUntil: item.snoozed_until || null,
+                assignedEmail,
+              };
+            });
+          });
           setSelectedTicket(prev => {
             if (!prev || prev.id !== item.id) return prev;
             const assignedEmail = item.assigned_to
@@ -517,6 +549,8 @@ export default function TicketsPage() {
       snoozedUntil: item.snoozed_until || null,
       assignedTo: item.assigned_to || null,
       assignedEmail: item.assigned_user?.email || null,
+      firstResponseAt: item.first_response_at || null,
+      tags: item.tags || [],
     }));
 
     setTickets(mapped);
@@ -808,7 +842,13 @@ export default function TicketsPage() {
   const sendComposeEmail = async () => {
     const htmlContent = composeEditorRef.current?.getHTML() || '';
     const textContent = composeEditorRef.current?.getText()?.trim() || '';
-    if (!composeTo.trim() || !composeSubject.trim() || !textContent) return;
+    // Give explicit feedback instead of a silent no-op when something's missing/invalid.
+    if (!composeTo.trim()) { setComposeError('Add a recipient email address.'); return; }
+    if (!composeSubject.trim()) { setComposeError('Add a subject.'); return; }
+    if (!textContent) { setComposeError('Write a message before sending.'); return; }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const badTo = composeTo.split(',').map(s => s.trim()).filter(Boolean).filter(e => !emailRe.test(e));
+    if (badTo.length) { setComposeError(`Not a valid email address: ${badTo[0]}`); return; }
 
     setComposeSending(true);
     setComposeError(null);
@@ -1076,6 +1116,10 @@ export default function TicketsPage() {
         return;
       }
 
+      // Don't let list/ticket shortcuts (j/k/r/e/Esc) fire while a modal is open —
+      // otherwise e.g. pressing "e" behind the delete dialog resolves the ticket under it.
+      if (showCompose || deleteConfirmId || mergeFromId) return;
+
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' ||
           target.isContentEditable || target.closest('.tiptap')) return;
 
@@ -1116,7 +1160,126 @@ export default function TicketsPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedTicket, filteredTickets, composerMode]);
+  }, [selectedTicket, filteredTickets, composerMode, showCompose, deleteConfirmId, mergeFromId]);
+
+  // Reset AI output + load customer context when switching tickets.
+  useEffect(() => {
+    setAiSummary(null);
+    setAiError(null);
+    setCustomerContext(null);
+    const id = selectedTicket?.id;
+    if (!id) return;
+    let cancelled = false;
+    fetch(`/api/admin/tickets/${id}/context`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (!cancelled) setCustomerContext(d); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [selectedTicket?.id]);
+
+  const planBadgeClass = (plan: string | null) =>
+    plan === 'enterprise' ? 'bg-violet-100 text-violet-700'
+    : (plan === 'professional' || plan === 'pro') ? 'bg-blue-100 text-blue-700'
+    : 'bg-gray-100 text-gray-600';
+
+  // Generate an AI draft reply (fills the editor) or a thread summary (shows a banner).
+  const generateAi = async (mode: 'reply' | 'summary') => {
+    if (!selectedTicket || aiDrafting) return;
+    setAiDrafting(mode);
+    setAiError(null);
+    try {
+      const res = await fetch(`/api/admin/tickets/${selectedTicket.id}/ai-draft`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAiError(data.error || 'AI request failed');
+        return;
+      }
+      if (mode === 'summary') {
+        setAiSummary(data.text);
+      } else {
+        const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const html = String(data.text)
+          .split(/\n\n+/)
+          .map((p: string) => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`)
+          .join('');
+        setComposerMode('reply');
+        setNewNote(html);
+        editorRef.current?.setContent(html);
+      }
+    } catch {
+      setAiError('AI request failed');
+    } finally {
+      setAiDrafting(null);
+    }
+  };
+
+  // Open the composer in a given mode and bring it into view + focus (used by the
+  // top action bar so you don't have to scroll to the bottom to reply).
+  const openComposer = (mode: 'reply' | 'note') => {
+    setComposerMode(mode);
+    setTimeout(() => {
+      composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      editorRef.current?.focus?.();
+    }, 60);
+  };
+
+  // Merge the currently-open ticket into another (fold a forked/duplicate thread).
+  const mergeTicket = async (into: string) => {
+    const from = mergeFromId;
+    if (!from || from === into) return;
+    setMergeFromId(null);
+    setMergeSearch('');
+    try {
+      await fetch(`/api/admin/tickets/${from}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'merge', into }),
+      });
+      setTickets(prev => prev.filter(t => t.id !== from));
+      setSelectedTicket(prev => (prev?.id === from ? null : prev));
+    } catch {
+      /* best-effort */
+    }
+  };
+
+  // Update a ticket's tags (optimistic + persist).
+  const updateTags = async (ticketId: string, tags: string[]) => {
+    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, tags } : t));
+    setSelectedTicket(prev => prev && prev.id === ticketId ? { ...prev, tags } : prev);
+    try {
+      await fetch(`/api/admin/tickets/${ticketId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set_tags', tags }),
+      });
+    } catch {
+      /* best-effort */
+    }
+  };
+
+  // Hours an open ticket has waited with no agent reply yet (null if answered/closed).
+  const awaitingHours = (t: FeedbackEntry): number | null => {
+    if (!['new', 'reviewed'].includes(t.status) || t.firstResponseAt) return null;
+    return Math.floor((Date.now() - new Date(t.createdAt).getTime()) / 3600000);
+  };
+
+  // Expand {{variables}} in a canned reply using the open ticket's context,
+  // so saved replies personalize instead of pasting literal placeholders.
+  const fillCannedTemplate = (content: string): string => {
+    const email = selectedTicket?.userEmail || '';
+    const first = email ? (email.split('@')[0].split(/[._-]/)[0] || '') : '';
+    const firstName = first ? first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() : 'there';
+    return content
+      .replace(/\{\{\s*first_?name\s*\}\}/gi, firstName)
+      .replace(/\{\{\s*(?:full_?)?name\s*\}\}/gi, firstName)
+      .replace(/\{\{\s*email\s*\}\}/gi, email)
+      .replace(/\{\{\s*ticket_?id\s*\}\}/gi, selectedTicket ? selectedTicket.id.slice(0, 8) : '')
+      .replace(/\{\{\s*(?:org|organization|company)(?:_?name)?\s*\}\}/gi, selectedTicket?.organizationName || '');
+  };
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -1240,6 +1403,31 @@ export default function TicketsPage() {
     if (days < 7) return `${days}d`;
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  const contextBar = customerContext && (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-card px-3 py-2 text-xs">
+      {customerContext.plan ? (
+        <span className={`px-1.5 py-0.5 rounded font-semibold capitalize ${planBadgeClass(customerContext.plan)}`}>
+          {customerContext.plan}{customerContext.planStatus && customerContext.planStatus !== 'active' ? ` · ${customerContext.planStatus}` : ''}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">No account</span>
+      )}
+      {customerContext.orgName && (
+        <span className="text-foreground/80 font-medium">{customerContext.orgName}{customerContext.orgType === 'msp' ? ' · partner' : ''}</span>
+      )}
+      {customerContext.memberSince && (
+        <span className="text-muted-foreground">Joined {timeAgo(customerContext.memberSince)}</span>
+      )}
+      {customerContext.totalTickets > 0 && (
+        <span className="text-muted-foreground">
+          {customerContext.totalTickets} ticket{customerContext.totalTickets !== 1 ? 's' : ''}
+          {customerContext.openTickets > 1 ? ` · ${customerContext.openTickets} open` : ''}
+        </span>
+      )}
+      {customerContext.isActive === false && <span className="text-red-500 font-medium">Deactivated</span>}
+    </div>
+  );
 
   const hasActiveFilters = typeFilter !== 'all' || priorityFilter !== 'all' || partnerFilter !== 'all';
 
@@ -1524,12 +1712,17 @@ export default function TicketsPage() {
 
                         <div className="flex flex-col items-end gap-1.5 shrink-0">
                           <span className={`text-xs whitespace-nowrap ${isUnread ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>{timeAgo(ticket.createdAt)}</span>
-                          {ticket.updatedAt && ticket.updatedAt !== ticket.createdAt && (
-                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                              <Reply className="h-2.5 w-2.5" />
-                              {timeAgo(ticket.updatedAt)}
-                            </span>
-                          )}
+                          {(() => {
+                            const h = awaitingHours(ticket);
+                            if (h === null) return null;
+                            const cls = h >= 24 ? 'bg-red-100 text-red-700' : h >= 4 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500';
+                            return (
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5 ${cls}`} title="Waiting for first reply">
+                                <Clock className="h-2.5 w-2.5" />
+                                {h < 1 ? '<1h' : h >= 24 ? `${Math.floor(h / 24)}d` : `${h}h`}
+                              </span>
+                            );
+                          })()}
                           {!isCompact && ticket.isPartnerEscalation && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">Partner</span>
                           )}
@@ -1656,6 +1849,9 @@ export default function TicketsPage() {
                           <ShieldBan className="h-3.5 w-3.5" /> Mark as Spam
                         </button>
                       )}
+                      <button onClick={() => { setMergeFromId(selectedTicket.id); setMergeSearch(selectedTicket.userEmail || ''); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2">
+                        <GitMerge className="h-3.5 w-3.5" /> Merge into…
+                      </button>
                       <div className="border-t my-1" />
                       <button onClick={() => { setDeleteConfirmId(selectedTicket.id); setShowMoreActions(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-red-50 text-red-600 flex items-center gap-2">
                         <Trash2 className="h-3.5 w-3.5" /> Delete
@@ -1688,8 +1884,57 @@ export default function TicketsPage() {
               </div>
             )}
 
+            {/* Quick actions (top) — mirror of the bottom composer so you don't scroll to reply */}
+            <div className="flex items-center gap-1.5 px-4 py-2 border-b bg-card shrink-0">
+              <button onClick={() => openComposer('reply')} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 bg-primary text-primary-foreground hover:opacity-90">
+                <Reply className="h-3.5 w-3.5" /> Reply
+              </button>
+              <button onClick={() => openComposer('note')} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-muted-foreground hover:bg-muted border">
+                <MessageCircle className="h-3.5 w-3.5" /> Note
+              </button>
+              <button onClick={() => forwardTicket(selectedTicket)} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-muted-foreground hover:bg-muted border">
+                <Forward className="h-3.5 w-3.5" /> Forward
+              </button>
+              <button onClick={() => generateAi('reply')} disabled={!!aiDrafting} className="h-7 px-3 rounded-md text-xs font-medium flex items-center gap-1 text-violet-600 hover:bg-violet-50 border border-violet-200 disabled:opacity-60 ml-auto">
+                {aiDrafting === 'reply' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} AI Draft
+              </button>
+            </div>
+
             {/* Scrollable conversation area — collapsible thread */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3 bg-muted/20">
+              {contextBar}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {selectedTicket.tags.map(tag => (
+                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                    {tag}
+                    <button onClick={() => updateTags(selectedTicket.id, selectedTicket.tags.filter(t => t !== tag))} className="hover:text-blue-900" title="Remove tag"><X className="h-2.5 w-2.5" /></button>
+                  </span>
+                ))}
+                <input
+                  value={newTag}
+                  onChange={e => setNewTag(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && newTag.trim()) {
+                      const t = newTag.trim().slice(0, 40);
+                      if (!selectedTicket.tags.includes(t)) updateTags(selectedTicket.id, [...selectedTicket.tags, t]);
+                      setNewTag('');
+                    }
+                  }}
+                  placeholder="+ tag"
+                  className="text-[11px] px-2 py-0.5 border rounded-full w-16 focus:w-32 bg-background transition-all outline-none focus:ring-1 focus:ring-blue-300"
+                />
+              </div>
+              {aiSummary && (
+                <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-violet-700">
+                      <Sparkles className="h-3.5 w-3.5" /> AI summary
+                    </span>
+                    <button onClick={() => setAiSummary(null)} className="text-violet-400 hover:text-violet-600"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                  <div className="text-sm text-violet-900 whitespace-pre-wrap leading-relaxed">{aiSummary}</div>
+                </div>
+              )}
               {(() => {
                 // Notes are fetched newest-first; build thread with latest at top
                 const allMessages = [
@@ -1791,7 +2036,7 @@ export default function TicketsPage() {
             </div>
 
             {/* Bottom action bar — Reply / Note / Forward buttons + collapsible composer */}
-            <div className="bg-card border-t shrink-0">
+            <div ref={composerRef} className="bg-card border-t shrink-0">
               {/* Mode buttons */}
               <div className="flex items-center gap-1 px-4 py-2 border-b bg-muted/30">
                 <button
@@ -1850,6 +2095,34 @@ export default function TicketsPage() {
                     </div>
                   )}
 
+                  {/* AI assist for reply mode */}
+                  {composerMode === 'reply' && (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => generateAi('reply')}
+                        disabled={!!aiDrafting}
+                        className="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-700 px-2 py-1 rounded hover:bg-violet-50 font-medium disabled:opacity-60"
+                        title="Draft a reply with AI"
+                      >
+                        {aiDrafting === 'reply' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                        AI Draft
+                      </button>
+                      <button
+                        onClick={() => generateAi('summary')}
+                        disabled={!!aiDrafting}
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded hover:bg-muted font-medium disabled:opacity-60"
+                        title="Summarize this thread"
+                      >
+                        {aiDrafting === 'summary' ? <Loader2 className="h-3 w-3 animate-spin" /> : <MessageSquare className="h-3 w-3" />}
+                        Summarize
+                      </button>
+                    </div>
+                  )}
+
+                  {aiError && composerMode === 'reply' && (
+                    <p className="text-xs text-red-500">{aiError}</p>
+                  )}
+
                   {/* Canned responses for reply mode */}
                   {cannedResponses.length > 0 && composerMode === 'reply' && (
                     <div className="relative" data-popover="canned">
@@ -1859,7 +2132,7 @@ export default function TicketsPage() {
                       {showCannedPicker && (
                         <div className="absolute left-0 bottom-7 bg-popover border rounded-lg shadow-lg py-1 z-20 w-72 max-h-48 overflow-y-auto">
                           {cannedResponses.map(cr => (
-                            <button key={cr.id} onClick={() => { setNewNote(cr.content); editorRef.current?.setContent(cr.content); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-muted border-b last:border-0">
+                            <button key={cr.id} onClick={() => { const filled = fillCannedTemplate(cr.content); setNewNote(filled); editorRef.current?.setContent(filled); setShowCannedPicker(false); }} className="w-full text-left px-3 py-2 hover:bg-muted border-b last:border-0">
                               <p className="text-sm font-medium">{cr.title}</p>
                               <p className="text-xs text-muted-foreground truncate mt-0.5">{cr.content.slice(0, 60)}</p>
                             </button>
@@ -1925,6 +2198,16 @@ export default function TicketsPage() {
 
             {/* Mobile conversation — same collapsible pattern */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-muted/20">
+              {contextBar}
+              {aiSummary && (
+                <div className="rounded-lg border border-violet-200 bg-violet-50 p-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-violet-700"><Sparkles className="h-3.5 w-3.5" /> AI summary</span>
+                    <button onClick={() => setAiSummary(null)} className="text-violet-400"><X className="h-3.5 w-3.5" /></button>
+                  </div>
+                  <div className="text-sm text-violet-900 whitespace-pre-wrap leading-relaxed">{aiSummary}</div>
+                </div>
+              )}
               {/* Original message */}
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
@@ -1952,8 +2235,9 @@ export default function TicketsPage() {
                 </button>
               )}
 
-              {/* Middle messages (when expanded) */}
-              {(1 + selectedTicket.notes.length) > 2 && expandedNotes.has('__all') && selectedTicket.notes.slice(0, -1).map(note => {
+              {/* Middle messages (when expanded) — notes are newest-first; show all but the
+                  newest, in chronological (oldest→newest) order so the thread reads top-to-bottom. */}
+              {(1 + selectedTicket.notes.length) > 2 && expandedNotes.has('__all') && [...selectedTicket.notes.slice(1)].reverse().map(note => {
                 const isCustomer = note.authorEmail === 'External Reply';
                 const isInternal = note.isInternal;
                 return (
@@ -1972,9 +2256,9 @@ export default function TicketsPage() {
                 );
               })}
 
-              {/* Latest message — always visible */}
+              {/* Latest message — always visible (notes are newest-first, so [0] is newest). */}
               {selectedTicket.notes.length > 0 && (() => {
-                const note = selectedTicket.notes[selectedTicket.notes.length - 1];
+                const note = selectedTicket.notes[0];
                 const isCustomer = note.authorEmail === 'External Reply';
                 const isInternal = note.isInternal;
                 return (
@@ -2010,6 +2294,17 @@ export default function TicketsPage() {
               </div>
               {composerMode && (composerMode === 'reply' || composerMode === 'note') && (
                 <div className="px-3 py-2.5 space-y-2">
+                  {composerMode === 'reply' && (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => generateAi('reply')} disabled={!!aiDrafting} className="flex items-center gap-1.5 text-xs text-violet-600 font-medium px-2 py-1 rounded hover:bg-violet-50 disabled:opacity-60">
+                        {aiDrafting === 'reply' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />} AI Draft
+                      </button>
+                      <button onClick={() => generateAi('summary')} disabled={!!aiDrafting} className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium px-2 py-1 rounded hover:bg-muted disabled:opacity-60">
+                        {aiDrafting === 'summary' ? <Loader2 className="h-3 w-3 animate-spin" /> : <MessageSquare className="h-3 w-3" />} Summarize
+                      </button>
+                    </div>
+                  )}
+                  {aiError && <p className="text-xs text-red-500">{aiError}</p>}
                   <RichTextEditor ref={editorRef} placeholder={composerMode === 'note' ? "Internal note..." : "Write a reply..."} onChange={(html) => setNewNote(html)} initialContent={newNote} />
                   <Button onClick={addNote} disabled={(!newNote || newNote === '<p></p>') || addingNote} className={`w-full h-9 text-sm font-medium ${composerMode === 'note' ? 'bg-amber-600 hover:bg-amber-700' : ''}`}>
                     {addingNote ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
@@ -2017,6 +2312,51 @@ export default function TicketsPage() {
                   </Button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Merge Dialog — pick a ticket to fold the current one into */}
+      {mergeFromId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMergeFromId(null)} />
+          <div className="relative bg-background rounded-xl shadow-2xl border w-full max-w-lg mx-4 flex flex-col max-h-[80vh]">
+            <div className="p-4 border-b">
+              <h3 className="text-base font-semibold flex items-center gap-2"><GitMerge className="h-4 w-4" /> Merge ticket into…</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">The current ticket's messages move into the one you pick, and it's archived.</p>
+              <input
+                autoFocus
+                value={mergeSearch}
+                onChange={e => setMergeSearch(e.target.value)}
+                placeholder="Search by sender or subject…"
+                className="mt-3 w-full h-9 px-3 border rounded-lg text-sm bg-background outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="overflow-y-auto p-2">
+              {(() => {
+                const term = mergeSearch.trim().toLowerCase();
+                const candidates = tickets
+                  .filter(t => t.id !== mergeFromId && t.status !== 'spam')
+                  .filter(t => !term || (t.userEmail || '').toLowerCase().includes(term) || (t.message || '').toLowerCase().includes(term))
+                  .slice(0, 30);
+                if (candidates.length === 0) {
+                  return <p className="text-sm text-muted-foreground text-center py-6">No matching tickets in the current list.</p>;
+                }
+                return candidates.map(t => (
+                  <button key={t.id} onClick={() => mergeTicket(t.id)} className="w-full text-left px-3 py-2.5 rounded-lg hover:bg-muted flex items-center gap-3">
+                    <span className="text-[10px] font-mono text-muted-foreground shrink-0">#{t.id.slice(0, 8)}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{t.userEmail || 'Anonymous'}</p>
+                      <p className="text-xs text-muted-foreground truncate">{t.message.replace(/^From:.*?\n(Subject:.*?\n)?(\n)?/s, '').slice(0, 70)}</p>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground shrink-0">{timeAgo(t.createdAt)}</span>
+                  </button>
+                ));
+              })()}
+            </div>
+            <div className="p-3 border-t flex justify-end">
+              <Button variant="outline" onClick={() => setMergeFromId(null)}>Cancel</Button>
             </div>
           </div>
         </div>
