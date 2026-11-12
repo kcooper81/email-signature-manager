@@ -1293,9 +1293,9 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'signaturesatori',
     category: 'alternatives',
     meta: {
-      title: 'Best SignatureSatori Alternative | Siggly',
+      title: 'SignatureSatori Alternative: Google + Microsoft 365 | Siggly',
       description:
-        'SignatureSatori is built for Google Workspace only. Siggly manages signatures natively across both Google Workspace and Microsoft 365 from one dashboard.',
+        'Moving off SignatureSatori? Siggly deploys signatures across Google Workspace AND Microsoft 365, with banner campaigns, click analytics, and a free 5-user plan.',
       keywords: [
         'SignatureSatori alternative',
         'SignatureSatori replacement',
@@ -1436,7 +1436,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'florbs',
     category: 'alternatives',
     meta: {
-      title: 'Florbs Alternative for Teams | Siggly',
+      title: 'Florbs Alternative for Google + Microsoft 365 | Siggly',
       description:
         'Florbs bundles signatures into a Google Workspace admin suite. Siggly is a purpose-built signature platform for both Google Workspace and Microsoft 365.',
       keywords: [
@@ -1583,7 +1583,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'brandmail',
     category: 'alternatives',
     meta: {
-      title: 'Best BrandMail Alternative | Siggly',
+      title: 'BrandMail Alternative — No Outlook Add-In to Install | Siggly',
       description:
         'BrandMail deploys signatures through a client-side Outlook add-in. Siggly deploys server-side across Google Workspace and Microsoft 365 with nothing to install.',
       keywords: [
@@ -1717,7 +1717,7 @@ export const alternativesPages: SEOLandingPageData[] = [
     slug: 'syncsignature',
     category: 'alternatives',
     meta: {
-      title: 'SyncSignature Alternative for Teams | Siggly',
+      title: 'SyncSignature Alternative With a Free Plan | Siggly',
       description:
         'Comparing SyncSignature and Siggly? Both deploy natively to Google Workspace and Microsoft 365. Siggly starts at $1.50/user with a free plan for up to 5 users.',
       keywords: [
@@ -1853,6 +1853,144 @@ export const alternativesPages: SEOLandingPageData[] = [
       title: 'Get More Signature Value With Siggly',
       description:
         'Start free with up to 5 users, then scale to Professional at $1.50/user/month across Google Workspace and Microsoft 365.',
+      variant: 'default',
+    },
+  },
+
+  // ---------------------------------------------------------------------------
+  // CodeTwo
+  // ---------------------------------------------------------------------------
+  {
+    slug: 'codetwo',
+    category: 'alternatives',
+    meta: {
+      title: 'CodeTwo Alternative for Google + Microsoft 365 | Siggly',
+      description:
+        'Looking for a CodeTwo alternative? CodeTwo manages signatures for Microsoft 365 and Exchange. Siggly covers both Google Workspace AND Microsoft 365 from one dashboard, with simple per-user pricing and a free plan.',
+      keywords: [
+        'CodeTwo alternative',
+        'CodeTwo Email Signatures alternative',
+        'CodeTwo replacement',
+        'Microsoft 365 email signature management',
+        'cross-platform signature manager',
+      ],
+      canonical: '/alternatives/codetwo',
+    },
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Alternatives', url: '/alternatives' },
+      { name: 'Siggly vs CodeTwo', url: '/alternatives/codetwo' },
+    ],
+    hero: {
+      badge: { icon: 'arrow-left-right', text: 'Alternative' },
+      title: 'A Cross-Platform Alternative to CodeTwo',
+      description:
+        'CodeTwo is a mature, well-regarded signature platform built around Microsoft — it deploys server-side signatures across Microsoft 365 and Exchange, including on-premises. If your organization also runs Google Workspace, or wants simpler per-user pricing and a free plan, Siggly manages signatures natively across both Google and Microsoft from a single dashboard.',
+      variant: 'indigo',
+    },
+    stats: [
+      { value: '2', label: 'Native platforms: Google + Microsoft' },
+      { value: '$1.50', label: 'Per user / month on Professional' },
+      { value: '5', label: 'Free users to get started' },
+    ],
+    featuresTitle: 'Why Teams Consider Siggly Instead of CodeTwo',
+    features: [
+      {
+        icon: 'globe',
+        title: 'Native Google AND Microsoft Support',
+        description:
+          'CodeTwo\'s signature products are built for Microsoft 365 and Exchange. Siggly deploys natively to both Google Workspace and Microsoft 365, so mixed or migrating environments are covered from one place.',
+      },
+      {
+        icon: 'dollar-sign',
+        title: 'Simple Per-User Pricing',
+        description:
+          'Siggly Professional is a flat $1.50/user/month with a free plan for up to 5 users — an easy fit for small and growing teams alongside CodeTwo\'s enterprise-oriented per-mailbox plans.',
+      },
+      {
+        icon: 'layout',
+        title: 'Modern Drag-and-Drop Editor',
+        description:
+          'Design signatures visually with conditional fields, banner slots, and live cross-client preview — no HTML required.',
+      },
+      {
+        icon: 'image',
+        title: 'Banner Campaigns Built In',
+        description:
+          'Schedule and rotate promotional banners inside employee signatures and measure the clicks they generate, on every plan.',
+      },
+      {
+        icon: 'cloud',
+        title: 'Cloud-Native, Nothing to Install',
+        description:
+          'Siggly is fully cloud-based with no server role or add-in to maintain — connect your workspace and deploy in minutes.',
+      },
+    ],
+    sections: [
+      {
+        type: 'comparison-table',
+        title: 'Siggly vs CodeTwo',
+        competitor: 'CodeTwo',
+        rows: [
+          { feature: 'Native Microsoft 365 deployment', siggly: true, competitor: true },
+          { feature: 'Native Google Workspace deployment', siggly: true, competitor: false },
+          { feature: 'One dashboard for Google + Microsoft', siggly: true, competitor: false },
+          { feature: 'On-premises Exchange support', siggly: false, competitor: true },
+          { feature: 'Server-side signature enforcement', siggly: true, competitor: true },
+          { feature: 'Drag-and-drop template editor', siggly: true, competitor: true },
+          { feature: 'Banner campaign scheduling', siggly: true, competitor: true },
+          { feature: 'Click and impression analytics', siggly: true, competitor: true },
+          { feature: 'Free plan available', siggly: true, competitor: 'Add-in only' },
+          { feature: 'Simple per-user subscription', siggly: true, competitor: 'Per-mailbox / year' },
+        ],
+      },
+      {
+        type: 'checklist',
+        title: 'What You Gain by Choosing Siggly',
+        items: [
+          'One dashboard for both Google Workspace and Microsoft 365 signatures',
+          'Flat $1.50/user/month pricing with a free plan for up to 5 users',
+          'Banner campaigns and click analytics included on every plan',
+          'A modern visual editor with live cross-client preview',
+          'Cloud-native deployment with no server role or add-in to maintain',
+        ],
+      },
+      {
+        type: 'prose',
+        title: 'CodeTwo vs Siggly: which should you choose?',
+        paragraphs: [
+          'CodeTwo is one of the most established names in email signature management, with a strong reputation among Microsoft administrators. Its signature products apply server-side signatures across Microsoft 365 and Exchange — including on-premises Exchange — and it offers a mature template editor, central rules, and marketing banners. If your organization is entirely on Microsoft and values deep Exchange and on-prem coverage, CodeTwo is a proven, capable choice.',
+          'The main differences are platform coverage and pricing model. CodeTwo is built around Microsoft, so it does not natively manage Google Workspace signatures; if any part of your company runs Gmail, you would need a second tool. Siggly manages signatures natively across both Google Workspace and Microsoft 365 from one dashboard, which suits mixed environments and companies mid-migration. On pricing, Siggly uses a simple flat per-user subscription ($1.50/user/month, free for up to 5 users) rather than CodeTwo\'s per-mailbox annual plans aimed at larger deployments.',
+          'If you are Microsoft-only and need on-premises Exchange support, CodeTwo is a strong fit. If you run both Google and Microsoft — or want straightforward per-user pricing, a free plan, and banners and analytics included — Siggly is the better match. Feature and pricing details reflect publicly available information as of November 2026 and may change.',
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: 'Does Siggly support Microsoft 365 like CodeTwo?',
+        answer:
+          'Yes. Siggly deploys signatures natively to Microsoft 365, and also to Google Workspace, from the same dashboard. CodeTwo focuses on Microsoft 365 and Exchange, including on-premises Exchange, which Siggly (being cloud-native) does not cover.',
+      },
+      {
+        question: 'What is the main difference between Siggly and CodeTwo?',
+        answer:
+          'Platform coverage and pricing. CodeTwo is a mature, Microsoft-focused platform; Siggly manages both Google Workspace and Microsoft 365 signatures from one place and uses simple per-user pricing with a free plan, rather than per-mailbox annual plans.',
+      },
+      {
+        question: 'Does Siggly work if we use both Google and Microsoft?',
+        answer:
+          'Yes. Siggly is designed for mixed environments, so you can manage Gmail and Outlook signatures side by side — useful for companies running both platforms or in the middle of a migration.',
+      },
+      {
+        question: 'Can I migrate my CodeTwo signatures to Siggly?',
+        answer:
+          'Yes. Paste your existing HTML signature into the Siggly editor to keep your current design, or start from a professional template, then connect Google Workspace or Microsoft 365 and deploy to your team in minutes.',
+      },
+    ],
+    cta: {
+      title: 'Manage Signatures Across Google and Microsoft',
+      description:
+        'Start free with Siggly and deploy on-brand signatures to every inbox — whichever platform your team runs on.',
       variant: 'default',
     },
   },

@@ -221,9 +221,9 @@ export const answersPages: SEOLandingPageData[] = [
     slug: 'stop-employees-changing-email-signature',
     category: 'answers',
     meta: {
-      title: 'Stop Employees Changing Email Signatures | Siggly',
+      title: 'How to Stop Employees Changing Email Signatures | Siggly',
       description:
-        'To stop employees editing or removing their email signature, deploy it server-side and enforce it. Here is how to lock company email signatures with Siggly.',
+        "Employees keep editing or deleting their signature? Lock it: deploy server-side and auto-reapply the approved version so every email stays on-brand. Here's how.",
       keywords: [
         'stop employees changing email signature',
         'enforce email signature',
