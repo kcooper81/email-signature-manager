@@ -21,6 +21,7 @@ import { answersPages } from '@/lib/seo-pages/data/answers';
 
 // Blog posts data - should match the blog page
 const blogPosts = [
+  { slug: 'email-signature-size-guide', date: '2026-11-08', dateModified: '2026-11-08' },
   { slug: 'google-workspace-admin-signature-guide', date: '2026-02-07', dateModified: '2026-03-29' },
   { slug: 'gmail-signature-compliance-guide', date: '2026-02-07', dateModified: '2026-03-29' },
   { slug: 'google-workspace-vs-microsoft-365-signatures', date: '2026-02-07', dateModified: '2026-03-29' },
